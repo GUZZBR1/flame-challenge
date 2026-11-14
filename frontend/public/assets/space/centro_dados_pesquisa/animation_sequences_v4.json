@@ -1,0 +1,56 @@
+{
+  "schema": "ignis.pixi.research-module-animation-v1",
+  "renderer": "PixiJS 8",
+  "commands": {
+    "E": "play-engine-startup-burn-shutdown",
+    "R": "play-contained-test-flash-and-crew-reaction"
+  },
+  "animations": {
+    "engine_startup": {
+      "sheet": "centro_dados_pesquisa_engine_v4.json",
+      "animation": "engine_startup",
+      "fps": 6,
+      "loop": false
+    },
+    "engine_burn": {
+      "sheet": "centro_dados_pesquisa_engine_v4.json",
+      "animation": "engine_burn",
+      "fps": 8,
+      "loop": false,
+      "durationMs": 800
+    },
+    "engine_shutdown": {
+      "sheet": "centro_dados_pesquisa_engine_v4.json",
+      "animation": "engine_shutdown",
+      "fps": 6,
+      "loop": false
+    },
+    "scientist_walk": {
+      "sheet": "centro_dados_pesquisa_scientist_v4.json",
+      "animation": "scientist_walk",
+      "fps": 6,
+      "loop": true
+    },
+    "scientist_startled": {
+      "sheet": "centro_dados_pesquisa_scientist_v4.json",
+      "animation": "scientist_startled",
+      "fps": 8,
+      "loop": false
+    },
+    "test_flash": {
+      "sheet": "centro_dados_pesquisa_test_flash_v4.json",
+      "animation": "test_flash",
+      "fps": 12,
+      "loop": false,
+      "durationMs": 667
+    }
+  },
+  "cycle": {
+    "periodMs": 8000,
+    "idleMs": 7200,
+    "burnMs": 800,
+    "automatic": false,
+    "note": "8 s period is the storyboard timing target; start and test event are user-triggered in this package."
+  },
+  "notes": "Frame-based sprites are intended to overlay the approved V4 map; keep test flash contained to the shielded engine bay."
+}

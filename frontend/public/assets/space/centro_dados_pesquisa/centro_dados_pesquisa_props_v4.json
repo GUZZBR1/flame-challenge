@@ -1,0 +1,196 @@
+{
+  "frames": {
+    "bancada_pesquisa_v4": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 270,
+        "h": 225
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 270,
+        "h": 225
+      },
+      "sourceSize": {
+        "w": 270,
+        "h": 225
+      }
+    },
+    "caixa_ferramentas_v4": {
+      "frame": {
+        "x": 420,
+        "y": 0,
+        "w": 260,
+        "h": 270
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 260,
+        "h": 270
+      },
+      "sourceSize": {
+        "w": 260,
+        "h": 270
+      }
+    },
+    "console_pesquisa_v4": {
+      "frame": {
+        "x": 840,
+        "y": 0,
+        "w": 315,
+        "h": 250
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 315,
+        "h": 250
+      },
+      "sourceSize": {
+        "w": 315,
+        "h": 250
+      }
+    },
+    "eclusa_v4": {
+      "frame": {
+        "x": 0,
+        "y": 340,
+        "w": 380,
+        "h": 280
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 380,
+        "h": 280
+      },
+      "sourceSize": {
+        "w": 380,
+        "h": 280
+      }
+    },
+    "janela_espacial_v4": {
+      "frame": {
+        "x": 420,
+        "y": 340,
+        "w": 410,
+        "h": 265
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 410,
+        "h": 265
+      },
+      "sourceSize": {
+        "w": 410,
+        "h": 265
+      }
+    },
+    "parede_servidores_v4": {
+      "frame": {
+        "x": 840,
+        "y": 340,
+        "w": 395,
+        "h": 260
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 395,
+        "h": 260
+      },
+      "sourceSize": {
+        "w": 395,
+        "h": 260
+      }
+    },
+    "plataforma_risco_v4": {
+      "frame": {
+        "x": 0,
+        "y": 680,
+        "w": 385,
+        "h": 265
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 385,
+        "h": 265
+      },
+      "sourceSize": {
+        "w": 385,
+        "h": 265
+      }
+    },
+    "rack_servidor_v4": {
+      "frame": {
+        "x": 420,
+        "y": 680,
+        "w": 230,
+        "h": 325
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 230,
+        "h": 325
+      },
+      "sourceSize": {
+        "w": 230,
+        "h": 325
+      }
+    },
+    "terminal_v4": {
+      "frame": {
+        "x": 840,
+        "y": 680,
+        "w": 210,
+        "h": 280
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 210,
+        "h": 280
+      },
+      "sourceSize": {
+        "w": 210,
+        "h": 280
+      }
+    }
+  },
+  "animations": {},
+  "meta": {
+    "app": "IGNIS PixiJS Sprite Atlas",
+    "version": "4.0",
+    "image": "centro_dados_pesquisa_props_v4.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1260,
+      "h": 1020
+    },
+    "scale": "1"
+  }
+}
