@@ -40,11 +40,33 @@ cd core && cmake -S . -B build -DPython3_EXECUTABLE=/usr/bin/python3 \
 ```
 core/      C++20 physics: droplet d²-law (FLEX), SAFFIRE spread,
                   ACME material risk + pybind11 + (Emscripten-ready)
-data/    NASA PSI/NTRS ETL + calibrate_constants.py
-backend/      FastAPI bridge: /api/chamber/preview, WS /ws/chamber
+data/    NASA PSI/NTRS ETL → experiments.csv, search index, risk model
+backend/      FastAPI bridge: /api/chamber/preview, WS /ws/chamber,
+                  /api/search, /api/ask, /api/risk(+curve/materials)
 frontend/     React + TypeScript + PixiJS game client
-docs/             ARCHITECTURE.md, NASA_PSI_REFERENCES.md, challenge brief
+docs/             ARCHITECTURE.md, DATA_PIPELINE.md,
+                  NASA_PSI_REFERENCES.md, challenge brief
 ```
+
+## Data layer (real NASA records)
+
+The ETL in `data/pipelines/` pulls **4,600+ public files across 17 PSI
+studies** (FLEX/CFI, ACME, BASS, Saffire, SAME…) plus 120 NTRS citations,
+normalizes **800+ real test runs** into `data/processed/experiments.csv`,
+and builds a deterministic retrieval corpus — no external ML service.
+
+```bash
+./.venv/bin/python data/pipelines/psi_search.py --all
+./.venv/bin/python data/pipelines/psi_files.py --all
+./.venv/bin/python data/pipelines/ntrs_search.py --all --fulltext 3
+./.venv/bin/python data/pipelines/normalize_experiments.py
+./.venv/bin/python data/pipelines/build_index.py
+./.venv/bin/python data/pipelines/fit_risk_model.py
+```
+
+Then `uvicorn` exposes `/api/search`, `/api/ask` (BM25 + DuckDB SQL-RAG
+with exact PSI/NTRS citations) and `/api/risk` (cabin fire-risk index:
+O₂ × ventilation × material × gravity). Recipe: `docs/DATA_PIPELINE.md`.
 
 See `docs/ARCHITECTURE.md` for the data flow and
 `docs/NASA_PSI_REFERENCES.md` for the mechanic→dataset mapping.

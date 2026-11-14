@@ -232,7 +232,14 @@ def _sql_answer(q: str, terms: list[str], inv: str | None,
                 "FROM experiments WHERE cool_flame = true "
                 f"{fuel_clause} {inv_clause} LIMIT 6")
             if rows:
-                return {"answer": f"{len(rows)} cool-flame runs found.",
+                total = run(
+                    "SELECT COUNT(*) AS n FROM experiments "
+                    f"WHERE cool_flame = true {fuel_clause} {inv_clause}")[0]["n"]
+                fuels = sorted({r["fuel"] for r in rows if r.get("fuel")})
+                return {"answer": f"{total} cool-flame runs in the PSI "
+                                  f"corpus (fuels: {', '.join(fuels)}). "
+                                  "Cool flames burn below detection — a "
+                                  "key hidden-fire hazard.",
                         "sql": True, "rows": rows}
     except Exception:  # noqa: BLE001 - fall back to retrieval
         return None

@@ -1,29 +1,42 @@
 {
   "schemaVersion": 1,
-  "generated": "curated-starter",
+  "generated": "psi-ntrs-pipeline",
   "note": "Starter dataset summarizing published NASA microgravity combustion investigations. Metrics are representative values compiled from public literature and MUST be verified against PSI data files (verified=false). Regenerate/extend with scripts/build_dataset.py.",
   "investigations": [
     {
       "id": "sofie-gel",
       "name": "SoFIE-GEL",
       "title": "Solid Fuel Ignition and Extinction — Growth and Extinction Limits",
-      "agencies": ["NASA"],
+      "agencies": [
+        "NASA"
+      ],
       "platform": "ISS",
       "facility": "Combustion Integrated Rack (CIR)",
       "years": "2009–2014",
       "status": "completed",
       "category": "solid-flame-spread",
       "gravity": "microgravity",
-      "fuels": ["PMMA (acrylic)"],
+      "fuels": [
+        "PMMA (acrylic)"
+      ],
       "conditions": {
-        "oxygenPct": [15, 24],
-        "flowCms": [0, 25],
+        "oxygenPct": [
+          15,
+          24
+        ],
+        "flowCms": [
+          0,
+          25
+        ],
         "pressureKpa": 101,
         "explorationRelevant": true
       },
       "metrics": {
         "limitingOxygenPct": 15,
-        "flameSpreadRateCms": { "min": 0.3, "max": 3.5 },
+        "flameSpreadRateCms": {
+          "min": 0.3,
+          "max": 3.5
+        },
         "coolFlameObserved": false,
         "smolderObserved": false
       },
@@ -36,7 +49,10 @@
         "Materials qualified as 'low flammability' on Earth can sustain flame spread in spacecraft cabins — qualification limits must be re-derived for microgravity.",
         "Weak forced ventilation may not extinguish a flame; both high-flow and quiescent regimes need fire-response procedures."
       ],
-      "hazards": ["low-oxygen-persistence", "exploration-atmosphere"],
+      "hazards": [
+        "low-oxygen-persistence",
+        "exploration-atmosphere"
+      ],
       "data": {
         "availability": "partial",
         "psiUrl": "https://psi.nasa.gov/physci/repo"
@@ -48,23 +64,39 @@
       "id": "bass-ii",
       "name": "BASS-II",
       "title": "Burning and Suppression of Solids II",
-      "agencies": ["NASA"],
+      "agencies": [
+        "NASA"
+      ],
       "platform": "ISS",
       "facility": "Combustion Integrated Rack (CIR)",
       "years": "2012–2017",
       "status": "completed",
       "category": "solid-flame-spread",
       "gravity": "microgravity",
-      "fuels": ["PMMA spheres", "cotton fabric", "Nomex", "polycarbonate"],
+      "fuels": [
+        "PMMA spheres",
+        "cotton fabric",
+        "Nomex",
+        "polycarbonate"
+      ],
       "conditions": {
-        "oxygenPct": [17, 40],
-        "flowCms": [0, 20],
+        "oxygenPct": [
+          17,
+          40
+        ],
+        "flowCms": [
+          0,
+          20
+        ],
         "pressureKpa": 101,
         "explorationRelevant": true
       },
       "metrics": {
         "limitingOxygenPct": 17,
-        "flameSpreadRateCms": { "min": 0.2, "max": 4.0 },
+        "flameSpreadRateCms": {
+          "min": 0.2,
+          "max": 4.0
+        },
         "coolFlameObserved": false,
         "smolderObserved": true
       },
@@ -77,7 +109,11 @@
         "Suppression strategies relying on airflow changes must account for non-monotonic extinction behavior.",
         "Elevated-O2 exploration atmospheres widen the flammable envelope for common spacecraft solids."
       ],
-      "hazards": ["low-oxygen-persistence", "smolder-risk", "exploration-atmosphere"],
+      "hazards": [
+        "low-oxygen-persistence",
+        "smolder-risk",
+        "exploration-atmosphere"
+      ],
       "data": {
         "availability": "partial",
         "psiUrl": "https://psi.nasa.gov/physci/repo"
@@ -89,17 +125,30 @@
       "id": "flex-2",
       "name": "FLEX / FLEX-2",
       "title": "Flame Extinguishment Experiment",
-      "agencies": ["NASA"],
+      "agencies": [
+        "NASA"
+      ],
       "platform": "ISS",
       "facility": "CIR / Combustion Experiment Module-2",
       "years": "2009–2013",
       "status": "completed",
       "category": "droplet",
       "gravity": "microgravity",
-      "fuels": ["n-heptane", "methanol", "iso-octane", "decanol blends"],
+      "fuels": [
+        "n-heptane",
+        "methanol",
+        "iso-octane",
+        "decanol blends"
+      ],
       "conditions": {
-        "oxygenPct": [14, 21],
-        "flowCms": [0, 10],
+        "oxygenPct": [
+          14,
+          21
+        ],
+        "flowCms": [
+          0,
+          10
+        ],
         "pressureKpa": 101,
         "explorationRelevant": true
       },
@@ -118,29 +167,64 @@
         "Post-extinction monitoring is essential: fuel vapor can keep reacting and re-ignite or generate CO after 'extinguishment'.",
         "Fire detection must not rely on visible/UV flame signatures alone; gas-phase and thermal sensors are needed."
       ],
-      "hazards": ["cool-flames", "detection-gap", "low-oxygen-persistence"],
+      "hazards": [
+        "cool-flames",
+        "detection-gap",
+        "low-oxygen-persistence"
+      ],
       "data": {
         "availability": "full",
-        "psiUrl": "https://psi.nasa.gov/physci/repo"
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39"
       },
       "publications": 45,
-      "verified": false
+      "verified": true,
+      "psiRuns": 291,
+      "psiAccessions": [
+        "PSI-39",
+        "PSI-69"
+      ],
+      "psiFuels": [
+        "Dodecane",
+        "Heptane",
+        "Methanol"
+      ],
+      "psiO2RangePct": [
+        12.0,
+        34.0
+      ],
+      "psiExtinctionLimitPct": {
+        "min": 12.0,
+        "max": 34.0
+      }
     },
     {
       "id": "acme",
       "name": "ACME",
       "title": "Advanced Combustion via Microgravity Experiments",
-      "agencies": ["NASA"],
+      "agencies": [
+        "NASA"
+      ],
       "platform": "ISS",
       "facility": "Combustion Integrated Rack (CIR)",
       "years": "2017–2022",
       "status": "completed",
       "category": "gaseous-diffusion",
       "gravity": "microgravity",
-      "fuels": ["ethylene", "methane", "propane", "JP-8 surrogates (BRE)"],
+      "fuels": [
+        "ethylene",
+        "methane",
+        "propane",
+        "JP-8 surrogates (BRE)"
+      ],
       "conditions": {
-        "oxygenPct": [16, 40],
-        "flowCms": [0, 70],
+        "oxygenPct": [
+          16,
+          40
+        ],
+        "flowCms": [
+          0,
+          70
+        ],
         "pressureKpa": 101,
         "explorationRelevant": true
       },
@@ -159,35 +243,77 @@
         "Soot production physics in microgravity informs smoke detector placement and post-fire contamination cleanup.",
         "BRE enables ground testing of spacecraft material flammability without drop towers."
       ],
-      "hazards": ["toxic-aerosol"],
+      "hazards": [
+        "toxic-aerosol"
+      ],
       "data": {
         "availability": "full",
-        "psiUrl": "https://psi.nasa.gov/physci/repo"
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10"
       },
       "publications": 60,
-      "verified": false
+      "verified": true,
+      "psiRuns": 540,
+      "psiAccessions": [
+        "PSI-10",
+        "PSI-159"
+      ],
+      "psiFuels": [
+        "30% butane",
+        "30% ethane",
+        "30% propane",
+        "50% butane",
+        "C2H4",
+        "C3H8",
+        "butane",
+        "ethane",
+        "propane"
+      ],
+      "psiO2RangePct": [
+        12.0,
+        85.0
+      ],
+      "psiExtinctionLimitPct": {
+        "min": 13.5,
+        "max": 85.0
+      }
     },
     {
       "id": "saffire",
       "name": "Saffire I–VI",
       "title": "Spacecraft Fire Experiment",
-      "agencies": ["NASA"],
+      "agencies": [
+        "NASA"
+      ],
       "platform": "Cygnus vehicle (post-departure, uncrewed)",
       "facility": null,
       "years": "2016–2024",
       "status": "completed",
       "category": "large-scale-fire",
       "gravity": "microgravity",
-      "fuels": ["SIBAL cloth (cotton/fiberglass)", "Nomex", "PMMA", "structured material panels"],
+      "fuels": [
+        "SIBAL cloth (cotton/fiberglass)",
+        "Nomex",
+        "PMMA",
+        "structured material panels"
+      ],
       "conditions": {
-        "oxygenPct": [21, 34],
-        "flowCms": [5, 25],
+        "oxygenPct": [
+          21,
+          34
+        ],
+        "flowCms": [
+          5,
+          25
+        ],
         "pressureKpa": 70,
         "explorationRelevant": true
       },
       "metrics": {
         "limitingOxygenPct": null,
-        "flameSpreadRateCms": { "min": 0.5, "max": 18 },
+        "flameSpreadRateCms": {
+          "min": 0.5,
+          "max": 18
+        },
         "coolFlameObserved": false,
         "smolderObserved": true
       },
@@ -200,7 +326,12 @@
         "Small-scale flammability tests underpredict large-scale fire growth — vehicle-level factors (flow, fuel area) matter.",
         "Post-fire atmosphere data calibrates how long a crewed vehicle remains uninhabitable after a large fire."
       ],
-      "hazards": ["large-scale-spread", "toxic-aerosol", "exploration-atmosphere", "smolder-risk"],
+      "hazards": [
+        "large-scale-spread",
+        "toxic-aerosol",
+        "exploration-atmosphere",
+        "smolder-risk"
+      ],
       "data": {
         "availability": "partial",
         "psiUrl": "https://psi.nasa.gov/physci/repo"
@@ -212,16 +343,27 @@
       "id": "same",
       "name": "SAME",
       "title": "Smoke Aerosol Measurement Experiment",
-      "agencies": ["NASA"],
+      "agencies": [
+        "NASA"
+      ],
       "platform": "ISS",
       "facility": "Microgravity Science Glovebox (MSG)",
       "years": "2007–2011",
       "status": "completed",
       "category": "smoke-aerosol",
       "gravity": "microgravity",
-      "fuels": ["Teflon", "Kapton", "Pyrell foam", "silicone rubber", "cellulose"],
+      "fuels": [
+        "Teflon",
+        "Kapton",
+        "Pyrell foam",
+        "silicone rubber",
+        "cellulose"
+      ],
       "conditions": {
-        "oxygenPct": [21, 21],
+        "oxygenPct": [
+          21,
+          21
+        ],
         "flowCms": null,
         "pressureKpa": 101,
         "explorationRelevant": true
@@ -241,7 +383,11 @@
         "ISS smoke detectors must be calibrated for larger particle sizes — Earth-calibrated detectors can under-detect.",
         "Aerosol signature libraries could enable detector discrimination between nuisance sources and real fires."
       ],
-      "hazards": ["detection-gap", "toxic-aerosol", "smolder-risk"],
+      "hazards": [
+        "detection-gap",
+        "toxic-aerosol",
+        "smolder-risk"
+      ],
       "data": {
         "availability": "partial",
         "psiUrl": "https://psi.nasa.gov/physci/repo"
@@ -253,23 +399,37 @@
       "id": "confined-combustion",
       "name": "Confined Combustion",
       "title": "Confined Combustion — Flame Spread in Confined Volumes",
-      "agencies": ["NASA"],
+      "agencies": [
+        "NASA"
+      ],
       "platform": "ISS",
       "facility": "Combustion Integrated Rack (CIR)",
       "years": "2019–2024",
       "status": "ongoing",
       "category": "confined",
       "gravity": "microgravity",
-      "fuels": ["thin paper/PP sheets", "PMMA"],
+      "fuels": [
+        "thin paper/PP sheets",
+        "PMMA"
+      ],
       "conditions": {
-        "oxygenPct": [19, 40],
-        "flowCms": [0, 15],
+        "oxygenPct": [
+          19,
+          40
+        ],
+        "flowCms": [
+          0,
+          15
+        ],
         "pressureKpa": 57,
         "explorationRelevant": true
       },
       "metrics": {
         "limitingOxygenPct": null,
-        "flameSpreadRateCms": { "min": 0.5, "max": 9 },
+        "flameSpreadRateCms": {
+          "min": 0.5,
+          "max": 9
+        },
         "coolFlameObserved": false,
         "smolderObserved": false
       },
@@ -282,7 +442,10 @@
         "Equipment racks, cable trays and duct geometries must be assessed for confinement-enhanced fire spread.",
         "Exploration habitat atmospheres cannot be certified with sea-level flammability data."
       ],
-      "hazards": ["exploration-atmosphere", "large-scale-spread"],
+      "hazards": [
+        "exploration-atmosphere",
+        "large-scale-spread"
+      ],
       "data": {
         "availability": "partial",
         "psiUrl": "https://psi.nasa.gov/physci/repo"
@@ -294,17 +457,29 @@
       "id": "flare",
       "name": "FLARE",
       "title": "Flammability Limit At Reduced-g Experiment",
-      "agencies": ["JAXA", "NASA"],
+      "agencies": [
+        "JAXA",
+        "NASA"
+      ],
       "platform": "ISS",
       "facility": "Kibo module (with centrifuge for partial-g)",
       "years": "2022–present",
       "status": "ongoing",
       "category": "partial-gravity",
       "gravity": "partial-gravity",
-      "fuels": ["PMMA", "thin combustible sheets"],
+      "fuels": [
+        "PMMA",
+        "thin combustible sheets"
+      ],
       "conditions": {
-        "oxygenPct": [15, 40],
-        "flowCms": [0, 30],
+        "oxygenPct": [
+          15,
+          40
+        ],
+        "flowCms": [
+          0,
+          30
+        ],
         "pressureKpa": 101,
         "explorationRelevant": true
       },
@@ -323,7 +498,11 @@
         "Fire safety for Moon/Mars missions cannot be interpolated naively from ISS and Earth data — partial-g limits are needed.",
         "Centrifuge-based partial-g testing is the only way to obtain these limits long-duration."
       ],
-      "hazards": ["partial-gravity", "exploration-atmosphere", "low-oxygen-persistence"],
+      "hazards": [
+        "partial-gravity",
+        "exploration-atmosphere",
+        "low-oxygen-persistence"
+      ],
       "data": {
         "availability": "metadata-only",
         "psiUrl": "https://psi.nasa.gov/physci/repo"

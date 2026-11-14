@@ -76,10 +76,16 @@ TARGET_STUDIES = {
 # extensions we can actually mine offline
 KEEP_EXT = {"txt", "csv", "tsv", "xml", "json", "log", "meta", "metadata",
             "asc", "xls", "xlsx", "dat", "ini", "cfg", "md", "htm", "html"}
-# name patterns that get download priority (per-test parameter sheets etc.)
-PRIORITY_RE = re.compile(
-    r"testsheet|comments?|readme|summary|matrix|conditions?|parameters?|"
-    r"test_?plan|run_?sheet|metadata|eird|procedure",
+# tabular data gets download preference over logs/comments after priority names
+DATA_EXT = {"csv", "tsv", "xls", "xlsx", "dat"}
+# name patterns that get download priority — structured per-test parameter
+# sheets first (they carry fuel/O2/pressure/extinction fields), then other
+# ops docs. Ordering matters: test sheets outrank free-text comments.
+TIER0_RE = re.compile(r"testsheet|test_?sheet|run_?sheet|matrix|eird",
+                      re.IGNORECASE)
+TIER1_RE = re.compile(
+    r"comments?|readme|summary|conditions?|parameters?|test_?plan|"
+    r"metadata|procedure|test_?point|_tp\b|mdipsug",
     re.IGNORECASE,
 )
 
@@ -153,10 +159,18 @@ def select_files(leaves: list[dict], max_kb: int, max_files: int) -> list[dict]:
         return ext in KEEP_EXT and n.get("bytes_size", 0) <= max_kb * 1024
 
     cands = [n for n in leaves if keep(n)]
-    cands.sort(key=lambda n: (
-        0 if PRIORITY_RE.search(n["key"]) else 1,
-        n.get("bytes_size", 0),
-    ))
+    def rank(n: dict) -> tuple:
+        ext = n["key"].rsplit(".", 1)[-1].lower() if "." in n["key"] else ""
+        if TIER0_RE.search(n["key"]):
+            tier = 0
+        elif ext in DATA_EXT:
+            tier = 1
+        elif TIER1_RE.search(n["key"]):
+            tier = 2
+        else:
+            tier = 3
+        return (tier, n.get("bytes_size", 0))
+    cands.sort(key=rank)
     return cands[:max_files]
 
 

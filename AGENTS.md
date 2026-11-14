@@ -13,15 +13,20 @@ NASA PSI data and a compiled C++ physics core. See `docs/`.
   extinction regimes), `material_risk` (ACME flammability matrix),
   `chamber.hpp` aggregate API. `src/bindings.cpp` → pybind11 module;
   `src/bindings_wasm.cpp` → Emscripten-ready embind.
-- `data/` — Python ETL (`pipelines/`): `psi_search.py`, `ntrs_search.py`,
-  `build_dataset.py`, `calibrate_constants.py` → `shared/calibrated-data/*.json`
-  (canonical) + copies into `frontend/src/data/`
+- `data/` — Python ETL (`pipelines/`): `psi_search.py` (PSI catalog via
+  `geode-py/ws`), `psi_files.py` (per-test data files), `ntrs_search.py`
+  (citations + fulltext), `normalize_experiments.py` (unified CSV),
+  `build_index.py` (retrieval corpus), `fit_risk_model.py` (risk surface),
+  `build_dataset.py`, `calibrate_constants.py` → `data/processed/` +
+  `shared/calibrated-data/*.json` (canonical) + copies into `frontend/src/data/`
 - `shared/` — contracts: `schemas/` JSON schemas + `calibrated-data/`
   (`calibration.json`, `risk_profiles.json` — the single source of truth for
   both the C++ core and the TS fallback)
-- `backend/` — `api/` FastAPI routes + `services/engine_bridge.py` pybind
-  bridge: `/health`, `/api/chamber/preview`, `/api/materials`,
-  `WS /ws/chamber` (30 Hz telemetry)
+- `backend/` — `api/` FastAPI routes + `services/` (`engine_bridge.py`
+  pybind, `rag.py` retrieval/SQL-RAG, `risk.py` cabin simulator):
+  `/health`, `/api/chamber/preview`, `/api/materials`, `WS /ws/chamber`
+  (30 Hz), `/api/search`, `/api/ask`, `/api/risk`, `/api/risk/curve`,
+  `/api/rag/stats`
 - `frontend/` — React + TS + PixiJS client:
   - `src/game/` — pure TS sim: engine (state/tick/actions), crew AI + jobs,
     fire system, experiments (multifactor risk from `risk_profiles.json`),
@@ -44,6 +49,11 @@ NASA PSI data and a compiled C++ physics core. See `docs/`.
 - `./.venv/bin/python data/pipelines/calibrate_constants.py`
 - `./.venv/bin/uvicorn backend.api.main:app --port 8000`
 - `./.venv/bin/pip install ...` — PEP 668 managed env; always use `.venv`
+- ETL (in order): `psi_search.py --all` → `psi_files.py --all` →
+  `ntrs_search.py --all --fulltext 3` → `normalize_experiments.py` →
+  `build_index.py` → `fit_risk_model.py` → `build_dataset.py` →
+  `calibrate_constants.py` → `build_master_sheet.py` (auditable
+  `data/processed/nasa_combustion_master.csv` + `frontend/src/data/master_sheet.json`)
 
 ## Conventions
 

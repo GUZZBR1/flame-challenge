@@ -9,7 +9,7 @@ namespace ff {
 /**
  * ACME-style material flammability matrix.
  * Constants are calibrated from NASA PSI investigation records
- * (see data-pipeline/processed/calibration.json).
+ * (see shared/calibrated-data/calibration.json).
  */
 struct Material {
     std::string id;

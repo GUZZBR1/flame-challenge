@@ -105,7 +105,7 @@ def main() -> int:
         if not mid:
             continue
         s = stats.setdefault(mid, {"burned": [], "extinct": [], "cool": 0,
-                                   "n": 0, "kavg": []})
+                                   "n": 0, "kavg": [], "dext": []})
         s["n"] += 1
         try:
             o2 = float(r["o2_pct"]) if r.get("o2_pct") else None
@@ -116,6 +116,12 @@ def main() -> int:
                 s["burned"].append(o2)
             elif r.get("outcome") in EXTINCT:
                 s["extinct"].append(o2)
+        try:
+            d = float(r["extinction_d_mm"]) if r.get("extinction_d_mm") else None
+            if d:
+                s["dext"].append(d)
+        except ValueError:
+            pass
         if r.get("cool_flame") in ("True", "true", True):
             s["cool"] += 1
         try:
@@ -142,14 +148,27 @@ def main() -> int:
             "hiddenFactor": 1.0,
         }
         if s:
-            loc_fit = empirical_loc(s["burned"], s["extinct"])
             entry["psiRuns"] = s["n"]
             entry["psiBurned"] = len(s["burned"])
             entry["psiExtinguished"] = len(s["extinct"])
             entry["psiCoolFlameRuns"] = s["cool"]
+            if s["extinct"]:
+                # measured extinction-limit envelope (NOT classical LOC —
+                # radiative extinctions at high O2 are part of the envelope)
+                entry["extinctionLimitMinPct"] = round(min(s["extinct"]), 1)
+                entry["extinctionLimitMaxPct"] = round(max(s["extinct"]), 1)
+            if s["dext"]:
+                entry["extinctionDiameterMedianMm"] = round(
+                    statistics.median(s["dext"]), 2)
             if s["kavg"]:
                 entry["burnRateMedianMm2s"] = round(statistics.median(s["kavg"]), 3)
-            if loc_fit is not None and len(s["burned"]) + len(s["extinct"]) >= 6:
+            # LOC refit only on clean burn/extinct separation — overlapping
+            # envelopes mean radiative extinctions dominate and the boundary
+            # is not a flammability limit
+            loc_fit = empirical_loc(s["burned"], s["extinct"])
+            if (loc_fit is not None and s["burned"] and s["extinct"]
+                    and max(s["extinct"]) < min(s["burned"])
+                    and len(s["burned"]) + len(s["extinct"]) >= 6):
                 entry["locPct"] = loc_fit
                 entry["locSource"] = "psi-data"
                 fitted += 1
@@ -172,8 +191,12 @@ def main() -> int:
         "provenance": {
             "psiRunsParsed": len(rows),
             "materialsFittedFromPsi": fitted,
-            "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test "
-                    "sheets; locSource=calibration -> literature-seeded value.",
+            "note": "locSource=psi-data -> LOC re-estimated from parsed PSI "
+                    "test sheets with clean burn/extinct separation; "
+                    "locSource=calibration -> literature-seeded. "
+                    "extinctionLimitMin/MaxPct = measured extinction envelope "
+                    "(includes radiative extinctions — not a flammability "
+                    "limit).",
         },
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)

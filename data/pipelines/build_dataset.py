@@ -70,19 +70,27 @@ def merge_structured() -> None:
         )
         return
 
-    # Merge: structured records override same-id starter records.
+    # Merge: structured records override same-id starter records; nested
+    # objects (conditions/metrics/data) merge key-wise so partial records
+    # don't drop sibling fields.
     dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
     merged = {inv["id"]: inv for inv in dataset.get("investigations", [])}
     for rec in records:
-        merged[rec["id"]] = {**merged.get(rec["id"], {}), **rec}
         rec["verified"] = True  # records built from real downloads are verified
+        base = merged.get(rec["id"], {})
+        for k, v in rec.items():
+            if isinstance(v, dict) and isinstance(base.get(k), dict):
+                base[k] = {**base[k], **v}
+            else:
+                base[k] = v
+        merged[rec["id"]] = base
 
     dataset["investigations"] = list(merged.values())
     dataset["generated"] = "psi-ntrs-pipeline"
     DATASET_PATH.write_text(
         json.dumps(dataset, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    print(f"[OK] merged {len(records)} records -> {DATASET_PATH.relative_to(ROOT)}")
+    print(f"[OK] merged {len(records)} records -> {DATASET_PATH.relative_to(REPO)}")
 
 
 def main() -> int:

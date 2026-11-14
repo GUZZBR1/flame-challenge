@@ -17,6 +17,7 @@ into one canonical schema — the "clean CSV" layer of the pipeline:
     flow_cms          forced flow speed (None = quiescent/drift only)
     droplet_d0_mm     initial droplet diameter (droplet rigs)
     burn_rate_mm2_s   measured burning-rate constant kavg
+    burn_time_s       recorded burn duration (CFI tables)
     extinction_d_mm   droplet diameter at extinction
     outcome           burnout | extinction | no-ignition | disruption | unknown
     extinction_type   radiative | oxygen-limit | blow-off | suppressant | none
@@ -40,6 +41,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -88,6 +90,8 @@ FUEL_ID = {
     "ethylene": "ethylene", "c2h4": "ethylene",
     "methane": "methane", "ch4": "methane",
     "propane": "propane", "c3h8": "propane",
+    "ethane": "ethane", "c2h6": "ethane",
+    "butane": "butane", "c4h10": "butane",
     "jp-8": "jp8", "jp8": "jp8", "jet": "jp8",
     "pmma": "pmma", "acrylic": "pmma",
     "cotton": "cotton", "sibal": "cotton",
@@ -100,9 +104,9 @@ FUEL_ID = {
 FIELDS = [
     "run_id", "accession", "investigation_id", "fuel", "material_id",
     "o2_pct", "n2_pct", "co2_pct", "he_pct", "pressure_kpa", "temp_k",
-    "flow_cms", "droplet_d0_mm", "burn_rate_mm2_s", "extinction_d_mm",
-    "outcome", "extinction_type", "cool_flame", "fiber_support",
-    "comments", "source_file", "source_url", "verified",
+    "flow_cms", "droplet_d0_mm", "burn_rate_mm2_s", "burn_time_s",
+    "extinction_d_mm", "outcome", "extinction_type", "cool_flame",
+    "fiber_support", "comments", "source_file", "source_url", "verified",
 ]
 
 NUM_RE = r"[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?"
@@ -122,6 +126,9 @@ def fuel_id(name: str | None) -> str | None:
     if not name:
         return None
     n = name.strip().lower()
+    # reject captures that are really field labels / units, not fuel names
+    if "=" in n or len(n) < 3 or re.match(r"^(d0|mm|kavg|test|fuel)", n):
+        return None
     for key, mid in FUEL_ID.items():
         if key in n:
             return mid
@@ -159,11 +166,13 @@ def parse_testsheet(text: str, fname: str, acc: str, inv: str) -> dict | None:
     if not run:
         m = re.match(r"([A-Za-z]+[-_]?\d+[A-Za-z]?)", fname)
         run = m.group(1).upper() if m else fname
-    fuel = _f(r"Fuel:\s*\t?\s*([^\n\t]+)", text, str)
+    fuel = _f(r"Fuel:[^\S\n]*([^\n\t]+)", text, str)
     dext_raw = _f(r"Dext\s*\(mm\)\s*=\s*\t?\s*([^\n\t]+)", text, str)
     try:
         dext = float(str(dext_raw).strip())
     except (TypeError, ValueError):
+        dext = None
+    if dext is not None and math.isnan(dext):
         dext = None
     pressure_atm = _f(r"Pressure\s*\(atm\)\s*=\s*\t?\s*(" + NUM_RE + ")", text)
     comments = ""
@@ -188,11 +197,12 @@ def parse_testsheet(text: str, fname: str, acc: str, inv: str) -> dict | None:
         "flow_cms": _f(r"(?:flow|velocity|air ?speed)\D{0,12}(" + NUM_RE + r")\s*cm", text),
         "droplet_d0_mm": _f(r"D0\s*\(mm\)\s*=\s*\t?\s*(" + NUM_RE + ")", text),
         "burn_rate_mm2_s": kavg,
+        "burn_time_s": None,
         "extinction_d_mm": dext,
         "outcome": outcome,
         "extinction_type": etype,
         "cool_flame": cool,
-        "fiber_support": str(_f(r"Fiber:\s*\t?\s*([^\n\t]+)", text, str) or "").strip() or None,
+        "fiber_support": str(_f(r"Fiber:[^\S\n]*([^\n\t]+)", text, str) or "").strip() or None,
         "comments": comments,
         "source_file": fname,
         "source_url": f"https://psi.nasa.gov/physci/repo/data/investigation/{acc}",
@@ -212,7 +222,7 @@ def parse_generic_kv(text: str, fname: str, acc: str, inv: str) -> dict | None:
     """Fallback parser: any file containing O2%/fuel-ish key-value pairs."""
     o2 = _f(r"O2[^=\n]{0,20}=\s*\t?\s*(" + NUM_RE + ")", text) \
         or _f(r"oxygen[^=\n]{0,20}[:\s]\s*(" + NUM_RE + r")\s*%?", text)
-    fuel = _f(r"Fuel:\s*\t?\s*([^\n\t]+)", text, str)
+    fuel = _f(r"Fuel:[^\S\n]*([^\n\t]+)", text, str)
     if o2 is None and fuel is None:
         return None
     m = re.match(r"([A-Za-z]+[-_]?\d+[A-Za-z]?)", fname)
@@ -224,7 +234,8 @@ def parse_generic_kv(text: str, fname: str, acc: str, inv: str) -> dict | None:
         "o2_pct": _pct(o2), "n2_pct": None, "co2_pct": None, "he_pct": None,
         "pressure_kpa": None, "temp_k": None,
         "flow_cms": _f(r"(?:flow|velocity|air ?speed)\D{0,12}(" + NUM_RE + r")\s*cm", text),
-        "droplet_d0_mm": None, "burn_rate_mm2_s": None, "extinction_d_mm": None,
+        "droplet_d0_mm": None, "burn_rate_mm2_s": None, "burn_time_s": None,
+        "extinction_d_mm": None,
         "outcome": "unknown", "extinction_type": "none", "cool_flame": False,
         "fiber_support": None, "comments": "",
         "source_file": fname,
@@ -254,6 +265,8 @@ def sniff_csv_rows(path: Path, acc: str, inv: str) -> list[dict]:
     if not rows or len(rows) > 5000:
         return []
 
+    lower_heads = [k.strip().lower() for k in rows[0].keys()]
+
     def col(r: dict, *names: str) -> float | str | None:
         lower = {k.strip().lower(): v for k, v in r.items()}
         for n in names:
@@ -265,25 +278,91 @@ def sniff_csv_rows(path: Path, acc: str, inv: str) -> list[dict]:
                         return v
         return None
 
+    def col_key(*names: str) -> str | None:
+        """First header containing any of the name fragments."""
+        for n in names:
+            for k in lower_heads:
+                if n in k:
+                    return k
+        return None
+
+    # unit-aware columns: pressure reported in atm/bar -> kPa
+    p_key = col_key("pressure", "pmean", "pinit", "atm", "(bar)")
+    t_key = col_key("ambient", "temp", "t_k", "t(k)")
+    test_key = col_key("test", "run", "point")
+    hot_key = col_key("hot ignit", "ignition")
+    se_key = col_key("self-ext", "self ext", "or flow term")
+    cool_key = col_key("cool flame")
+    btime_key = col_key("burn time", "burn_time", "burntime")
+    comm_key = col_key("comment")
+    # d²-law rate only from explicit k/mm2 columns — "burnrate (mg/s)"
+    # style headers are fuel-consumption rates, not mm²/s
+    krate_key = col_key("mm2", "kavg", "k avg")
+
+    def cell(r: dict, key: str | None) -> str:
+        if not key:
+            return ""
+        lower = {k.strip().lower(): v for k, v in r.items()}
+        return str(lower.get(key) or "").strip()
+
+    def num(r: dict, *names: str) -> float | None:
+        v = col(r, *names)
+        return v if isinstance(v, float) else None
+
     out = []
+    last_fuel: str | None = None
     for i, r in enumerate(rows):
+        if all(v in (None, "", " ") for v in r.values()):
+            continue                                    # padding rows
         fuel = col(r, "fuel", "material")
+        fuel_s = str(fuel) if not isinstance(fuel, float) and fuel else None
+        if fuel_s:
+            last_fuel = fuel_s                        # merged-cell style
+        else:
+            fuel_s = last_fuel
         o2 = col(r, "o2", "oxygen")
         o2f = float(o2) if isinstance(o2, float) else \
             (float(o2) if isinstance(o2, str) and re.fullmatch(NUM_RE, o2.strip()) else None)
+        p = num(r, "pressure", "pmean", "pinit", "atm", "(bar)")
+        pkpa = None
+        if isinstance(p, float):
+            pkpa = round(p * (101.325 if "atm" in (p_key or "")
+                            else 100.0 if "bar" in (p_key or "") else 1.0), 1)
+        t = num(r, "ambient", "temp", "t_k", "t(k)")
+        run = cell(r, test_key)
+        if run.upper() in ("RAMPED", ""):
+            run = ""
+        comments = cell(r, comm_key)[:600]
+        hot = cell(r, hot_key).lower()
+        se = cell(r, se_key).upper()
+        cool_v = cell(r, cool_key).lower()
+        cool = cool_v.startswith("y") or "cool flame" in comments.lower()
+        # outcome: CFI semantics — Hot ignition N + comments "failed/no
+        # ignition"; SE = self-extinguished; FT = flow ended while burning
+        low_c = comments.lower()
+        if hot.startswith("n") or re.search(r"fail(ed)? to ignite|no ignition", low_c):
+            outcome, etype = "no-ignition", "none"
+        elif se == "SE":
+            outcome, etype = "extinction", "oxygen-limit"
+        elif se == "FT":
+            outcome, etype = "burnout", "none"
+        else:
+            outcome, etype, cool_c = classify_outcome(low_c, None)
+            cool = cool or cool_c
         out.append({
-            "run_id": f"{path.stem[:40]}#{i}",
+            "run_id": run or f"{path.stem[:40]}#{i}",
             "accession": acc, "investigation_id": inv,
-            "fuel": str(fuel) if not isinstance(fuel, float) else None,
-            "material_id": fuel_id(str(fuel) if fuel else None),
+            "fuel": fuel_s,
+            "material_id": fuel_id(fuel_s),
             "o2_pct": _pct(o2f), "n2_pct": None, "co2_pct": None, "he_pct": None,
-            "pressure_kpa": None, "temp_k": None,
-            "flow_cms": col(r, "flow", "veloc", "speed"),
-            "droplet_d0_mm": col(r, "d0", "diameter", "droplet"),
-            "burn_rate_mm2_s": col(r, "burn", "rate", "k"),
-            "extinction_d_mm": col(r, "dext", "extinction"),
-            "outcome": "unknown", "extinction_type": "none", "cool_flame": False,
-            "fiber_support": None, "comments": "",
+            "pressure_kpa": pkpa, "temp_k": t,
+            "flow_cms": num(r, "flow cm", "veloc", "speed"),
+            "droplet_d0_mm": num(r, "d0", "diameter", "droplet"),
+            "burn_rate_mm2_s": num(r, "mm2", "kavg", "k avg") if krate_key else None,
+            "burn_time_s": num(r, "burn time", "burn_time") if btime_key else None,
+            "extinction_d_mm": num(r, "dext", "extinction"),
+            "outcome": outcome, "extinction_type": etype, "cool_flame": cool,
+            "fiber_support": None, "comments": comments,
             "source_file": path.name,
             "source_url": f"https://psi.nasa.gov/physci/repo/data/investigation/{acc}",
             "verified": True,
@@ -341,6 +420,8 @@ def main() -> int:
                     "experiments": rows}, ensure_ascii=False),
         encoding="utf-8")
 
+    write_structured(rows)
+
     fuels = {r["fuel"] for r in rows if r["fuel"]}
     print(f"\n[DONE] {len(rows)} normalized experiment rows "
           f"({len(fuels)} fuels) -> {csv_path.relative_to(ROOT)}")
@@ -348,6 +429,52 @@ def main() -> int:
         if n:
             print(f"       {acc}: {n}")
     return 0
+
+
+def write_structured(rows: list[dict]) -> None:
+    """Per-investigation structured records for build_dataset.py.
+
+    Emitted only for investigations with parsed PSI runs — the dataset
+    merge marks these verified and upgrades data.availability to 'full'.
+    """
+    by_inv: dict[str, list[dict]] = {}
+    for r in rows:
+        by_inv.setdefault(r["investigation_id"], []).append(r)
+
+    records = []
+    for inv, rs in sorted(by_inv.items()):
+        o2s = [float(r["o2_pct"]) for r in rs if r.get("o2_pct")]
+        exts = [float(r["o2_pct"]) for r in rs
+                if r.get("o2_pct") and r.get("outcome") == "extinction"]
+        n_cool = sum(str(r.get("cool_flame")).lower() == "true" for r in rs)
+        accs = sorted({r["accession"] for r in rs})
+        rec: dict = {
+            "id": inv,
+            "data": {
+                "availability": "full",
+                "psiUrl": f"https://psi.nasa.gov/physci/repo/data/investigation/{accs[0]}",
+            },
+            "psiRuns": len(rs),
+            "psiAccessions": accs,
+            "psiFuels": sorted({r["fuel"] for r in rs if r.get("fuel")}),
+        }
+        if o2s:
+            rec["psiO2RangePct"] = [min(o2s), max(o2s)]
+        if exts:
+            rec["psiExtinctionLimitPct"] = {"min": min(exts), "max": max(exts)}
+        # flag the investigation only when cool flames are a real signature
+        # of the dataset (>=5% of runs) — avoids tagging every fuel of an
+        # investigation that ran a handful of cool-flame test points
+        if n_cool / len(rs) >= 0.05:
+            rec["metrics"] = {"coolFlameObserved": True}
+        records.append(rec)
+
+    out = ROOT / "raw" / "structured"
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "psi_experiments.json").write_text(
+        json.dumps(records, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"[OK] {len(records)} structured records -> "
+          f"raw/structured/psi_experiments.json")
 
 
 if __name__ == "__main__":
