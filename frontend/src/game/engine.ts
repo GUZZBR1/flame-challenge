@@ -19,7 +19,7 @@ import type {
   Speed,
   Vec,
 } from './types'
-import { rectContains } from './types'
+import { rectContains, rectTiles } from './types'
 
 const investigations = getInvestigations()
 export const invById = new Map(investigations.map((i) => [i.id, i]))
@@ -316,7 +316,7 @@ export class Engine {
     const W = 3
     const H = 3
     const overlaps = (rect: Rect) =>
-      rectTiles(rect).some((t) => e.rooms.some((r) => rectContains(r.rect, t.x, t.y)))
+      rectTiles(rect).some((t) => e.roomByTile[t.y * GRID_W + t.x])
     for (const r of e.rooms) {
       const cands: Rect[] = [
         { x: r.rect.x + r.rect.w, y: r.rect.y, w: W, h: H },
