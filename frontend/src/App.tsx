@@ -72,24 +72,28 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement) return
-      if (e.code === 'Space') {
-        e.preventDefault()
-        engine.setSpeed(engine.state.speed === 0 ? 1 : 0)
-      } else if (e.key === '1') engine.setSpeed(1)
-      else if (e.key === '2') engine.setSpeed(2)
-      else if (e.key === '3') engine.setSpeed(4)
-      else if (e.key === 'Escape') {
+      if (e.key === 'Escape') {
         setSceneView('foundry')
         setMode('inspect')
         setExpRoom(null)
         setMissionOpen(false)
         setSheetOpen(false)
         setInsightsOpen(false)
+        return
       }
+      // Scene views (e.g. the experiment lab) own Space/take keys locally —
+      // sim-speed shortcuts only fire on the foundry
+      if (sceneView !== 'foundry') return
+      if (e.code === 'Space') {
+        e.preventDefault()
+        engine.setSpeed(engine.state.speed === 0 ? 1 : 0)
+      } else if (e.key === '1') engine.setSpeed(1)
+      else if (e.key === '2') engine.setSpeed(2)
+      else if (e.key === '3') engine.setSpeed(4)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [sceneView])
 
   return (
     <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-void text-white">

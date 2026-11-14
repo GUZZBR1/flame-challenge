@@ -116,7 +116,7 @@ export default function ResearchLabScene({
   const hotspotRefs = useRef(new Map<string, HTMLDivElement>())
 
   const [activeTake, setActiveTake] = useState<LabTake>('overview')
-  const [activeHotspot, setActiveHotspot] = useState<HotspotData | null>(null)
+  const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null)
   const [showHotspots, setShowHotspots] = useState<boolean>(true)
   const [isAutoTour, setIsAutoTour] = useState<boolean>(false)
   const [zoomLevel, setZoomLevel] = useState<number>(100)
@@ -195,7 +195,7 @@ export default function ResearchLabScene({
       icon: Activity,
       metrics: [
         { label: 'Loaded Dataset', value: currentInv.title },
-        { label: 'Ignition Risk', value: `${Math.round(currentSpec.riskPct)}% (${currentSpec.factors.ignition > 0.5 ? 'High' : 'Controlled'})` },
+        { label: 'Ignition Risk', value: `${Math.round(currentSpec.riskPct)}% (${currentSpec.factors.ignition > 50 ? 'High' : 'Controlled'})` },
         { label: 'Burn Rate d²/dt', value: `${(0.4 + (o2Pct / 30) * 0.6).toFixed(2)} mm²/s` },
         { label: 'Scientific Record', value: 'NASA PSI Microgravity Archive' },
       ],
@@ -211,7 +211,7 @@ export default function ResearchLabScene({
       icon: Database,
       metrics: [
         { label: 'Bus Throughput', value: '4.2 TB/s Synchronous' },
-        { label: 'Archived Experiments', value: `${investigations.length} Complete Investigations` },
+        { label: 'Archived Experiments', value: `${investigations.filter((i) => i.verified).length} Verified / ${investigations.length} Total` },
         { label: 'Core Cooling', value: 'Cryogenic Helium 4.2 K' },
         { label: 'Data Integrity', value: '99.9999% Verified Parity' },
       ],
@@ -248,6 +248,19 @@ export default function ResearchLabScene({
       ],
     },
   ], [currentInv, currentLOC, currentSpec, o2Pct, flowCms, testPhase])
+
+  // Inspection card always renders the live hotspot so slider/investigation
+  // changes update the open card instead of leaving stale metrics
+  const activeHotspot = activeHotspotId ? (hotspots.find((h) => h.id === activeHotspotId) ?? null) : null
+
+  // Latest values for the Pixi ticker — keeps canvas init independent of
+  // experiment state so moving sliders never restarts the application
+  const hotspotsRef = useRef(hotspots)
+  const testFlameRef = useRef(testFlameIntensity)
+  useEffect(() => {
+    hotspotsRef.current = hotspots
+    testFlameRef.current = testFlameIntensity
+  }, [hotspots, testFlameIntensity])
 
   // Camera animation target ref
   const cameraRef = useRef({
@@ -442,7 +455,7 @@ export default function ResearchLabScene({
         }
 
         // Keep HTML hotspots anchored to landmarks
-        hotspots.forEach((hotspot) => {
+        hotspotsRef.current.forEach((hotspot) => {
           const element = hotspotRefs.current.get(hotspot.id)
           if (!element) return
           const localX = (hotspot.x - 0.5) * bgSprite.width
@@ -466,16 +479,17 @@ export default function ResearchLabScene({
         })
 
         // Engine Test Burn visual pulse when active
-        if (testFlameIntensity > 0) {
+        const flame = testFlameRef.current
+        if (flame > 0) {
           const flameFlicker = Math.sin(elapsed * 8.0) * 0.2 + 0.8
-          const r = 26 * testFlameIntensity * flameFlicker
+          const r = 26 * flame * flameFlicker
           // Spherical microgravity flame glow (IGNIS blue/cyan core with amber envelope)
           pulseLayer.circle(engineX, engineY - 8, r * 1.5)
-          pulseLayer.fill({ color: 0xf3be5a, alpha: 0.35 * testFlameIntensity })
+          pulseLayer.fill({ color: 0xf3be5a, alpha: 0.35 * flame })
           pulseLayer.circle(engineX, engineY - 8, r * 0.85)
-          pulseLayer.fill({ color: 0x49b8d6, alpha: 0.75 * testFlameIntensity })
+          pulseLayer.fill({ color: 0x49b8d6, alpha: 0.75 * flame })
           pulseLayer.circle(engineX, engineY - 8, r * 0.4)
-          pulseLayer.fill({ color: 0xffffff, alpha: 0.95 * testFlameIntensity })
+          pulseLayer.fill({ color: 0xffffff, alpha: 0.95 * flame })
         }
 
         // Analysis Console: Holographic workbench shimmer (Cyan)
@@ -562,7 +576,7 @@ export default function ResearchLabScene({
         appRef.current = null
       }
     }
-  }, [testFlameIntensity, hotspots])
+  }, [])
 
   return (
     <div className="relative h-[720px] w-full overflow-hidden rounded-xl border border-edge bg-[#0B1220] shadow-2xl">
@@ -721,7 +735,7 @@ export default function ResearchLabScene({
               >
                 <button
                   onClick={() => {
-                    setActiveHotspot(isSelected ? null : h)
+                    setActiveHotspotId(isSelected ? null : h.id)
                     applyTake(h.takeId)
                   }}
                   className={`group relative flex items-center justify-center rounded-full p-2.5 transition-transform duration-200 hover:scale-125 ${
@@ -754,7 +768,7 @@ export default function ResearchLabScene({
               <p className="text-[11px] text-mist">{activeHotspot.subtitle}</p>
             </div>
             <button
-              onClick={() => setActiveHotspot(null)}
+              onClick={() => setActiveHotspotId(null)}
               className="text-xs text-mist hover:text-white"
             >
               ✕
