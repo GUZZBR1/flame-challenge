@@ -63,7 +63,11 @@
       "sootIndex": 0.3,
       "coolFlameCapable": false,
       "smoldering": true,
-      "hiddenFactor": 1.18
+      "hiddenFactor": 1.18,
+      "psiRuns": 17,
+      "psiBurned": 3,
+      "psiExtinguished": 0,
+      "psiCoolFlameRuns": 0
     },
     "decanol": {
       "id": "decanol",
@@ -76,7 +80,7 @@
       "coolFlameCapable": true,
       "smoldering": false,
       "hiddenFactor": 1.3,
-      "psiRuns": 21,
+      "psiRuns": 22,
       "psiBurned": 0,
       "psiExtinguished": 20,
       "psiCoolFlameRuns": 20,
@@ -96,7 +100,7 @@
       "coolFlameCapable": false,
       "smoldering": false,
       "hiddenFactor": 1.09,
-      "psiRuns": 187,
+      "psiRuns": 222,
       "psiBurned": 0,
       "psiExtinguished": 0,
       "psiCoolFlameRuns": 0
@@ -104,22 +108,23 @@
     "heptane": {
       "id": "heptane",
       "name": "n-heptane",
-      "locPct": 12.0,
-      "locSource": "calibration",
+      "locPct": 16.0,
+      "locSource": "psi-data",
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.55,
       "coolFlameCapable": true,
       "smoldering": false,
       "hiddenFactor": 1.305,
-      "psiRuns": 112,
-      "psiBurned": 13,
-      "psiExtinguished": 86,
-      "psiCoolFlameRuns": 41,
+      "psiRuns": 114,
+      "psiBurned": 15,
+      "psiExtinguished": 88,
+      "psiCoolFlameRuns": 34,
       "extinctionLimitMinPct": 13.0,
       "extinctionLimitMaxPct": 34.0,
       "extinctionDiameterMedianMm": 2.31,
-      "burnRateMedianMm2s": 0.54
+      "burnRateMedianMm2s": 0.54,
+      "locMethod": "extinction-floor"
     },
     "iso-octane": {
       "id": "iso-octane",
@@ -131,7 +136,11 @@
       "sootIndex": 0.6,
       "coolFlameCapable": true,
       "smoldering": false,
-      "hiddenFactor": 1.31
+      "hiddenFactor": 1.31,
+      "psiRuns": 1,
+      "psiBurned": 0,
+      "psiExtinguished": 0,
+      "psiCoolFlameRuns": 0
     },
     "jp8": {
       "id": "jp8",
@@ -167,27 +176,32 @@
       "sootIndex": 0.2,
       "coolFlameCapable": false,
       "smoldering": false,
-      "hiddenFactor": 1.02
+      "hiddenFactor": 1.02,
+      "psiRuns": 24,
+      "psiBurned": 0,
+      "psiExtinguished": 0,
+      "psiCoolFlameRuns": 0
     },
     "methanol": {
       "id": "methanol",
       "name": "methanol",
-      "locPct": 12.5,
-      "locSource": "calibration",
+      "locPct": 12.0,
+      "locSource": "psi-data",
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.1,
       "coolFlameCapable": true,
       "smoldering": false,
       "hiddenFactor": 1.26,
-      "psiRuns": 155,
-      "psiBurned": 6,
-      "psiExtinguished": 132,
+      "psiRuns": 156,
+      "psiBurned": 0,
+      "psiExtinguished": 151,
       "psiCoolFlameRuns": 0,
       "extinctionLimitMinPct": 12.0,
       "extinctionLimitMaxPct": 34.0,
       "extinctionDiameterMedianMm": 1.61,
-      "burnRateMedianMm2s": 0.46
+      "burnRateMedianMm2s": 0.46,
+      "locMethod": "extinction-floor"
     },
     "nomex": {
       "id": "nomex",
@@ -199,7 +213,11 @@
       "sootIndex": 0.3,
       "coolFlameCapable": false,
       "smoldering": true,
-      "hiddenFactor": 1.18
+      "hiddenFactor": 1.18,
+      "psiRuns": 6,
+      "psiBurned": 0,
+      "psiExtinguished": 0,
+      "psiCoolFlameRuns": 0
     },
     "panels": {
       "id": "panels",
@@ -223,7 +241,11 @@
       "sootIndex": 0.3,
       "coolFlameCapable": false,
       "smoldering": true,
-      "hiddenFactor": 1.18
+      "hiddenFactor": 1.18,
+      "psiRuns": 50,
+      "psiBurned": 2,
+      "psiExtinguished": 0,
+      "psiCoolFlameRuns": 0
     },
     "pmma-sphere": {
       "id": "pmma-sphere",
@@ -289,7 +311,11 @@
       "sootIndex": 0.2,
       "coolFlameCapable": false,
       "smoldering": true,
-      "hiddenFactor": 1.17
+      "hiddenFactor": 1.17,
+      "psiRuns": 4,
+      "psiBurned": 0,
+      "psiExtinguished": 0,
+      "psiCoolFlameRuns": 0
     },
     "teflon": {
       "id": "teflon",
@@ -317,8 +343,8 @@
     }
   },
   "provenance": {
-    "psiRunsParsed": 831,
-    "materialsFittedFromPsi": 0,
-    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets with clean burn/extinct separation; locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit)."
+    "psiRunsParsed": 1063,
+    "materialsFittedFromPsi": 2,
+    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit)."
   }
 }

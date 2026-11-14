@@ -8,12 +8,16 @@ and normalized for the Flame in Freefall dashboard and insights engine.
 
 | Folder | Contents | Committed? |
 | --- | --- | --- |
-| `raw/` | Original files as downloaded from PSI, grouped by investigation (`<ACC>/<category>/`) | no (`.gitignore`) — re-fetch with `scripts/psi/psi_fetch.py` |
+| `raw/` | Original files as downloaded from PSI, grouped by investigation (`<ACC>/<category>/`) | no (`.gitignore`) |
 | `catalog/` | `investigations.csv` (one row per investigation), `files_manifest.csv` (one row per downloaded file), `data_dictionary.md` | yes |
 | `processed/` | Cleaned tables ready to consume: `experimental_runs.csv`, `flex_test_points.csv`, `telemetry_index.csv`, `xlsx_csv/` | yes, except `xlsx_csv/` |
 
-The pipeline scripts live in `scripts/psi/` alongside the other data-pipeline
-scripts (`psi_search.py`, `ntrs_search.py`, `build_dataset.py`).
+> **Note — this is a committed, pre-normalized corpus** produced by an
+> earlier pipeline iteration (`scripts/psi/`, since removed). It is now
+> consumed as an *additional source* by `data/pipelines/normalize_experiments.py`
+> (`parse_legacy_runs` / `parse_legacy_flex`), which merges it into
+> `data/processed/experiments.csv` for accessions the raw-file parsers
+> never reached (BASS, SAFFIRE, FLEX test points, extra ACME studies).
 
 ## Investigations covered
 
@@ -30,20 +34,20 @@ the challenge (FLEX, SAFFIRE, ACME) plus the closely related BASS program:
 
 ## Refresh / reproduce
 
+The original fetch/catalog/normalize scripts (`scripts/psi/psi_fetch.py`,
+`psi_catalog.py`, `psi_normalize.py`) were removed when the ETL moved to
+`data/pipelines/`. To regenerate this corpus, use the current pipeline:
+
 ```sh
-# 1. download (resumable; ~20k files, a few GB)
-python scripts/psi/psi_fetch.py
-
-# 2. rebuild the catalog row-per-investigation table
-python scripts/psi/psi_catalog.py
-
-# 3. normalize everything into processed/*.csv
-python scripts/psi/psi_normalize.py   # needs: openpyxl (scripts/requirements.txt)
+python data/pipelines/psi_search.py --all   # catalog
+python data/pipelines/psi_files.py --all    # per-test file download
+python data/pipelines/normalize_experiments.py  # folds these CSVs into
+                                                # processed/experiments.csv
 ```
 
-`psi_fetch.py` talks directly to the PSI `geode-py` API — no login is needed for
-public investigations. Large video/image archives are deliberately excluded;
-the policy is documented inside the script.
+`psi_search.py`/`psi_files.py` talk to the PSI `geode-py` API — no login is
+needed for public investigations. Large video/image archives are deliberately
+excluded; the policy is documented inside the scripts.
 
 ## License / attribution
 

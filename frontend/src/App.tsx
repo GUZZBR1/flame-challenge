@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import BuildPalette from './ui/BuildPalette'
 import EventFeed from './ui/EventFeed'
 import ExperimentModal from './ui/ExperimentModal'
+import InsightsPanel from './ui/InsightsPanel'
 import InspectPanel from './ui/InspectPanel'
 import MasterSheet from './ui/MasterSheet'
 import MissionModal from './ui/MissionModal'
@@ -27,6 +28,7 @@ export default function App() {
   const [expRoom, setExpRoom] = useState<number | null>(null)
   const [missionOpen, setMissionOpen] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [insightsOpen, setInsightsOpen] = useState(false)
   const [cond, setCond] = useState<DashConditions>({
     env: 'microgravity',
     o2Pct: 21,
@@ -73,6 +75,7 @@ export default function App() {
         setExpRoom(null)
         setMissionOpen(false)
         setSheetOpen(false)
+        setInsightsOpen(false)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -85,6 +88,7 @@ export default function App() {
         engine={engine}
         onOpenMission={() => setMissionOpen(true)}
         onOpenData={() => setSheetOpen(true)}
+        onOpenInsights={() => setInsightsOpen(true)}
       />
       <nav aria-label="Scene views" className="z-20 flex shrink-0 items-center gap-2 border-b border-edge bg-panel px-4 py-2">
         <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'foundry' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('foundry')}>Foundry</button>
@@ -134,6 +138,9 @@ export default function App() {
       )}
       {missionOpen && <MissionModal engine={engine} onClose={() => setMissionOpen(false)} />}
       {sheetOpen && <MasterSheet onClose={() => setSheetOpen(false)} onInject={injectRow} />}
+      {insightsOpen && (
+        <InsightsPanel cond={cond} onClose={() => setInsightsOpen(false)} onInject={injectRow} />
+      )}
     </div>
   )
 }
