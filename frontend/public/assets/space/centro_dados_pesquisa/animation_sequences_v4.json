@@ -15,7 +15,7 @@
     "engine_burn": {
       "sheet": "centro_dados_pesquisa_engine_v4.json",
       "animation": "engine_burn",
-      "fps": 8,
+      "fps": 3.75,
       "loop": false,
       "durationMs": 800
     },
