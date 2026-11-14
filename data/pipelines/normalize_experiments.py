@@ -135,10 +135,34 @@ def fuel_id(name: str | None) -> str | None:
     return re.sub(r"[^a-z0-9]+", "-", n).strip("-") or None
 
 
+def cool_flame_observed(text: str) -> bool:
+    """Affirmative cool-flame evidence in free text.
+
+    Explicit negative observations ("No cool flame detected.", "cool flame
+    was not observed") do NOT count — a recorded non-observation is real
+    evidence, not a positive detection.
+    """
+    for m in re.finditer(r"cool[ -]?flames?", text, re.IGNORECASE):
+        # negation scopes only within the current clause and when it
+        # directly precedes the mention ("No cool flame", "no evidence of
+        # cool flame") — not across ";" boundaries ("No ignition occurred;
+        # a cool flame followed")
+        seg = re.split(r"[.!?;:]", text[max(0, m.start() - 60):m.start()])[-1]
+        if re.search(r"\b(?:no|not|never|without|absent|none)\b"
+                     r"(?:\s+\w+){0,2}\s*$", seg, re.IGNORECASE):
+            continue                                   # negated mention
+        head = " ".join(text[m.end():m.end() + 60].lower().split()[:4])
+        if re.match(r"[\s,;:()\-]*(?:was|were|is|has been|could be|"
+                    r"seemed|appeared|remained)?\s*not\b", head):
+            continue             # "cool flame was not ..." / ", not ..."
+        return True
+    return False
+
+
 def classify_outcome(comments: str, dext: float | str | None) -> tuple[str, str, bool]:
     """(outcome, extinction_type, cool_flame) from free-text comments."""
     c = comments.lower()
-    cool = "cool flame" in c or "cool-flame" in c
+    cool = cool_flame_observed(c)
     if re.search(r"did not ignite|failed to ignite|no ignition|would not ignite|"
                  r"not ignite|non-?ignition", c):
         return "no-ignition", "none", cool
@@ -146,7 +170,10 @@ def classify_outcome(comments: str, dext: float | str | None) -> tuple[str, str,
         return "extinction", "radiative", cool
     if re.search(r"blow.?off|blows? out", c):
         return "extinction", "blow-off", cool
-    if re.search(r"exting", c) or isinstance(dext, float):
+    # a positive measured extinction diameter is direct evidence; Dext=0.00
+    # is the FLEX sentinel for "no extinction observed" (data dictionary),
+    # NOT an extinction — completed burns record zero.
+    if re.search(r"extin[gc]", c) or (isinstance(dext, float) and dext > 0):
         if cool:
             return "extinction", "cool-flame", True
         return "extinction", "oxygen-limit" if "oxygen" in c else "suppressant" \
@@ -154,6 +181,8 @@ def classify_outcome(comments: str, dext: float | str | None) -> tuple[str, str,
     if "disruption" in c or "burns? to disruption" in c:
         return "disruption", "none", cool
     if re.search(r"burn(ed|s|t)? (to completion|completely|out)|complete burn", c):
+        return "burnout", "none", cool
+    if isinstance(dext, float) and dext == 0:
         return "burnout", "none", cool
     return "unknown", "none", cool
 
@@ -336,7 +365,11 @@ def sniff_csv_rows(path: Path, acc: str, inv: str) -> list[dict]:
         hot = cell(r, hot_key).lower()
         se = cell(r, se_key).upper()
         cool_v = cell(r, cool_key).lower()
-        cool = cool_v.startswith("y") or "cool flame" in comments.lower()
+        # an explicit structured "no" wins over comment text; with no
+        # structured value, negation-aware comment parsing decides
+        explicit_no_cool = bool(cool_key) and cool_v.startswith("n")
+        cool = cool_v.startswith("y") or (
+            not explicit_no_cool and cool_flame_observed(comments))
         # outcome: CFI semantics — Hot ignition N + comments "failed/no
         # ignition"; SE = self-extinguished; FT = flow ended while burning
         low_c = comments.lower()
@@ -348,7 +381,7 @@ def sniff_csv_rows(path: Path, acc: str, inv: str) -> list[dict]:
             outcome, etype = "burnout", "none"
         else:
             outcome, etype, cool_c = classify_outcome(low_c, None)
-            cool = cool or cool_c
+            cool = cool or (cool_c and not explicit_no_cool)
         out.append({
             "run_id": run or f"{path.stem[:40]}#{i}",
             "accession": acc, "investigation_id": inv,

@@ -96,8 +96,14 @@ def main() -> int:
     if EXP_CSV.exists():
         with EXP_CSV.open(newline="", encoding="utf-8") as fh:
             rows = list(csv.DictReader(fh))
-    cal = json.loads(CALIBRATION.read_text()) if CALIBRATION.exists() \
-        else {"materials": []}
+    if not CALIBRATION.exists():
+        print(f"[FAIL] calibration input missing: {CALIBRATION}\n"
+              "       run data/pipelines/build_dataset.py then "
+              "data/pipelines/calibrate_constants.py first — fitting "
+              "without calibrated materials would write an empty risk model",
+              file=sys.stderr)
+        return 1
+    cal = json.loads(CALIBRATION.read_text())
 
     stats: dict[str, dict] = {}
     for r in rows:

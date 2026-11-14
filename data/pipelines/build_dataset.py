@@ -41,7 +41,7 @@ def restore_starter() -> None:
     ensure_starter_backup()
     if STARTER_PATH.exists():
         shutil.copy(STARTER_PATH, DATASET_PATH)
-        print(f"[OK] starter dataset restored -> {DATASET_PATH.relative_to(ROOT)}")
+        print(f"[OK] starter dataset restored -> {DATASET_PATH.relative_to(REPO)}")
     else:
         print("[FAIL] no starter backup found", file=sys.stderr)
         sys.exit(1)
