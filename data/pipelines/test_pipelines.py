@@ -478,6 +478,30 @@ def test_legacy_flex_cir_dedup(monkeypatch, tmp_path):
     assert pts[0]["outcome"] == "extinction"   # Test end, not comments
 
 
+def test_flex_sequence_numbers_do_not_pair_globally(monkeypatch, tmp_path):
+    """The tables' sequence numbers diverge — FLEX-157's summary row is
+    '156; C03H401', NOT '157; C05M101' (a different methanol test).
+    Pairing must key on CIR, not the numeric prefix."""
+    _legacy_runs_csv(tmp_path, [
+        {"accession": "PSI-69", "data_id": "156; C03H401",
+         "fuel_or_material": "Heptane", "burn_time_s": "3.2",
+         "extra_json": json.dumps({"Test end": "Completion"})},
+        {"accession": "PSI-69", "data_id": "157; C05M101",  # decoy
+         "fuel_or_material": "Methanol", "burn_time_s": "7.6",
+         "extra_json": json.dumps({"Test end": "Extinction"})},
+    ])
+    _flex_points_csv(tmp_path, [
+        {"accession": "PSI-69", "test_id": "FLEX-157",
+         "cir_test_number": "C03H401", "fuel_or_material": "Heptane",
+         "o2_mf": "0.18", "comments": "flame out"},
+    ])
+    monkeypatch.setattr(norm, "LEGACY_DIR", tmp_path)
+    pts = norm.parse_legacy_flex(set())
+    assert len(pts) == 1
+    assert pts[0]["burn_time_s"] == 3.2          # its own test, not the decoy
+    assert pts[0]["outcome"] == "burnout"        # Completion, not Extinction
+
+
 def test_flex_shared_cir_pairs_by_test_number(monkeypatch, tmp_path):
     """FLEX-070 and FLEX-073 share CIR 193F001 — pairing must use the
     test number, not the CIR, or durations get mixed up."""

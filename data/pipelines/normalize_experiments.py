@@ -518,61 +518,58 @@ def _flex_end_outcome(r: dict, comments: str = "") -> tuple[str, str]:
 
 
 def _flex_test_num(test_id: str | None) -> int | None:
-    """Test sequence number — 'FLEX-070' → 70, and experimental_runs
-    data_id '70; 193F001' → 70. CIR numbers are NOT unique in the
-    corpus (FLEX-070/073 share 193F001); the sequence number is."""
+    """Sequence number — 'FLEX-070' → 70, data_id '70; 193F001' → 70.
+    NOT a global pairing key: the tables' numbering diverges for ~44%
+    of tests (FLEX-157 is '156; C03H401', not '157; C05M101'). It only
+    disambiguates the few tests that SHARE one CIR."""
     m = re.search(r"(\d+)", (test_id or "").split(";")[0])
     return int(m.group(1)) if m else None
 
 
-def _flex_points_nums() -> set[int]:
-    """Test numbers present in flex_test_points.csv — the richer
-    per-test table. experimental_runs rows for the same test must not
-    double-count (its data_id carries the number before the CIR)."""
+def _flex_points_cirs() -> set[str]:
+    """CIR test numbers present in flex_test_points.csv — the richer
+    per-test table. CIR is the identifier both tables share; summary
+    rows for those tests must not double-count."""
     path = LEGACY_DIR / "flex_test_points.csv"
     if not path.exists():
         return set()
-    return {n for n in (_flex_test_num(r.get("test_id"))
-                       for r in csv.DictReader(
-                           path.open(encoding="utf-8", errors="replace")))
-            if n is not None}
+    return {(r.get("cir_test_number") or "").strip()
+            for r in csv.DictReader(
+                path.open(encoding="utf-8", errors="replace"))}
 
 
-def _flex_runs_meta() -> tuple[dict[int, dict], dict[str, list[dict]]]:
-    """PSI-69 experimental_runs rows — the authoritative outcome
-    metadata (Test end, ignition/cool flags, burn time) for the
-    richer flex_test_points physics rows — keyed by test number
-    (primary pairing) and by CIR (fallback; may collide)."""
+def _flex_runs_meta() -> dict[str, list[dict]]:
+    """PSI-69 experimental_runs rows grouped by CIR — the authoritative
+    outcome metadata (Test end, ignition/cool flags, burn time) for the
+    richer flex_test_points physics rows. A handful of tests share one
+    CIR (FLEX-070/073 → 193F001), hence lists, not single rows."""
     path = LEGACY_DIR / "experimental_runs.csv"
-    by_num: dict[int, dict] = {}
     by_cir: dict[str, list[dict]] = {}
     if not path.exists():
-        return by_num, by_cir
+        return by_cir
     for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
         if (r.get("accession") or "").strip() != "PSI-69":
             continue
         parts = (r.get("data_id") or "").split(";")
-        n = _flex_test_num(r.get("data_id"))
-        if n is not None:
-            by_num.setdefault(n, r)
         if len(parts) > 1 and parts[1].strip():
             by_cir.setdefault(parts[1].strip(), []).append(r)
-    return by_num, by_cir
+    return by_cir
 
 
 def parse_legacy_runs(covered: set[str]) -> list[dict]:
     path = LEGACY_DIR / "experimental_runs.csv"
     if not path.exists():
         return []
-    flex_nums = _flex_points_nums()
+    flex_cirs = _flex_points_cirs()
     out: list[dict] = []
     for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
         acc = (r.get("accession") or "").strip()
         if not acc or acc in covered or acc not in ACCESSIONS:
             continue
         if acc == "PSI-69":
-            n = _flex_test_num(r.get("data_id"))
-            if n is not None and n in flex_nums:
+            parts = (r.get("data_id") or "").split(";")
+            cir = parts[1].strip() if len(parts) > 1 else ""
+            if cir and cir in flex_cirs:
                 continue  # emitted by parse_legacy_flex with richer fields
         inv = ACCESSIONS[acc][0]
         fuel = (r.get("fuel_or_material") or r.get("fuel_bottle") or "").strip() or None
@@ -645,7 +642,7 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
     path = LEGACY_DIR / "flex_test_points.csv"
     if not path.exists():
         return []
-    by_num, by_cir = _flex_runs_meta()
+    by_cir = _flex_runs_meta()
     out: list[dict] = []
     for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
         acc = (r.get("accession") or "").strip()
@@ -654,13 +651,18 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
         inv = ACCESSIONS[acc][0]
         comments = (r.get("comments") or "").strip()
         dext = _num1(r.get("dext_mm"))
-        # pair by test number (unique); a shared CIR only pairs when
-        # it maps to exactly one summary row
-        n = _flex_test_num(r.get("test_id"))
-        m = by_num.get(n) if n is not None else None
-        if m is None:
-            cands = by_cir.get((r.get("cir_test_number") or "").strip(), [])
-            m = cands[0] if len(cands) == 1 else None
+        # pair by CIR — the identifier both tables share. A shared CIR
+        # is disambiguated by sequence number within its own candidates
+        # only; the numbers diverge globally (~44% of tests differ)
+        cands = by_cir.get((r.get("cir_test_number") or "").strip(), [])
+        if len(cands) == 1:
+            m = cands[0]
+        elif cands:
+            n = _flex_test_num(r.get("test_id"))
+            m = next((c for c in cands
+                      if _flex_test_num(c.get("data_id")) == n), None)
+        else:
+            m = None
         burn_time = None
         if m is not None:
             # the summary row carries the authoritative end state — its
