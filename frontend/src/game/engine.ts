@@ -122,6 +122,8 @@ export class Engine {
     e.rooms.push(room)
     for (let y = rect.y; y < rect.y + rect.h; y++)
       for (let x = rect.x; x < rect.x + rect.w; x++) e.roomByTile[y * GRID_W + x] = room
+    // walkability changed — the cached fire-distance field is stale
+    e.fireDist = null
     return room
   }
 

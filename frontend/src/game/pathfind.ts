@@ -23,12 +23,16 @@ export function findPath(
 
   const n = maxX * maxY
   const g = new Float64Array(n).fill(Infinity)
-  const f = new Float64Array(n)
   const parent = new Int32Array(n).fill(-1)
   const closed = new Uint8Array(n)
   const h = (x: number, y: number) => Math.abs(x - tx) + Math.abs(y - ty)
-  const less = (a: number, b: number) => f[a] < f[b] || (f[a] === f[b] && a < b)
 
+  // Heap entries are immutable priority snapshots packed as f*n + id
+  // (g and h are integers, so f is too). Ordering by the packed key is
+  // exactly ordering by (f, id). When a node's g improves we push a new
+  // entry — the stale one keeps its old key, pops strictly later, and is
+  // discarded by `closed`. A live-f[] comparator would silently reorder
+  // existing entries on every decrease-key and corrupt the pop order.
   const heap: number[] = []
   const swap = (i: number, j: number) => {
     const t = heap[i]
@@ -38,7 +42,7 @@ export function findPath(
   const siftUp = (i: number) => {
     while (i > 0) {
       const p = (i - 1) >> 1
-      if (!less(heap[i], heap[p])) break
+      if (heap[i] >= heap[p]) break
       swap(i, p)
       i = p
     }
@@ -48,8 +52,8 @@ export function findPath(
       let m = i
       const l = 2 * i + 1
       const r = l + 1
-      if (l < heap.length && less(heap[l], heap[m])) m = l
-      if (r < heap.length && less(heap[r], heap[m])) m = r
+      if (l < heap.length && heap[l] < heap[m]) m = l
+      if (r < heap.length && heap[r] < heap[m]) m = r
       if (m === i) return
       swap(i, m)
       i = m
@@ -59,11 +63,10 @@ export function findPath(
   const start = sy * maxX + sx
   const target = ty * maxX + tx
   g[start] = 0
-  f[start] = h(sx, sy)
-  heap.push(start)
+  heap.push(h(sx, sy) * n + start)
 
   while (heap.length) {
-    const cur = heap[0]
+    const cur = heap[0] % n
     const last = heap.pop()!
     if (heap.length) {
       heap[0] = last
@@ -90,8 +93,7 @@ export function findPath(
       if (ng < g[ni]) {
         g[ni] = ng
         parent[ni] = cur
-        f[ni] = ng + h(nx, ny)
-        heap.push(ni)
+        heap.push((ng + h(nx, ny)) * n + ni)
         siftUp(heap.length - 1)
       }
     }
