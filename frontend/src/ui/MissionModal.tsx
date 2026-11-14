@@ -7,13 +7,14 @@ import { useGameVersion } from '../state/store'
 interface Props {
   engine: Engine
   onClose: () => void
+  onTriggerScenario: (id: string) => boolean
 }
 
 /**
  * Mission Control — replay documented NASA fire incidents (Apollo 1,
  * Apollo 13, Mir 1997) and spend science on NASA spin-off upgrades.
  */
-export default function MissionModal({ engine, onClose }: Props) {
+export default function MissionModal({ engine, onClose, onTriggerScenario }: Props) {
   useGameVersion()
   const st = engine.state
 
@@ -55,7 +56,7 @@ export default function MissionModal({ engine, onClose }: Props) {
                   </div>
                   <button
                     onClick={() => {
-                      if (engine.triggerScenario(s.id)) onClose()
+                      if (onTriggerScenario(s.id)) onClose()
                     }}
                     className="mt-2 w-full rounded bg-ember/90 py-1 text-[11px] font-bold text-white hover:bg-ember"
                   >

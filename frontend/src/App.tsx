@@ -54,8 +54,16 @@ export default function App() {
   const injectRow = useCallback((row: MasterRow) => {
     const t = injectTarget(row)
     if (!t) return
-    if (t.kind === 'scenario') engine.triggerScenario(t.id)
-    else engine.injectExperiment(t.invId, t.o2, t.flow)
+    const started = t.kind === 'scenario'
+      ? engine.triggerScenario(t.id)
+      : engine.injectExperiment(t.invId, t.o2, t.flow)
+    if (started) setSceneView('foundry')
+  }, [])
+
+  const triggerMissionScenario = useCallback((id: string) => {
+    const started = engine.triggerScenario(id)
+    if (started) setSceneView('foundry')
+    return started
   }, [])
 
   const exitBuild = useCallback(() => setMode('inspect'), [])
@@ -136,7 +144,13 @@ export default function App() {
       </div>
         </>
       )}
-      {missionOpen && <MissionModal engine={engine} onClose={() => setMissionOpen(false)} />}
+      {missionOpen && (
+        <MissionModal
+          engine={engine}
+          onClose={() => setMissionOpen(false)}
+          onTriggerScenario={triggerMissionScenario}
+        />
+      )}
       {sheetOpen && <MasterSheet onClose={() => setSheetOpen(false)} onInject={injectRow} />}
       {insightsOpen && (
         <InsightsPanel cond={cond} onClose={() => setInsightsOpen(false)} onInject={injectRow} />
