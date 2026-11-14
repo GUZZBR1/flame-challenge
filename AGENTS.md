@@ -51,8 +51,8 @@ NASA PSI data and a compiled C++ physics core. See `docs/`.
 - `./.venv/bin/pip install ...` — PEP 668 managed env; always use `.venv`
 - ETL (in order): `psi_search.py --all` → `psi_files.py --all` →
   `ntrs_search.py --all --fulltext 3` → `normalize_experiments.py` →
-  `build_index.py` → `fit_risk_model.py` → `build_dataset.py` →
-  `calibrate_constants.py` → `build_master_sheet.py` (auditable
+  `build_index.py` → `build_dataset.py` → `calibrate_constants.py` →
+  `fit_risk_model.py` → `build_master_sheet.py` (auditable
   `data/processed/nasa_combustion_master.csv` + `frontend/src/data/master_sheet.json`)
 
 ## Conventions

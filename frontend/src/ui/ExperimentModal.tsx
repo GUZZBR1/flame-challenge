@@ -5,7 +5,7 @@ import { investigations } from '../game/engine'
 import { flowRange, limitingO2, o2Range, specFor } from '../game/experiments'
 import { gravityContrast } from '../game/telemetry'
 import { previewExperiment } from '../sim-bridge/physics'
-import type { ExperimentSpec, RiskAxis } from '../game/types'
+import type { RiskAxis } from '../game/types'
 import type { Investigation } from '../types'
 
 interface Props {
@@ -38,9 +38,12 @@ export default function ExperimentModal({ engine, roomId, onClose }: Props) {
   const fRange = flowRange(inv)
   const [o2, setO2] = useState<number>(() => Math.min(range[1], Math.max(range[0], 21)))
   const [flow, setFlow] = useState<number>(0)
-  const [spec, setSpec] = useState<ExperimentSpec>(() => specFor(inv, o2))
   const [physics, setPhysics] = useState<'c++' | 'local'>('local')
-  const [pressure, setPressure] = useState<number | undefined>(undefined)
+  // preview pressure is bound to the exact inputs that produced it — a
+  // preview for other settings must never feed specFor or startExperiment
+  const [preview, setPreview] = useState<
+    { invId: string; o2: number; flow: number; pressure: number } | undefined
+  >(undefined)
   const loc = limitingO2(inv)
 
   // live risk from the C++ core when the backend is up (local model otherwise)
@@ -51,8 +54,7 @@ export default function ExperimentModal({ engine, roomId, onClose }: Props) {
       previewExperiment(inv, o2, flow).then((p) => {
         if (!live) return
         setPhysics(p.engine)
-        setPressure(p.ignitionPressure)
-        setSpec(specFor(inv, o2, flow, p.ignitionPressure))
+        setPreview({ invId: inv.id, o2, flow, pressure: p.ignitionPressure })
       })
     }, 180)
     return () => {
@@ -60,6 +62,12 @@ export default function ExperimentModal({ engine, roomId, onClose }: Props) {
       clearTimeout(timer)
     }
   }, [inv, o2, flow])
+
+  const pressure =
+    preview && preview.invId === inv.id && preview.o2 === o2 && preview.flow === flow
+      ? preview.pressure
+      : undefined
+  const spec = specFor(inv, o2, flow, pressure)
 
   const pick = (i: Investigation) => {
     setInv(i)

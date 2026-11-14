@@ -35,3 +35,12 @@ core/build/
 # Local secrets (LLM keys etc.)
 .env
 .env.*
+
+# regenerable artifacts (build_index.py / normalize_experiments.py)
+data/processed/search_index.json
+data/processed/experiments.json
+
+# C++ core build artifacts (cmake)
+build/
+*.o
+*.a

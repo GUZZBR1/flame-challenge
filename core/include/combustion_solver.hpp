@@ -50,6 +50,15 @@ class DropletFlame {
     void step(double dtSec);
     const State& state() const { return s_; }
 
+    /**
+     * Update the surrounding atmosphere mid-run (cabin airflow restored,
+     * O₂ depleted by a neighbouring fire, ...). Preserves fuel, regime and
+     * elapsed state — unlike configure(), which starts a fresh experiment.
+     * Makes cool-flame re-ignition reachable: raising O₂ back above the
+     * material LOC allows the stochastic flashback to hot combustion.
+     */
+    void updateAtmosphere(double o2Pct, double pressureKpa);
+
     /** burning-rate constant, mm²/s — exposed for validation vs PSI data */
     double burnRateK() const;
 
@@ -61,6 +70,8 @@ class DropletFlame {
 
     double nextRandom();           // xorshift32, deterministic
     void transition(Regime r);
+    /** consumed fuel mass fraction 0..1 — spherical droplet mass ∝ d³ */
+    double burnedFraction() const;
 };
 
 } // namespace ff

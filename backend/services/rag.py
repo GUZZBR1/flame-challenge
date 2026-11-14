@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import math
 import re
+import threading
 from collections import Counter
 from pathlib import Path
 
@@ -33,17 +34,24 @@ STOP = {
     "during", "per", "via", "under", "over", "can", "could", "would",
 }
 
-# investigation aliases -> ids (for query grounding)
+# explicit investigation names/acronyms -> ids (checked first)
 INV_ALIASES = {
-    "flex": "flex-2", "flex-2": "flex-2", "cfi": "flex-2",
-    "cool flame": "flex-2", "cool flames": "flex-2",
+    "flex": "flex-2", "flex-2": "flex-2",
+    "cfi": "acme", "cfi-g": "acme",          # PSI-159 is ACME CFI-G
     "acme": "acme", "slice": "acme", "bre": "acme", "cld": "acme",
     "sofie": "sofie-gel", "sofie-gel": "sofie-gel",
     "bass": "bass-ii", "bass-ii": "bass-ii",
     "saffire": "saffire", "cygnus": "saffire",
-    "same": "same", "smoke": "same", "aerosol": "same", "damf": "same",
+    "same": "same", "damf": "same",
     "confined": "confined-combustion",
-    "flare": "flare", "partial gravity": "flare", "partial-g": "flare",
+    "flare": "flare", "partial-g": "flare",
+}
+# topic terms that only ground a query when no explicit name matched —
+# "ACME cool flame" must resolve to acme, not the cool-flame default
+TOPIC_DEFAULTS = {
+    "cool flame": "flex-2", "cool flames": "flex-2",
+    "smoke": "same", "aerosol": "same",
+    "partial gravity": "flare",
 }
 
 FUEL_RE = re.compile(
@@ -55,29 +63,46 @@ _docs: list[dict] = []
 _idf: dict[str, float] = {}
 _ready = False
 _duck = None
+# one lock guards lazy init AND every query: a shared DuckDB connection's
+# result stream is not thread-safe, so each query also runs on its own
+# cursor while the lock serializes execute+fetch+description
+_lock = threading.Lock()
 
 
 def _load() -> None:
     global _docs, _idf, _ready, _duck
     if _ready:
         return
-    _ready = True
-    if INDEX.exists():
-        _docs = json.loads(INDEX.read_text()).get("documents", [])
-    df: Counter = Counter()
-    for d in _docs:
-        df.update(set(d.get("tokens", [])))
-    n = max(1, len(_docs))
-    _idf = {t: math.log(1 + (n - c + 0.5) / (c + 0.5)) for t, c in df.items()}
-    if EXPERIMENTS.exists():
-        try:
-            import duckdb  # noqa: PLC0415
-            _duck = duckdb.connect(":memory:")
-            _duck.execute(
-                "CREATE TABLE experiments AS SELECT * FROM read_csv_auto(?, "
-                "header=true)", [str(EXPERIMENTS)])
-        except Exception:  # noqa: BLE001 - duckdb optional; degrade to search only
-            _duck = None
+    with _lock:
+        if _ready:
+            return
+        _ready = True
+        if INDEX.exists():
+            _docs = json.loads(INDEX.read_text()).get("documents", [])
+        df: Counter = Counter()
+        for d in _docs:
+            df.update(set(d.get("tokens", [])))
+        n = max(1, len(_docs))
+        _idf = {t: math.log(1 + (n - c + 0.5) / (c + 0.5)) for t, c in df.items()}
+        if EXPERIMENTS.exists():
+            try:
+                import duckdb  # noqa: PLC0415
+                _duck = duckdb.connect(":memory:")
+                _duck.execute(
+                    "CREATE TABLE experiments AS SELECT * FROM read_csv_auto(?, "
+                    "header=true)", [str(EXPERIMENTS)])
+            except Exception:  # noqa: BLE001 - duckdb optional; degrade to search only
+                _duck = None
+
+
+def _duck_query(sql: str) -> tuple[list[tuple], list[str]]:
+    """Run a read query on an isolated cursor; returns (rows, col_names)."""
+    with _lock:
+        cur = _duck.cursor()
+        cur.execute(sql)
+        rows = cur.fetchall()
+        cols = [c[0] for c in cur.description]
+        return rows, cols
 
 
 def reload() -> None:
@@ -122,14 +147,26 @@ def _score(doc: dict, terms: list[str], boosts: dict[str, float]) -> float:
     return s
 
 
+def _alias_in_text(alias: str, low: str) -> bool:
+    """Whole-token (or whole-phrase) match — 'bre' must not fire inside
+    'breakdown', and 'flex' must not swallow 'flex-2'."""
+    return re.search(r"(?<![a-z0-9_-])" + re.escape(alias) +
+                     r"(?![a-z0-9_-])", low) is not None
+
+
 def _ground(q: str) -> tuple[list[str], str | None, str | None]:
     """(terms, investigation_id, fuel_token) extracted from the question."""
     low = q.lower()
     inv = None
     for alias, iid in INV_ALIASES.items():
-        if alias in low:
+        if _alias_in_text(alias, low):
             inv = iid
             break
+    if inv is None:
+        for topic, iid in TOPIC_DEFAULTS.items():
+            if _alias_in_text(topic, low):
+                inv = iid
+                break
     fm = FUEL_RE.search(low)
     fuel = fm.group(0).lower() if fm else None
     return qtokens(q), inv, fuel
@@ -187,8 +224,8 @@ def _sql_answer(q: str, terms: list[str], inv: str | None,
     extinct = "outcome IN ('extinction','no-ignition')"
 
     def run(sql: str):
-        return [dict(zip([c[0] for c in _duck.description], r))
-                for r in _duck.execute(sql).fetchall()]
+        rows, cols = _duck_query(sql)
+        return [dict(zip(cols, r)) for r in rows]
 
     try:
         if re.search(r"lowest|minimum|min\b|least", low) and "o2" in low:
@@ -205,6 +242,8 @@ def _sql_answer(q: str, terms: list[str], inv: str | None,
         if re.search(r"how many|count|number of", low):
             where = ("outcome = 'extinction'" if "extinct" in low
                      else "1=1")
+            if "cool flame" in low:
+                where += " AND cool_flame = true"
             rows = run(
                 "SELECT investigation_id, accession, COUNT(*) AS runs "
                 f"FROM experiments WHERE {where} {inv_clause} {fuel_clause} "
@@ -301,7 +340,8 @@ def stats() -> dict:
     n_rows = None
     if _duck is not None:
         try:
-            n_rows = _duck.execute("SELECT COUNT(*) FROM experiments").fetchone()[0]
+            rows, _ = _duck_query("SELECT COUNT(*) FROM experiments")
+            n_rows = rows[0][0]
         except Exception:  # noqa: BLE001
             pass
     return {"documents": len(_docs), "byType": dict(types),

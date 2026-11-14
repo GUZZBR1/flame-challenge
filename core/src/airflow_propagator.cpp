@@ -11,6 +11,12 @@ void SolidSpread::configure(const Config& cfg) {
     s_.regime = Regime::Preheat;
 }
 
+void SolidSpread::updateAtmosphere(double o2Pct, double flowCms, double pressureKpa) {
+    c_.o2Pct = o2Pct;
+    c_.flowCms = flowCms;
+    c_.pressureKpa = pressureKpa;
+}
+
 double SolidSpread::nominalRate() const {
     const auto& m = c_.material;
     // interpolate within the measured spread range by O₂ margin
@@ -40,10 +46,16 @@ void SolidSpread::step(double dtSec) {
     switch (s_.regime) {
     case Regime::Preheat:
         if (s_.tSec > 1.5) {
-            if (oxygenLimitExtinct() || quiescentExtinct())
+            if (oxygenLimitExtinct() || quiescentExtinct()) {
                 s_.regime = Regime::Out;
-            else
+            } else {
+                // enter Spreading with a consistent first-frame state —
+                // callers must never observe the regime with a zero rate
                 s_.regime = Regime::Spreading;
+                s_.spreadRateCms = nominalRate();
+                s_.intensity = std::clamp(
+                    0.3 + s_.spreadRateCms / c_.material.spreadMaxCms, 0.0, 1.0);
+            }
         }
         break;
 

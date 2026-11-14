@@ -39,6 +39,13 @@ class SolidSpread {
     void step(double dtSec);
     const State& state() const { return s_; }
 
+    /**
+     * Update cabin atmosphere mid-run (O₂ level / opposed flow / pressure).
+     * Preserves front position and regime — extinction and spread-rate
+     * checks respond on the next step.
+     */
+    void updateAtmosphere(double o2Pct, double flowCms, double pressureKpa);
+
   private:
     Config c_;
     State s_;

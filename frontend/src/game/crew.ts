@@ -6,20 +6,22 @@ import type { CrewMember, GameState, Room, Vec } from './types'
 import { rectContains, tileKey } from './types'
 
 export function moveAlongPath(c: CrewMember, dt: number): boolean {
+  // one distance budget per tick — each waypoint consumes from it
+  let allowance = Math.max(c.speed * dt * (c.state === 'injured' ? 0.45 : 1), 0.001)
   while (c.path.length) {
     const t = c.path[0]
     const dx = t.x - c.pos.x
     const dy = t.y - c.pos.y
     const d = Math.hypot(dx, dy)
-    const step = c.speed * dt * (c.state === 'injured' ? 0.45 : 1)
-    if (d <= Math.max(step, 0.001)) {
+    if (d <= allowance) {
       c.pos.x = t.x
       c.pos.y = t.y
       c.path.shift()
+      allowance -= d
       continue
     }
-    c.pos.x += (dx / d) * step
-    c.pos.y += (dy / d) * step
+    c.pos.x += (dx / d) * allowance
+    c.pos.y += (dy / d) * allowance
     return false
   }
   return true
@@ -35,6 +37,13 @@ export function pathTo(state: GameState, c: CrewMember, target: Vec): boolean {
 /** center of a room in pos-space (tile areas are [x, x+1)) */
 export function roomSpot(room: Room): Vec {
   return { x: room.rect.x + room.rect.w / 2, y: room.rect.y + room.rect.h / 2 }
+}
+
+/** free the run's scientist reservation when its experiment job is abandoned */
+export function releaseExperiment(state: GameState, c: CrewMember) {
+  if (c.job?.kind !== 'experiment') return
+  for (const r of state.rooms)
+    if (r.experiment?.scientistId === c.id) r.experiment.scientistId = null
 }
 
 /** pick the walkable tile furthest from all visible fires — a muster point */
@@ -91,6 +100,7 @@ export function updateCrewMember(
     if (c.health <= 0) {
       c.health = 0
       c.state = 'dead'
+      releaseExperiment(state, c)
       c.job = null
       c.path = []
       state.safety = Math.max(0, state.safety - BALANCE.safetyLossDeath)
@@ -103,6 +113,7 @@ export function updateCrewMember(
   // panic check — anyone (non-extinguishing engineer) near visible fire flees
   const threat = fireNear(state, Math.floor(c.pos.x), Math.floor(c.pos.y), 2)
   if (threat && c.state !== 'fleeing' && !(c.role === 'engineer' && c.job?.kind === 'extinguish')) {
+    releaseExperiment(state, c)
     c.job = null
     c.state = 'fleeing'
     pathTo(state, c, musterPoint(state))
@@ -138,6 +149,7 @@ export function updateCrewMember(
   const fy = Math.floor(c.pos.y)
 
   const clearJob = () => {
+    releaseExperiment(state, c)
     c.job = null
     c.state = 'idle'
   }

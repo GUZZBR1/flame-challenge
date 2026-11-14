@@ -55,7 +55,10 @@ CATEGORY_MODEL = {
     "large-scale-fire": "spread",
     "confined": "spread",
     "smoke-aerosol": "spread",
-    "gaseous-diffusion": "droplet",
+    # ACME coflow gas burners are diffusion flames, not liquid droplets —
+    # the SAFFIRE-type spread model is the closest engine regime and matches
+    # the TS dispatch in frontend/src/sim-bridge/physics.ts
+    "gaseous-diffusion": "spread",
     "partial-gravity": "spread",
 }
 

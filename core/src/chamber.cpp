@@ -38,6 +38,14 @@ void Chamber::configure(const Config& cfg) {
     events_.clear();
 }
 
+void Chamber::updateAtmosphere(double o2Pct, double flowCms, double pressureKpa) {
+    cfg_.o2Pct = o2Pct;
+    cfg_.flowCms = flowCms;
+    cfg_.pressureKpa = pressureKpa;
+    droplet_.updateAtmosphere(o2Pct, pressureKpa);
+    spread_.updateAtmosphere(o2Pct, flowCms, pressureKpa);
+}
+
 double Chamber::ignitionPressure() const {
     const Material* m = risks_.get(cfg_.materialId);
     if (!m) return 0.5;
@@ -51,6 +59,9 @@ void Chamber::step(double dtSec) {
         if (r == DropletFlame::Regime::HotFlame && !ignited_) {
             ignited_ = true;
             events_.push_back("ignited");
+        } else if (r == DropletFlame::Regime::HotFlame &&
+                   lastRegime_ == (int)DropletFlame::Regime::CoolFlame) {
+            events_.push_back("reignited");
         }
         if (r == DropletFlame::Regime::CoolFlame && lastRegime_ != (int)r)
             events_.push_back("cool-flame-onset");

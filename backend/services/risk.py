@@ -119,16 +119,38 @@ def risk_index(material_id: str, o2_pct: float, flow_cms: float = 0.0,
     }
 
 
+# physical bounds for the O2 sweep; a request can't allocate beyond this
+O2_LIMITS = (0.0, 100.0)
+MAX_CURVE_POINTS = 400
+
+
 def curve(material_id: str, flow_cms: float = 0.0,
           gravity: str = "microgravity",
           o2_min: float = 8.0, o2_max: float = 40.0, step: float = 0.5) -> dict:
-    """O2 sweep for charts — risk vs oxygen at fixed ventilation."""
+    """O2 sweep for charts — risk vs oxygen at fixed ventilation.
+
+    Range/step are clamped so a pathological query (o2Max=inf, step=0)
+    can't hang the server or exhaust memory.
+    """
+    lo = float(o2_min) if math.isfinite(float(o2_min)) else O2_LIMITS[0]
+    hi = float(o2_max) if math.isfinite(float(o2_max)) else O2_LIMITS[1]
+    lo, hi = max(O2_LIMITS[0], lo), min(O2_LIMITS[1], hi)
+    if lo > hi:
+        lo, hi = hi, lo
+    st = abs(float(step))
+    if not math.isfinite(st) or st <= 0:
+        st = 0.5
+    # widen step so the sweep stays bounded even for dense requests
+    span = hi - lo
+    if span / st > MAX_CURVE_POINTS:
+        st = span / MAX_CURVE_POINTS
     pts = []
-    o2 = o2_min
-    while o2 <= o2_max + 1e-9:
+    o2 = lo
+    while o2 <= hi + 1e-9:
         r = risk_index(material_id, o2, flow_cms, gravity)
         pts.append({"o2Pct": round(o2, 2), "riskIndex": r["riskIndex"],
                     "level": r["level"]})
-        o2 += step
+        o2 += st
     return {"materialId": material_id, "flowCms": flow_cms,
-            "gravity": gravity, "points": pts}
+            "gravity": gravity, "o2Min": lo, "o2Max": hi, "step": st,
+            "points": pts}

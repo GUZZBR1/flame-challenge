@@ -49,6 +49,7 @@ PYBIND11_MODULE(freefall_engine, m) {
         .def(py::init<MaterialRisk>())
         .def("configure", &Chamber::configure)
         .def("step", &Chamber::step)
+        .def("update_atmosphere", &Chamber::updateAtmosphere)
         .def("ignition_pressure", &Chamber::ignitionPressure)
         .def("regime", &Chamber::regime)
         .def("hot_burning", &Chamber::hotBurning)

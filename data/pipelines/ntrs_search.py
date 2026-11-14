@@ -62,6 +62,17 @@ def safe_name(query: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", query.lower()).strip("_") or "query"
 
 
+def author_name(a: dict) -> str | None:
+    """Author display name from an NTRS authorAffiliations entry."""
+    meta = a.get("meta") if isinstance(a.get("meta"), dict) else {}
+    name = (meta.get("author") or {}).get("name") if isinstance(
+        meta.get("author"), dict) else None
+    if name and str(name).strip():
+        return str(name).strip()
+    joined = " ".join(p for p in [a.get("first"), a.get("last")] if p).strip()
+    return joined or None
+
+
 def slim(r: dict, inv: str) -> dict:
     """Keep the fields the RAG corpus actually needs."""
     downloads = []
@@ -74,12 +85,22 @@ def slim(r: dict, inv: str) -> dict:
             "pdf": links.get("pdf"),
             "fulltext": links.get("fulltext"),
         })
+    # prefer the work's own publication date; distribution/submission
+    # dates are repository events, not the citation year
     year = None
-    for key in ("distributionDate", "submittedDate", "created"):
-        v = r.get(key)
+    for p in r.get("publications") or []:
+        if not isinstance(p, dict):
+            continue
+        v = p.get("publicationDate")
         if isinstance(v, str) and len(v) >= 4 and v[:4].isdigit():
             year = int(v[:4])
             break
+    if year is None:
+        for key in ("submittedDate", "created"):
+            v = r.get(key)
+            if isinstance(v, str) and len(v) >= 4 and v[:4].isdigit():
+                year = int(v[:4])
+                break
     sti = r.get("stiTypeDetails")
     if isinstance(sti, dict):
         sti = sti.get("name")
@@ -95,10 +116,12 @@ def slim(r: dict, inv: str) -> dict:
         "stiType": sti,
         "center": (r.get("center") or {}).get("name"),
         "authors": [
-            " ".join(p for p in [a.get("first"), a.get("last")] if p)
-            for a in (r.get("authorAffiliations") or [])[:6]
-            if isinstance(a, dict)
-        ],
+            n for n in (
+                author_name(a)
+                for a in (r.get("authorAffiliations") or [])
+                if isinstance(a, dict))
+            if n
+        ][:6],
         "reportNumber": (r.get("otherReportNumbers") or [None])[0]
         if isinstance(r.get("otherReportNumbers"), list) else None,
         "ntrsUrl": f"https://ntrs.nasa.gov/citations/{r.get('id')}",
@@ -109,11 +132,14 @@ def slim(r: dict, inv: str) -> dict:
 
 def merge(catalog_path: Path, rec: dict) -> None:
     cat = json.loads(catalog_path.read_text()) if catalog_path.exists() else {}
-    cur = cat.get(rec["id"], rec)
+    # JSON object keys are strings — use the str form for lookup AND
+    # assignment or a reloaded catalog splits one citation into two keys
+    key = str(rec["id"])
+    cur = cat.get(key, rec)
     invs = sorted({*cur.get("investigationIds", []), *rec["investigationIds"]})
     cur.update({k: v for k, v in rec.items() if v is not None or k == "abstract"})
     cur["investigationIds"] = invs
-    cat[rec["id"]] = cur
+    cat[key] = cur
     catalog_path.write_text(json.dumps(cat, indent=1, ensure_ascii=False),
                             encoding="utf-8")
 

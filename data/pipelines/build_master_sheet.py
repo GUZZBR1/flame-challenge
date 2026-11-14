@@ -121,12 +121,16 @@ def material_rows(inp: dict) -> list[dict]:
         r["fuel_or_material"] = m["name"]
         src_invs = [s for s in m.get("sourceInvestigations", []) if s != "same" or True]
         r["investigation_id"] = src_invs[0] if src_invs else ""
-        r["loc_pct"] = m["locPct"]
+        # LOC and its provenance come from the same source — the fitted
+        # risk-model entry when present, else the calibrated default —
+        # so verified=true never labels an unfitted value
+        st = stats.get(m["id"], {})
+        loc_pct = st["locPct"] if st.get("locPct") is not None else m["locPct"]
+        r["loc_pct"] = loc_pct
         r["spread_mm_s"] = f"{m['spreadMinCms'] * 10:g}–{m['spreadMaxCms'] * 10:g}"
         r["soot_index"] = m["sootIndex"]
         r["cool_flame"] = str(m["coolFlameCapable"]).lower()
         r["smolder"] = str(m["smoldering"]).lower()
-        st = stats.get(m["id"], {})
         if st.get("hiddenFactor") is not None:
             r["hidden_factor"] = st["hiddenFactor"]
         if st.get("psiRuns") is not None:
@@ -138,7 +142,7 @@ def material_rows(inp: dict) -> list[dict]:
         r["source"] = "ACME/BASS-II flammability matrix"
         r["source_url"] = PSI_REPO
         r["notes"] = _clip(
-            f"LOC {m['locPct']}% O₂; soot index {m['sootIndex']}; "
+            f"LOC {loc_pct}% O₂; soot index {m['sootIndex']}; "
             + ("cool-flame capable (FLEX regime); " if m["coolFlameCapable"] else "")
             + ("smoldering; " if m["smoldering"] else "")
             + f"refs: {', '.join(m.get('sourceInvestigations', []))}"

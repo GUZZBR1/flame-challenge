@@ -177,7 +177,7 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39"
       },
       "publications": 45,
-      "verified": true,
+      "verified": false,
       "psiRuns": 291,
       "psiAccessions": [
         "PSI-39",
@@ -251,7 +251,7 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10"
       },
       "publications": 60,
-      "verified": true,
+      "verified": false,
       "psiRuns": 540,
       "psiAccessions": [
         "PSI-10",
