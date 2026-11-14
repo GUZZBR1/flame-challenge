@@ -106,11 +106,22 @@ std::vector<std::string> Chamber::drainEvents() {
 }
 
 std::string Chamber::stateJson() const {
-    char buf[640];
+    // buffer doubles until the payload fits — no fixed-size ceiling to
+    // outgrow when fields are added
+    auto emit = [&](const char* fmt, auto... args) {
+        std::string out;
+        for (size_t cap = 512;; cap *= 2) {
+            out.assign(cap, '\0');
+            const int n = std::snprintf(out.data(), cap, fmt, args...);
+            if (n >= 0 && static_cast<size_t>(n) < cap) {
+                out.resize(static_cast<size_t>(n));
+                return out;
+            }
+        }
+    };
     if (useDroplet_) {
         const auto& s = droplet_.state();
-        std::snprintf(
-            buf, sizeof buf,
+        return emit(
             "{\"model\":\"droplet\",\"tSec\":%.3f,\"regime\":%d,"
             "\"dropletDMm\":%.3f,\"flameRMm\":%.3f,\"flameTempK\":%.1f,"
             "\"heatReleaseW\":%.2f,\"burnFraction\":%.3f,"
@@ -119,19 +130,16 @@ std::string Chamber::stateJson() const {
             s.heatReleaseW, s.burnFraction,
             ignited_ ? "true" : "false", coolFlame() ? "true" : "false",
             finished() ? "true" : "false");
-    } else {
-        const auto& s = spread_.state();
-        std::snprintf(
-            buf, sizeof buf,
-            "{\"model\":\"spread\",\"tSec\":%.3f,\"regime\":%d,"
-            "\"frontPosCm\":%.3f,\"spreadRateCms\":%.3f,\"burnLengthCm\":%.3f,"
-            "\"intensity\":%.3f,"
-            "\"ignited\":%s,\"coolFlame\":false,\"finished\":%s}",
-            s.tSec, (int)s.regime, s.frontPosCm, s.spreadRateCms,
-            s.burnLengthCm, s.intensity,
-            ignited_ ? "true" : "false", finished() ? "true" : "false");
     }
-    return buf;
+    const auto& s = spread_.state();
+    return emit(
+        "{\"model\":\"spread\",\"tSec\":%.3f,\"regime\":%d,"
+        "\"frontPosCm\":%.3f,\"spreadRateCms\":%.3f,\"burnLengthCm\":%.3f,"
+        "\"intensity\":%.3f,"
+        "\"ignited\":%s,\"coolFlame\":false,\"finished\":%s}",
+        s.tSec, (int)s.regime, s.frontPosCm, s.spreadRateCms,
+        s.burnLengthCm, s.intensity,
+        ignited_ ? "true" : "false", finished() ? "true" : "false");
 }
 
 } // namespace ff

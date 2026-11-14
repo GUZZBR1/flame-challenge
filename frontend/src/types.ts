@@ -55,7 +55,7 @@ export interface Investigation {
   psiAccessions?: string[]
   psiFuels?: string[]
   psiO2RangePct?: [number, number]
-  psiExtinctionLimitPct?: number | null
+  psiExtinctionLimitPct?: { min: number; max: number }
 }
 
 export interface Dataset {
