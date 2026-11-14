@@ -285,15 +285,15 @@ export class Engine {
     const e = this.state
     const inv = invById.get(invId)
     if (!inv) return false
+    // no chamber to host the run — bolt a rack onto the current
+    // structure so a master-sheet / waffle-grid click always lands
+    if (!e.rooms.some((r) => r.type === 'combustion' && r.state === 'active'))
+      this.ensureCombustionRoom()
     const room = e.rooms.find(
       (r) => r.type === 'combustion' && r.state === 'active' && !r.experiment,
     )
     if (!room) {
-      this.notice(
-        e.rooms.some((r) => r.type === 'combustion' && r.state === 'active')
-          ? 'Combustion chamber busy — wait for the current run'
-          : 'No combustion chamber — build one or load a NASA replay',
-      )
+      this.notice('Combustion chamber busy — wait for the current run')
       return false
     }
     const o2 = o2Pct ?? Math.min(o2Range(inv)[1], Math.max(o2Range(inv)[0], 21))
@@ -302,6 +302,97 @@ export class Engine {
     if (ok)
       this.log('info', `Master-sheet record injected into ${room.label}: ${inv.name} @ ${o2}% O₂.`)
     return ok
+  }
+
+  /**
+   * Find or bolt a combustion rack onto the existing structure — the
+   * first free 3×3 spot edge-adjacent to any room. Instant-active:
+   * PSI injections must never dead-end on a missing chamber.
+   */
+  private ensureCombustionRoom(): Room | null {
+    const e = this.state
+    const existing = e.rooms.find((r) => r.type === 'combustion' && r.state === 'active')
+    if (existing) return existing
+    const W = 3
+    const H = 3
+    const overlaps = (rect: Rect) =>
+      rectTiles(rect).some((t) => e.rooms.some((r) => rectContains(r.rect, t.x, t.y)))
+    for (const r of e.rooms) {
+      const cands: Rect[] = [
+        { x: r.rect.x + r.rect.w, y: r.rect.y, w: W, h: H },
+        { x: r.rect.x - W, y: r.rect.y, w: W, h: H },
+        { x: r.rect.x, y: r.rect.y + r.rect.h, w: W, h: H },
+        { x: r.rect.x, y: r.rect.y - H, w: W, h: H },
+      ]
+      for (const c of cands) {
+        if (c.x < 0 || c.y < 0 || c.x + c.w > GRID_W || c.y + c.h > GRID_H) continue
+        if (overlaps(c)) continue
+        const room = this.addRoomRaw('combustion', c, 'Combustion Rack C-1')
+        room.state = 'active'
+        room.buildProgress = 1
+        this.log('info', `${room.label} bolted on to host the injected PSI run.`)
+        return room
+      }
+    }
+    return null
+  }
+
+  /**
+   * Apply a decision-card countermeasure to the live yard — makes each
+   * suppression option a distinct replay instead of the same untreated
+   * fire: gas starves ordinary fires but cannot touch a self-oxidizing
+   * candle (the Mir lesson), mist cools everything including smolder
+   * pockets, monitor-only commands no knock-down at all.
+   */
+  applyCountermeasure(action?: string): void {
+    const e = this.state
+    if (action === 'inert-gas' || action === 'water-mist') {
+      const gas = action === 'inert-gas'
+      let knocked = 0
+      let pockets = 0
+      let resisted = 0
+      for (const [k, f] of [...e.fires]) {
+        if (f.selfOxidizing) {
+          // the candle carries its own oxidizer — venting won't starve it
+          if (gas) {
+            resisted++
+            continue
+          }
+          f.intensity *= 0.55
+          continue
+        }
+        knocked++
+        // gas knock-down on smolder-capable fuel leaves re-igniting
+        // pockets far more often than a penetrating water-mist cool
+        if (f.smolder && this.rng() < (gas ? 0.5 : 0.2)) {
+          f.intensity = 0
+          f.hidden = true
+          f.dormant = 8 + this.rng() * 14
+          pockets++
+        } else {
+          e.fires.delete(k)
+        }
+      }
+      const extra = [
+        pockets ? `${pockets} dormant pocket(s) left` : null,
+        resisted ? `${resisted} self-oxidizing tile(s) unaffected` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+      this.log(
+        gas ? 'science' : 'info',
+        gas
+          ? `Inert-gas flood: ${knocked} tile(s) knocked down${extra ? ` — ${extra}` : ''}.`
+          : `Water-mist cool: ${knocked} tile(s) cooled${extra ? ` — ${extra}` : ''}.`,
+        gas ? 'Spacecraft fire-suppression doctrine' : 'Mir-23/24 protocol',
+      )
+    } else if (action === 'monitor') {
+      this.log(
+        'warn',
+        'Monitor-only protocol: no knock-down commanded — watch for hidden re-ignition signatures.',
+      )
+    }
+    this.emit()
   }
 
   /** replay a documented NASA fire incident in the largest active module */

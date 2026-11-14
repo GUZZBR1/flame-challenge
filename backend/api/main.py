@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from backend.services import engine_bridge as eb
-from backend.services import rag, risk
+from backend.services import neighbors, rag, risk, tactics
 
 app = FastAPI(title="Freefall Foundry Engine API", version="0.1.0")
 app.add_middleware(
@@ -161,6 +161,41 @@ def api_risk_curve(materialId: str = "pmma",
 @app.get("/api/risk/materials")
 def api_risk_materials() -> dict:
     return {"materials": risk.materials()}
+
+
+# ---------- SI layer: KNN lookup + deterministic tactical synthesis ----------
+
+@app.get("/api/neighbors")
+def api_neighbors(materialId: str = "pmma", o2Pct: float = 21.0,
+                  flowCms: float = 0.0, k: int = 3) -> dict:
+    """k nearest real PSI test runs to the requested operating point."""
+    return {
+        "materialId": materialId, "o2Pct": o2Pct, "flowCms": flowCms,
+        "neighbors": neighbors.nearest(materialId, o2Pct, flowCms, k),
+    }
+
+
+@app.get("/api/decision-cards")
+def api_decision_cards(materialId: str = "pmma", o2Pct: float = 21.0,
+                       flowCms: float = 0.0,
+                       gravity: str = "microgravity") -> dict:
+    """Live decision cards: countermeasure scores from the fitted risk
+    model + KNN evidence + C++ ignition pressure for provenance."""
+    payload = tactics.decision_cards(materialId, o2Pct, flowCms, gravity)
+    # unresolved ids (butane, …) fall back inside risk_index — chamber
+    # fields must quote the material the cards were actually built on
+    resolved = payload["material"]["materialId"]
+    return {
+        "engine": "c++",
+        "chamber": {
+            "materialId": resolved,
+            "requestedMaterialId": materialId,
+            "o2Pct": o2Pct,
+            "flowCms": flowCms,
+            "ignitionPressure": round(eb.ignition_pressure(resolved, o2Pct), 4),
+        },
+        **payload,
+    }
 
 
 @app.websocket("/ws/chamber")
