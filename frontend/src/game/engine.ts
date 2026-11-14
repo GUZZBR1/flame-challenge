@@ -2,7 +2,7 @@ import { getInvestigations } from '../lib/data'
 import { BALANCE, GRID_H, GRID_W, ROOM_SPECS, mulberry32 } from './config'
 import { crewName } from './names'
 import { findPath } from './pathfind'
-import { isWalkable, igniteRoom, roomAt, updateFires } from './fire'
+import { isWalkable, igniteRoom, updateFires } from './fire'
 import { musterPoint, pathTo, releaseExperiment, roomSpot, updateCrewMember } from './crew'
 import { citation, flowRange, o2Range, rollsHidden, specFor } from './experiments'
 import { applyScenario, SCENARIOS } from './scenarios'
@@ -19,7 +19,7 @@ import type {
   Speed,
   Vec,
 } from './types'
-import { rectContains, rectTiles } from './types'
+import { rectContains } from './types'
 
 const investigations = getInvestigations()
 export const invById = new Map(investigations.map((i) => [i.id, i]))
@@ -50,8 +50,10 @@ export class Engine {
       shipProgress: 0,
       scienceSinceGrant: 0,
       rooms: [],
+      roomByTile: new Array<Room | null>(GRID_W * GRID_H).fill(null),
       crew: [],
       fires: new Map(),
+      fireDist: null,
       events: [],
       speed: 1,
       tech: [],
@@ -72,7 +74,10 @@ export class Engine {
   private notice(text: string) {
     this.state.notice = text
     setTimeout(() => {
-      if (this.state.notice === text) this.state.notice = null
+      if (this.state.notice === text) {
+        this.state.notice = null
+        this.emit()
+      }
     }, 1800)
   }
 
@@ -115,6 +120,8 @@ export class Engine {
       label: label ?? `${ROOM_SPECS[type].label} ${e.nextId}`,
     }
     e.rooms.push(room)
+    for (let y = rect.y; y < rect.y + rect.h; y++)
+      for (let x = rect.x; x < rect.x + rect.w; x++) e.roomByTile[y * GRID_W + x] = room
     return room
   }
 
@@ -155,25 +162,27 @@ export class Engine {
       return { ok: false, reason: `Min ${spec.minW}×${spec.minH}` }
     if (rect.x < 0 || rect.y < 0 || rect.x + rect.w > GRID_W || rect.y + rect.h > GRID_H)
       return { ok: false, reason: 'Outside deck frame' }
-    for (const r of e.rooms)
-      for (const t of rectTiles(rect))
-        if (rectContains(r.rect, t.x, t.y)) return { ok: false, reason: 'Overlaps existing module' }
+    for (let y = rect.y; y < rect.y + rect.h; y++)
+      for (let x = rect.x; x < rect.x + rect.w; x++)
+        if (e.roomByTile[y * GRID_W + x]) return { ok: false, reason: 'Overlaps existing module' }
     const tiles = rect.w * rect.h
     if (e.credits < tiles * spec.costPerTile) return { ok: false, reason: 'Insufficient credits' }
     // must connect: at least one rect edge-adjacent tile belongs to a room
     let adjacent = false
-    for (const t of rectTiles(rect)) {
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-        const nx = t.x + dx
-        const ny = t.y + dy
-        if (rectContains(rect, nx, ny)) continue
-        if (roomAt(e, nx, ny)) {
-          adjacent = true
-          break
+    for (let y = rect.y; y < rect.y + rect.h && !adjacent; y++)
+      for (let x = rect.x; x < rect.x + rect.w && !adjacent; x++)
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const nx = x + dx
+          const ny = y + dy
+          if (
+            !rectContains(rect, nx, ny) &&
+            nx >= 0 && ny >= 0 && nx < GRID_W && ny < GRID_H &&
+            e.roomByTile[ny * GRID_W + nx]
+          ) {
+            adjacent = true
+            break
+          }
         }
-      }
-      if (adjacent) break
-    }
     if (!adjacent) return { ok: false, reason: 'Must connect to existing structure' }
     return { ok: true }
   }
