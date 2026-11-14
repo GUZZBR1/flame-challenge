@@ -1,21 +1,19 @@
-"""Build src/data/investigations.json from raw PSI/NTRS downloads.
+"""Build frontend/src/data/investigations.json from raw PSI/NTRS downloads.
 
 Pipeline:
-    1. scripts/psi_search.py  -> data/raw/psi_search_*.json
-    2. scripts/ntrs_search.py -> data/raw/ntrs_*.json
-    3. scripts/build_dataset.py -> src/data/investigations.json
+    1. pipelines/psi_search.py  -> data/raw/psi_search_*.json + psi_investigations.json
+    2. pipelines/ntrs_search.py -> data/raw/ntrs_*.json + ntrs_citations.json
+    3. pipelines/build_dataset.py -> frontend/src/data/investigations.json
 
-For now, PSI raw responses are HTML/JS-driven, so curated records are kept in
-src/data/investigations.json. This script:
-    - with no raw files: keeps the current starter dataset (no-op)
+This script:
+    - with no structured records: keeps the current starter dataset (no-op)
     - with --sample: restores the bundled starter dataset
-    - with raw files: parses whatever structured records exist under
-      data/raw/structured/*.json (see schema in docs/data-schema.md) and
-      merges them with curation overrides in data/curation.json
+    - with structured records under data/raw/structured/*.json
+      (schema: docs/data-schema.md): merges them into the dataset
 
 Usage:
-    python scripts/build_dataset.py            # merge raw data if present
-    python scripts/build_dataset.py --sample   # restore starter dataset
+    python data/pipelines/build_dataset.py            # merge raw data if present
+    python data/pipelines/build_dataset.py --sample   # restore starter dataset
 """
 
 from __future__ import annotations
@@ -26,10 +24,11 @@ import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-DATASET_PATH = ROOT / "src" / "data" / "investigations.json"
-STRUCTURED_DIR = ROOT / "data" / "raw" / "structured"
-STARTER_PATH = ROOT / "data" / "investigations.starter.json"
+ROOT = Path(__file__).resolve().parent.parent          # data/
+REPO = ROOT.parent
+DATASET_PATH = REPO / "frontend" / "src" / "data" / "investigations.json"
+STRUCTURED_DIR = ROOT / "raw" / "structured"
+STARTER_PATH = ROOT / "investigations.starter.json"
 
 # Keep a pristine copy of the starter dataset for --sample restores.
 def ensure_starter_backup() -> None:
@@ -67,23 +66,31 @@ def merge_structured() -> None:
             "[INFO] no structured records under data/raw/structured/ — "
             "keeping current dataset.\n"
             "       Add normalized records there (schema: docs/data-schema.md) "
-            "or run scripts/psi_search.py + scripts/ntrs_search.py first."
+            "or run data/pipelines/psi_search.py + ntrs_search.py first."
         )
         return
 
-    # Merge: structured records override same-id starter records.
+    # Merge: structured records override same-id starter records; nested
+    # objects (conditions/metrics/data) merge key-wise so partial records
+    # don't drop sibling fields.
     dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
     merged = {inv["id"]: inv for inv in dataset.get("investigations", [])}
     for rec in records:
-        merged[rec["id"]] = {**merged.get(rec["id"], {}), **rec}
         rec["verified"] = True  # records built from real downloads are verified
+        base = merged.get(rec["id"], {})
+        for k, v in rec.items():
+            if isinstance(v, dict) and isinstance(base.get(k), dict):
+                base[k] = {**base[k], **v}
+            else:
+                base[k] = v
+        merged[rec["id"]] = base
 
     dataset["investigations"] = list(merged.values())
     dataset["generated"] = "psi-ntrs-pipeline"
     DATASET_PATH.write_text(
         json.dumps(dataset, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-    print(f"[OK] merged {len(records)} records -> {DATASET_PATH.relative_to(ROOT)}")
+    print(f"[OK] merged {len(records)} records -> {DATASET_PATH.relative_to(REPO)}")
 
 
 def main() -> int:
