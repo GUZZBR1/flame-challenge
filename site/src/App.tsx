@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import Shipyard from './components/Shipyard'
 import { initScroll } from './lib/scroll'
 
 type Theme = 'light' | 'dark'
@@ -42,7 +41,6 @@ export default function App() {
     <main>
       <Header dark={theme === 'dark'} onToggleTheme={toggleTheme} />
       <Hero />
-      <Shipyard />
       <footer className="border-t border-[var(--edge)] py-8 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-mist">
         NASA Space Apps Challenge 2026 · Flame in Freefall · data: psi.nasa.gov/physci/repo
       </footer>

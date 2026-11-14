@@ -49,24 +49,23 @@ export default function Hero() {
       const st = ScrollTrigger.create({
         trigger: hero,
         start: 'top top',
-        end: '58% top',
+        end: () => window.innerHeight * 0.58,
         onEnter: () => gsap.set(identity, { autoAlpha: 0 }),
         onLeaveBack: () => gsap.set(identity, { autoAlpha: 1 }),
       })
       return () => st.kill()
     }
     // capture once — reading offsetHeight inside onUpdate forces layout per frame
-    const heroHeight = hero.offsetHeight
     const ctx = gsap.context(() => {
       const brand = document.querySelector<HTMLElement>('[data-ignis-brand]')
       const title = titleRef.current
       // dock: the title flies to the brand slot in the header, not just up
-      const dims = { dx: 0, lift: heroHeight * 0.43 - 45, scale: 0.15 }
+      const dims = { dx: 0, lift: window.innerHeight * 0.43 - 45, scale: 0.15 }
       const measure = () => {
         if (!brand || !title) return
         const br = brand.getBoundingClientRect()
         dims.dx = br.left + br.width / 2 - window.innerWidth / 2
-        dims.lift = heroHeight * 0.43 - (br.top + br.height / 2)
+        dims.lift = window.innerHeight * 0.43 - (br.top + br.height / 2)
         dims.scale =
           parseFloat(getComputedStyle(brand).fontSize) /
           parseFloat(getComputedStyle(title).fontSize)
@@ -79,7 +78,9 @@ export default function Hero() {
         scrollTrigger: {
           trigger: hero,
           start: 'top top',
-          end: '58% top',
+          // viewport-relative: '58% top' would measure 58% of the 190svh
+          // trigger (~1.1 viewport scrolls) and never be reached
+          end: () => window.innerHeight * 0.58,
           scrub: true,
           onRefresh: measure,
         },
@@ -100,10 +101,12 @@ export default function Hero() {
       id="top"
       ref={heroRef}
       aria-labelledby="ignis-title"
-      className="relative isolate h-[100svh] min-h-[680px] cursor-crosshair overflow-hidden"
+      className="relative isolate h-[190svh] cursor-crosshair"
     >
-      <HeroCanvas />
-      <div className="hero-shade pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="sticky top-0 h-[100svh] min-h-[680px] overflow-hidden">
+        <HeroCanvas />
+        <div className="hero-shade pointer-events-none absolute inset-0" aria-hidden="true" />
+      </div>
 
       <div
         ref={identityRef}

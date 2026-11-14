@@ -8,10 +8,8 @@ interface Props {
 
 const NAV: { label: string; href: string; className?: string }[] = [
   { label: 'vision', href: '#top', className: 'max-[900px]:hidden' },
-  { label: 'shipyard', href: '#estaleiro' },
 ]
 
-const BRAND_AFTER = 0 // insert the IGNIS wordmark before shipyard
 
 /** Floating glass header — bare monospace text over the hero, then a
  *  blurred, glowing pill materializes behind the nav as you scroll. */
@@ -34,7 +32,12 @@ export default function Header({ dark, onToggleTheme }: Props) {
         })
         return
       }
-      const scrub = { trigger: '#top', start: 'top top', end: '58% top', scrub: true } as const
+      const scrub = {
+        trigger: '#top',
+        start: 'top top',
+        end: () => window.innerHeight * 0.58,
+        scrub: true,
+      } as const
       gsap.fromTo(
         glass,
         { opacity: 0, scaleX: 0.55, y: -6 },
@@ -74,21 +77,6 @@ export default function Header({ dark, onToggleTheme }: Props) {
         <nav className="relative flex items-center gap-2 sm:gap-6 lg:gap-8" aria-label="Primary">
           {NAV.map((item, i) => (
             <Fragment key={item.label}>
-              {i === BRAND_AFTER + 1 && (
-                <a
-                  ref={brandRef}
-                  data-ignis-brand
-                  href="#top"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    go('#top')
-                  }}
-                  aria-label="IGNIS — back to top"
-                  className="relative pb-1 font-[family-name:var(--font-display)] text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-[-0.03em] text-[var(--ink)] opacity-0"
-                >
-                  IGNIS
-                </a>
-              )}
               <a
                 href={item.href}
                 onClick={(e) => {
@@ -103,6 +91,21 @@ export default function Header({ dark, onToggleTheme }: Props) {
                   className="absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"
                 />
               </a>
+              {i === NAV.length - 1 && (
+                <a
+                  ref={brandRef}
+                  data-ignis-brand
+                  href="#top"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    go('#top')
+                  }}
+                  aria-label="IGNIS — back to top"
+                  className="relative pb-1 font-[family-name:var(--font-display)] text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-[-0.03em] text-[var(--ink)] opacity-0"
+                >
+                  IGNIS
+                </a>
+              )}
             </Fragment>
           ))}
         </nav>
