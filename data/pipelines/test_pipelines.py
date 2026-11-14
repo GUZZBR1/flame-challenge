@@ -324,3 +324,35 @@ def test_fit_propagates_fitted_loc_to_calibration(monkeypatch, tmp_path):
     assert patched["investigations"]["demo"]["effectiveLoc"] == 14.1
     rm = json.loads((tmp_path / "risk_model.json").read_text())
     assert rm["materials"]["heptane"]["locMethod"] == "extinction-floor"
+
+
+def _legacy_runs_csv(tmp_path, rows):
+    header = ("accession,data_id,row_idx,fuel_or_material,fuel_bottle,"
+              "o2_pct_min,o2_pct_max,o2_mf_min,o2_mf_max,n2_mf_raw,"
+              "co2_mf_raw,he_mf_raw,pressure_atm_min,pressure_atm_max,"
+              "temperature_k_raw,airflow_cm_s_min,airflow_cm_s_max,"
+              "flow_direction,d0_mm_min,d0_mm_max,dext_mm_min,dext_mm_max,"
+              "burn_time_s,extinction_mode,ignition_flag,cool_flame_flag,"
+              "spread_length_raw,spread_rate_raw,comments,notes,"
+              "source_table\n")
+    p = tmp_path / "experimental_runs.csv"
+    p.write_text(header + "".join(",".join(r) + "\n" for r in rows))
+    return p
+
+
+def test_legacy_explicit_no_cool_flag_beats_comment(monkeypatch, tmp_path):
+    (tmp_path / "flex_test_points.csv").touch()  # exists but empty
+    _legacy_runs_csv(tmp_path, [
+        ["PSI-98", "SF1", "0", "SIBAL", "", "21", "21", "", "", "", "", "",
+         "", "", "", "20", "20", "Concurrent", "", "", "", "", "", "",
+         "", "", "no", "", "", "", "cool flame observed", "", "t.csv"],
+    ])
+    monkeypatch.setattr(norm, "LEGACY_DIR", tmp_path)
+    rows = norm.parse_legacy_runs(set())
+    assert len(rows) == 1
+    assert rows[0]["cool_flame"] is False   # structured "no" wins
+
+
+def test_legacy_co2_mode_is_suppressant_not_oxygen_limit():
+    out, et = norm._legacy_outcome({"extinction_mode": "CO2 suppression"})
+    assert (out, et) == ("extinction", "suppressant")

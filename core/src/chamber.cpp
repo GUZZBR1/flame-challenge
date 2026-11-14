@@ -110,14 +110,16 @@ std::string Chamber::stateJson() const {
     // outgrow when fields are added
     auto emit = [&](const char* fmt, auto... args) {
         std::string out;
-        for (size_t cap = 512;; cap *= 2) {
+        for (size_t cap = 512; cap <= (1u << 20); cap *= 2) {
             out.assign(cap, '\0');
             const int n = std::snprintf(out.data(), cap, fmt, args...);
             if (n >= 0 && static_cast<size_t>(n) < cap) {
                 out.resize(static_cast<size_t>(n));
                 return out;
             }
+            if (n < 0) return std::string("{}");  // encoding failure — no hang
         }
+        return out;
     };
     if (useDroplet_) {
         const auto& s = droplet_.state();

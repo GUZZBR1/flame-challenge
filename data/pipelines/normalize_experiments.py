@@ -438,10 +438,12 @@ def _legacy_outcome(r: dict) -> tuple[str, str]:
     if ign in ("no", "false", "0", "failed"):
         return "no-ignition", "none"
     if mode:
+        # specific regimes before the generic "o2" token — "co2 suppression"
+        # contains "o2" as a substring and must reach the suppressant branch
         for key, et in (("rad", "radiative"), ("quiesc", "quiescent"),
-                        ("oxy", "oxygen-limit"), ("o2", "oxygen-limit"),
                         ("blow", "blow-off"), ("cool", "cool-flame"),
-                        ("suppress", "suppressant")):
+                        ("suppress", "suppressant"), ("oxy", "oxygen-limit"),
+                        ("o2", "oxygen-limit")):
             if key in mode:
                 return "extinction", et
         return "extinction", re.sub(r"[^a-z0-9]+", "-", mode).strip("-")[:24]
@@ -471,8 +473,15 @@ def parse_legacy_runs(covered: set[str]) -> list[dict]:
             comments = f"{comments} | {'; '.join(extras)}" if comments \
                 else "; ".join(extras)
         outcome, etype = _legacy_outcome(r)
+        # structured flag wins over comment text in BOTH directions — an
+        # explicit "no" is a recorded non-observation, comments can't flip it
         cool_flag = (r.get("cool_flame_flag") or "").strip().lower()
-        cool = cool_flag in ("yes", "true", "1") or cool_flame_observed(comments)
+        if cool_flag in ("no", "false", "0", "n"):
+            cool = False
+        elif cool_flag in ("yes", "true", "1", "y"):
+            cool = True
+        else:
+            cool = cool_flame_observed(comments)
         o2 = _mid(r.get("o2_pct_min"), r.get("o2_pct_max"))
         if o2 is None:
             o2mf = _mid(r.get("o2_mf_min"), r.get("o2_mf_max"))
