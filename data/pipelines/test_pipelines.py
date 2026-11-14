@@ -196,13 +196,13 @@ def test_merge_preserves_investigation_links_across_reloads(tmp_path):
 
 # ---- build_dataset --sample restore path ----
 
-def test_restore_starter_outside_data_root(monkeypatch, tmp_path, capsys):
-    # dataset lives under <repo>/frontend — outside data/ — exactly the
-    # post-restructure layout that made relative_to(ROOT) raise ValueError
+def test_restore_starter_relocated_dataset(monkeypatch, tmp_path, capsys):
+    # relocated dataset layouts made relative_to() raise ValueError —
+    # _rel() must still print a sensible path
     starter = tmp_path / "data" / "starter.json"
     starter.parent.mkdir(parents=True)
     starter.write_text('{"investigations": []}', encoding="utf-8")
-    dataset = tmp_path / "frontend" / "src" / "data" / "investigations.json"
+    dataset = tmp_path / "data" / "bundle" / "investigations.json"
     dataset.parent.mkdir(parents=True)
     dataset.write_text('{"investigations": [{"id": "x"}]}', encoding="utf-8")
     monkeypatch.setattr(build_dataset, "DATASET_PATH", dataset)
@@ -217,7 +217,7 @@ def test_sample_command_exit_status(monkeypatch, tmp_path):
     starter = tmp_path / "data" / "starter.json"
     starter.parent.mkdir(parents=True)
     starter.write_text('{"investigations": []}', encoding="utf-8")
-    dataset = tmp_path / "frontend" / "src" / "data" / "investigations.json"
+    dataset = tmp_path / "data" / "bundle" / "investigations.json"
     dataset.parent.mkdir(parents=True)
     dataset.write_text('{"investigations": [{"id": "x"}]}', encoding="utf-8")
     monkeypatch.setattr(build_dataset, "DATASET_PATH", dataset)
@@ -233,8 +233,8 @@ def test_fit_risk_fails_without_calibration(monkeypatch, tmp_path, capsys):
     monkeypatch.setattr(fit_risk_model, "CALIBRATION",
                         tmp_path / "missing.json")
     monkeypatch.setattr(fit_risk_model, "OUT", tmp_path / "risk_model.json")
-    monkeypatch.setattr(fit_risk_model, "FRONTEND_OUT",
-                        tmp_path / "fe_risk.json")
+    monkeypatch.setattr(fit_risk_model, "BUNDLE_OUT",
+                        tmp_path / "bundle_risk.json")
     assert fit_risk_model.main() == 1
     assert not (tmp_path / "risk_model.json").exists()
     assert "calibration" in capsys.readouterr().err.lower()
@@ -297,12 +297,12 @@ def test_calibrate_emits_effective_loc(monkeypatch, tmp_path):
     (tmp_path / "shared" / "calibrated-data").mkdir(parents=True)
     for f in ("historical_scenarios.json", "tech_spinoffs.json"):
         (tmp_path / "shared" / "calibrated-data" / f).write_text("{}")
-    (tmp_path / "fe").mkdir()
+    (tmp_path / "bundle").mkdir()
     monkeypatch.setattr(calib, "ROOT", tmp_path)
     monkeypatch.setattr(calib, "DATASET", tmp_path / "ds.json")
     monkeypatch.setattr(calib, "OUT", tmp_path / "calibration.json")
     monkeypatch.setattr(calib, "RISK_OUT", tmp_path / "risk_profiles.json")
-    monkeypatch.setattr(calib, "FRONTEND_DATA", tmp_path / "fe")
+    monkeypatch.setattr(calib, "BUNDLE_DATA", tmp_path / "bundle")
     assert calib.main() == 0
     cal = json.loads((tmp_path / "calibration.json").read_text())
     spec = cal["investigations"]["demo-flex"]
@@ -339,7 +339,7 @@ def test_fit_propagates_fitted_loc_to_calibration(monkeypatch, tmp_path):
     monkeypatch.setattr(fit_risk_model, "EXP_CSV", exp)
     monkeypatch.setattr(fit_risk_model, "CALIBRATION", cal_path)
     monkeypatch.setattr(fit_risk_model, "OUT", tmp_path / "risk_model.json")
-    monkeypatch.setattr(fit_risk_model, "FRONTEND_OUT", tmp_path / "fe.json")
+    monkeypatch.setattr(fit_risk_model, "BUNDLE_OUT", tmp_path / "bundle.json")
     monkeypatch.setattr(fit_risk_model, "REPO", tmp_path)
     assert fit_risk_model.main() == 0
     patched = json.loads(cal_path.read_text())
@@ -637,6 +637,33 @@ def test_flex_shared_cir_pairs_by_test_number(monkeypatch, tmp_path):
     by_id = {p["run_id"]: p for p in pts}
     assert by_id["FLEX-070"]["burn_time_s"] == 1.6
     assert by_id["FLEX-073"]["burn_time_s"] == 1.5
+
+
+def test_flex_duplicate_sheets_emit_once(monkeypatch, tmp_path):
+    """FLEX-127/128 are the same experiment recorded twice — same CIR,
+    GMT, fuel and measurements, both resolving to '127; C13M301'.
+    Collapse corroborated duplicates; sheets with different recorded
+    values are distinct runs and must be preserved."""
+    _legacy_runs_csv(tmp_path, [
+        {"accession": "PSI-69", "data_id": "127; C13M301",
+         "fuel_or_material": "Methanol", "burn_time_s": "11.0",
+         "extra_json": json.dumps(
+             {"Test GMT": "19:22:49", "Test end": "Extinction"})},
+    ])
+    sheet = {"accession": "PSI-69", "cir_test_number": "C13M301",
+             "test_time": "19:22:49 (GMT)", "fuel_or_material": "Methanol",
+             "o2_mf": "0.17", "d0_mm": "3.22", "kavg_mm2_s": "0.38",
+             "dext_mm": "2.53", "pressure_atm": "0.71", "fiber": "Yes",
+             "comments": "radiative extinction"}
+    _flex_points_csv(tmp_path, [
+        dict(sheet, test_id="FLEX-127"),
+        dict(sheet, test_id="FLEX-128"),
+        dict(sheet, test_id="FLEX-129",
+             d0_mm="3.30", kavg_mm2_s="0.40"),
+    ])
+    monkeypatch.setattr(norm, "LEGACY_DIR", tmp_path)
+    pts = norm.parse_legacy_flex(set())
+    assert [p["run_id"] for p in pts] == ["FLEX-127", "FLEX-129"]
 
 
 def test_flex_point_placeholders_backfilled(monkeypatch, tmp_path):
