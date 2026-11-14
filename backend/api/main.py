@@ -201,8 +201,12 @@ def api_insights() -> dict:
 # ---------- SI layer: KNN lookup + deterministic tactical synthesis ----------
 
 @app.get("/api/neighbors")
-def api_neighbors(materialId: str = "pmma", o2Pct: float = 21.0,
-                  flowCms: float = 0.0, k: int = 3) -> dict:
+def api_neighbors(materialId: str = "pmma",
+                  o2Pct: float = Query(21.0, ge=0.0, le=100.0,
+                                       allow_inf_nan=False),
+                  flowCms: float = Query(0.0, ge=0.0, le=300.0,
+                                         allow_inf_nan=False),
+                  k: int = Query(3, ge=1, le=10)) -> dict:
     """k nearest real PSI test runs to the requested operating point."""
     return {
         "materialId": materialId, "o2Pct": o2Pct, "flowCms": flowCms,
@@ -211,8 +215,11 @@ def api_neighbors(materialId: str = "pmma", o2Pct: float = 21.0,
 
 
 @app.get("/api/decision-cards")
-def api_decision_cards(materialId: str = "pmma", o2Pct: float = 21.0,
-                       flowCms: float = 0.0,
+def api_decision_cards(materialId: str = "pmma",
+                       o2Pct: float = Query(21.0, ge=0.0, le=100.0,
+                                            allow_inf_nan=False),
+                       flowCms: float = Query(0.0, ge=0.0, le=300.0,
+                                              allow_inf_nan=False),
                        gravity: str = "microgravity") -> dict:
     """Live decision cards: countermeasure scores from the fitted risk
     model + KNN evidence + C++ ignition pressure for provenance."""
@@ -221,7 +228,7 @@ def api_decision_cards(materialId: str = "pmma", o2Pct: float = 21.0,
     # fields must quote the material the cards were actually built on
     resolved = payload["material"]["materialId"]
     return {
-        "engine": "c++",
+        "engine": eb.ENGINE,
         "chamber": {
             "materialId": resolved,
             "requestedMaterialId": materialId,

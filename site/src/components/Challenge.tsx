@@ -58,11 +58,22 @@ export default function Challenge() {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    const ctx = c.getContext('2d', { willReadFrequently: true })!
+    const ctx = c.getContext('2d', { willReadFrequently: true })
+    if (!ctx) return
     let raf = 0
+    let cancelled = false
+    let visible = true
+
+    // skip the pixel work entirely while the section is off-screen
+    const obs = new IntersectionObserver(
+      ([entry]) => { visible = entry.isIntersecting },
+      { threshold: 0 },
+    )
+    obs.observe(c)
 
     const tick = () => {
-      if (v.readyState >= 2 && v.videoWidth) {
+      if (cancelled) return
+      if (visible && v.readyState >= 2 && v.videoWidth) {
         const w = v.videoWidth >> 1
         const h = v.videoHeight >> 1
         if (c.width !== w || c.height !== h) {
@@ -81,7 +92,11 @@ export default function Challenge() {
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(raf)
+      obs.disconnect()
+    }
   }, [])
 
   // reveal rows once, on entry — skipped entirely under reduced motion
@@ -110,7 +125,10 @@ export default function Challenge() {
         const frame = frameRef.current
         const text = root.querySelector<HTMLElement>('[data-dock-text]')
         if (!stage || !frame) return
-        const scaleFrom = () => stage.offsetWidth / frame.offsetWidth
+        const scaleFrom = () => stage.offsetWidth / Math.max(1, frame.offsetWidth)
+        // text starts hidden — the fromTo at 0.35 doesn't immediateRender,
+        // so without this it stays visible while the frame is still large
+        if (text) gsap.set(text, { autoAlpha: 0, y: 24 })
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: stage,
@@ -162,7 +180,7 @@ export default function Challenge() {
       id="challenge"
       ref={rootRef}
       aria-labelledby="challenge-title"
-      className="relative px-5 pb-28 pt-10 sm:px-10 lg:px-16"
+      className="relative scroll-mt-24 px-5 pb-28 pt-10 sm:px-10 lg:px-16"
     >
       <div className="mx-auto max-w-6xl">
         {/* section marker */}
@@ -194,7 +212,6 @@ export default function Challenge() {
                 className="absolute h-px w-px opacity-0"
                 autoPlay
                 muted
-                loop
                 playsInline
                 preload="metadata"
                 onLoadedMetadata={(e) => {
@@ -206,6 +223,10 @@ export default function Challenge() {
                   if (e.currentTarget.currentTime >= 15.5)
                     e.currentTarget.currentTime = 0.4
                 }}
+                onEnded={(e) => {
+                  e.currentTarget.currentTime = 0.4
+                  void e.currentTarget.play()
+                }}
                 aria-hidden="true"
               >
                 <source src="/assets/sofie_flame_hd.mp4" media="(min-width: 768px)" />
@@ -213,7 +234,7 @@ export default function Challenge() {
               </video>
               <canvas
                 ref={canvasRef}
-                className="block aspect-video w-full"
+                className="pointer-events-none block aspect-video w-full"
                 role="img"
                 aria-label="NASA SoFIE-GEL footage: a flame appearing to spin itself into extinction aboard the ISS"
               />

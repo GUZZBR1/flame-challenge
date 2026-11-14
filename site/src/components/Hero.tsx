@@ -22,8 +22,10 @@ export default function Hero() {
     cursor.setAttribute('aria-hidden', 'true')
     el.append(cursor)
     let i = 0
+    let stopped = false
     let timer: ReturnType<typeof setTimeout>
     const typeNext = () => {
+      if (stopped) return
       if (i < TITLE.length) {
         const span = document.createElement('span')
         span.className =
@@ -36,7 +38,10 @@ export default function Hero() {
       }
     }
     timer = setTimeout(typeNext, 700)
-    return () => clearTimeout(timer)
+    return () => {
+      stopped = true
+      clearTimeout(timer)
+    }
   }, [])
 
   // scroll choreography

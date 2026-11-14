@@ -1,7 +1,14 @@
 import { useCallback } from 'react'
 import { getLenis } from '../lib/scroll'
 
-const LINKS = [{ label: 'vision', href: '#top' }]
+const LINKS = [
+  { label: 'challenge', href: '#challenge' },
+  { label: 'simulations', href: '#simulations' },
+  { label: 'psi-dataset', href: '#psi-dataset' },
+  { label: 'crew', href: '#crew' },
+  { label: 'vision', href: '#vision' },
+  { label: 'back to top', href: '#top' },
+]
 
 const SOURCES = [
   { label: 'psi.nasa.gov/physci/repo', href: 'https://psi.nasa.gov/physci/repo' },
@@ -15,7 +22,7 @@ export default function Footer() {
   const go = useCallback((href: string) => {
     const lenis = getLenis()
     if (lenis) {
-      lenis.scrollTo(href === '#top' ? 0 : href)
+      lenis.scrollTo(href === '#top' ? 0 : href, { offset: -96 })
       return
     }
     if (href === '#top') {
@@ -39,8 +46,16 @@ export default function Footer() {
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-gradient-to-b from-[var(--bg)] via-transparent to-transparent"
       />
+      <img
+        src="/assets/space/ship_vessel.png"
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        className="ship-drift pointer-events-none absolute right-[6%] top-20 z-0 w-40 opacity-90 [filter:drop-shadow(0_0_18px_#49b8d680)] [image-rendering:pixelated] sm:bottom-12 sm:left-[7%] sm:right-auto sm:top-auto sm:w-48 lg:left-[10%] lg:w-56"
+      />
 
-      <div className="mx-auto w-[min(1400px,94%)] pb-10 pt-28 sm:pt-36">
+      <div className="relative z-10 mx-auto w-[min(1400px,94%)] pb-10 pt-28 sm:pt-36">
         <div className="grid gap-12 sm:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <p className="m-0 font-[family-name:var(--font-display)] text-3xl font-bold leading-none tracking-[-0.03em] text-[#edf4fa] sm:text-4xl">

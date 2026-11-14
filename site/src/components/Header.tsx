@@ -7,7 +7,7 @@ interface Props {
 }
 
 const NAV: { label: string; href: string; className?: string }[] = [
-  { label: 'vision', href: '#top', className: 'max-lg:hidden' },
+  { label: 'vision', href: '#vision', className: 'max-lg:hidden' },
   { label: 'simulations', href: '#simulations' },
   { label: 'psi-dataset', href: '#psi-dataset', className: 'max-[560px]:hidden' },
 ]

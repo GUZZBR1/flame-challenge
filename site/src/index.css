@@ -23,7 +23,7 @@
   --panel: #ffffffa6;
   --edge: #17212b26;
   --accent: #49b8d6;
-  --link: #b45309;
+  --link: #92400e;
   --olive: #9e9a82;
   --font-ui: 'IBM Plex Mono', 'Courier Prime', monospace;
   --font-display: 'Space Mono', 'Courier Prime', monospace;
@@ -61,6 +61,14 @@ body {
 @keyframes cursor-blink { 50% { opacity: 0; } }
 .clock-blink { animation: cursor-blink 1s steps(1, end) infinite; }
 @keyframes reveal-surfaces { from { opacity: 0; } to { opacity: .85; } }
+@keyframes bubble-in { from { opacity: 0; transform: translateY(6px) scale(.94); } to { opacity: 1; transform: none; } }
+.bubble-in { animation: bubble-in .22s steps(3, end) both; }
+.caret-blink { animation: cursor-blink .7s steps(1, end) infinite; }
+@keyframes ship-drift {
+  0%, 100% { transform: translate(0, 0) rotate(-1.2deg); }
+  50% { transform: translate(-14px, 10px) rotate(0.8deg); }
+}
+.ship-drift { animation: ship-drift 9s ease-in-out infinite; }
 
 .hero-shade {
   background:
@@ -74,6 +82,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .caret { animation: none; }
+  .caret, .bubble-in, .caret-blink, .clock-blink, .ship-drift { animation: none; }
   .heat-surface { animation: none; opacity: .85; }
 }

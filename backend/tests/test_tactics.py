@@ -40,6 +40,26 @@ def test_below_loc_scores_near_perfect():
     assert below["score"] > hold["score"]
 
 
+def test_oxygen_options_never_raise_o2():
+    """Below the material's LOC the loc-anchored targets would *increase*
+    cabin O₂ — every reduction action must target less oxygen, not more.
+    (Teflon LOC ~30%: cabin at 21% used to emit reduce→31%, below→29.5%.)"""
+    out = tactics.decision_cards("teflon", 21.0, 0.0)
+    card = _card(out["cards"], "atmosphere")
+    targets = {o["action"]: o["model"]["o2Pct"] for o in card["options"]}
+    assert targets["below-loc"] < targets["reduce-o2"] < 21.0
+
+
+def test_oxygen_targets_above_loc_keep_loc_anchor():
+    """Well above the LOC the loc-anchored reduction targets still apply."""
+    out = tactics.decision_cards("cotton", 30.0, 0.0)
+    loc = out["material"]["locPct"]
+    card = _card(out["cards"], "atmosphere")
+    targets = {o["action"]: o["model"]["o2Pct"] for o in card["options"]}
+    assert targets["reduce-o2"] == round(loc + 1, 2)
+    assert targets["below-loc"] == round(loc - 0.5, 2)
+
+
 def test_suppression_degrades_on_smoldering_material():
     """Smolder-capable cotton must price inert-gas suppression lower
     than a non-smoldering gas (ethylene)."""

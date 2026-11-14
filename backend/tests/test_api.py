@@ -90,6 +90,31 @@ def test_risk_post_and_get_validation():
                       params={"o2Pct": 21.0}).status_code == 200
 
 
+@pytest.mark.parametrize("value", ["nan", "1e309", "-0.5", "100.5"])
+def test_neighbors_o2_validation(value):
+    assert client.get("/api/neighbors",
+                      params={"o2Pct": value}).status_code == 422
+
+
+def test_neighbors_flow_and_k_validation():
+    assert client.get("/api/neighbors",
+                      params={"flowCms": -5}).status_code == 422
+    assert client.get("/api/neighbors", params={"k": 0}).status_code == 422
+    assert client.get("/api/neighbors").status_code == 200
+
+
+def test_decision_cards_reports_live_engine_and_validates():
+    """engine must name the live backend (python-fallback when the .so is
+    absent), and o2/flow need the same bounds as /api/risk — non-finite
+    floats used to echo into the response and 500 the serializer."""
+    j = client.get("/api/decision-cards").json()
+    assert j["engine"] == eb.ENGINE
+    for params in ({"o2Pct": "nan"}, {"o2Pct": "1e309"},
+                   {"o2Pct": -1}, {"flowCms": -5}):
+        r = client.get("/api/decision-cards", params=params)
+        assert r.status_code == 422, params
+
+
 # ---------- pure-Python fallback engine ----------
 
 def test_fallback_ignition_pressure_formula():

@@ -7,6 +7,7 @@ import AskPanel from './components/AskPanel'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import Hero from './components/Hero'
+import Shipyard from './components/Shipyard'
 import Stars from './components/Stars'
 import { initScroll } from './lib/scroll'
 
@@ -54,6 +55,7 @@ export default function App() {
       <LiveChamber />
       <AskPanel />
       <Crew />
+      <Shipyard />
       <Footer />
     </main>
   )

@@ -128,6 +128,12 @@ def decision_cards(
 
     inert, mist, monitor = _suppression_scores(r, cool, smolder, hidden)
 
+    # oxygen-reduction targets must actually reduce — when the cabin
+    # already sits below the material's LOC the loc-anchored targets
+    # would *raise* O₂ (and calculated risk) instead of lowering it
+    reduce_t = max(0.0, min(loc + 1, o2 - 1))
+    below_t = max(0.0, min(loc - 0.5, o2 - 2))
+
     cards = [
         {
             "id": "containment",
@@ -164,12 +170,16 @@ def decision_cards(
                 opt(f"Hold {o2}% O₂",
                     "current margin — no action",
                     o2, flow, "hold-o2"),
-                opt(f"Reduce toward LOC ({round(loc + 1, 1)}% O₂)",
-                    "exploration-atmosphere target — margin shrinks to ~1 pt",
-                    loc + 1, flow, "reduce-o2"),
-                opt(f"Drop below LOC ({round(loc - 0.5, 1)}% O₂)",
+                opt((f"Reduce toward LOC ({round(reduce_t, 1)}% O₂)"
+                     if reduce_t >= loc else
+                     f"Reduce O₂ ({round(reduce_t, 1)}%)"),
+                    ("exploration-atmosphere target — margin shrinks to ~1 pt"
+                     if reduce_t >= loc else
+                     "deeper margin below the LOC — risk falls further"),
+                    reduce_t, flow, "reduce-o2"),
+                opt(f"Drop below LOC ({round(below_t, 1)}% O₂)",
                     "ignition pressure collapses — the Apollo-1 lesson in reverse",
-                    loc - 0.5, flow, "below-loc"),
+                    below_t, flow, "below-loc"),
             ],
             "sources": sources,
             "neighbors": nb,
