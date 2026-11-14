@@ -4,8 +4,9 @@ import { crewName } from './names'
 import { findPath } from './pathfind'
 import { isWalkable, igniteRoom, roomAt, updateFires } from './fire'
 import { musterPoint, pathTo, roomSpot, updateCrewMember } from './crew'
-import { citation, rollsHidden, specFor } from './experiments'
+import { citation, flowRange, o2Range, rollsHidden, specFor } from './experiments'
 import { applyScenario, SCENARIOS } from './scenarios'
+import { applyPreset, PRESETS } from './presets'
 import { buyTech as buyTechImpl } from './tech'
 import type {
   CrewMember,
@@ -35,7 +36,12 @@ export class Engine {
 
   constructor(seed = (Date.now() % 100000) | 0) {
     this.rng = mulberry32(seed)
-    this.state = {
+    this.state = this.initialState(seed)
+    this.bootstrap()
+  }
+
+  private initialState(seed: number): GameState {
+    return {
       seed,
       time: 0,
       credits: BALANCE.startCredits,
@@ -55,7 +61,6 @@ export class Engine {
       version: 0,
       notice: null,
     }
-    this.bootstrap()
   }
 
   private log: LogFn = (kind, text, ref) => {
@@ -236,6 +241,56 @@ export class Engine {
     this.log('info', `Fabrication started in ${room.label} — ship section incoming.`)
     this.emit()
     return true
+  }
+
+  /**
+   * Rebuild the yard as a curated NASA replay (one-click demo):
+   * resets state, lays out a compact shipyard, seeds the incident.
+   */
+  loadPreset(id: string): boolean {
+    const def = PRESETS.find((p) => p.id === id)
+    if (!def) return false
+    const seed = this.state.seed
+    this.state = this.initialState(seed)
+    this.rng = mulberry32((seed ^ def.seed) >>> 0)
+    const ok = applyPreset(this.state, id, {
+      addRoom: (t, r, l) => this.addRoomRaw(t, r, l),
+      spawnCrew: (role) => {
+        this.spawnCrew(role)
+      },
+      log: this.log,
+    })
+    if (!ok) return false
+    this.log('info', `Replay loaded: ${def.name} — ${def.tagline}`, def.citation)
+    this.emit()
+    return true
+  }
+
+  /**
+   * Master-sheet injection: queue a PSI investigation in the first free
+   * combustion chamber ("Inject this experiment into the 2.5D module").
+   */
+  injectExperiment(invId: string, o2Pct?: number, flowCms?: number): boolean {
+    const e = this.state
+    const inv = invById.get(invId)
+    if (!inv) return false
+    const room = e.rooms.find(
+      (r) => r.type === 'combustion' && r.state === 'active' && !r.experiment,
+    )
+    if (!room) {
+      this.notice(
+        e.rooms.some((r) => r.type === 'combustion' && r.state === 'active')
+          ? 'Combustion chamber busy — wait for the current run'
+          : 'No combustion chamber — build one or load a NASA replay',
+      )
+      return false
+    }
+    const o2 = o2Pct ?? Math.min(o2Range(inv)[1], Math.max(o2Range(inv)[0], 21))
+    const flow = flowCms ?? flowRange(inv)[0]
+    const ok = this.startExperiment(room.id, invId, o2, flow)
+    if (ok)
+      this.log('info', `Master-sheet record injected into ${room.label}: ${inv.name} @ ${o2}% O₂.`)
+    return ok
   }
 
   /** replay a documented NASA fire incident in the largest active module */

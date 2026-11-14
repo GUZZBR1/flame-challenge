@@ -4,6 +4,7 @@ import {
   ChevronsRight,
   Coins,
   Cpu,
+  Database,
   FastForward,
   HardHat,
   HeartPulse,
@@ -34,7 +35,15 @@ const SPEEDS: { s: Speed; icon: typeof Play; label: string }[] = [
   { s: 4, icon: ChevronsRight, label: '4×' },
 ]
 
-export default function TopBar({ engine, onOpenMission }: { engine: Engine; onOpenMission: () => void }) {
+export default function TopBar({
+  engine,
+  onOpenMission,
+  onOpenData,
+}: {
+  engine: Engine
+  onOpenMission: () => void
+  onOpenData: () => void
+}) {
   useGameVersion()
   const st = engine.state
   const alive = st.crew.filter((c) => c.state !== 'dead').length
@@ -85,6 +94,15 @@ export default function TopBar({ engine, onOpenMission }: { engine: Engine; onOp
         <Cpu className="h-3 w-3" />
         {physics ? 'C++' : 'local'}
       </span>
+
+      <button
+        onClick={onOpenData}
+        title="NASA combustion master sheet — auditable records, inject into the yard"
+        className="flex items-center gap-1 rounded border border-ice/50 bg-panel2 px-2 py-1 text-[10px] font-semibold text-ice hover:bg-ice/20"
+      >
+        <Database className="h-3 w-3" />
+        Data
+      </button>
 
       <button
         onClick={onOpenMission}

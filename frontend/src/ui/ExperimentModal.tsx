@@ -3,6 +3,7 @@ import { Cpu, ExternalLink, EyeOff, Flame, FlaskConical, RotateCcw, ShieldAlert,
 import type { Engine } from '../game/engine'
 import { investigations } from '../game/engine'
 import { flowRange, limitingO2, o2Range, specFor } from '../game/experiments'
+import { gravityContrast } from '../game/telemetry'
 import { previewExperiment } from '../sim-bridge/physics'
 import type { ExperimentSpec, RiskAxis } from '../game/types'
 import type { Investigation } from '../types'
@@ -138,7 +139,7 @@ export default function ExperimentModal({ engine, roomId, onClose }: Props) {
           </div>
 
           {/* detail + dial */}
-          <div className="flex flex-1 flex-col p-4">
+          <div className="hud-scroll flex flex-1 flex-col overflow-y-auto p-4">
             <div className="text-[13px] font-semibold text-white">{inv.title}</div>
             <div className="mt-0.5 text-[10px] uppercase tracking-wide text-mist">
               {inv.agencies.join(' + ')} · {inv.fuels.join(', ')}
@@ -228,6 +229,23 @@ export default function ExperimentModal({ engine, roomId, onClose }: Props) {
                     <span className="w-8 text-right font-mono text-[10px] text-mist">{spec.factors[k]}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* comparative telemetry — Earth 1 g vs microgravity */}
+            <div className="mt-2 rounded border border-ice/25 bg-ice/5 p-3">
+              <div className="text-[9px] font-semibold uppercase tracking-widest text-ice">
+                Telemetry — Earth 1 g vs µg (PSI)
+              </div>
+              <div className="mt-1.5 space-y-1 text-[10px] leading-snug">
+                <div className="flex gap-2">
+                  <span className="w-16 shrink-0 font-mono text-mist">Earth 1 g</span>
+                  <span className="text-white/80">{gravityContrast(inv).earth}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="w-16 shrink-0 font-mono text-ice">Space µg</span>
+                  <span className="text-white/80">{gravityContrast(inv).space}</span>
+                </div>
               </div>
             </div>
 
