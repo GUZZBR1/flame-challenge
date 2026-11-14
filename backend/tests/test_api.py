@@ -199,3 +199,60 @@ def test_fallback_matches_cpp_engine_when_built():
             else:
                 assert s_py[k] == v, k
         assert py.drain_events() == cpp.drain_events()
+
+
+# ---------- investigation intelligence endpoints ----------
+
+def test_investigations_leaderboard_shape_and_order():
+    r = client.get("/api/investigations")
+    assert r.status_code == 200
+    j = r.json()
+    assert set(j["weights"]) == {"flammability", "hiddenHazard",
+                                 "explorationRelevance", "dataRichness"}
+    assert abs(sum(j["weights"].values()) - 1.0) < 1e-9
+    items = j["items"]
+    assert len(items) >= 8
+    # strictly ranked and every component inside [0,100]
+    assert [c["rank"] for c in items] == list(range(1, len(items) + 1))
+    assert all(items[i]["score"] >= items[i + 1]["score"]
+               for i in range(len(items) - 1))
+    for c in items:
+        assert set(c["breakdown"]) == set(j["weights"])
+        assert all(0.0 <= v <= 100.0 for v in c["breakdown"].values())
+        assert 0.0 <= c["score"] <= 100.0
+
+
+def test_investigation_detail_carrying_engine_fidelity():
+    r = client.get("/api/investigations/flex-2")
+    assert r.status_code == 200
+    j = r.json()
+    assert j["name"] == "FLEX-2"
+    assert j["materialId"] == "heptane"
+    assert j["engineFidelity"]["scoredRuns"] > 100
+    assert j["engineFidelity"]["accuracy"] > 0.5
+    assert j["stats"]["nRuns"] > 200
+    assert j["stats"]["coolFlameRuns"] > 0
+    assert j["summary"]
+    assert j["sampleRuns"]
+
+
+def test_investigation_detail_404_lists_known_ids():
+    r = client.get("/api/investigations/nope")
+    assert r.status_code == 404
+    detail = r.json()["detail"]
+    assert "nope" in detail and "flex-2" in detail
+
+
+def test_insights_are_evidence_backed():
+    r = client.get("/api/insights")
+    assert r.status_code == 200
+    j = r.json()
+    assert j["labeledRuns"] > 300
+    assert j["items"]
+    for item in j["items"]:
+        assert item["severity"] in ("high", "medium", "info")
+        assert item["evidence"]          # every claim cites its counts
+        assert item["sources"]
+    ids = {i["id"] for i in j["items"]}
+    assert "cool-flame-detection-gap" in ids
+    assert "engine-fidelity-map" in ids

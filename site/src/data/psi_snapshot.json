@@ -1,0 +1,1077 @@
+{
+ "generated": "build_site_snapshot.py",
+ "leaderboard": {
+  "weights": {
+   "flammability": 0.35,
+   "hiddenHazard": 0.25,
+   "explorationRelevance": 0.25,
+   "dataRichness": 0.15
+  },
+  "items": [
+   {
+    "id": "flare",
+    "name": "FLARE",
+    "model": "spread",
+    "materialId": "pmma",
+    "hazards": [
+     "partial-gravity",
+     "exploration-atmosphere",
+     "low-oxygen-persistence"
+    ],
+    "o2Range": [
+     15,
+     40
+    ],
+    "flowRangeCms": [
+     0,
+     30
+    ],
+    "pressureKpa": 101,
+    "partialGravity": true,
+    "effectiveLoc": 15,
+    "stats": {
+     "nRuns": 0,
+     "nLabeled": 0,
+     "burnFrac": null,
+     "extinctFrac": null,
+     "coolFlameRuns": 0,
+     "hiddenExtinctRuns": 0,
+     "o2Measured": null,
+     "burnRateMedianMm2s": null
+    },
+    "summary": "Directly maps material flammability limits at Lunar (0.17 g) and Martian (0.38 g) gravity using an on-orbit centrifuge.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 57.2,
+    "breakdown": {
+     "flammability": 75.0,
+     "hiddenHazard": 24.0,
+     "explorationRelevance": 100.0,
+     "dataRichness": 0.0
+    },
+    "rank": 1
+   },
+   {
+    "id": "saffire",
+    "name": "SAFFIRE",
+    "model": "spread",
+    "materialId": "cotton",
+    "hazards": [
+     "large-scale-spread",
+     "toxic-aerosol",
+     "exploration-atmosphere",
+     "smolder-risk"
+    ],
+    "o2Range": [
+     21.5,
+     22.1
+    ],
+    "flowRangeCms": [
+     20.0,
+     30.0
+    ],
+    "pressureKpa": 70,
+    "partialGravity": false,
+    "effectiveLoc": 17,
+    "stats": {
+     "nRuns": 13,
+     "nLabeled": 7,
+     "burnFrac": 1.0,
+     "extinctFrac": 0.0,
+     "coolFlameRuns": 0,
+     "hiddenExtinctRuns": 0,
+     "o2Measured": [
+      21.5,
+      22.1
+     ],
+     "burnRateMedianMm2s": null
+    },
+    "summary": "Largest deliberate fires ever set in an uncrewed spacecraft \u2014 flame behavior at ~meter scale differs from small CIR samples.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 54.3,
+    "breakdown": {
+     "flammability": 79.9,
+     "hiddenHazard": 44.0,
+     "explorationRelevance": 40,
+     "dataRichness": 35.6
+    },
+    "engineFidelity": {
+     "scoredRuns": 5,
+     "accuracy": 1.0
+    },
+    "rank": 2
+   },
+   {
+    "id": "bass-ii",
+    "name": "BASS-II",
+    "model": "spread",
+    "materialId": "pmma-sphere",
+    "hazards": [
+     "low-oxygen-persistence",
+     "smolder-risk",
+     "exploration-atmosphere"
+    ],
+    "o2Range": [
+     17,
+     40
+    ],
+    "flowRangeCms": [
+     0,
+     20
+    ],
+    "pressureKpa": 101,
+    "partialGravity": false,
+    "effectiveLoc": 17,
+    "stats": {
+     "nRuns": 122,
+     "nLabeled": 0,
+     "burnFrac": null,
+     "extinctFrac": null,
+     "coolFlameRuns": 0,
+     "hiddenExtinctRuns": 0,
+     "o2Measured": null,
+     "burnRateMedianMm2s": null
+    },
+    "summary": "Characterized opposed-flow flame spread and extinction over small solid samples across oxygen and flow regimes.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 51.8,
+    "breakdown": {
+     "flammability": 75.0,
+     "hiddenHazard": 28.0,
+     "explorationRelevance": 50,
+     "dataRichness": 40.4
+    },
+    "rank": 3
+   },
+   {
+    "id": "flex-2",
+    "name": "FLEX-2",
+    "model": "droplet",
+    "materialId": "heptane",
+    "hazards": [
+     "cool-flames",
+     "detection-gap",
+     "low-oxygen-persistence"
+    ],
+    "o2Range": [
+     12.0,
+     34.0
+    ],
+    "flowRangeCms": [
+     0.0,
+     2.55
+    ],
+    "pressureKpa": 101,
+    "partialGravity": false,
+    "effectiveLoc": 16.0,
+    "stats": {
+     "nRuns": 299,
+     "nLabeled": 277,
+     "burnFrac": 0.054,
+     "extinctFrac": 0.946,
+     "coolFlameRuns": 55,
+     "hiddenExtinctRuns": 80,
+     "o2Measured": [
+      0.0,
+      34.0
+     ],
+     "burnRateMedianMm2s": 0.49
+    },
+    "summary": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 47.5,
+    "breakdown": {
+     "flammability": 10.3,
+     "hiddenHazard": 86.1,
+     "explorationRelevance": 35,
+     "dataRichness": 91.0
+    },
+    "engineFidelity": {
+     "scoredRuns": 274,
+     "accuracy": 0.934
+    },
+    "rank": 4
+   },
+   {
+    "id": "confined-combustion",
+    "name": "Confined Combustion",
+    "model": "spread",
+    "materialId": "thin-sheet",
+    "hazards": [
+     "exploration-atmosphere",
+     "large-scale-spread"
+    ],
+    "o2Range": [
+     19,
+     40
+    ],
+    "flowRangeCms": [
+     0,
+     15
+    ],
+    "pressureKpa": 57,
+    "partialGravity": false,
+    "effectiveLoc": 16.0,
+    "stats": {
+     "nRuns": 0,
+     "nLabeled": 0,
+     "burnFrac": null,
+     "extinctFrac": null,
+     "coolFlameRuns": 0,
+     "hiddenExtinctRuns": 0,
+     "o2Measured": null,
+     "burnRateMedianMm2s": null
+    },
+    "summary": "Flame spread between close parallel plates (confined geometry, like racks/ducts) is strongly affected by wall heat recirculation.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 42.2,
+    "breakdown": {
+     "flammability": 75.0,
+     "hiddenHazard": 24.0,
+     "explorationRelevance": 40,
+     "dataRichness": 0.0
+    },
+    "rank": 5
+   },
+   {
+    "id": "sofie-gel",
+    "name": "SoFIE-GEL",
+    "model": "spread",
+    "materialId": "pmma",
+    "hazards": [
+     "low-oxygen-persistence",
+     "exploration-atmosphere"
+    ],
+    "o2Range": [
+     15,
+     24
+    ],
+    "flowRangeCms": [
+     0,
+     25
+    ],
+    "pressureKpa": 101,
+    "partialGravity": false,
+    "effectiveLoc": 15,
+    "stats": {
+     "nRuns": 0,
+     "nLabeled": 0,
+     "burnFrac": null,
+     "extinctFrac": null,
+     "coolFlameRuns": 0,
+     "hiddenExtinctRuns": 0,
+     "o2Measured": null,
+     "burnRateMedianMm2s": null
+    },
+    "summary": "Flames spread over PMMA at oxygen concentrations as low as ~15% in quiescent microgravity \u2014 below typical Earth extinction limits (~17\u201318%).",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 33.3,
+    "breakdown": {
+     "flammability": 47.9,
+     "hiddenHazard": 16.0,
+     "explorationRelevance": 50,
+     "dataRichness": 0.0
+    },
+    "rank": 6
+   },
+   {
+    "id": "acme",
+    "name": "ACME",
+    "model": "spread",
+    "materialId": "ethylene",
+    "hazards": [
+     "toxic-aerosol"
+    ],
+    "o2Range": [
+     12.0,
+     85.0
+    ],
+    "flowRangeCms": [
+     0,
+     70
+    ],
+    "pressureKpa": 101,
+    "partialGravity": false,
+    "effectiveLoc": 11.0,
+    "stats": {
+     "nRuns": 629,
+     "nLabeled": 333,
+     "burnFrac": 0.261,
+     "extinctFrac": 0.739,
+     "coolFlameRuns": 7,
+     "hiddenExtinctRuns": 0,
+     "o2Measured": [
+      12.0,
+      85.0
+     ],
+     "burnRateMedianMm2s": null
+    },
+    "summary": "Mapped soot inception and growth in laminar coflow diffusion flames without buoyancy-driven distortion.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 24.1,
+    "breakdown": {
+     "flammability": 24.0,
+     "hiddenHazard": 9.5,
+     "explorationRelevance": 10,
+     "dataRichness": 72.4
+    },
+    "engineFidelity": {
+     "scoredRuns": 99,
+     "accuracy": 0.192
+    },
+    "rank": 7
+   },
+   {
+    "id": "same",
+    "name": "SAME",
+    "model": "spread",
+    "materialId": "teflon",
+    "hazards": [
+     "detection-gap",
+     "toxic-aerosol",
+     "smolder-risk"
+    ],
+    "o2Range": [
+     21,
+     21
+    ],
+    "flowRangeCms": [
+     0,
+     10
+    ],
+    "pressureKpa": 101,
+    "partialGravity": false,
+    "effectiveLoc": 30.0,
+    "stats": {
+     "nRuns": 0,
+     "nLabeled": 0,
+     "burnFrac": null,
+     "extinctFrac": null,
+     "coolFlameRuns": 0,
+     "hiddenExtinctRuns": 0,
+     "o2Measured": null,
+     "burnRateMedianMm2s": null
+    },
+    "summary": "Measured particle size distribution of smoke from overheated and ignited spacecraft materials.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 18.8,
+    "breakdown": {
+     "flammability": 25.0,
+     "hiddenHazard": 40.0,
+     "explorationRelevance": 0.0,
+     "dataRichness": 0.0
+    },
+    "rank": 8
+   }
+  ]
+ },
+ "details": {
+  "flare": {
+   "id": "flare",
+   "name": "FLARE",
+   "model": "spread",
+   "materialId": "pmma",
+   "hazards": [
+    "partial-gravity",
+    "exploration-atmosphere",
+    "low-oxygen-persistence"
+   ],
+   "o2Range": [
+    15,
+    40
+   ],
+   "flowRangeCms": [
+    0,
+    30
+   ],
+   "pressureKpa": 101,
+   "partialGravity": true,
+   "effectiveLoc": 15,
+   "stats": {
+    "nRuns": 0,
+    "nLabeled": 0,
+    "burnFrac": null,
+    "extinctFrac": null,
+    "coolFlameRuns": 0,
+    "hiddenExtinctRuns": 0,
+    "o2Measured": null,
+    "burnRateMedianMm2s": null
+   },
+   "summary": "Directly maps material flammability limits at Lunar (0.17 g) and Martian (0.38 g) gravity using an on-orbit centrifuge.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 57.2,
+   "breakdown": {
+    "flammability": 75.0,
+    "hiddenHazard": 24.0,
+    "explorationRelevance": 100.0,
+    "dataRichness": 0.0
+   },
+   "material": {
+    "id": "pmma",
+    "name": "PMMA (acrylic)",
+    "locPct": 15,
+    "locSource": "calibration",
+    "ignitionFitScope": null,
+    "psiRuns": 50
+   },
+   "sampleRuns": []
+  },
+  "saffire": {
+   "id": "saffire",
+   "name": "SAFFIRE",
+   "model": "spread",
+   "materialId": "cotton",
+   "hazards": [
+    "large-scale-spread",
+    "toxic-aerosol",
+    "exploration-atmosphere",
+    "smolder-risk"
+   ],
+   "o2Range": [
+    21.5,
+    22.1
+   ],
+   "flowRangeCms": [
+    20.0,
+    30.0
+   ],
+   "pressureKpa": 70,
+   "partialGravity": false,
+   "effectiveLoc": 17,
+   "stats": {
+    "nRuns": 13,
+    "nLabeled": 7,
+    "burnFrac": 1.0,
+    "extinctFrac": 0.0,
+    "coolFlameRuns": 0,
+    "hiddenExtinctRuns": 0,
+    "o2Measured": [
+     21.5,
+     22.1
+    ],
+    "burnRateMedianMm2s": null
+   },
+   "summary": "Largest deliberate fires ever set in an uncrewed spacecraft \u2014 flame behavior at ~meter scale differs from small CIR samples.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 54.3,
+   "breakdown": {
+    "flammability": 79.9,
+    "hiddenHazard": 44.0,
+    "explorationRelevance": 40,
+    "dataRichness": 35.6
+   },
+   "engineFidelity": {
+    "scoredRuns": 5,
+    "accuracy": 1.0
+   },
+   "material": {
+    "id": "cotton",
+    "name": "cotton fabric",
+    "locPct": 17,
+    "locSource": "calibration",
+    "ignitionFitScope": null,
+    "psiRuns": 17
+   },
+   "sampleRuns": [
+    {
+     "runId": "PSI-100-row0",
+     "accession": "PSI-100",
+     "fuel": "SIBAL Fabric",
+     "o2Pct": null,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-100",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-100-row1",
+     "accession": "PSI-100",
+     "fuel": "SIBAL Fabric",
+     "o2Pct": null,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-100",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-98-row0",
+     "accession": "PSI-98",
+     "fuel": "SIBAL Fabric",
+     "o2Pct": 21.6,
+     "outcome": "burnout",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-98",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-98-row1",
+     "accession": "PSI-98",
+     "fuel": "SIBAL Fabric",
+     "o2Pct": 21.5,
+     "outcome": "burnout",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-98",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-99-row0",
+     "accession": "PSI-99",
+     "fuel": "Silicone",
+     "o2Pct": 21.5,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
+     "verified": "True"
+    }
+   ]
+  },
+  "bass-ii": {
+   "id": "bass-ii",
+   "name": "BASS-II",
+   "model": "spread",
+   "materialId": "pmma-sphere",
+   "hazards": [
+    "low-oxygen-persistence",
+    "smolder-risk",
+    "exploration-atmosphere"
+   ],
+   "o2Range": [
+    17,
+    40
+   ],
+   "flowRangeCms": [
+    0,
+    20
+   ],
+   "pressureKpa": 101,
+   "partialGravity": false,
+   "effectiveLoc": 17,
+   "stats": {
+    "nRuns": 122,
+    "nLabeled": 0,
+    "burnFrac": null,
+    "extinctFrac": null,
+    "coolFlameRuns": 0,
+    "hiddenExtinctRuns": 0,
+    "o2Measured": null,
+    "burnRateMedianMm2s": null
+   },
+   "summary": "Characterized opposed-flow flame spread and extinction over small solid samples across oxygen and flow regimes.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 51.8,
+   "breakdown": {
+    "flammability": 75.0,
+    "hiddenHazard": 28.0,
+    "explorationRelevance": 50,
+    "dataRichness": 40.4
+   },
+   "material": {
+    "id": "pmma-sphere",
+    "name": "PMMA spheres",
+    "locPct": 17,
+    "locSource": "calibration",
+    "ignitionFitScope": null,
+    "psiRuns": null
+   },
+   "sampleRuns": [
+    {
+     "runId": "100; 89",
+     "accession": "PSI-26",
+     "fuel": "parrafin wax candle",
+     "o2Pct": null,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
+     "verified": "True"
+    },
+    {
+     "runId": "101; 95",
+     "accession": "PSI-26",
+     "fuel": "paraffin wax candle",
+     "o2Pct": null,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
+     "verified": "True"
+    },
+    {
+     "runId": "102; 92",
+     "accession": "PSI-26",
+     "fuel": "candle   Japan wax",
+     "o2Pct": null,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
+     "verified": "True"
+    },
+    {
+     "runId": "103; 78",
+     "accession": "PSI-26",
+     "fuel": "paraffin wax slab",
+     "o2Pct": null,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
+     "verified": "True"
+    },
+    {
+     "runId": "104; 50",
+     "accession": "PSI-26",
+     "fuel": "2 cm pmma sphere",
+     "o2Pct": null,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
+     "verified": "True"
+    }
+   ]
+  },
+  "flex-2": {
+   "id": "flex-2",
+   "name": "FLEX-2",
+   "model": "droplet",
+   "materialId": "heptane",
+   "hazards": [
+    "cool-flames",
+    "detection-gap",
+    "low-oxygen-persistence"
+   ],
+   "o2Range": [
+    12.0,
+    34.0
+   ],
+   "flowRangeCms": [
+    0.0,
+    2.55
+   ],
+   "pressureKpa": 101,
+   "partialGravity": false,
+   "effectiveLoc": 16.0,
+   "stats": {
+    "nRuns": 299,
+    "nLabeled": 277,
+    "burnFrac": 0.054,
+    "extinctFrac": 0.946,
+    "coolFlameRuns": 55,
+    "hiddenExtinctRuns": 80,
+    "o2Measured": [
+     0.0,
+     34.0
+    ],
+    "burnRateMedianMm2s": 0.49
+   },
+   "summary": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 47.5,
+   "breakdown": {
+    "flammability": 10.3,
+    "hiddenHazard": 86.1,
+    "explorationRelevance": 35,
+    "dataRichness": 91.0
+   },
+   "engineFidelity": {
+    "scoredRuns": 274,
+    "accuracy": 0.934
+   },
+   "material": {
+    "id": "heptane",
+    "name": "n-heptane",
+    "locPct": 16.0,
+    "locSource": "psi-data",
+    "ignitionFitScope": "material",
+    "psiRuns": 114
+   },
+   "sampleRuns": [
+    {
+     "runId": "FLEX-1206",
+     "accession": "PSI-39",
+     "fuel": "Dodecane",
+     "o2Pct": 21.0,
+     "outcome": "extinction",
+     "extinctionType": "cool-flame",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
+     "verified": "True"
+    },
+    {
+     "runId": "FLEX-1207",
+     "accession": "PSI-39",
+     "fuel": "Dodecane",
+     "o2Pct": 21.0,
+     "outcome": "extinction",
+     "extinctionType": "cool-flame",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
+     "verified": "True"
+    },
+    {
+     "runId": "FLEX-1208",
+     "accession": "PSI-39",
+     "fuel": "Dodecane",
+     "o2Pct": 21.0,
+     "outcome": "extinction",
+     "extinctionType": "cool-flame",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
+     "verified": "True"
+    },
+    {
+     "runId": "FLEX-1209",
+     "accession": "PSI-39",
+     "fuel": "Dodecane",
+     "o2Pct": 21.0,
+     "outcome": "extinction",
+     "extinctionType": "cool-flame",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
+     "verified": "True"
+    },
+    {
+     "runId": "FLEX-1210",
+     "accession": "PSI-39",
+     "fuel": "Dodecane",
+     "o2Pct": 21.0,
+     "outcome": "extinction",
+     "extinctionType": "cool-flame",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
+     "verified": "True"
+    }
+   ]
+  },
+  "confined-combustion": {
+   "id": "confined-combustion",
+   "name": "Confined Combustion",
+   "model": "spread",
+   "materialId": "thin-sheet",
+   "hazards": [
+    "exploration-atmosphere",
+    "large-scale-spread"
+   ],
+   "o2Range": [
+    19,
+    40
+   ],
+   "flowRangeCms": [
+    0,
+    15
+   ],
+   "pressureKpa": 57,
+   "partialGravity": false,
+   "effectiveLoc": 16.0,
+   "stats": {
+    "nRuns": 0,
+    "nLabeled": 0,
+    "burnFrac": null,
+    "extinctFrac": null,
+    "coolFlameRuns": 0,
+    "hiddenExtinctRuns": 0,
+    "o2Measured": null,
+    "burnRateMedianMm2s": null
+   },
+   "summary": "Flame spread between close parallel plates (confined geometry, like racks/ducts) is strongly affected by wall heat recirculation.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 42.2,
+   "breakdown": {
+    "flammability": 75.0,
+    "hiddenHazard": 24.0,
+    "explorationRelevance": 40,
+    "dataRichness": 0.0
+   },
+   "material": {
+    "id": "thin-sheet",
+    "name": "thin paper/PP sheets",
+    "locPct": 16.0,
+    "locSource": "calibration",
+    "ignitionFitScope": null,
+    "psiRuns": null
+   },
+   "sampleRuns": []
+  },
+  "sofie-gel": {
+   "id": "sofie-gel",
+   "name": "SoFIE-GEL",
+   "model": "spread",
+   "materialId": "pmma",
+   "hazards": [
+    "low-oxygen-persistence",
+    "exploration-atmosphere"
+   ],
+   "o2Range": [
+    15,
+    24
+   ],
+   "flowRangeCms": [
+    0,
+    25
+   ],
+   "pressureKpa": 101,
+   "partialGravity": false,
+   "effectiveLoc": 15,
+   "stats": {
+    "nRuns": 0,
+    "nLabeled": 0,
+    "burnFrac": null,
+    "extinctFrac": null,
+    "coolFlameRuns": 0,
+    "hiddenExtinctRuns": 0,
+    "o2Measured": null,
+    "burnRateMedianMm2s": null
+   },
+   "summary": "Flames spread over PMMA at oxygen concentrations as low as ~15% in quiescent microgravity \u2014 below typical Earth extinction limits (~17\u201318%).",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 33.3,
+   "breakdown": {
+    "flammability": 47.9,
+    "hiddenHazard": 16.0,
+    "explorationRelevance": 50,
+    "dataRichness": 0.0
+   },
+   "material": {
+    "id": "pmma",
+    "name": "PMMA (acrylic)",
+    "locPct": 15,
+    "locSource": "calibration",
+    "ignitionFitScope": null,
+    "psiRuns": 50
+   },
+   "sampleRuns": []
+  },
+  "acme": {
+   "id": "acme",
+   "name": "ACME",
+   "model": "spread",
+   "materialId": "ethylene",
+   "hazards": [
+    "toxic-aerosol"
+   ],
+   "o2Range": [
+    12.0,
+    85.0
+   ],
+   "flowRangeCms": [
+    0,
+    70
+   ],
+   "pressureKpa": 101,
+   "partialGravity": false,
+   "effectiveLoc": 11.0,
+   "stats": {
+    "nRuns": 629,
+    "nLabeled": 333,
+    "burnFrac": 0.261,
+    "extinctFrac": 0.739,
+    "coolFlameRuns": 7,
+    "hiddenExtinctRuns": 0,
+    "o2Measured": [
+     12.0,
+     85.0
+    ],
+    "burnRateMedianMm2s": null
+   },
+   "summary": "Mapped soot inception and growth in laminar coflow diffusion flames without buoyancy-driven distortion.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 24.1,
+   "breakdown": {
+    "flammability": 24.0,
+    "hiddenHazard": 9.5,
+    "explorationRelevance": 10,
+    "dataRichness": 72.4
+   },
+   "engineFidelity": {
+    "scoredRuns": 99,
+    "accuracy": 0.192
+   },
+   "material": {
+    "id": "ethylene",
+    "name": "ethylene",
+    "locPct": 11.0,
+    "locSource": "calibration",
+    "ignitionFitScope": "family:gaseous-fuels",
+    "psiRuns": 222
+   },
+   "sampleRuns": [
+    {
+     "runId": "19115A1",
+     "accession": "PSI-10",
+     "fuel": "C2H4",
+     "o2Pct": 20.71,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
+     "verified": "True"
+    },
+    {
+     "runId": "19115B1",
+     "accession": "PSI-10",
+     "fuel": "C2H4",
+     "o2Pct": 20.57,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
+     "verified": "True"
+    },
+    {
+     "runId": "19115B2",
+     "accession": "PSI-10",
+     "fuel": "C2H4",
+     "o2Pct": 20.49,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
+     "verified": "True"
+    },
+    {
+     "runId": "19115D2",
+     "accession": "PSI-10",
+     "fuel": "C2H4",
+     "o2Pct": 20.62,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
+     "verified": "True"
+    },
+    {
+     "runId": "19115F1",
+     "accession": "PSI-10",
+     "fuel": "C2H4",
+     "o2Pct": 20.43,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
+     "verified": "True"
+    }
+   ]
+  },
+  "same": {
+   "id": "same",
+   "name": "SAME",
+   "model": "spread",
+   "materialId": "teflon",
+   "hazards": [
+    "detection-gap",
+    "toxic-aerosol",
+    "smolder-risk"
+   ],
+   "o2Range": [
+    21,
+    21
+   ],
+   "flowRangeCms": [
+    0,
+    10
+   ],
+   "pressureKpa": 101,
+   "partialGravity": false,
+   "effectiveLoc": 30.0,
+   "stats": {
+    "nRuns": 0,
+    "nLabeled": 0,
+    "burnFrac": null,
+    "extinctFrac": null,
+    "coolFlameRuns": 0,
+    "hiddenExtinctRuns": 0,
+    "o2Measured": null,
+    "burnRateMedianMm2s": null
+   },
+   "summary": "Measured particle size distribution of smoke from overheated and ignited spacecraft materials.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 18.8,
+   "breakdown": {
+    "flammability": 25.0,
+    "hiddenHazard": 40.0,
+    "explorationRelevance": 0.0,
+    "dataRichness": 0.0
+   },
+   "material": {
+    "id": "teflon",
+    "name": "Teflon",
+    "locPct": 30.0,
+    "locSource": "calibration",
+    "ignitionFitScope": null,
+    "psiRuns": null
+   },
+   "sampleRuns": []
+  }
+ },
+ "insights": {
+  "labeledRuns": 617,
+  "items": [
+   {
+    "id": "loc-does-not-bound",
+    "severity": "high",
+    "title": "LOC alone does not bound droplet-fire persistence",
+    "body": "decanol blends, methanol never sustained burning across 171 labeled FLEX runs \u2014 at O2 well above their LOC. Radiative and cool-flame extinction kill the flame with fuel aboard; cabin O2 margin is a necessary, not sufficient, safety condition.",
+    "evidence": {
+     "labeledRuns": 171,
+     "materials": [
+      "decanol",
+      "methanol"
+     ]
+    },
+    "sources": [
+     "flex-2"
+    ]
+   },
+   {
+    "id": "cool-flame-detection-gap",
+    "severity": "high",
+    "title": "Cool flames defeat optical fire detection",
+    "body": "62 PSI runs show cool-flame chemistry \u2014 combustion continuing near-invisibly at ~600 K after the visible hot flame dies. 'Flame out' on camera is a monitoring window, not an all-clear; detectors must track chemistry, not brightness.",
+    "evidence": {
+     "coolFlameRuns": 62
+    },
+    "sources": [
+     "acme",
+     "flex-2"
+    ]
+   },
+   {
+    "id": "extinction-not-exhaustion",
+    "severity": "medium",
+    "title": "Extinction does not mean the fuel is gone",
+    "body": "26 radiative extinctions record flames dying with most of the droplet unburned \u2014 the fuel remains and re-ignition is possible. Post-fire atmospheres must be treated as still-fueled.",
+    "evidence": {
+     "radiativeExtinctions": 26
+    },
+    "sources": [
+     "flex-2"
+    ]
+   },
+   {
+    "id": "o2-doubles-burn-rate",
+    "severity": "medium",
+    "title": "Burn rate nearly doubles across the FLEX O2 range",
+    "body": "The fitted heptane d\u00b2-law rate rises from 0.43 to 0.75 mm\u00b2/s between 13% and 34% O2 \u2014 enriched exploration atmospheres do not just ignite more easily, they consume fuel ~2\u00d7 faster.",
+    "evidence": {
+     "burnRateK0Mm2s": 0.2317,
+     "burnRateKO2Mm2sPct": 0.01522
+    },
+    "sources": [
+     "flex-2"
+    ]
+   },
+   {
+    "id": "engine-fidelity-map",
+    "severity": "info",
+    "title": "Engine replay fidelity is measured, not claimed",
+    "body": "Replaying labeled PSI runs, the physics core reproduces SAFFIRE outcomes at 100% but only 19% on ACME coflow flames \u2014 strain/blow-off physics is the quantified modeling frontier.",
+    "evidence": {
+     "perInvestigation": {
+      "acme": {
+       "n": 99,
+       "accuracy": 0.192
+      },
+      "flex-2": {
+       "n": 274,
+       "accuracy": 0.934
+      },
+      "saffire": {
+       "n": 5,
+       "accuracy": 1.0
+      }
+     }
+    },
+    "sources": [
+     "acme",
+     "flex-2",
+     "saffire"
+    ]
+   }
+  ]
+ }
+}

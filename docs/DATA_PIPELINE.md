@@ -47,6 +47,7 @@ but search metadata + file trees + per-file downloads are public.
 | `build_dataset.py` | merge curated/structured records → `data/bundle/investigations.json` |
 | `calibrate_constants.py` | dataset → `shared/calibrated-data/calibration.json` + `risk_profiles.json` |
 | `validate_engine.py` | replays scored runs through the engine → `processed/validation_report.json` (confusion matrix + burn-rate error; the gate for physics changes) |
+| `build_site_snapshot.py` | bakes `/api/investigations` + `/api/insights` output → `site/src/data/psi_snapshot.json` (offline fallback for the dashboard section) |
 
 ## Normalized experiment schema (`experiments.csv`)
 
@@ -95,3 +96,11 @@ sheets; `calibration` means literature-seeded.
 - `GET /api/risk/curve?materialId=&flowCms=` — O₂ sweep for charts
 - `GET /api/risk/materials` — material table (LOC, hidden factors, provenance)
 - `GET /api/rag/stats` — corpus statistics
+- `GET /api/investigations` — ranked investigation cards: composite score
+  (0.35·flammability + 0.25·hiddenHazard + 0.25·explorationRelevance +
+  0.15·dataRichness) with per-component breakdown, run stats and
+  per-investigation engine-replay fidelity — `services/investigations.py`
+- `GET /api/investigations/{id}` — detail card: summary, material fit
+  provenance, sample real runs
+- `GET /api/insights` — interpreted corpus findings, each citing its run
+  counts and source investigations
