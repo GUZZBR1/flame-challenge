@@ -8,4 +8,6 @@
 
 Os caminhos consumidos pelo PixiJS foram atualizados para estas categorias.
 
-Recortes de `naves/`, `cometas/` e `motores/` foram refeitos diretamente da prancha fonte the original IGNIS motor and comet source sheet; os rótulos da prancha ficaram fora dos recortes. Os PNGs de efeitos usam transparência para PixiJS.
+As sequências e os takes do exterior ficam definidos em `design/assets/estaleiros/shipyard_takes.json` e são copiados para `assets/space/shipyard_takes.json` na pasta pública do frontend.
+
+Recortes de `naves/`, `cometas/` e `motores/` foram refeitos diretamente da prancha-fonte original do IGNIS; os rótulos da prancha ficaram fora dos recortes. Os PNGs de efeitos usam transparência para PixiJS.
