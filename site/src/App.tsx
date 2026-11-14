@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import Challenge from './components/Challenge'
 import Crew from './components/Crew'
 import Dashboard from './components/Dashboard'
+import LiveChamber from './components/LiveChamber'
+import AskPanel from './components/AskPanel'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import Hero from './components/Hero'
@@ -49,6 +51,8 @@ export default function App() {
       <Hero />
       <Challenge />
       <Dashboard />
+      <LiveChamber />
+      <AskPanel />
       <Crew />
       <Footer />
     </main>

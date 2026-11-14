@@ -151,3 +151,4 @@ export async function insights(): Promise<{
   const live = await probe<{ labeledRuns: number; items: Insight[] }>('/api/insights')
   return live ? { ...live, live: true } : { ...snap.insights, live: false }
 }
+
