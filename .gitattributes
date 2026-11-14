@@ -1,0 +1,14 @@
+# Normalize line endings — the repo is LF; editors on Windows must not
+# rewrite whole files as CRLF.
+* text=auto eol=lf
+
+# generated data artifacts stay as-is
+*.csv text=auto
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.mp4 binary
+*.zip binary
+*.tif binary
+*.tiff binary
+*.bmp binary

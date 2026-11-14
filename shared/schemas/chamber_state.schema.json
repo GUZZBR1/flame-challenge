@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "chamber_state.schema.json",
+  "title": "Chamber state snapshot (Chamber::stateJson / WS /ws/chamber)",
+  "type": "object",
+  "required": ["model", "tSec", "regime", "ignited", "coolFlame", "finished"],
+  "properties": {
+    "model": { "enum": ["droplet", "spread"] },
+    "tSec": { "type": "number" },
+    "regime": { "type": "integer", "description": "droplet: 0 ign,1 hot,2 cool,3 extinction,4 out — spread: 0 preheat,1 spreading,2 cooling,3 out" },
+    "ignited": { "type": "boolean" },
+    "coolFlame": { "type": "boolean" },
+    "finished": { "type": "boolean" },
+    "dropletDMm": { "type": "number", "description": "droplet model only" },
+    "flameRMm": { "type": "number" },
+    "flameTempK": { "type": "number" },
+    "heatReleaseW": { "type": "number" },
+    "burnFraction": { "type": "number" },
+    "frontPosCm": { "type": "number", "description": "spread model only" },
+    "spreadRateCms": { "type": "number" },
+    "burnLengthCm": { "type": "number" },
+    "intensity": { "type": "number" },
+    "events": { "type": "array", "items": { "type": "string" } }
+  }
+}
