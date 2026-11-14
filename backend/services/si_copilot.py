@@ -153,11 +153,13 @@ _RESPONSE_SCHEMA = {
                     {
                         "type": "object",
                         "additionalProperties": False,
+                        # strict mode requires every key — nullable types let
+                        # the model mark the ones it does not want to change
                         "properties": {
-                            "set_o2_percent": {"type": "number"},
-                            "set_airflow_cm_s": {"type": "number"},
-                            "load_preset": {"type": "string"},
-                            "focus_module": {"type": "string"},
+                            "set_o2_percent": {"type": ["number", "null"]},
+                            "set_airflow_cm_s": {"type": ["number", "null"]},
+                            "load_preset": {"type": ["string", "null"]},
+                            "focus_module": {"type": ["string", "null"]},
                         },
                         "required": ["set_o2_percent", "set_airflow_cm_s",
                                      "load_preset", "focus_module"],
