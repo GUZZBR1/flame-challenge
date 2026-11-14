@@ -1,0 +1,80 @@
+{
+  "generated": "hand-authored decision cards — scores computed live by the risk engine",
+  "cards": [
+    {
+      "id": "ventilation",
+      "context": "CONTAINMENT · CABIN AIRFLOW",
+      "question": "How should cabin airflow be operated the moment ignition is detected in solid polymers?",
+      "preset": "saffire",
+      "metric": "containment efficacy",
+      "options": [
+        {
+          "label": "Cut ventilation immediately (0 cm/s)",
+          "why": "starves the flame of oxidizer diffusion",
+          "model": { "materialId": "cotton", "o2Pct": 21, "flowCms": 0 }
+        },
+        {
+          "label": "Halve the flow (10 cm/s)",
+          "why": "slow-propagation regime stays active",
+          "model": { "materialId": "cotton", "o2Pct": 21, "flowCms": 10 }
+        },
+        {
+          "label": "Keep exhaust running (25 cm/s)",
+          "why": "forced-flow spread at SAFFIRE-IV rates",
+          "model": { "materialId": "cotton", "o2Pct": 21, "flowCms": 25 }
+        }
+      ],
+      "sources": ["SAFFIRE-IV", "SoFIE-GEL", "Airflow Vector"]
+    },
+    {
+      "id": "cool-flame",
+      "context": "INVISIBLE RISK · COOL FLAMES",
+      "question": "Which sensor protocol prevents re-ignition after a visible liquid-fuel flame goes out?",
+      "preset": "flex",
+      "metric": "protocol safety",
+      "options": [
+        {
+          "label": "Thermal isolation + diffusion wait",
+          "why": "cool flame decays once the diffusion path closes",
+          "model": { "materialId": "heptane", "o2Pct": 17, "flowCms": 0 }
+        },
+        {
+          "label": "Reopen O₂ once the optical sensor clears",
+          "why": "optical sensors miss ~600 K cool flames → flashback",
+          "model": { "materialId": "heptane", "o2Pct": 26, "flowCms": 10 }
+        },
+        {
+          "label": "Rapid partial depressurization",
+          "why": "drops O₂ partial pressure below the cool-flame limit",
+          "model": { "materialId": "heptane", "o2Pct": 14, "flowCms": 0 }
+        }
+      ],
+      "sources": ["PSI-39 FLEX", "Cool-Flame Regime", "Shuttle Smoke Detector"]
+    },
+    {
+      "id": "atmosphere",
+      "context": "MATERIALS & ATMOSPHERE",
+      "question": "Which pressure × O₂ × fabric combination keeps standard textiles below flashover risk?",
+      "preset": "apollo-1",
+      "metric": "safe margin",
+      "options": [
+        {
+          "label": "101 kPa · 21% O₂ · Nomex",
+          "why": "comfortably above LOC — ISS-like cabin",
+          "model": { "materialId": "nomex", "o2Pct": 21, "flowCms": 0 }
+        },
+        {
+          "label": "56 kPa · 34% O₂ · cotton/fiberglass",
+          "why": "exploration atmosphere — Lunar Gateway regime",
+          "model": { "materialId": "cotton", "o2Pct": 34, "flowCms": 0, "gravity": "lunar" }
+        },
+        {
+          "label": "115 kPa · 100% O₂ · velcro/nylon",
+          "why": "Apollo 1 pad conditions — everything burns",
+          "model": { "materialId": "teflon", "o2Pct": 60, "flowCms": 0, "gravity": "earth" }
+        }
+      ],
+      "sources": ["ACME", "BASS-II", "Apollo 1 Lessons"]
+    }
+  ]
+}
