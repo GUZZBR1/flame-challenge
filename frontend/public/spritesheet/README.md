@@ -1,12 +1,12 @@
-# IGNIS hangar sprite sheets
+# Hangar sprite atlases
 
-This folder is inside Vite’s `frontend/public` directory, so its files are served from `/spritesheet/` and copied into the production build. It contains the original reference atlas and two PNG atlases with PixiJS-compatible JSON metadata.
+Source sprite sheets and PixiJS metadata for the IGNIS hangar. Runtime copies live in `flame-challenge/frontend/public/spritesheet/` and can be refreshed with `design/scripts/sync-runtime-assets.sh`.
 
-- `ignis_hangar_spritesheet.jpg`: original 1024×1024 source atlas.
-- `ignis_hangar_assets_v1.png` + `.json`: transparent atlas with containers, science shuttle, technician poses, starfield tiles and beacon frames.
-- `ignis_hangar_spritesheet_v2.png` + `.json`: reorganized transparent atlas for hangar beacons, forcefield, shuttle, crew poses and modular tiles.
-- `spritesheet_spec.json`: specification for the original source atlas.
+## Files
 
-The JSON files use PixiJS spritesheet fields: `frames` map names to atlas rectangles and `animations` list frame names in playback order. Load the matching PNG and JSON together. Animation playback speed can be configured by the consuming scene.
+- `ignis_hangar_spritesheet.jpg`: original 1024×1024 atlas containing beacon and forcefield frames, the exploration ship, crew poses, and modular floor/border tiles. The runtime hangar copy is named `spritesheet.jpg`.
+- `spritesheet_spec.json`: original atlas description and animation groups.
+- `ignis_hangar_assets_v1.png` and `ignis_hangar_assets_v1.json`: transparent 1536×1024 atlas with cargo containers, the shuttle, technician poses, starfield tiles, and beacon frames.
+- `ignis_hangar_spritesheet_v2.png` and `ignis_hangar_spritesheet_v2.json`: transparent 1536×1024 reorganized atlas with beacon, forcefield, shuttle, crew, and floor/border assets.
 
-The V1 and V2 atlases are separate revisions. V2 preserves the sprite families in the original reference; V1 adds the cargo and starfield assets.
+The JSON files use PixiJS spritesheet structure: `frames` maps names to pixel rectangles and `animations` lists the frame names in playback order. Load each JSON with the PNG named in its `meta.image` field. Static takes are catalogued separately in `design/guias/animacoes/TAKES_HANGAR.md`.
