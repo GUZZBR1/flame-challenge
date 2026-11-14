@@ -15,10 +15,10 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from backend.services import engine_bridge as eb
-from backend.services import rag, risk
+from backend.services import neighbors, rag, risk, tactics
 
 app = FastAPI(title="Freefall Foundry Engine API", version="0.1.0")
 app.add_middleware(
@@ -163,12 +163,74 @@ def api_risk_materials() -> dict:
     return {"materials": risk.materials()}
 
 
+# ---------- SI layer: KNN lookup + deterministic tactical synthesis ----------
+
+@app.get("/api/neighbors")
+def api_neighbors(materialId: str = "pmma",
+                  o2Pct: float = Query(21.0, ge=0.0, le=100.0,
+                                       allow_inf_nan=False),
+                  flowCms: float = Query(0.0, ge=0.0, le=300.0,
+                                         allow_inf_nan=False),
+                  k: int = Query(3, ge=1, le=10)) -> dict:
+    """k nearest real PSI test runs to the requested operating point."""
+    return {
+        "materialId": materialId, "o2Pct": o2Pct, "flowCms": flowCms,
+        "neighbors": neighbors.nearest(materialId, o2Pct, flowCms, k),
+    }
+
+
+@app.get("/api/decision-cards")
+def api_decision_cards(materialId: str = "pmma",
+                       o2Pct: float = Query(21.0, ge=0.0, le=100.0,
+                                            allow_inf_nan=False),
+                       flowCms: float = Query(0.0, ge=0.0, le=300.0,
+                                              allow_inf_nan=False),
+                       gravity: str = "microgravity") -> dict:
+    """Live decision cards: countermeasure scores from the fitted risk
+    model + KNN evidence + C++ ignition pressure for provenance."""
+    payload = tactics.decision_cards(materialId, o2Pct, flowCms, gravity)
+    # unresolved ids (butane, …) fall back inside risk_index — chamber
+    # fields must quote the material the cards were actually built on
+    resolved = payload["material"]["materialId"]
+    return {
+        "engine": eb.ENGINE,
+        "chamber": {
+            "materialId": resolved,
+            "requestedMaterialId": materialId,
+            "o2Pct": o2Pct,
+            "flowCms": flowCms,
+            "ignitionPressure": round(eb.ignition_pressure(resolved, o2Pct), 4),
+        },
+        **payload,
+    }
+
+
 @app.websocket("/ws/chamber")
 async def chamber_ws(ws: WebSocket) -> None:
     """Stream a live chamber run at ~30 Hz until the run finishes or 60 s cap."""
     await ws.accept()
     try:
-        req = ChamberReq(**json.loads(await ws.receive_text()))
+        raw = await ws.receive_text()
+        try:
+            req = ChamberReq(**json.loads(raw))
+        except ValidationError as exc:
+            # same sanitized shape as the HTTP 422 handler — never the
+            # raw str(exc), which echoes the offending payload back
+            try:
+                detail = jsonable_encoder(
+                    {"detail": _json_safe(exc.errors()),
+                     "body": _json_safe(raw)})
+            except Exception:
+                detail = {"detail": "Invalid request body",
+                          "type": "request_validation"}
+            await ws.send_text(json.dumps({"error": detail}))
+            await ws.close(code=1008)  # policy violation — clean reject
+            return
+        except (json.JSONDecodeError, TypeError):
+            await ws.send_text(
+                json.dumps({"error": "expected a JSON object request"}))
+            await ws.close(code=1008)
+            return
         ch = eb.make_chamber(req.investigationId, req.o2Pct, req.flowCms,
                              req.seed, req.pressureKpa)
         dt = 1.0 / 30.0

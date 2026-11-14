@@ -1,11 +1,16 @@
 # IGNIS website
 
-Standalone static website for the IGNIS project opening and orbital shipyard.
-
-From the repository root, serve the project with any static web server, for example:
+React + TypeScript + Vite site for the IGNIS project. The hero keeps the
+original isometric heat-wave canvases (now resize-safe: they redraw at
+the current wave time instead of snapping to t=0); scroll runs on Lenis +
+GSAP ScrollTrigger; the shipyard section expands to fullscreen.
 
 ```sh
-python3 -m http.server 8000
+npm install
+npm run dev        # → http://localhost:5173 (proxies /api → :8000)
+npm run build      # typecheck + static bundle → dist/
 ```
 
-Then open `http://localhost:8000/site/`. No package installation or build step is needed.
+`src/lib/risk.ts` + `src/lib/api.ts` mirror the backend risk formula for
+future live-data sections (offline fallback from
+`shared/calibrated-data/risk_model.json`).

@@ -86,7 +86,10 @@ FUEL_ID = {
     "iso-octane": "iso-octane", "isooctane": "iso-octane",
     "iso octane": "iso-octane", "decane": "decanol", "decanol": "decanol",
     "n-decane": "decanol", "nonane": "decanol",
-    "ethanol": "methanol", "butanol": "decanol",
+    # ethanol/butanol map to THEMSELVES — PSI-68 runs "Ethanol (pure)"
+    # tests; aliasing them to methanol/decanol was a chemistry error that
+    # also corrupted the per-material fit statistics
+    "ethanol": "ethanol", "butanol": "butanol",
     "ethylene": "ethylene", "c2h4": "ethylene",
     "methane": "methane", "ch4": "methane",
     "propane": "propane", "c3h8": "propane",
@@ -478,9 +481,11 @@ def _flag(text: str | None) -> bool | None:
     v = (text or "").strip().lower()
     if not v or v in ("n/a", "na", "none", "-", "?", "unknown"):
         return None
-    if re.match(r"yes|true|y\b|1\b", v):
+    # every alternative needs its own \b — "yes" unanchored also matched
+    # "yesterday…", "fail" matched "failure reported" (a comment, not a no)
+    if re.match(r"^(yes|true|y|1)\b", v):
         return True
-    if re.match(r"no\b|false|n\b|0\b|fail", v):
+    if re.match(r"^(no|false|n|0|fail)\b", v):
         return False
     return None
 
@@ -717,6 +722,7 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
     if not path.exists():
         return []
     pairs = _flex_pairing()
+    seen: set[tuple] = set()
     out: list[dict] = []
     for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
         acc = (r.get("accession") or "").strip()
@@ -726,7 +732,8 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
         comments = (r.get("comments") or "").strip()
         dext = _num1(r.get("dext_mm"))
         # resolved CIR-first pairing — never a bare sequence-number join
-        m = pairs.get((r.get("test_id") or "").strip())
+        tid = (r.get("test_id") or "").strip()
+        m = pairs.get(tid)
         burn_time = None
         if m is not None:
             # the summary row carries the authoritative end state — its
@@ -746,6 +753,22 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
         if (o2mf is None or o2mf == 0.0) and m is not None:
             o2mf = _mid(m.get("o2_mf_min"), m.get("o2_mf_max"))
         atm = _num1(r.get("pressure_atm"))
+        # corroborated duplicate sheets — the same experiment recorded
+        # twice (FLEX-127/128: same CIR, GMT, fuel and measurements, both
+        # resolving to '127; C13M301') must emit once; sheets with
+        # different corroborating metadata are genuinely distinct runs
+        dup_key = (
+            (m or {}).get("data_id") or (r.get("cir_test_number") or tid),
+            _point_gmt(r), _fuel_key(fuel),
+            (r.get("o2_mf") or "").strip(), (r.get("d0_mm") or "").strip(),
+            (r.get("kavg_mm2_s") or "").strip(),
+            (r.get("dext_mm") or "").strip(),
+            (r.get("pressure_atm") or "").strip(),
+            (r.get("fiber") or "").strip(),
+        )
+        if dup_key in seen:
+            continue
+        seen.add(dup_key)
         out.append({
             "run_id": (r.get("test_id") or "").strip() or f"{acc}-tp",
             "accession": acc,
@@ -860,6 +883,11 @@ def write_structured(rows: list[dict]) -> None:
     records = []
     for inv, rs in sorted(by_inv.items()):
         o2s = [float(r["o2_pct"]) for r in rs if r.get("o2_pct")]
+        # flow_cms = None means quiescent (drift only), not "unrecorded" —
+        # a rig that mostly ran quiescent but pushed a few 2.55 cm/s
+        # points has a [0, 2.55] envelope, not a degenerate single point
+        flows = ([float(r["flow_cms"] or 0.0) for r in rs]
+                 if any(r.get("flow_cms") is not None for r in rs) else [])
         exts = [float(r["o2_pct"]) for r in rs
                 if r.get("o2_pct") and r.get("outcome") == "extinction"]
         n_cool = sum(str(r.get("cool_flame")).lower() == "true" for r in rs)
@@ -876,6 +904,8 @@ def write_structured(rows: list[dict]) -> None:
         }
         if o2s:
             rec["psiO2RangePct"] = [min(o2s), max(o2s)]
+        if flows:
+            rec["psiFlowRangeCms"] = [min(flows), max(flows)]
         if exts:
             rec["psiExtinctionLimitPct"] = {"min": min(exts), "max": max(exts)}
         # flag the investigation only when cool flames are a real signature
