@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import BuildPalette from './ui/BuildPalette'
 import EventFeed from './ui/EventFeed'
 import ExperimentModal from './ui/ExperimentModal'
+import InsightsPanel from './ui/InsightsPanel'
 import InspectPanel from './ui/InspectPanel'
 import MasterSheet from './ui/MasterSheet'
 import MissionModal from './ui/MissionModal'
@@ -24,6 +25,7 @@ export default function App() {
   const [expRoom, setExpRoom] = useState<number | null>(null)
   const [missionOpen, setMissionOpen] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [insightsOpen, setInsightsOpen] = useState(false)
   const [cond, setCond] = useState<DashConditions>({
     env: 'microgravity',
     o2Pct: 21,
@@ -69,6 +71,7 @@ export default function App() {
         setExpRoom(null)
         setMissionOpen(false)
         setSheetOpen(false)
+        setInsightsOpen(false)
       }
     }
     window.addEventListener('keydown', onKey)
@@ -81,6 +84,7 @@ export default function App() {
         engine={engine}
         onOpenMission={() => setMissionOpen(true)}
         onOpenData={() => setSheetOpen(true)}
+        onOpenInsights={() => setInsightsOpen(true)}
       />
       <SimulateBar cond={cond} onCond={patchCond} onApply={applyPreset} />
       <div className="relative min-h-0 flex-1">
@@ -114,6 +118,9 @@ export default function App() {
         )}
         {missionOpen && <MissionModal engine={engine} onClose={() => setMissionOpen(false)} />}
         {sheetOpen && <MasterSheet onClose={() => setSheetOpen(false)} onInject={injectRow} />}
+        {insightsOpen && (
+          <InsightsPanel cond={cond} onClose={() => setInsightsOpen(false)} onInject={injectRow} />
+        )}
         {!started && <IntroOverlay onStart={() => setStarted(true)} />}
         <GameOverOverlay engine={engine} />
       </div>

@@ -39,7 +39,7 @@
       "cool_flame_capable": false,
       "smolder_capable": true,
       "limiting_o2_pct": 17,
-      "psi_url": "https://psi.nasa.gov/physci/repo"
+      "psi_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26"
     },
     {
       "psi_id": "flex-2",
@@ -99,7 +99,7 @@
       "cool_flame_capable": false,
       "smolder_capable": true,
       "limiting_o2_pct": null,
-      "psi_url": "https://psi.nasa.gov/physci/repo"
+      "psi_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-100"
     },
     {
       "psi_id": "same",
