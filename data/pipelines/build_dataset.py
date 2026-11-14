@@ -49,7 +49,7 @@ def _recompute_run_stats(dataset: dict) -> None:
     summing them double-counts evidence. The corpus total is unique run_ids
     and lives at meta.uniquePsiRuns for the dashboard header.
     """
-    if not EXPERIMENTS_CSV.exists():
+    if not EXPERIMENTS_CSV.exists() or not dataset.get("investigations"):
         return
     with EXPERIMENTS_CSV.open(newline="", encoding="utf-8") as fh:
         rows = list(csv.DictReader(fh))
