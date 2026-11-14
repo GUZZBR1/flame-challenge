@@ -9,6 +9,55 @@
   },
   "items": [
    {
+    "id": "flex-2",
+    "name": "FLEX-2",
+    "model": "droplet",
+    "materialId": "heptane",
+    "hazards": [
+     "cool-flames",
+     "detection-gap",
+     "low-oxygen-persistence"
+    ],
+    "o2Range": [
+     12.0,
+     34.0
+    ],
+    "flowRangeCms": [
+     0.0,
+     2.55
+    ],
+    "pressureKpa": 101,
+    "partialGravity": false,
+    "effectiveLoc": 12.0,
+    "stats": {
+     "nRuns": 282,
+     "nLabeled": 274,
+     "burnFrac": 0.321,
+     "extinctFrac": 0.679,
+     "coolFlameRuns": 46,
+     "hiddenExtinctRuns": 94,
+     "o2Measured": [
+      12.0,
+      34.0
+     ],
+     "burnRateMedianMm2s": 0.5
+    },
+    "summary": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished.",
+    "psiUrl": "https://psi.nasa.gov/physci/repo",
+    "score": 59.7,
+    "breakdown": {
+     "flammability": 45.7,
+     "hiddenHazard": 87.8,
+     "explorationRelevance": 35,
+     "dataRichness": 86.7
+    },
+    "engineFidelity": {
+     "scoredRuns": 274,
+     "accuracy": 0.679
+    },
+    "rank": 1
+   },
+   {
     "id": "flare",
     "name": "FLARE",
     "model": "spread",
@@ -48,7 +97,7 @@
      "explorationRelevance": 100.0,
      "dataRichness": 0.0
     },
-    "rank": 1
+    "rank": 2
    },
    {
     "id": "saffire",
@@ -98,7 +147,7 @@
      "scoredRuns": 5,
      "accuracy": 1.0
     },
-    "rank": 2
+    "rank": 3
    },
    {
     "id": "bass-ii",
@@ -139,55 +188,6 @@
      "hiddenHazard": 28.0,
      "explorationRelevance": 50,
      "dataRichness": 40.4
-    },
-    "rank": 3
-   },
-   {
-    "id": "flex-2",
-    "name": "FLEX-2",
-    "model": "droplet",
-    "materialId": "heptane",
-    "hazards": [
-     "cool-flames",
-     "detection-gap",
-     "low-oxygen-persistence"
-    ],
-    "o2Range": [
-     12.0,
-     34.0
-    ],
-    "flowRangeCms": [
-     0.0,
-     2.55
-    ],
-    "pressureKpa": 101,
-    "partialGravity": false,
-    "effectiveLoc": 16.0,
-    "stats": {
-     "nRuns": 299,
-     "nLabeled": 277,
-     "burnFrac": 0.054,
-     "extinctFrac": 0.946,
-     "coolFlameRuns": 55,
-     "hiddenExtinctRuns": 80,
-     "o2Measured": [
-      0.0,
-      34.0
-     ],
-     "burnRateMedianMm2s": 0.49
-    },
-    "summary": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished.",
-    "psiUrl": "https://psi.nasa.gov/physci/repo",
-    "score": 47.5,
-    "breakdown": {
-     "flammability": 10.3,
-     "hiddenHazard": 86.1,
-     "explorationRelevance": 35,
-     "dataRichness": 91.0
-    },
-    "engineFidelity": {
-     "scoredRuns": 274,
-     "accuracy": 0.934
     },
     "rank": 4
    },
@@ -276,7 +276,7 @@
    {
     "id": "acme",
     "name": "ACME",
-    "model": "spread",
+    "model": "coflow",
     "materialId": "ethylene",
     "hazards": [
      "toxic-aerosol"
@@ -293,10 +293,10 @@
     "partialGravity": false,
     "effectiveLoc": 11.0,
     "stats": {
-     "nRuns": 629,
+     "nRuns": 738,
      "nLabeled": 333,
-     "burnFrac": 0.261,
-     "extinctFrac": 0.739,
+     "burnFrac": 0.264,
+     "extinctFrac": 0.736,
      "coolFlameRuns": 7,
      "hiddenExtinctRuns": 0,
      "o2Measured": [
@@ -309,14 +309,14 @@
     "psiUrl": "https://psi.nasa.gov/physci/repo",
     "score": 24.1,
     "breakdown": {
-     "flammability": 24.0,
+     "flammability": 24.1,
      "hiddenHazard": 9.5,
      "explorationRelevance": 10,
-     "dataRichness": 72.4
+     "dataRichness": 71.7
     },
     "engineFidelity": {
-     "scoredRuns": 99,
-     "accuracy": 0.192
+     "scoredRuns": 333,
+     "accuracy": 0.61
     },
     "rank": 7
    },
@@ -365,6 +365,114 @@
   ]
  },
  "details": {
+  "flex-2": {
+   "id": "flex-2",
+   "name": "FLEX-2",
+   "model": "droplet",
+   "materialId": "heptane",
+   "hazards": [
+    "cool-flames",
+    "detection-gap",
+    "low-oxygen-persistence"
+   ],
+   "o2Range": [
+    12.0,
+    34.0
+   ],
+   "flowRangeCms": [
+    0.0,
+    2.55
+   ],
+   "pressureKpa": 101,
+   "partialGravity": false,
+   "effectiveLoc": 12.0,
+   "stats": {
+    "nRuns": 282,
+    "nLabeled": 274,
+    "burnFrac": 0.321,
+    "extinctFrac": 0.679,
+    "coolFlameRuns": 46,
+    "hiddenExtinctRuns": 94,
+    "o2Measured": [
+     12.0,
+     34.0
+    ],
+    "burnRateMedianMm2s": 0.5
+   },
+   "summary": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished.",
+   "psiUrl": "https://psi.nasa.gov/physci/repo",
+   "score": 59.7,
+   "breakdown": {
+    "flammability": 45.7,
+    "hiddenHazard": 87.8,
+    "explorationRelevance": 35,
+    "dataRichness": 86.7
+   },
+   "engineFidelity": {
+    "scoredRuns": 274,
+    "accuracy": 0.679
+   },
+   "material": {
+    "id": "heptane",
+    "name": "n-heptane",
+    "locPct": 12.0,
+    "locSource": "calibration",
+    "ignitionFitScope": "material",
+    "psiRuns": 119
+   },
+   "sampleRuns": [
+    {
+     "runId": "PSI-68-row0",
+     "accession": "PSI-68",
+     "fuel": "IsoOctane (pure)",
+     "o2Pct": 23.5,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-68-row1",
+     "accession": "PSI-68",
+     "fuel": "n-Octane (pure)",
+     "o2Pct": 23.5,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-68-row2",
+     "accession": "PSI-68",
+     "fuel": "Heptane (pure)",
+     "o2Pct": 23.5,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-68-row3",
+     "accession": "PSI-68",
+     "fuel": "Decane (pure)",
+     "o2Pct": 23.5,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
+     "verified": "True"
+    },
+    {
+     "runId": "PSI-68-row4",
+     "accession": "PSI-68",
+     "fuel": "Ethanol (pure)",
+     "o2Pct": 23.5,
+     "outcome": "unknown",
+     "extinctionType": "none",
+     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
+     "verified": "True"
+    }
+   ]
+  },
   "flare": {
    "id": "flare",
    "name": "FLARE",
@@ -625,114 +733,6 @@
     }
    ]
   },
-  "flex-2": {
-   "id": "flex-2",
-   "name": "FLEX-2",
-   "model": "droplet",
-   "materialId": "heptane",
-   "hazards": [
-    "cool-flames",
-    "detection-gap",
-    "low-oxygen-persistence"
-   ],
-   "o2Range": [
-    12.0,
-    34.0
-   ],
-   "flowRangeCms": [
-    0.0,
-    2.55
-   ],
-   "pressureKpa": 101,
-   "partialGravity": false,
-   "effectiveLoc": 16.0,
-   "stats": {
-    "nRuns": 299,
-    "nLabeled": 277,
-    "burnFrac": 0.054,
-    "extinctFrac": 0.946,
-    "coolFlameRuns": 55,
-    "hiddenExtinctRuns": 80,
-    "o2Measured": [
-     0.0,
-     34.0
-    ],
-    "burnRateMedianMm2s": 0.49
-   },
-   "summary": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished.",
-   "psiUrl": "https://psi.nasa.gov/physci/repo",
-   "score": 47.5,
-   "breakdown": {
-    "flammability": 10.3,
-    "hiddenHazard": 86.1,
-    "explorationRelevance": 35,
-    "dataRichness": 91.0
-   },
-   "engineFidelity": {
-    "scoredRuns": 274,
-    "accuracy": 0.934
-   },
-   "material": {
-    "id": "heptane",
-    "name": "n-heptane",
-    "locPct": 16.0,
-    "locSource": "psi-data",
-    "ignitionFitScope": "material",
-    "psiRuns": 114
-   },
-   "sampleRuns": [
-    {
-     "runId": "FLEX-1206",
-     "accession": "PSI-39",
-     "fuel": "Dodecane",
-     "o2Pct": 21.0,
-     "outcome": "extinction",
-     "extinctionType": "cool-flame",
-     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-     "verified": "True"
-    },
-    {
-     "runId": "FLEX-1207",
-     "accession": "PSI-39",
-     "fuel": "Dodecane",
-     "o2Pct": 21.0,
-     "outcome": "extinction",
-     "extinctionType": "cool-flame",
-     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-     "verified": "True"
-    },
-    {
-     "runId": "FLEX-1208",
-     "accession": "PSI-39",
-     "fuel": "Dodecane",
-     "o2Pct": 21.0,
-     "outcome": "extinction",
-     "extinctionType": "cool-flame",
-     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-     "verified": "True"
-    },
-    {
-     "runId": "FLEX-1209",
-     "accession": "PSI-39",
-     "fuel": "Dodecane",
-     "o2Pct": 21.0,
-     "outcome": "extinction",
-     "extinctionType": "cool-flame",
-     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-     "verified": "True"
-    },
-    {
-     "runId": "FLEX-1210",
-     "accession": "PSI-39",
-     "fuel": "Dodecane",
-     "o2Pct": 21.0,
-     "outcome": "extinction",
-     "extinctionType": "cool-flame",
-     "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-     "verified": "True"
-    }
-   ]
-  },
   "confined-combustion": {
    "id": "confined-combustion",
    "name": "Confined Combustion",
@@ -834,7 +834,7 @@
   "acme": {
    "id": "acme",
    "name": "ACME",
-   "model": "spread",
+   "model": "coflow",
    "materialId": "ethylene",
    "hazards": [
     "toxic-aerosol"
@@ -851,10 +851,10 @@
    "partialGravity": false,
    "effectiveLoc": 11.0,
    "stats": {
-    "nRuns": 629,
+    "nRuns": 738,
     "nLabeled": 333,
-    "burnFrac": 0.261,
-    "extinctFrac": 0.739,
+    "burnFrac": 0.264,
+    "extinctFrac": 0.736,
     "coolFlameRuns": 7,
     "hiddenExtinctRuns": 0,
     "o2Measured": [
@@ -867,14 +867,14 @@
    "psiUrl": "https://psi.nasa.gov/physci/repo",
    "score": 24.1,
    "breakdown": {
-    "flammability": 24.0,
+    "flammability": 24.1,
     "hiddenHazard": 9.5,
     "explorationRelevance": 10,
-    "dataRichness": 72.4
+    "dataRichness": 71.7
    },
    "engineFidelity": {
-    "scoredRuns": 99,
-    "accuracy": 0.192
+    "scoredRuns": 333,
+    "accuracy": 0.61
    },
    "material": {
     "id": "ethylene",
@@ -889,7 +889,7 @@
      "runId": "19115A1",
      "accession": "PSI-10",
      "fuel": "C2H4",
-     "o2Pct": 20.71,
+     "o2Pct": 20.667,
      "outcome": "unknown",
      "extinctionType": "none",
      "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
@@ -899,7 +899,7 @@
      "runId": "19115B1",
      "accession": "PSI-10",
      "fuel": "C2H4",
-     "o2Pct": 20.57,
+     "o2Pct": 20.531,
      "outcome": "unknown",
      "extinctionType": "none",
      "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
@@ -909,7 +909,7 @@
      "runId": "19115B2",
      "accession": "PSI-10",
      "fuel": "C2H4",
-     "o2Pct": 20.49,
+     "o2Pct": 20.463,
      "outcome": "unknown",
      "extinctionType": "none",
      "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
@@ -919,7 +919,7 @@
      "runId": "19115D2",
      "accession": "PSI-10",
      "fuel": "C2H4",
-     "o2Pct": 20.62,
+     "o2Pct": 20.592,
      "outcome": "unknown",
      "extinctionType": "none",
      "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
@@ -929,7 +929,7 @@
      "runId": "19115F1",
      "accession": "PSI-10",
      "fuel": "C2H4",
-     "o2Pct": 20.43,
+     "o2Pct": 20.409,
      "outcome": "unknown",
      "extinctionType": "none",
      "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
@@ -989,31 +989,15 @@
   }
  },
  "insights": {
-  "labeledRuns": 617,
+  "labeledRuns": 614,
   "items": [
-   {
-    "id": "loc-does-not-bound",
-    "severity": "high",
-    "title": "LOC alone does not bound droplet-fire persistence",
-    "body": "decanol blends, methanol never sustained burning across 171 labeled FLEX runs \u2014 at O2 well above their LOC. Radiative and cool-flame extinction kill the flame with fuel aboard; cabin O2 margin is a necessary, not sufficient, safety condition.",
-    "evidence": {
-     "labeledRuns": 171,
-     "materials": [
-      "decanol",
-      "methanol"
-     ]
-    },
-    "sources": [
-     "flex-2"
-    ]
-   },
    {
     "id": "cool-flame-detection-gap",
     "severity": "high",
     "title": "Cool flames defeat optical fire detection",
-    "body": "62 PSI runs show cool-flame chemistry \u2014 combustion continuing near-invisibly at ~600 K after the visible hot flame dies. 'Flame out' on camera is a monitoring window, not an all-clear; detectors must track chemistry, not brightness.",
+    "body": "53 PSI runs show cool-flame chemistry \u2014 combustion continuing near-invisibly at ~600 K after the visible hot flame dies. 'Flame out' on camera is a monitoring window, not an all-clear; detectors must track chemistry, not brightness.",
     "evidence": {
-     "coolFlameRuns": 62
+     "coolFlameRuns": 53
     },
     "sources": [
      "acme",
@@ -1024,9 +1008,9 @@
     "id": "extinction-not-exhaustion",
     "severity": "medium",
     "title": "Extinction does not mean the fuel is gone",
-    "body": "26 radiative extinctions record flames dying with most of the droplet unburned \u2014 the fuel remains and re-ignition is possible. Post-fire atmospheres must be treated as still-fueled.",
+    "body": "48 radiative extinctions record flames dying with most of the droplet unburned \u2014 the fuel remains and re-ignition is possible. Post-fire atmospheres must be treated as still-fueled.",
     "evidence": {
-     "radiativeExtinctions": 26
+     "radiativeExtinctions": 48
     },
     "sources": [
      "flex-2"
@@ -1038,8 +1022,8 @@
     "title": "Burn rate nearly doubles across the FLEX O2 range",
     "body": "The fitted heptane d\u00b2-law rate rises from 0.43 to 0.75 mm\u00b2/s between 13% and 34% O2 \u2014 enriched exploration atmospheres do not just ignite more easily, they consume fuel ~2\u00d7 faster.",
     "evidence": {
-     "burnRateK0Mm2s": 0.2317,
-     "burnRateKO2Mm2sPct": 0.01522
+     "burnRateK0Mm2s": 0.2254,
+     "burnRateKO2Mm2sPct": 0.01538
     },
     "sources": [
      "flex-2"
@@ -1049,16 +1033,16 @@
     "id": "engine-fidelity-map",
     "severity": "info",
     "title": "Engine replay fidelity is measured, not claimed",
-    "body": "Replaying labeled PSI runs, the physics core reproduces SAFFIRE outcomes at 100% but only 19% on ACME coflow flames \u2014 strain/blow-off physics is the quantified modeling frontier.",
+    "body": "Replaying labeled PSI runs, the physics core reproduces SAFFIRE outcomes at 100% but only 61% on ACME coflow flames \u2014 strain/blow-off physics is the quantified modeling frontier.",
     "evidence": {
      "perInvestigation": {
       "acme": {
-       "n": 99,
-       "accuracy": 0.192
+       "n": 333,
+       "accuracy": 0.61
       },
       "flex-2": {
        "n": 274,
-       "accuracy": 0.934
+       "accuracy": 0.679
       },
       "saffire": {
        "n": 5,

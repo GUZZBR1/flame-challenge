@@ -269,6 +269,13 @@ def main() -> int:
                 "shared/calibrated-data/ (see docs/NASA_PSI_REFERENCES.md)"
             )
         (BUNDLE_DATA / authored).write_text(src.read_text())
+    # legacy frontend still consumes the same artifacts when present
+    FE_DATA = ROOT / "frontend" / "src" / "data"
+    if FE_DATA.is_dir():
+        for f in ("calibration.json", "risk_profiles.json",
+                  "psi_experiments.json", "historical_scenarios.json",
+                  "tech_spinoffs.json"):
+            (FE_DATA / f).write_text((BUNDLE_DATA / f).read_text())
     print(f"wrote calibration + risk_profiles + psi_experiments — "
           f"{len(materials)} materials, {len(inv_map)} investigations")
     return 0

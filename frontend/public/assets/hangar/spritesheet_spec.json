@@ -1,0 +1,49 @@
+{
+  "name": "ignis_hangar_spritesheet",
+  "version": "1.0.0",
+  "meta": {
+    "image": "ignis_hangar_spritesheet.jpg",
+    "size": { "w": 1024, "h": 1024 },
+    "format": "RGBA8888",
+    "scale": 1
+  },
+  "animations": {
+    "landing_pad_beacon": {
+      "frameCount": 4,
+      "fps": 6,
+      "loop": true,
+      "description": "Luz estroboscópica de aproximação dos landing pads (pulso em ciano #49B8D6)"
+    },
+    "gateway_forcefield": {
+      "frameCount": 4,
+      "fps": 4,
+      "loop": true,
+      "description": "Campo de contenção atmosférica hexagonal da saída para o espaço sideral"
+    },
+    "runway_pillar_beacon": {
+      "frameCount": 3,
+      "fps": 2,
+      "loop": true,
+      "description": "Poste de balizamento de voo com sinalizadores alternados vermelho e ciano"
+    },
+    "isolated_exploration_ship": {
+      "frameCount": 1,
+      "description": "Sprite isolado da nave de exploração científica IGNIS em perspectiva 2.5D"
+    },
+    "ground_crew_technician": {
+      "frameCount": 4,
+      "fps": 3,
+      "loop": true,
+      "description": "Ciclo de inspeção e idle do operador em solo com macacão azul oficial IGNIS"
+    },
+    "modular_tileset": {
+      "tiles": [
+        "Floor_Tile_A_Slate",
+        "Floor_Tile_B_HazardStripe_Border",
+        "Floor_Tile_C_AirlockBorder",
+        "Wall_Border_Tile_Gantry"
+      ],
+      "description": "Tiles modulares de piso metálico e sinalização industrial para montagem de conveses"
+    }
+  }
+}
