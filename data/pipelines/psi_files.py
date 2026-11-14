@@ -96,11 +96,18 @@ def post(path: str, body: dict, limit: int | None = None) -> tuple[int, bytes]:
 
 
 def get_presigned(accession: str, file_id: str, version: int = 1) -> str | None:
-    code, body = post(f"/studies/{accession}/download?redirect=false",
-                      {"file": file_id, "version": str(version)})
-    if code != 200:
+    # oddity of the PSI API: presign is a GET that requires a JSON body
+    req = urllib.request.Request(
+        f"{PSI_API}/studies/{accession}/download?redirect=false",
+        data=json.dumps({"file": file_id, "version": str(version)}).encode(),
+        headers=HEADERS, method="GET")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            if resp.status != 200:
+                return None
+            return resp.read().decode().strip()
+    except (urllib.error.HTTPError, urllib.error.URLError):
         return None
-    return body.decode().strip()
 
 
 def get_clean(url: str, limit: int | None = None) -> tuple[int, bytes]:
