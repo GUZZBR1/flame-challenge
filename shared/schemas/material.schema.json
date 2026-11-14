@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "material.schema.json",
+  "title": "MaterialRisk material entry",
+  "type": "object",
+  "required": ["id", "name", "locPct", "spreadMinCms", "spreadMaxCms", "sootIndex", "coolFlameCapable", "smoldering"],
+  "properties": {
+    "id": { "type": "string", "description": "slug used by ChamberConfig.materialId" },
+    "name": { "type": "string" },
+    "locPct": { "type": "number", "description": "limiting oxygen concentration, %" },
+    "spreadMinCms": { "type": "number", "description": "measured flame spread min, cm/s" },
+    "spreadMaxCms": { "type": "number", "description": "measured flame spread max, cm/s" },
+    "sootIndex": { "type": "number", "minimum": 0, "maximum": 1 },
+    "coolFlameCapable": { "type": "boolean", "description": "FLEX-type two-stage combustion" },
+    "smoldering": { "type": "boolean", "description": "supports smolder/re-ignition" },
+    "sourceInvestigations": { "type": "array", "items": { "type": "string" } }
+  }
+}
