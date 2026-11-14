@@ -1,6 +1,6 @@
 # Sprites animados — Entrada V8
 
-Cada PNG é uma spritesheet RGBA horizontal com 6 frames sequenciais. Use `sprites_entrada_v8.json` para os nomes, tamanho dos frames, loop e FPS sugeridos. Cada frame mede 256×170 px; recorte da esquerda para a direita sem interpolação.
+Cada PNG é uma spritesheet RGBA horizontal com 6 frames sequenciais. Use `sprites_entrada_v8.json` para os nomes, tamanho dos frames, loop e FPS sugeridos. Cada frame mede 256×171 px; recorte da esquerda para a direita sem interpolação.
 
 | Arquivo | Animação |
 | --- | --- |

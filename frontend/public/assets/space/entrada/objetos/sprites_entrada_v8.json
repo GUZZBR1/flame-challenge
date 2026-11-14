@@ -3,13 +3,37 @@
   "format": "horizontal sprite sheet",
   "frameCount": 6,
   "frameWidth": 256,
-  "frameHeight": 170,
+  "frameHeight": 171,
   "animations": {
-    "visitante_a_walk": { "file": "visitante_a_walk.png", "loop": true, "fps": 8 },
-    "visitante_b_walk": { "file": "visitante_b_walk.png", "loop": true, "fps": 8 },
-    "quiosque_holograma": { "file": "quiosque_holograma.png", "loop": true, "fps": 5 },
-    "luminaria_amber": { "file": "luminaria_amber.png", "loop": true, "fps": 4 },
-    "nave_janela": { "file": "nave_janela.png", "loop": true, "fps": 6 },
-    "terminal_ui": { "file": "terminal_ui.png", "loop": true, "fps": 4 }
+    "visitante_a_walk": {
+      "file": "visitante_a_walk.png",
+      "loop": true,
+      "fps": 8
+    },
+    "visitante_b_walk": {
+      "file": "visitante_b_walk.png",
+      "loop": true,
+      "fps": 8
+    },
+    "quiosque_holograma": {
+      "file": "quiosque_holograma.png",
+      "loop": true,
+      "fps": 5
+    },
+    "luminaria_amber": {
+      "file": "luminaria_amber.png",
+      "loop": true,
+      "fps": 4
+    },
+    "nave_janela": {
+      "file": "nave_janela.png",
+      "loop": true,
+      "fps": 6
+    },
+    "terminal_ui": {
+      "file": "terminal_ui.png",
+      "loop": true,
+      "fps": 4
+    }
   }
 }
