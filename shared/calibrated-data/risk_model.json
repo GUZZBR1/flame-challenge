@@ -108,7 +108,7 @@
     "heptane": {
       "id": "heptane",
       "name": "n-heptane",
-      "locPct": 15.0,
+      "locPct": 16.0,
       "locSource": "psi-data",
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,

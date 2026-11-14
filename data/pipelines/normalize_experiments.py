@@ -167,6 +167,16 @@ _EXTINCTION_WORDS = (
     r"\b(?:extinct|extinction|extinguished|extinguishes|extinguishing|"
     r"extinguishment)\b")
 
+# suppression-agent evidence: an explicit "suppress…" mention, or a gas
+# (co2 / carbon dioxide) acting within ~1 word of an extinguishing verb —
+# never a bare ambient-mixture mention like "0.12/0.49/0.40 O2/N2/CO2"
+_SUPPRESSANT_EVIDENCE = re.compile(
+    r"suppress|"
+    r"(?:co2|carbon dioxide)\W{0,4}\w{0,12}\W{0,4}"
+    r"(?:flood|discharge|agent|extin)|"
+    r"(?:flood|discharge|agent|extin)\w*\W{0,4}\w{0,12}\W{0,4}"
+    r"(?:co2|carbon dioxide)")
+
 
 def cool_flame_observed(text: str) -> bool:
     """Affirmative cool-flame evidence in free text."""
@@ -180,7 +190,12 @@ def classify_outcome(comments: str, dext: float | str | None) -> tuple[str, str,
     if re.search(r"did not ignite|failed to ignite|no ignition|would not ignite|"
                  r"not ignite|non-?ignition", c):
         return "no-ignition", "none", cool
-    if re.search(r"radiative extinction|radiative extinction", c):
+    # radiative regime in all corpus wordings — "radiatively
+    # extinguishing", "extinguishes due to radiative loss", "likely
+    # radiative extinction" — not just the literal 'radiative extinction'
+    if re.search(r"radiativ\w*(?:\s+\w+){0,2}\s+extin\w*|"
+                 r"extin\w*(?:\s+\w+){0,2}\s+radiativ\w*|"
+                 r"radiativ\w*\s+loss", c):
         return "extinction", "radiative", cool
     if re.search(r"blow.?off|blows? out", c):
         return "extinction", "blow-off", cool
@@ -191,8 +206,11 @@ def classify_outcome(comments: str, dext: float | str | None) -> tuple[str, str,
             (isinstance(dext, float) and dext > 0):
         if cool:
             return "extinction", "cool-flame", True
-        return "extinction", "oxygen-limit" if "oxygen" in c else "suppressant" \
-            if ("co2" in c or "suppress" in c) else "oxygen-limit", cool
+        # suppressant needs suppression EVIDENCE — ambient "O2/N2/CO2"
+        # composition text is not an extinguishing agent observation
+        if _SUPPRESSANT_EVIDENCE.search(c):
+            return "extinction", "suppressant", cool
+        return "extinction", "oxygen-limit", cool
     if "disruption" in c or "burns? to disruption" in c:
         return "disruption", "none", cool
     if re.search(r"burn(ed|s|t)? (to completion|completely|out)|complete burn", c):
@@ -518,59 +536,111 @@ def _flex_end_outcome(r: dict, comments: str = "") -> tuple[str, str]:
 
 
 def _flex_test_num(test_id: str | None) -> int | None:
-    """Sequence number — 'FLEX-070' → 70, data_id '70; 193F001' → 70.
-    NOT a global pairing key: the tables' numbering diverges for ~44%
-    of tests (FLEX-157 is '156; C03H401', not '157; C05M101'). It only
-    disambiguates the few tests that SHARE one CIR."""
+    """Sequence number inside one id — 'FLEX-070' → 70,
+    '70; 193F001' → 70. Only corroborates a shared-CIR tie: the two
+    tables number tests differently, so it must never be the join key."""
     m = re.search(r"(\d+)", (test_id or "").split(";")[0])
     return int(m.group(1)) if m else None
 
 
-def _flex_points_cirs() -> set[str]:
-    """CIR test numbers present in flex_test_points.csv — the richer
-    per-test table. CIR is the identifier both tables share; summary
-    rows for those tests must not double-count."""
-    path = LEGACY_DIR / "flex_test_points.csv"
-    if not path.exists():
-        return set()
-    return {(r.get("cir_test_number") or "").strip()
-            for r in csv.DictReader(
-                path.open(encoding="utf-8", errors="replace"))}
+def _run_gmt(r: dict) -> str:
+    """Summary-row test time from extra_json — 'Test GMT'."""
+    try:
+        return str(json.loads(r.get("extra_json") or "{}")
+                   .get("Test GMT") or "").strip()
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        return ""
 
 
-def _flex_runs_meta() -> dict[str, list[dict]]:
-    """PSI-69 experimental_runs rows grouped by CIR — the authoritative
-    outcome metadata (Test end, ignition/cool flags, burn time) for the
-    richer flex_test_points physics rows. A handful of tests share one
-    CIR (FLEX-070/073 → 193F001), hence lists, not single rows."""
-    path = LEGACY_DIR / "experimental_runs.csv"
+def _point_gmt(p: dict) -> str:
+    """Test-point time '19:12:27 (GMT)' → '19:12:27'."""
+    return re.sub(r"\s*\([^)]*\)\s*", " ", p.get("test_time") or "").strip()
+
+
+def _fuel_key(s: str | None) -> str:
+    return re.sub(r"[^a-z0-9]+", "", (s or "").lower())
+
+
+def _flex_pairing() -> dict[str, dict]:
+    """Resolved flex_test_points test_id → experimental_runs summary row.
+
+    The join key is the CIR test number — the experiment identifier both
+    tables share. Sequence numbers are NOT usable: the tables number
+    tests differently (FLEX-157 is summary '156; C03H401', not '157;').
+    Shared-CIR collisions (FLEX-070/073 under 193F001) are corroborated
+    by test time, then fuel, then sequence; points without a CIR join on
+    a unique test GMT. Unresolvable points get no summary metadata
+    rather than another experiment's.
+    """
+    ppath = LEGACY_DIR / "flex_test_points.csv"
+    rpath = LEGACY_DIR / "experimental_runs.csv"
+    if not ppath.exists():
+        return {}
+    runs: list[dict] = []
+    if rpath.exists():
+        for r in csv.DictReader(rpath.open(encoding="utf-8", errors="replace")):
+            if (r.get("accession") or "").strip() == "PSI-69":
+                runs.append(r)
     by_cir: dict[str, list[dict]] = {}
-    if not path.exists():
-        return by_cir
-    for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
-        if (r.get("accession") or "").strip() != "PSI-69":
-            continue
+    by_gmt: dict[str, list[dict]] = {}
+    for r in runs:
         parts = (r.get("data_id") or "").split(";")
         if len(parts) > 1 and parts[1].strip():
             by_cir.setdefault(parts[1].strip(), []).append(r)
-    return by_cir
+        g = _run_gmt(r)
+        if g:
+            by_gmt.setdefault(g, []).append(r)
+
+    pairs: dict[str, dict] = {}
+    for p in csv.DictReader(ppath.open(encoding="utf-8", errors="replace")):
+        cir = (p.get("cir_test_number") or "").strip()
+        cands = by_cir.get(cir, []) if cir else []
+        m = cands[0] if len(cands) == 1 else None
+        if m is None and len(cands) > 1:
+            # shared CIR — corroborate: test GMT, then fuel, then seq num
+            g = _point_gmt(p)
+            hit = [r for r in cands if g and _run_gmt(r) == g]
+            if len(hit) == 1:
+                m = hit[0]
+            else:
+                cands = hit or cands
+                f = _fuel_key(p.get("fuel_or_material"))
+                hit = [r for r in cands if f and _fuel_key(
+                    r.get("fuel_or_material") or r.get("fuel_bottle")) == f]
+                if len(hit) == 1:
+                    m = hit[0]
+                else:
+                    n = _flex_test_num(p.get("test_id"))
+                    hit = [r for r in (hit or cands)
+                           if _flex_test_num(r.get("data_id")) == n]
+                    if len(hit) == 1:
+                        m = hit[0]
+        if m is None and not cands:
+            # no CIR candidate — a shared test GMT is still a unique join
+            hit = by_gmt.get(_point_gmt(p), [])
+            if len(hit) == 1:
+                m = hit[0]
+        if m is not None:
+            pairs[(p.get("test_id") or "").strip()] = m
+    return pairs
 
 
 def parse_legacy_runs(covered: set[str]) -> list[dict]:
     path = LEGACY_DIR / "experimental_runs.csv"
     if not path.exists():
         return []
-    flex_cirs = _flex_points_cirs()
+    # summary rows consumed by the resolved point→summary pairing —
+    # skipping by anything else (sequence numbers, raw CIR overlap)
+    # either keeps a consumed duplicate or drops a runs-only test
+    flex_consumed = {(m.get("data_id") or "").strip()
+                     for m in _flex_pairing().values()}
     out: list[dict] = []
     for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
         acc = (r.get("accession") or "").strip()
         if not acc or acc in covered or acc not in ACCESSIONS:
             continue
-        if acc == "PSI-69":
-            parts = (r.get("data_id") or "").split(";")
-            cir = parts[1].strip() if len(parts) > 1 else ""
-            if cir and cir in flex_cirs:
-                continue  # emitted by parse_legacy_flex with richer fields
+        if acc == "PSI-69" and (r.get("data_id") or "").strip() in flex_consumed:
+            continue  # emitted by parse_legacy_flex with richer fields
         inv = ACCESSIONS[acc][0]
         fuel = (r.get("fuel_or_material") or r.get("fuel_bottle") or "").strip() or None
         comments = (r.get("comments") or r.get("notes") or "").strip()
@@ -642,7 +712,7 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
     path = LEGACY_DIR / "flex_test_points.csv"
     if not path.exists():
         return []
-    by_cir = _flex_runs_meta()
+    pairs = _flex_pairing()
     out: list[dict] = []
     for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
         acc = (r.get("accession") or "").strip()
@@ -651,18 +721,8 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
         inv = ACCESSIONS[acc][0]
         comments = (r.get("comments") or "").strip()
         dext = _num1(r.get("dext_mm"))
-        # pair by CIR — the identifier both tables share. A shared CIR
-        # is disambiguated by sequence number within its own candidates
-        # only; the numbers diverge globally (~44% of tests differ)
-        cands = by_cir.get((r.get("cir_test_number") or "").strip(), [])
-        if len(cands) == 1:
-            m = cands[0]
-        elif cands:
-            n = _flex_test_num(r.get("test_id"))
-            m = next((c for c in cands
-                      if _flex_test_num(c.get("data_id")) == n), None)
-        else:
-            m = None
+        # resolved CIR-first pairing — never a bare sequence-number join
+        m = pairs.get((r.get("test_id") or "").strip())
         burn_time = None
         if m is not None:
             # the summary row carries the authoritative end state — its
