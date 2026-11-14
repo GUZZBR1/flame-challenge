@@ -44,8 +44,12 @@ def numbers(text):
 
 
 def rng(text):
-    """Parse 'a - b', 'a; b; c', '~a', 'a units' into (min, max)."""
-    vals = numbers(text)
+    """Parse 'a - b', 'a-b', 'a; b; c', '~a', 'a units' into (min, max)."""
+    # split on a dash between digits first, so '0.5-1.5' is a range,
+    # not '0.5' plus a negative '-1.5'
+    vals = []
+    for part in re.split(r"(?<=\d)\s*[-–—]\s*(?=\d)", text or ""):
+        vals.extend(numbers(part))
     if not vals:
         return None, None
     return min(vals), max(vals)
@@ -265,6 +269,14 @@ FLEX_COLS = ["accession", "acronym", "test_id", "cir_test_number", "test_date",
              "pressure_atm", "o2_mf", "n2_mf", "co2_mf", "he_mf",
              "temperature_k", "fiber", "comments", "source_file"]
 
+# fields that must hold a measurement; status text like "nan", "Burn to
+# completion" or "out of FOV" is moved into comments instead
+NUMERIC_TS = {"pressure_atm", "o2_mf", "n2_mf", "co2_mf", "he_mf",
+              "temperature_k", "d0_mm", "kavg_mm2_s", "dext_mm"}
+MEASURE_RE = re.compile(
+    r"~?\s*[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?"
+    r"(?:\s*(?:mm|mm2/s|k|atm|kpa|pa|%|w|s))?\s*", re.I)
+
 
 def parse_testsheet(path, accession):
     out = {c: "" for c in FLEX_COLS}
@@ -290,7 +302,15 @@ def parse_testsheet(path, accession):
                 key = kv.group(1).strip().lower()
                 key = re.sub(r"\s+", " ", key)
                 if key in TS_FIELDS:
-                    out[TS_FIELDS[key]] = kv.group(2).strip()
+                    field = TS_FIELDS[key]
+                    val = kv.group(2).strip()
+                    if field in NUMERIC_TS and val:
+                        if MEASURE_RE.fullmatch(val):
+                            out[field] = f"{first_num(val):g}"
+                        else:
+                            comments.append(f"{key}: {val}")
+                    else:
+                        out[field] = val
             elif s.strip() and not out["test_id"] and re.match(r"FLEX-?\d+", s.strip()):
                 out["test_id"] = s.strip()
     out["comments"] = " ".join(c for c in comments if c)
@@ -344,7 +364,7 @@ def test_point(name, accession):
 
 
 def sniff_csv(path, max_bytes=65536):
-    """Return (n_rows_estimate, header_cols) for csv/txt tabular files."""
+    """Return (n_rows, header_cols) for csv/txt tabular files."""
     try:
         with open(path, "rb") as fh:
             chunk = fh.read(max_bytes)
@@ -355,7 +375,13 @@ def sniff_csv(path, max_bytes=65536):
         header = lines[0]
         delim = "\t" if header.count("\t") > header.count(",") else ","
         cols = [c.strip().strip('"') for c in header.split(delim)][:40]
-        return len(lines) - 1, delim.join(cols)
+        # the header comes from the first chunk, but the row count must
+        # cover the whole file, not just the sampled prefix
+        n = 0
+        with open(path, "rb") as fh:
+            for buf in iter(lambda: fh.read(1 << 20), b""):
+                n += buf.count(b"\n")
+        return max(n - 1, 0), delim.join(cols)
     except OSError:
         return None, ""
 
@@ -438,8 +464,8 @@ def main():
                     exp_rows.extend(normalize_table(path, acc))
                 if ext == "txt" and "TestSheet" in name:
                     flex_rows.append(parse_testsheet(path, acc))
-                if cat == "Raw Data" and ext in ("csv", "txt", "asc", "dat", "xlsx", "log"):
-                    n_rows, cols = ("", "") if ext == "xlsx" else sniff_csv(path)
+                if cat == "Raw Data" and ext in ("csv", "txt", "asc", "dat", "xlsx", "xls", "log"):
+                    n_rows, cols = ("", "") if ext in ("xlsx", "xls") else sniff_csv(path)
                     if ext == "xlsx":
                         sheets = extract_xlsx(path, acc, rel)
                         xlsx_files += len(sheets)
@@ -471,7 +497,8 @@ def main():
             if not os.path.isdir(adir):
                 continue
             for name in os.listdir(adir):
-                if name.lower().endswith((".xlsx", ".xls")):
+                # openpyxl only reads .xlsx; legacy .xls stays a raw file
+                if name.lower().endswith(".xlsx"):
                     extract_xlsx(os.path.join(adir, name), acc,
                                  os.path.join(acc, sub, name))
 
