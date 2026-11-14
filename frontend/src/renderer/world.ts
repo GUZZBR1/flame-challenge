@@ -1,6 +1,6 @@
 import { Container, Graphics, Sprite } from 'pixi.js'
 import type { Application } from 'pixi.js'
-import { GRID_H, GRID_W, ROOM_SPECS, TILE_H } from '../game/config'
+import { BALANCE, GRID_H, GRID_W, ROOM_SPECS, TILE_H, mulberry32 } from '../game/config'
 import type { Engine } from '../game/engine'
 import { isoToScreen } from '../game/iso'
 import type { Rect, Room, Vec } from '../game/types'
@@ -113,6 +113,8 @@ export function createWorld(app: Application, engine: Engine, ui: WorldUI): Worl
   const fireSprites = new Map<string, Sprite>()
   const smoke: Smoke[] = []
   let smokeAcc = 0
+  // fx-only rng — seeded from the game seed so replays stay deterministic
+  const fxRng = mulberry32(engine.state.seed ^ 0x5eed)
 
   function crewSprite(id: number): Sprite {
     let s = crewSprites.get(id)
@@ -199,10 +201,9 @@ export function createWorld(app: Application, engine: Engine, ui: WorldUI): Worl
       if (!f.hidden && smokeAcc > 0.22 && f.intensity > 0.35) {
         const sp = new Sprite(tex.smoke)
         sp.anchor.set(0.5)
-        sp.position.set(p.x + (Math.random() - 0.5) * 10, p.y - 18)
-        sp.zIndex = 9999
-        actors.addChild(sp)
-        smoke.push({ s: sp, life: 1, vy: 18 + Math.random() * 14 })
+        sp.position.set(p.x + (fxRng() - 0.5) * 10, p.y - 18)
+        smokeLayer.addChild(sp)
+        smoke.push({ s: sp, life: 1, vy: 18 + fxRng() * 14 })
       }
     }
     if (smokeAcc > 0.22) smokeAcc = 0
@@ -289,11 +290,16 @@ export function createWorld(app: Application, engine: Engine, ui: WorldUI): Worl
             )
           })
           if (!near) continue
-          const c0 = isoToScreen(room.rect.x, room.rect.y)
-          const c1 = isoToScreen(room.rect.x + room.rect.w, room.rect.y)
-          const c2 = isoToScreen(room.rect.x + room.rect.w, room.rect.y + room.rect.h)
-          const c3 = isoToScreen(room.rect.x, room.rect.y + room.rect.h)
-          fx.poly([c0.x, c0.y, c1.x, c1.y, c2.x, c2.y, c3.x, c3.y]).stroke({
+          const top = isoToScreen(room.rect.x, room.rect.y)
+          const right = isoToScreen(room.rect.x + room.rect.w - 1, room.rect.y)
+          const bottom = isoToScreen(room.rect.x + room.rect.w - 1, room.rect.y + room.rect.h - 1)
+          const left = isoToScreen(room.rect.x, room.rect.y + room.rect.h - 1)
+          fx.poly([
+            top.x, top.y - TILE_H / 2,
+            right.x + 32, right.y,
+            bottom.x, bottom.y + TILE_H / 2,
+            left.x - 32, left.y,
+          ]).stroke({
             width: 2,
             color: 0xffb347,
             alpha: pulse,
@@ -313,7 +319,7 @@ export function createWorld(app: Application, engine: Engine, ui: WorldUI): Worl
         prog = room.experiment.progress
         col = 0x67e8f9
       } else if (room.fabJob) {
-        prog = 1 - room.fabJob.remaining / 18
+        prog = 1 - room.fabJob.remaining / BALANCE.fabDurationSec
         col = 0xb99fe0
       }
       if (prog >= 0) {

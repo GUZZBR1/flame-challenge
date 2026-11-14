@@ -43,16 +43,20 @@ export default function ExperimentModal({ engine, roomId, onClose }: Props) {
   const loc = limitingO2(inv)
 
   // live risk from the C++ core when the backend is up (local model otherwise)
+  // — debounced so slider drags don't queue a request per step
   useEffect(() => {
     let live = true
-    previewExperiment(inv, o2, flow).then((p) => {
-      if (!live) return
-      setPhysics(p.engine)
-      setPressure(p.ignitionPressure)
-      setSpec(specFor(inv, o2, flow, p.ignitionPressure))
-    })
+    const timer = setTimeout(() => {
+      previewExperiment(inv, o2, flow).then((p) => {
+        if (!live) return
+        setPhysics(p.engine)
+        setPressure(p.ignitionPressure)
+        setSpec(specFor(inv, o2, flow, p.ignitionPressure))
+      })
+    }, 180)
     return () => {
       live = false
+      clearTimeout(timer)
     }
   }, [inv, o2, flow])
 

@@ -228,6 +228,11 @@ def main() -> int:
     # pipeline mirrors them into the bundle.
     for authored in ("historical_scenarios.json", "tech_spinoffs.json"):
         src = ROOT / "shared" / "calibrated-data" / authored
+        if not src.exists():
+            raise FileNotFoundError(
+                f"authored contract missing: {src} — create it under "
+                "shared/calibrated-data/ (see docs/NASA_PSI_REFERENCES.md)"
+            )
         (FRONTEND_DATA / authored).write_text(src.read_text())
     print(f"wrote calibration + risk_profiles + psi_experiments — "
           f"{len(materials)} materials, {len(inv_map)} investigations")

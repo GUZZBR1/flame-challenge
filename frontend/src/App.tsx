@@ -32,6 +32,7 @@ export default function App() {
       else if (e.key === 'Escape') {
         setMode('inspect')
         setExpRoom(null)
+        setMissionOpen(false)
       }
     }
     window.addEventListener('keydown', onKey)

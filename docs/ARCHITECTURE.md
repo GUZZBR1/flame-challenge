@@ -2,32 +2,33 @@
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│ data/ (Python)                                          │
-│   psi_search.py → raw PSI JSON    calibrate_constants.py          │
-│   ntrs_search.py → raw NTRS JSON  ──────────────┐                 │
-│   build_dataset.py → merged dataset             ▼                 │
-│                          processed/calibration.json               │
+│ data/ (Python pipelines)                                         │
+│   psi_search.py → raw PSI JSON    calibrate_constants.py         │
+│   ntrs_search.py → raw NTRS JSON  ──────────────┐                │
+│   build_dataset.py → merged dataset             ▼                │
+│                  shared/calibrated-data/*.json                   │
 └──────────────┬───────────────────────────────┬───────────────────┘
-               │ materials + inv→model map      │ dataset
-               ▼                                ▼
-┌──────────────────────────┐      ┌─────────────────────────────────┐
-│ core/ (C++20)     │      │ frontend/ (React+PixiJS)    │
-│  combustion_solver  —    │      │  src/game/     sim (crew, fire) │
-│    FLEX droplet d²-law   │      │  src/render/   iso world        │
-│  airflow_propagator —    │      │  src/engine-client/             │
-│    SAFFIRE solid spread  │      │    physics.ts ──┐               │
-│  material_risk — ACME    │      │                 │ fallback      │
-│    flammability matrix   │      │  HUD components │               │
-│  chamber.hpp — aggregate │      │                 ▼               │
-│    API used by the game  │      │  preview: local model (offline) │
-└──────────┬───────────────┘      └─────────────▲───────────────────┘
-           │ pybind11                           │ HTTP /api/*, WS /ws/*
-           ▼                                    │
+               │ materials + inv→model map     │ dataset
+               ▼                               ▼
+┌──────────────────────────┐     ┌──────────────────────────────────┐
+│ core/ (C++20)            │     │ frontend/ (React + PixiJS)       │
+│  combustion_solver  —    │     │  src/game/      sim (crew, fire) │
+│    FLEX droplet d²-law   │     │  src/renderer/  iso world        │
+│  airflow_propagator —    │     │  src/sim-bridge/                 │
+│    SAFFIRE solid spread  │     │    physics.ts ──┐                │
+│  material_risk — ACME    │     │                 │ fallback       │
+│    flammability matrix   │     │  src/ui/        HUD + modals     │
+│  chamber.hpp — aggregate │     │                 ▼                │
+│    API used by the game  │     │  preview: local model (offline)  │
+└──────────┬───────────────┘     └─────────────▲────────────────────┘
+           │ pybind11                          │ HTTP /api/*, WS /ws/*
+           ▼                                   │
 ┌──────────────────────────┐                   │
-│ backend/ (FastAPI)   │───────────────────┘
-│  /health                 │  engine_bridge.py loads
-│  /api/chamber/preview    │  freefall_engine .so +
-│  /api/materials          │  calibration.json
+│ backend/ (FastAPI)       │───────────────────┘
+│  api/ + services/        │  services/engine_bridge.py
+│  /health                 │  loads freefall_engine .so +
+│  /api/chamber/preview    │  calibration.json
+│  /api/materials          │
 │  /ws/chamber (30 Hz)     │
 └──────────────────────────┘
 ```
@@ -38,7 +39,9 @@
 2. `physics.ts` calls `POST /api/chamber/preview` → the C++ `MaterialRisk`
    returns `ignitionPressure` for that material/atmosphere. Offline, the
    mirrored TS model returns the same curve.
-3. `specFor()` maps pressure → ignition risk %, and dataset fields →
+3. `specFor()` maps pressure → ignition risk % and decomposes it into
+   `RiskFactors` (ignition / propagation / detection / persistence) using
+   weights from `risk_profiles.json`; dataset fields also feed
    hidden-fire / smolder flags.
 4. The TS sim runs the chamber on the ship deck (crew, spread, damage);
    the C++ solver gates *whether and how* ignition happens.

@@ -243,8 +243,12 @@ export class Engine {
     const s = SCENARIOS.find((x) => x.id === id)
     if (!s) return false
     const ok = applyScenario(this.state, id, this.rng, this.log)
-    if (!ok) this.notice('No active module to host the scenario')
-    return ok
+    if (!ok) {
+      this.notice('No active module to host the scenario')
+      return false
+    }
+    this.emit()
+    return true
   }
 
   /** spend science on a NASA spin-off upgrade */
@@ -252,6 +256,7 @@ export class Engine {
     if (buyTechImpl(this.state, id)) {
       const t = this.state.tech[this.state.tech.length - 1]
       this.log('science', `Unlocked ${t} — NASA spin-off technology fielded.`)
+      this.emit()
       return true
     }
     this.notice('Insufficient science')
@@ -427,16 +432,16 @@ export class Engine {
       e.gameOver = 'lost'
       this.log('danger', 'No crew left alive. The yard drifts silent.')
     }
+    if (e.gameOver) this.emit()
   }
 
   // ---------- main tick ----------
 
   step(dtReal: number) {
     const e = this.state
-    if (e.gameOver || e.speed === 0) {
-      this.emit()
-      return
-    }
+    // paused/ended: state changes are emitted by their own call sites
+    // (setSpeed, checkEnd) — don't re-emit every tick
+    if (e.gameOver || e.speed === 0) return
     const dt = dtReal * e.speed
     e.time += dt
     this.emitAcc += dtReal

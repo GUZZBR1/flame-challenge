@@ -1,5 +1,5 @@
 import data from '../data/historical_scenarios.json'
-import { GRID_H, GRID_W } from './config'
+import { BALANCE, GRID_H, GRID_W } from './config'
 import { isWalkable } from './fire'
 import { rectContains, tileKey } from './types'
 import type { GameState, Room } from './types'
@@ -43,7 +43,7 @@ function seed(state: GameState, x: number, y: number, s: ScenarioDef, base: numb
   if (state.fires.has(k)) return
   const e = s.effects
   const room = state.rooms.find((r) => rectContains(r.rect, x, y))
-  const fuel = room && room.type !== 'deck' ? 30 : 14
+  const fuel = room && room.type !== 'deck' ? BALANCE.fireFuelModule : BALANCE.fireFuelDeck
   state.fires.set(k, {
     x,
     y,
@@ -98,7 +98,7 @@ export function applyScenario(
       seed(state, x, y, s, 0.4)
       spilled++
     }
-    seed(state, room.rect.x + ((room.rect.w / 2) | 0), room.rect.y + ((room.rect.h / 2) | 0), s, 0.4)
+    seed(state, room.rect.x + Math.floor(room.rect.w / 2), room.rect.y + Math.floor(room.rect.h / 2), s, 0.4)
   } else {
     // flashover / self-fed fire: seed a fraction of the room's tiles
     const tiles: [number, number][] = []
