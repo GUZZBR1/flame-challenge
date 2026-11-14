@@ -265,7 +265,11 @@ export default function Challenge() {
             </p>
             <p className="mt-4 text-[clamp(13px,1.15vw,15px)] leading-[1.75] text-[var(--ink)] opacity-80">
               the engine is a compiled c++20 core calibrated against iss
-              experiment telemetry — not a scripted animation.
+              experiment telemetry — not a scripted animation. ignis models
+              fire where crews live: cabins, habitats, stations, crewed
+              vehicles. rocket-motor and propellant combustion is
+              explicitly out of scope — at engine speeds, combustion stops
+              caring about gravity.
             </p>
           </div>
         </div>

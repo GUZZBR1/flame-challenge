@@ -25,10 +25,18 @@ backend only — no client. See `docs/`.
   (`calibration.json`, `risk_profiles.json` — the single source of truth
   for the C++ core)
 - `backend/` — `api/` FastAPI routes + `services/` (`engine_bridge.py`
-  pybind, `rag.py` retrieval/SQL-RAG, `risk.py` cabin simulator):
-  `/health`, `/api/chamber/preview`, `/api/materials`, `WS /ws/chamber`
-  (30 Hz), `/api/search`, `/api/ask`, `/api/risk`, `/api/risk/curve`,
-  `/api/rag/stats`
+  pybind, `rag.py` retrieval/SQL-RAG, `risk.py` cabin simulator,
+  `diff.py` run-pair differ): `/health`, `/api/chamber/preview`,
+  `/api/materials`, `WS /ws/chamber` (30 Hz), `/api/search`, `/api/ask`,
+  `/api/risk`, `/api/risk/curve`, `/api/risk/rank`, `/api/rag/stats`,
+  `/api/investigations`, `/api/runs`, `/api/diff`, `/api/diffs`,
+  `/api/decision-cards`, `/api/neighbors`
+- `site/` — IGNIS dashboard (Vite + React 19 + Tailwind 4 + GSAP):
+  editorial hero/challenge + `#dashboard` section (summarize · rank ·
+  interpret pillars, theme-filtered investigation matrix, scenario risk
+  ranking, tactical cards, investigation diff). Offline fallback mirrors
+  the same fitted model via `src/lib/risk.ts` + `src/lib/dashboard.ts`;
+  live mode proxies `/api` to :8000 (see `vite.config.ts`).
 - `docs/` — challenge brief, ARCHITECTURE.md, NASA_PSI_REFERENCES.md,
   data-schema.md
 - `assets/` — media sources (tilesets, crew sprites, audio); empty
@@ -40,11 +48,14 @@ backend only — no client. See `docs/`.
 - `./.venv/bin/python data/pipelines/calibrate_constants.py`
 - `./.venv/bin/uvicorn backend.api.main:app --port 8000`
 - `./.venv/bin/pip install ...` — PEP 668 managed env; always use `.venv`
+- `cd site && npm run build` (tsc + vite) / `npm run dev` / `npx oxlint`
+- `./.venv/bin/python -m pytest backend/tests` — API + services tests
 - ETL (in order): `psi_search.py --all` → `psi_files.py --all` →
   `ntrs_search.py --all --fulltext 3` → `normalize_experiments.py` →
   `build_index.py` → `build_dataset.py` → `calibrate_constants.py` →
   `fit_risk_model.py` → `build_master_sheet.py` (auditable
   `data/processed/nasa_combustion_master.csv` + `data/bundle/master_sheet.json`)
+  → `build_investigation_diffs.py` (`data/bundle/investigation_diffs.json`)
 
 ## Conventions
 

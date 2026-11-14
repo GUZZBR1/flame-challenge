@@ -36,6 +36,12 @@ The merged dataset lives in a single JSON file (`data/bundle/investigations.json
 | `metrics.smolderObserved` | boolean | |
 | `keyFindings` | string[] | 2–4 bullets, plain language |
 | `safetyImplications` | string[] | actionable fire-safety takeaways |
+| `objectives` | string[] | experiment goals (dashboard attribute) |
+| `apparatus` | string | rig/hardware, incl. fuel form & size context |
+| `sensors` | string[] | measurement types used (dashboard attribute) |
+| `testVariables.held` / `.varied` | string[] | intra-experiment variation: controls vs swept parameters (dashboard attribute) |
+| `themes` | enum[] | `detection`, `suppression`, `duct-flow`, `partial-gravity`, `large-scale`, `spread`, `flammability` — the filter chips |
+| `conditions.suppressants` | string[] | optional — diluents tested (FLEX: N₂, CO₂, He) |
 | `hazards` | enum[] | see `HazardTag` in `src/types.ts` |
 | `data.availability` | `full`\|`partial`\|`metadata-only` | |
 | `data.psiUrl` | string\|null | PSI record link |
@@ -76,3 +82,11 @@ test files were parsed. `build_dataset.py` deep-merges them (nested
 
 Normalized per-run schema (`data/processed/experiments.csv`) is documented
 in `docs/DATA_PIPELINE.md`.
+
+## Diff cards — `data/bundle/investigation_diffs.json`
+
+`data/pipelines/build_investigation_diffs.py` diffs curated pairs of real
+runs (same investigation, one variable isolated) into `cards[]`:
+`runA`/`runB` snapshots, `changed[{field,label,a,b}]`,
+`held[{field,label,value}]`, plus a human `insight`. Served live by
+`GET /api/diffs`; arbitrary pairs by `GET /api/diff?a=<runId>&b=<runId>`.

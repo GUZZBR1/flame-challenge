@@ -36,6 +36,17 @@
         "Materials qualified as 'low flammability' on Earth can sustain flame spread in spacecraft cabins — qualification limits must be re-derived for microgravity.",
         "Weak forced ventilation may not extinguish a flame; both high-flow and quiescent regimes need fire-response procedures."
       ],
+      "objectives": [
+        "Map the ignition and extinction boundaries of flame spread over flat solid fuels in sustained microgravity.",
+        "Test whether materials qualified as low-flammability on Earth remain non-propagating in \u00b5g."
+      ],
+      "apparatus": "CIR flat solid-fuel holder — thin PMMA sheets in an opposed-flow duct",
+      "sensors": ["video flame imaging", "radiometers", "flame-spread position tracking"],
+      "testVariables": {
+        "held": ["flat PMMA sheet geometry", "ambient pressure ~101 kPa"],
+        "varied": ["O2 15–24%", "opposed flow 0–25 cm/s"]
+      },
+      "themes": ["spread", "flammability"],
       "hazards": ["low-oxygen-persistence", "exploration-atmosphere"],
       "data": {
         "availability": "partial",
@@ -50,7 +61,7 @@
       "title": "Burning and Suppression of Solids II",
       "agencies": ["NASA"],
       "platform": "ISS",
-      "facility": "Combustion Integrated Rack (CIR)",
+      "facility": "Microgravity Science Glovebox (MSG) flow duct",
       "years": "2012–2017",
       "status": "completed",
       "category": "solid-flame-spread",
@@ -77,6 +88,17 @@
         "Suppression strategies relying on airflow changes must account for non-monotonic extinction behavior.",
         "Elevated-O2 exploration atmospheres widen the flammable envelope for common spacecraft solids."
       ],
+      "objectives": [
+        "Measure opposed-flow flame spread and extinction over small solid samples across O2 and ventilation regimes.",
+        "Characterize \u00b5g-unique transitions: steady burn \u2192 abrupt extinction \u2192 smolder."
+      ],
+      "apparatus": "MSG modular flow duct with fan — spheres, slabs and sheets on a sample holder",
+      "sensors": ["video flame imaging", "radiometers", "thermocouples", "O2/CO2 gas analyzers"],
+      "testVariables": {
+        "held": ["MSG duct rig", "ambient pressure"],
+        "varied": ["fuel (PMMA, cotton, Nomex, polycarbonate)", "sample form/size (1–2 cm spheres, slabs, sheets)", "O2 17–40%", "duct flow 0–20 cm/s"]
+      },
+      "themes": ["suppression", "duct-flow", "spread"],
       "hazards": ["low-oxygen-persistence", "smolder-risk", "exploration-atmosphere"],
       "data": {
         "availability": "partial",
@@ -98,9 +120,10 @@
       "gravity": "microgravity",
       "fuels": ["n-heptane", "methanol", "iso-octane", "decanol blends"],
       "conditions": {
-        "oxygenPct": [14, 21],
+        "oxygenPct": [13, 25],
         "flowCms": [0, 10],
         "pressureKpa": 101,
+        "suppressants": ["N2", "CO2", "He"],
         "explorationRelevant": true
       },
       "metrics": {
@@ -118,6 +141,17 @@
         "Post-extinction monitoring is essential: fuel vapor can keep reacting and re-ignite or generate CO after 'extinguishment'.",
         "Fire detection must not rely on visible/UV flame signatures alone; gas-phase and thermal sensors are needed."
       ],
+      "objectives": [
+        "Map flammability limits of isolated fuel droplets and quantify gaseous suppressant effectiveness — CO2, He and N2 dilution.",
+        "Measure droplet burning rates, extinction diameters and post-flameout cool-flame chemistry in quiescent \u00b5g."
+      ],
+      "apparatus": "CIR Multi-user Droplet Combustion Apparatus (MDCA) — free-floating ~1–4 mm droplets",
+      "sensors": ["backlit droplet imaging (LLUV)", "UV/visible flame cameras", "radiometers"],
+      "testVariables": {
+        "held": ["free droplet geometry", "ambient pressure ~1 atm"],
+        "varied": ["fuel (n-heptane, methanol, dodecane, iso-octane)", "O2 14–25%", "diluent species & fraction (N2 / CO2 / He)", "droplet d\u2080"]
+      },
+      "themes": ["suppression", "detection"],
       "hazards": ["cool-flames", "detection-gap", "low-oxygen-persistence"],
       "data": {
         "availability": "full",
@@ -159,6 +193,17 @@
         "Soot production physics in microgravity informs smoke detector placement and post-fire contamination cleanup.",
         "BRE enables ground testing of spacecraft material flammability without drop towers."
       ],
+      "objectives": [
+        "Measure structure, soot inception and extinction of laminar coflow diffusion flames without buoyant distortion.",
+        "Emulate solid-fuel burning rates with a gas burner (BRE) to enable ground-based flammability testing."
+      ],
+      "apparatus": "CIR coflow burner — gaseous fuel jet in coflowing oxidizer (E-FIELD adds high-voltage mesh electrodes)",
+      "sensors": ["color/UV flame imaging", "laser soot diagnostics", "ion probes", "thermocouples"],
+      "testVariables": {
+        "held": ["coflow burner geometry"],
+        "varied": ["fuel (CH4, C2H4, C3H8, JP-8 surrogates)", "O2 16–40%", "coflow velocity 0–70 cm/s", "fuel dilution", "E-FIELD voltage & polarity"]
+      },
+      "themes": ["flammability", "duct-flow"],
       "hazards": ["toxic-aerosol"],
       "data": {
         "availability": "full",
@@ -200,6 +245,17 @@
         "Small-scale flammability tests underpredict large-scale fire growth — vehicle-level factors (flow, fuel area) matter.",
         "Post-fire atmosphere data calibrates how long a crewed vehicle remains uninhabitable after a large fire."
       ],
+      "objectives": [
+        "Observe a realistic large-scale fire inside an uncrewed cargo vehicle after departure from the ISS.",
+        "Measure flame spread, material flammability, O2 draw-down and CO/CO2 production at vehicle scale."
+      ],
+      "apparatus": "Cygnus pressurized volume — instrumented flow duct and large material panels",
+      "sensors": ["video flame imaging", "O2/CO/CO2 gas analyzers", "temperature & pressure loggers", "post-fire aerosol sampling"],
+      "testVariables": {
+        "held": ["uncrewed vehicle post-departure", "ducted flow path"],
+        "varied": ["material (SIBAL, Nomex, PMMA panels)", "O2 21–34%", "flow 5–25 cm/s", "vehicle (OA-6 → later flights)"]
+      },
+      "themes": ["large-scale", "spread"],
       "hazards": ["large-scale-spread", "toxic-aerosol", "exploration-atmosphere", "smolder-risk"],
       "data": {
         "availability": "partial",
@@ -241,6 +297,17 @@
         "ISS smoke detectors must be calibrated for larger particle sizes — Earth-calibrated detectors can under-detect.",
         "Aerosol signature libraries could enable detector discrimination between nuisance sources and real fires."
       ],
+      "objectives": [
+        "Measure the size distribution and concentration of smoke particles from overheated and ignited spacecraft materials.",
+        "Benchmark real smoke-detector response against reference aerosol instruments in \u00b5g."
+      ],
+      "apparatus": "MSG sealed aerosol chamber — heated material samples on a carousel",
+      "sensors": ["aerosol moment instruments (number/diameter/mass concentration)", "thermal precipitator \u2192 TEM microscopy", "ISS/Shuttle ionization & photoelectric detectors"],
+      "testVariables": {
+        "held": ["sealed aerosol chamber", "aerosol instrument stack"],
+        "varied": ["material (Teflon, Kapton, Pyrell foam, silicone rubber, cellulose)", "overheated vs ignited regime", "smoke aging time"]
+      },
+      "themes": ["detection"],
       "hazards": ["detection-gap", "toxic-aerosol", "smolder-risk"],
       "data": {
         "availability": "partial",
@@ -282,6 +349,17 @@
         "Equipment racks, cable trays and duct geometries must be assessed for confinement-enhanced fire spread.",
         "Exploration habitat atmospheres cannot be certified with sea-level flammability data."
       ],
+      "objectives": [
+        "Quantify how confinement — parallel plates, rack and duct gaps — changes flame spread versus open \u00b5g tests.",
+        "Measure spread under exploration-like atmospheres: reduced pressure with elevated O2 fraction."
+      ],
+      "apparatus": "CIR confined-channel rig — twin parallel plates with adjustable gap",
+      "sensors": ["flame imaging", "thermocouples", "pressure sensors"],
+      "testVariables": {
+        "held": ["confined-channel geometry per run"],
+        "varied": ["gap width", "O2 19–40%", "pressure ~57 kPa", "fuel (thin paper/PP sheets, PMMA)"]
+      },
+      "themes": ["duct-flow", "spread"],
       "hazards": ["exploration-atmosphere", "large-scale-spread"],
       "data": {
         "availability": "partial",
@@ -323,12 +401,341 @@
         "Fire safety for Moon/Mars missions cannot be interpolated naively from ISS and Earth data — partial-g limits are needed.",
         "Centrifuge-based partial-g testing is the only way to obtain these limits long-duration."
       ],
+      "objectives": [
+        "Map material flammability limits directly at lunar (0.17 g) and martian (0.38 g) gravity.",
+        "Provide the partial-g data anchor that ISS and Earth results cannot interpolate."
+      ],
+      "apparatus": "Kibo module combustion cell mounted on a centrifuge — selectable g level",
+      "sensors": ["flame imaging", "flame-spread tracking", "controlled O2/flow loop"],
+      "testVariables": {
+        "held": ["sample set (PMMA, thin sheets)", "centrifuge rig"],
+        "varied": ["gravity level (\u00b5g / 0.17 g / 0.38 g / 1 g)", "O2 15–40%", "flow 0–30 cm/s"]
+      },
+      "themes": ["partial-gravity", "flammability"],
       "hazards": ["partial-gravity", "exploration-atmosphere", "low-oxygen-persistence"],
       "data": {
         "availability": "metadata-only",
         "psiUrl": "https://psi.nasa.gov/physci/repo"
       },
       "publications": 8,
+      "verified": false
+    },
+    {
+      "id": "bass",
+      "name": "BASS",
+      "title": "Burning and Suppression of Solids",
+      "agencies": ["NASA"],
+      "platform": "ISS",
+      "facility": "Microgravity Science Glovebox (MSG) flow duct",
+      "years": "2011–2013",
+      "status": "completed",
+      "category": "solid-flame-spread",
+      "gravity": "microgravity",
+      "fuels": ["PMMA spheres (1–2 cm)", "SIBAL cloth", "Nomex blends", "wax slabs and candles", "Ultem sheets"],
+      "conditions": {
+        "oxygenPct": null,
+        "flowCms": null,
+        "pressureKpa": 101,
+        "explorationRelevant": true
+      },
+      "metrics": {
+        "limitingOxygenPct": null,
+        "flameSpreadRateCms": null,
+        "coolFlameObserved": false,
+        "smolderObserved": true
+      },
+      "keyFindings": [
+        "Showed that sample geometry and form factor — sphere diameter, sheet thickness, candle vs slab — shift extinction boundaries in µg even when the polymer is unchanged.",
+        "Observed transitions from flaming to smoldering combustion that have no normal-gravity counterpart.",
+        "122 PSI-26 test runs are normalized in this dataset — see the experiment_run records."
+      ],
+      "safetyImplications": [
+        "Fire-safety models must carry geometry as a first-class parameter — the same polymer can extinguish or persist depending on form factor.",
+        "Smolder transitions mean post-flame monitoring is required even after visible burn-out."
+      ],
+      "objectives": [
+        "Quantify burning and extinction behavior of solid fuels in opposed and concurrent forced flow inside the MSG duct.",
+        "Isolate the effect of sample geometry and size on µg flammability limits."
+      ],
+      "apparatus": "MSG modular flow duct with fan — spheres, slabs, sheets and candles on a sample tree",
+      "sensors": ["video flame imaging", "radiometers", "thermocouples", "flow velocity probes"],
+      "testVariables": {
+        "held": ["MSG duct rig", "ambient pressure"],
+        "varied": ["fuel and form factor (1–2 cm spheres, slabs, sheets, candles)", "flow direction (opposed vs concurrent)", "O2 atmosphere"]
+      },
+      "themes": ["duct-flow", "suppression", "spread"],
+      "hazards": ["smolder-risk", "low-oxygen-persistence", "exploration-atmosphere"],
+      "data": {
+        "availability": "full",
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26"
+      },
+      "psiRuns": 122,
+      "psiAccessions": ["PSI-26"],
+      "publications": 18,
+      "verified": false
+    },
+    {
+      "id": "same-r",
+      "name": "SAME-R",
+      "title": "Smoke Aerosol Measurement Experiment — Reflight",
+      "agencies": ["NASA"],
+      "platform": "ISS",
+      "facility": "SAME hardware (reflight series)",
+      "years": "2017–2024",
+      "status": "completed",
+      "category": "smoke-aerosol",
+      "gravity": "microgravity",
+      "fuels": ["Teflon", "Kapton", "Pyrell foam", "silicone rubber", "cellulose"],
+      "conditions": {
+        "oxygenPct": [21, 21],
+        "flowCms": null,
+        "pressureKpa": 101,
+        "explorationRelevant": true
+      },
+      "metrics": {
+        "limitingOxygenPct": null,
+        "flameSpreadRateCms": null,
+        "coolFlameObserved": false,
+        "smolderObserved": true
+      },
+      "keyFindings": [
+        "Reflew the SAME diagnostic stack on the SAME flight hardware to extend µg smoke-particle statistics and validate the lognormal size-distribution assumption used by the moment method.",
+        "Compared ionization and photoelectric detector responses against reference aerosol instruments on the same microgravity smoke.",
+        "Public PSI release PSI-101 (2024) packages the reflight dataset."
+      ],
+      "safetyImplications": [
+        "Extends the calibration basis for next-generation smoke detectors on Gateway and lunar habitats.",
+        "Confirms Earth-calibrated detectors need µg-specific particle-size correction before deployment in exploration cabins."
+      ],
+      "objectives": [
+        "Extend SAME smoke-aerosol measurements to additional materials and longer smoke aging.",
+        "Validate detector-response models required for next-generation spacecraft smoke detectors."
+      ],
+      "apparatus": "SAME hardware reflight — sealed aerosol chamber with sample carousel",
+      "sensors": ["aerosol moment instruments", "ionization smoke detector (SAME heritage)", "thermal precipitator \u2192 TEM", "reference photometers"],
+      "testVariables": {
+        "held": ["SAME hardware stack", "sealed aerosol chamber"],
+        "varied": ["target material", "smoke aging time"]
+      },
+      "themes": ["detection"],
+      "hazards": ["detection-gap", "toxic-aerosol", "smolder-risk"],
+      "data": {
+        "availability": "metadata-only",
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-101"
+      },
+      "publications": 6,
+      "verified": false
+    },
+    {
+      "id": "spice",
+      "name": "SPICE",
+      "title": "Smoke Point In Co-flow Experiment",
+      "agencies": ["NASA"],
+      "platform": "ISS",
+      "facility": "Microgravity Science Glovebox (MSG)",
+      "years": "2009–2011",
+      "status": "completed",
+      "category": "gaseous-diffusion",
+      "gravity": "microgravity",
+      "fuels": ["gas-jet fuels (methane, propane)"],
+      "conditions": {
+        "oxygenPct": [21, 21],
+        "flowCms": null,
+        "pressureKpa": 101,
+        "explorationRelevant": true
+      },
+      "metrics": {
+        "limitingOxygenPct": null,
+        "flameSpreadRateCms": null,
+        "coolFlameObserved": false,
+        "smolderObserved": false
+      },
+      "keyFindings": [
+        "Determined laminar smoke points — the largest soot-free flame — for non-buoyant gas-jet flames.",
+        "Smoke points proved substantially different in reduced gravity than in normal gravity; increasing coflow velocity or decreasing burner diameter raises the µg smoke point.",
+        "Hardware lineage runs SPICE \u2192 SLICE \u2192 ACME CLD Flame, chaining the coflow dataset."
+      ],
+      "safetyImplications": [
+        "Sooting-propensity data feeds fire-spread and contamination models — soot carries most of a fire's radiant heat and drives detector loading.",
+        "Gas-jet flame data covers the leak-and-ignite scenario inside ducted hardware."
+      ],
+      "objectives": [
+        "Measure smoke-point properties of non-buoyant jet diffusion flames across fuels and nozzle/coflow configurations.",
+        "Provide soot-inception data to validate combustion and fire-spread models."
+      ],
+      "apparatus": "MSG enclosed coflow burner — gas jet inside a coaxial oxidizer stream",
+      "sensors": ["still/video flame imaging", "smoke-point onset determination", "coflow velocity control"],
+      "testVariables": {
+        "held": ["enclosed coflow burner"],
+        "varied": ["fuel", "nozzle diameter", "coflow velocity"]
+      },
+      "themes": ["duct-flow"],
+      "hazards": ["toxic-aerosol"],
+      "data": {
+        "availability": "metadata-only",
+        "psiUrl": "https://psi.nasa.gov/physci/repo"
+      },
+      "publications": 10,
+      "verified": false
+    },
+    {
+      "id": "slice",
+      "name": "SLICE",
+      "title": "Structure & Liftoff In Combustion Experiment",
+      "agencies": ["NASA"],
+      "platform": "ISS",
+      "facility": "Microgravity Science Glovebox (MSG) — SPICE hardware",
+      "years": "2011–2012",
+      "status": "completed",
+      "category": "gaseous-diffusion",
+      "gravity": "microgravity",
+      "fuels": ["methane", "ethylene", "nitrogen-diluted methane/ethylene"],
+      "conditions": {
+        "oxygenPct": [21, 21],
+        "flowCms": null,
+        "pressureKpa": 101,
+        "explorationRelevant": true
+      },
+      "metrics": {
+        "limitingOxygenPct": null,
+        "flameSpreadRateCms": null,
+        "coolFlameObserved": false,
+        "smolderObserved": false
+      },
+      "keyFindings": [
+        "Captured a unique coflow-jet dataset spanning weak near-extinction flames to strong heavily-sooting flames.",
+        "µg flames destabilize at higher forced airflows — the 0g/1g liftoff-flow difference is comparable to the 1g buoyant velocity.",
+        "Lower flame temperatures and dramatically higher soot concentrations than normal-gravity twins on the same hardware."
+      ],
+      "safetyImplications": [
+        "Flame attachment/stability physics governs whether a flame stays anchored at a leak point or propagates downstream through ducts.",
+        "Soot-rich µg flames sharpen the contamination case for post-fire cleanup requirements."
+      ],
+      "objectives": [
+        "Determine laminar diffusion flame structure and liftoff (stabilization) limits as functions of fuel and burner diameter.",
+        "Provide a validation dataset for combustion models including radiation, soot and detailed kinetics."
+      ],
+      "apparatus": "MSG coflow burner (SPICE heritage) — fuel jet in coflowing air",
+      "sensors": ["color digital flame imaging", "thermocouple-calibrated soot volume fraction", "CH* chemiluminescence"],
+      "testVariables": {
+        "held": ["burner and coflow geometry"],
+        "varied": ["fuel (methane vs ethylene vs N2-diluted)", "jet velocity \u2192 liftoff boundary"]
+      },
+      "themes": ["duct-flow"],
+      "hazards": ["toxic-aerosol", "detection-gap"],
+      "data": {
+        "availability": "metadata-only",
+        "psiUrl": "https://psi.nasa.gov/physci/repo"
+      },
+      "publications": 10,
+      "verified": false
+    },
+    {
+      "id": "acme-efield",
+      "name": "ACME E-FIELD Flames",
+      "title": "ACME — Electric-Field Effects on Laminar Flames",
+      "agencies": ["NASA"],
+      "platform": "ISS",
+      "facility": "Combustion Integrated Rack (CIR) coflow burner",
+      "years": "2021–2022",
+      "status": "completed",
+      "category": "partial-gravity",
+      "gravity": "microgravity",
+      "fuels": ["methane", "ethylene", "diluted CH4/C2H4"],
+      "conditions": {
+        "oxygenPct": null,
+        "flowCms": null,
+        "pressureKpa": 101,
+        "explorationRelevant": true
+      },
+      "metrics": {
+        "limitingOxygenPct": null,
+        "flameSpreadRateCms": null,
+        "coolFlameObserved": false,
+        "smolderObserved": false
+      },
+      "keyFindings": [
+        "Applied electric fields to flame ions — the resulting ion wind mimics buoyant convection, giving a controllable body-force 'gravity knob' between 0g and 1g behavior.",
+        "Field polarity and voltage measurably reshape the flame, shift soot production and move extinction boundaries.",
+        "21 PSI-22 runs are normalized in this dataset — see the experiment_run records."
+      ],
+      "safetyImplications": [
+        "Partial-gravity fire behavior (Moon 0.17 g, Mars 0.38 g) can be bracketed on-orbit without a centrifuge — complements FLARE.",
+        "Ion-wind suppression is a candidate clean extinguishment mechanism for habitats."
+      ],
+      "objectives": [
+        "Quantify how electric fields modify laminar flame structure, soot and extinction via ion wind.",
+        "Use the field as a controllable body-force analog to interpolate flame behavior between 0g and 1g."
+      ],
+      "apparatus": "CIR coflow burner with high-voltage mesh electrodes around the flame",
+      "sensors": ["flame imaging", "mesh polarity/voltage logs", "soot diagnostics"],
+      "testVariables": {
+        "held": ["coflow burner + electrode geometry"],
+        "varied": ["fuel (CH4, C2H4 and dilutions)", "field polarity", "voltage magnitude"]
+      },
+      "themes": ["partial-gravity"],
+      "hazards": ["partial-gravity", "exploration-atmosphere", "detection-gap"],
+      "data": {
+        "availability": "full",
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22"
+      },
+      "psiRuns": 21,
+      "psiAccessions": ["PSI-22"],
+      "publications": 8,
+      "verified": false
+    },
+    {
+      "id": "cfi",
+      "name": "ACME CFI / CFI-G",
+      "title": "ACME — Cool Flames Investigation (with Gases)",
+      "agencies": ["NASA"],
+      "platform": "ISS",
+      "facility": "Combustion Integrated Rack (CIR)",
+      "years": "2021–2023",
+      "status": "completed",
+      "category": "gaseous-diffusion",
+      "gravity": "microgravity",
+      "fuels": ["ethane", "propane", "butane", "diluted alkane feeds"],
+      "conditions": {
+        "oxygenPct": [21, 39],
+        "flowCms": null,
+        "pressureKpa": 101,
+        "explorationRelevant": true
+      },
+      "metrics": {
+        "limitingOxygenPct": null,
+        "flameSpreadRateCms": null,
+        "coolFlameObserved": true,
+        "smolderObserved": false
+      },
+      "keyFindings": [
+        "Largest single corpus in this dataset — 333 PSI-159 runs mapping the boundary between no-ignition, oxygen-limit extinction and sustained burnout for gaseous alkanes.",
+        "Systematically varied fuel species and dilution (100% \u2192 30–50%) to bracket where cool and hot flames survive at elevated O2.",
+        "Cool-flame events documented within the run matrix — extending FLEX droplet results to gaseous fuels."
+      ],
+      "safetyImplications": [
+        "The no-ignition/extinction/burnout boundary is the operational map for leak scenarios in fuel-handling hardware.",
+        "Fuel dilution is as sharp a safety lever as O2 control — relevant to inerting procedures after a leak."
+      ],
+      "objectives": [
+        "Map ignition, extinction and cool-flame boundaries of gaseous alkane flames in a spherical burner.",
+        "Quantify the effect of fuel dilution on flammability limits at elevated O2."
+      ],
+      "apparatus": "CIR spherical gaseous burner — ignition at the center of a quiescent chamber",
+      "sensors": ["flame imaging", "ignition logs", "chamber pressure/temperature"],
+      "testVariables": {
+        "held": ["spherical burner geometry", "ambient pressure"],
+        "varied": ["fuel (ethane, propane, butane)", "fuel dilution (30–100%)", "O2 ~21–39%"]
+      },
+      "themes": ["flammability", "detection"],
+      "hazards": ["cool-flames", "detection-gap", "low-oxygen-persistence"],
+      "data": {
+        "availability": "full",
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159"
+      },
+      "psiRuns": 333,
+      "psiAccessions": ["PSI-159"],
+      "publications": 10,
       "verified": false
     }
   ]

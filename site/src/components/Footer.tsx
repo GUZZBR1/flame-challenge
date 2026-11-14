@@ -4,6 +4,7 @@ import { getLenis } from '../lib/scroll'
 const LINKS = [
   { label: 'challenge', href: '#challenge' },
   { label: 'simulations', href: '#simulations' },
+  { label: 'dashboard', href: '#dashboard' },
   { label: 'psi-dataset', href: '#psi-dataset' },
   { label: 'crew', href: '#crew' },
   { label: 'vision', href: '#vision' },
@@ -62,8 +63,9 @@ export default function Footer() {
               IGNIS
             </p>
             <p className="mt-4 max-w-[36ch] font-mono text-[11px] lowercase leading-relaxed tracking-[0.08em] text-[#edf4fa99]">
-              orbital shipyard sim — microgravity combustion physics driven by
-              real nasa psi experiment data.
+              fire-safety insight for crewed spacecraft — microgravity
+              combustion physics driven by real nasa psi experiment data.
+              cabins &amp; habitats, not propulsion.
             </p>
           </div>
 

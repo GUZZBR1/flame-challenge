@@ -1,0 +1,806 @@
+{
+ "generated": "build_investigation_diffs.py",
+ "source": "data/processed/experiments.csv",
+ "cards": [
+  {
+   "id": "flex-co2-vs-he",
+   "title": "FLEX — suppressant swap at fixed O₂",
+   "hook": "co₂ vs he, 15% each",
+   "insight": "Same fuel (heptane), same 18% O₂, same 15% diluent fraction — CO₂ leaves a cool flame burning after the visible flame dies; He does not. Suppressant chemistry, not just O₂ displacement, decides whether a fire is really out.",
+   "runA": {
+    "runId": "FLEX-154",
+    "accession": "PSI-69",
+    "investigationId": "flex-2",
+    "fuel": "Heptane",
+    "material_id": "heptane",
+    "o2_pct": "18.0",
+    "n2_pct": "67.0",
+    "co2_pct": "15.0",
+    "he_pct": "0.0",
+    "pressure_kpa": "101.3",
+    "temp_k": "299.26",
+    "droplet_d0_mm": "3.7",
+    "burn_rate_mm2_s": "0.34",
+    "extinction_d_mm": "3.6",
+    "outcome": "extinction",
+    "extinction_type": "cool-flame",
+    "cool_flame": "True",
+    "fiber_support": "No",
+    "comments": "Free-floating heptane droplet burning in a 0.18/0.67/0.15 O2/N2/CO2, 1.0 atm ambient environment. Almost no residual motion after deployment and ignition. This is a relatively large droplet that stayed in the HiBMS FOV for the entire (short) burn and the entire recording time of the HiBMS IPSU. The droplet radiatively extinguishes after a short burn with no flame oscillations. There is significant post visible flame extinction vaporoization and large vapor cloud formed late in the recording time. The post visible flame extinction behavior is indicative of cool flame burning and extinction.",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69"
+   },
+   "runB": {
+    "runId": "FLEX-239",
+    "accession": "PSI-69",
+    "investigationId": "flex-2",
+    "fuel": "Heptane",
+    "material_id": "heptane",
+    "o2_pct": "18.0",
+    "n2_pct": "67.0",
+    "co2_pct": "0.0",
+    "he_pct": "15.0",
+    "pressure_kpa": "102.3",
+    "temp_k": "298.16",
+    "droplet_d0_mm": "2.3",
+    "burn_rate_mm2_s": "0.49",
+    "extinction_d_mm": "0.97",
+    "outcome": "extinction",
+    "extinction_type": "oxygen-limit",
+    "cool_flame": "False",
+    "fiber_support": "No",
+    "comments": "Free-floating heptane droplet burning in a 0.18/0.67/0.15 O2/N2/He, 1.0 atm ambient environment. The droplet drifts N after deployment and ignition and out of the HiBMS FOV 1/3rd of the way through the burn. The flame remains in the FOV of both the LLUV and color camera for the duration of the burn. The flame is bright and very luminous from soot oxidation initially, but quickly becomes dimmer blue. The luminosity increases slightly as the flame gets near extinction. Because the droplet is out of the HiBMS FOV for the majority of the test, there is no extinction diameter reported.",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69"
+   },
+   "investigationId": "flex-2",
+   "sameInvestigation": true,
+   "accessions": [
+    "PSI-69",
+    "PSI-69"
+   ],
+   "changed": [
+    {
+     "field": "co2_pct",
+     "label": "CO₂ %",
+     "a": "15.0",
+     "b": "0.0"
+    },
+    {
+     "field": "he_pct",
+     "label": "He %",
+     "a": "0.0",
+     "b": "15.0"
+    },
+    {
+     "field": "pressure_kpa",
+     "label": "pressure kPa",
+     "a": "101.3",
+     "b": "102.3"
+    },
+    {
+     "field": "temp_k",
+     "label": "ambient K",
+     "a": "299.26",
+     "b": "298.16"
+    },
+    {
+     "field": "droplet_d0_mm",
+     "label": "droplet d₀ mm",
+     "a": "3.7",
+     "b": "2.3"
+    },
+    {
+     "field": "burn_rate_mm2_s",
+     "label": "burn rate mm²/s",
+     "a": "0.34",
+     "b": "0.49"
+    },
+    {
+     "field": "extinction_d_mm",
+     "label": "extinction Ø mm",
+     "a": "3.6",
+     "b": "0.97"
+    },
+    {
+     "field": "extinction_type",
+     "label": "extinction mode",
+     "a": "cool-flame",
+     "b": "oxygen-limit"
+    },
+    {
+     "field": "cool_flame",
+     "label": "cool flame",
+     "a": "True",
+     "b": "False"
+    }
+   ],
+   "held": [
+    {
+     "field": "accession",
+     "label": "psi accession",
+     "value": "PSI-69"
+    },
+    {
+     "field": "fuel",
+     "label": "fuel / sample",
+     "value": "Heptane"
+    },
+    {
+     "field": "material_id",
+     "label": "material",
+     "value": "heptane"
+    },
+    {
+     "field": "o2_pct",
+     "label": "O₂ %",
+     "value": "18.0"
+    },
+    {
+     "field": "n2_pct",
+     "label": "N₂ %",
+     "value": "67.0"
+    },
+    {
+     "field": "outcome",
+     "label": "outcome",
+     "value": "extinction"
+    },
+    {
+     "field": "fiber_support",
+     "label": "fiber support",
+     "value": "No"
+    }
+   ],
+   "verified": [
+    true,
+    true
+   ]
+  },
+  {
+   "id": "flex-n2-vs-co2",
+   "title": "FLEX — diluent switch on methanol",
+   "hook": "n₂ vs co₂ at 15% O₂",
+   "insight": "Methanol at 15% O₂: swapping N₂ for CO₂ moved the extinction boundary from oxygen-limit to radiative — CO₂ kills the flame by heat capacity, not only by dilution.",
+   "runA": {
+    "runId": "FLEX-065",
+    "accession": "PSI-69",
+    "investigationId": "flex-2",
+    "fuel": "Methanol",
+    "material_id": "methanol",
+    "o2_pct": "15.0",
+    "n2_pct": "85.0",
+    "co2_pct": "0.0",
+    "he_pct": "0.0",
+    "pressure_kpa": "102.3",
+    "temp_k": "300.1",
+    "droplet_d0_mm": "3.37",
+    "burn_rate_mm2_s": "0.4",
+    "extinction_d_mm": "1.49",
+    "outcome": "extinction",
+    "extinction_type": "oxygen-limit",
+    "cool_flame": "False",
+    "fiber_support": "No",
+    "comments": "Free-floating methanol droplet burning in a 0.15/0.85 O2/N2, 1.0 atm ambient environment. The droplet drifts SSE and out of the HiBMS FOV before the end of the test. The color camera IPSU did not record any images for this test. The LLUV shows a very long burn with a flame that appears to get a little bit brighter for a short period of time. There is no extinction droplet diameter listed because the droplet is out of the HiBMS FOV for most of the droplet lifetime.",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69"
+   },
+   "runB": {
+    "runId": "FLEX-140",
+    "accession": "PSI-69",
+    "investigationId": "flex-2",
+    "fuel": "Methanol",
+    "material_id": "methanol",
+    "o2_pct": "15.0",
+    "n2_pct": "35.0",
+    "co2_pct": "50.0",
+    "he_pct": "0.0",
+    "pressure_kpa": "70.9",
+    "temp_k": "300.49",
+    "droplet_d0_mm": "3.98",
+    "burn_rate_mm2_s": "0.2",
+    "extinction_d_mm": "3.95",
+    "outcome": "extinction",
+    "extinction_type": "radiative",
+    "cool_flame": "False",
+    "fiber_support": "No",
+    "comments": "Free-floating methanol droplet burning in a 0.15/0.35/0.50 O2/N2/CO2, 0.70 atm ambient environment. The droplet has a very small S drift after deployment and ignition, but remains in the HiBMS FOV for the entire recording time. Very short burn, with the droplet being either significantly larger than the radiative extinction limit or completely outside the quasi-steady flammability boundary.",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69"
+   },
+   "investigationId": "flex-2",
+   "sameInvestigation": true,
+   "accessions": [
+    "PSI-69",
+    "PSI-69"
+   ],
+   "changed": [
+    {
+     "field": "n2_pct",
+     "label": "N₂ %",
+     "a": "85.0",
+     "b": "35.0"
+    },
+    {
+     "field": "co2_pct",
+     "label": "CO₂ %",
+     "a": "0.0",
+     "b": "50.0"
+    },
+    {
+     "field": "pressure_kpa",
+     "label": "pressure kPa",
+     "a": "102.3",
+     "b": "70.9"
+    },
+    {
+     "field": "temp_k",
+     "label": "ambient K",
+     "a": "300.1",
+     "b": "300.49"
+    },
+    {
+     "field": "droplet_d0_mm",
+     "label": "droplet d₀ mm",
+     "a": "3.37",
+     "b": "3.98"
+    },
+    {
+     "field": "burn_rate_mm2_s",
+     "label": "burn rate mm²/s",
+     "a": "0.4",
+     "b": "0.2"
+    },
+    {
+     "field": "extinction_d_mm",
+     "label": "extinction Ø mm",
+     "a": "1.49",
+     "b": "3.95"
+    },
+    {
+     "field": "extinction_type",
+     "label": "extinction mode",
+     "a": "oxygen-limit",
+     "b": "radiative"
+    }
+   ],
+   "held": [
+    {
+     "field": "accession",
+     "label": "psi accession",
+     "value": "PSI-69"
+    },
+    {
+     "field": "fuel",
+     "label": "fuel / sample",
+     "value": "Methanol"
+    },
+    {
+     "field": "material_id",
+     "label": "material",
+     "value": "methanol"
+    },
+    {
+     "field": "o2_pct",
+     "label": "O₂ %",
+     "value": "15.0"
+    },
+    {
+     "field": "he_pct",
+     "label": "He %",
+     "value": "0.0"
+    },
+    {
+     "field": "outcome",
+     "label": "outcome",
+     "value": "extinction"
+    },
+    {
+     "field": "cool_flame",
+     "label": "cool flame",
+     "value": "False"
+    },
+    {
+     "field": "fiber_support",
+     "label": "fiber support",
+     "value": "No"
+    }
+   ],
+   "verified": [
+    true,
+    true
+   ]
+  },
+  {
+   "id": "flex-o2-window",
+   "title": "FLEX — the O₂ window on heptane",
+   "hook": "21% vs 18% O₂ in N₂",
+   "insight": "Same fuel and N₂-dominated atmosphere — dropping O₂ from 21% to 18% pushed the run across the extinction boundary. FLEX maps these edges fuel by fuel, diluent by diluent.",
+   "runA": {
+    "runId": "FLEX-008",
+    "accession": "PSI-69",
+    "investigationId": "flex-2",
+    "fuel": "Heptane",
+    "material_id": "heptane",
+    "o2_pct": "21.0",
+    "n2_pct": "79.0",
+    "co2_pct": "0.0",
+    "he_pct": "0.0",
+    "pressure_kpa": "101.3",
+    "temp_k": "300.5",
+    "droplet_d0_mm": "2.95",
+    "burn_rate_mm2_s": "0.79",
+    "outcome": "unknown",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "fiber_support": "No",
+    "comments": "Freely deployed heptane droplet burning in a cabin air (nominally 0.21/0.79 O2/N2), 1.0 atm ambient environment. The droplet drifts SE out of the HiBMS FOV a few seconds after igniter withdraw. Significant sooting is apparent in the HiBMS. The droplet also drifts out of the color camera FOV. It remains in the LLUV FOV for the entire burn. There is a lot of noise in the droplet diameter data because of the soot. The droplet disrupts at the end of the burn (from the LLUV).",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69"
+   },
+   "runB": {
+    "runId": "FLEX-063",
+    "accession": "PSI-69",
+    "investigationId": "flex-2",
+    "fuel": "Heptane",
+    "material_id": "heptane",
+    "o2_pct": "18.0",
+    "n2_pct": "81.0",
+    "co2_pct": "0.0",
+    "he_pct": "0.0",
+    "pressure_kpa": "102.3",
+    "temp_k": "298.5",
+    "droplet_d0_mm": "2.15",
+    "burn_rate_mm2_s": "0.51",
+    "outcome": "extinction",
+    "extinction_type": "oxygen-limit",
+    "cool_flame": "False",
+    "fiber_support": "No",
+    "comments": "Free-floating heptane droplet burning in a 0.18/0.82 O2/N2, 1.0 atm ambient environment. The droplet drifts N in the HiBMS FOV after deployment and ignition and out of the FOV 2/3rds of the through the test. There is a small disruption near the end of the test. Extrapolating the droplet history using the average burning rate constant shows a very small extinction droplet size, indicating the droplet burned essentially to completion.",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69"
+   },
+   "investigationId": "flex-2",
+   "sameInvestigation": true,
+   "accessions": [
+    "PSI-69",
+    "PSI-69"
+   ],
+   "changed": [
+    {
+     "field": "o2_pct",
+     "label": "O₂ %",
+     "a": "21.0",
+     "b": "18.0"
+    },
+    {
+     "field": "n2_pct",
+     "label": "N₂ %",
+     "a": "79.0",
+     "b": "81.0"
+    },
+    {
+     "field": "pressure_kpa",
+     "label": "pressure kPa",
+     "a": "101.3",
+     "b": "102.3"
+    },
+    {
+     "field": "temp_k",
+     "label": "ambient K",
+     "a": "300.5",
+     "b": "298.5"
+    },
+    {
+     "field": "droplet_d0_mm",
+     "label": "droplet d₀ mm",
+     "a": "2.95",
+     "b": "2.15"
+    },
+    {
+     "field": "burn_rate_mm2_s",
+     "label": "burn rate mm²/s",
+     "a": "0.79",
+     "b": "0.51"
+    },
+    {
+     "field": "outcome",
+     "label": "outcome",
+     "a": "unknown",
+     "b": "extinction"
+    },
+    {
+     "field": "extinction_type",
+     "label": "extinction mode",
+     "a": "none",
+     "b": "oxygen-limit"
+    }
+   ],
+   "held": [
+    {
+     "field": "accession",
+     "label": "psi accession",
+     "value": "PSI-69"
+    },
+    {
+     "field": "fuel",
+     "label": "fuel / sample",
+     "value": "Heptane"
+    },
+    {
+     "field": "material_id",
+     "label": "material",
+     "value": "heptane"
+    },
+    {
+     "field": "co2_pct",
+     "label": "CO₂ %",
+     "value": "0.0"
+    },
+    {
+     "field": "he_pct",
+     "label": "He %",
+     "value": "0.0"
+    },
+    {
+     "field": "cool_flame",
+     "label": "cool flame",
+     "value": "False"
+    },
+    {
+     "field": "fiber_support",
+     "label": "fiber support",
+     "value": "No"
+    }
+   ],
+   "verified": [
+    true,
+    true
+   ]
+  },
+  {
+   "id": "cfi-fuel-dilution",
+   "title": "CFI-G — fuel dilution flips the outcome",
+   "hook": "propane vs 30% propane",
+   "insight": "Same spherical burner, ~21% O₂ — cutting the fuel feed from propane to 30% propane turned an ignited, extinguished run into a no-ignition one. Fuel fraction is as sharp a lever as O₂ control.",
+   "runA": {
+    "runId": "21112 F2",
+    "accession": "PSI-159",
+    "investigationId": "acme",
+    "fuel": "propane",
+    "material_id": "propane",
+    "o2_pct": "21.25",
+    "pressure_kpa": "101.3",
+    "burn_time_s": "8.0",
+    "outcome": "extinction",
+    "extinction_type": "oxygen-limit",
+    "cool_flame": "False",
+    "comments": "",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159"
+   },
+   "runB": {
+    "runId": "21130 A3",
+    "accession": "PSI-159",
+    "investigationId": "acme",
+    "fuel": "30% propane",
+    "material_id": "propane",
+    "o2_pct": "21.07",
+    "pressure_kpa": "202.7",
+    "burn_time_s": "0.0",
+    "outcome": "no-ignition",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "comments": "",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159"
+   },
+   "investigationId": "acme",
+   "sameInvestigation": true,
+   "accessions": [
+    "PSI-159",
+    "PSI-159"
+   ],
+   "changed": [
+    {
+     "field": "fuel",
+     "label": "fuel / sample",
+     "a": "propane",
+     "b": "30% propane"
+    },
+    {
+     "field": "o2_pct",
+     "label": "O₂ %",
+     "a": "21.25",
+     "b": "21.07"
+    },
+    {
+     "field": "pressure_kpa",
+     "label": "pressure kPa",
+     "a": "101.3",
+     "b": "202.7"
+    },
+    {
+     "field": "burn_time_s",
+     "label": "burn time s",
+     "a": "8.0",
+     "b": "0.0"
+    },
+    {
+     "field": "outcome",
+     "label": "outcome",
+     "a": "extinction",
+     "b": "no-ignition"
+    },
+    {
+     "field": "extinction_type",
+     "label": "extinction mode",
+     "a": "oxygen-limit",
+     "b": "none"
+    }
+   ],
+   "held": [
+    {
+     "field": "accession",
+     "label": "psi accession",
+     "value": "PSI-159"
+    },
+    {
+     "field": "material_id",
+     "label": "material",
+     "value": "propane"
+    },
+    {
+     "field": "cool_flame",
+     "label": "cool flame",
+     "value": "False"
+    }
+   ],
+   "verified": [
+    true,
+    true
+   ]
+  },
+  {
+   "id": "bass-sphere-size",
+   "title": "BASS — the sample was the variable",
+   "hook": "1 cm vs 2 cm pmma sphere",
+   "insight": "Same MSG duct, same polymer — BASS swept form factor (1 cm → 2 cm spheres, slabs, sheets, candles) to show geometry alone shifts µg flammability boundaries.",
+   "runA": {
+    "runId": "20; 30",
+    "accession": "PSI-26",
+    "investigationId": "bass-ii",
+    "fuel": "PMMA 1 cm",
+    "material_id": "pmma",
+    "outcome": "unknown",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "comments": "",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26"
+   },
+   "runB": {
+    "runId": "104; 50",
+    "accession": "PSI-26",
+    "investigationId": "bass-ii",
+    "fuel": "2 cm pmma sphere",
+    "material_id": "pmma",
+    "outcome": "unknown",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "comments": "",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26"
+   },
+   "investigationId": "bass-ii",
+   "sameInvestigation": true,
+   "accessions": [
+    "PSI-26",
+    "PSI-26"
+   ],
+   "changed": [
+    {
+     "field": "fuel",
+     "label": "fuel / sample",
+     "a": "PMMA 1 cm",
+     "b": "2 cm pmma sphere"
+    }
+   ],
+   "held": [
+    {
+     "field": "accession",
+     "label": "psi accession",
+     "value": "PSI-26"
+    },
+    {
+     "field": "material_id",
+     "label": "material",
+     "value": "pmma"
+    },
+    {
+     "field": "outcome",
+     "label": "outcome",
+     "value": "unknown"
+    },
+    {
+     "field": "extinction_type",
+     "label": "extinction mode",
+     "value": "none"
+    },
+    {
+     "field": "cool_flame",
+     "label": "cool flame",
+     "value": "False"
+    }
+   ],
+   "verified": [
+    true,
+    true
+   ]
+  },
+  {
+   "id": "saffire-cross-vehicle",
+   "title": "SAFFIRE — same fabric, different vehicle",
+   "hook": "sibal in two cargo ships",
+   "insight": "Independent burns of SIBAL fabric in two Cygnus vehicles at ~21% O₂ / 20 cm/s — both ran to burnout. At vehicle scale, material identity beat vehicle identity.",
+   "runA": {
+    "runId": "PSI-98-row0",
+    "accession": "PSI-98",
+    "investigationId": "saffire",
+    "fuel": "SIBAL Fabric",
+    "material_id": "cotton",
+    "o2_pct": "21.6",
+    "flow_cms": "20.0",
+    "burn_time_s": "420.0",
+    "outcome": "burnout",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "comments": "flow concurrent",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-98"
+   },
+   "runB": {
+    "runId": "PSI-99-row4",
+    "accession": "PSI-99",
+    "investigationId": "saffire",
+    "fuel": "Cotton-Fiberglass (SIBAL)",
+    "material_id": "cotton",
+    "o2_pct": "22.1",
+    "flow_cms": "20.0",
+    "burn_time_s": "145.0",
+    "outcome": "burnout",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "comments": "flow concurrent",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99"
+   },
+   "investigationId": "saffire",
+   "sameInvestigation": true,
+   "accessions": [
+    "PSI-98",
+    "PSI-99"
+   ],
+   "changed": [
+    {
+     "field": "accession",
+     "label": "psi accession",
+     "a": "PSI-98",
+     "b": "PSI-99"
+    },
+    {
+     "field": "fuel",
+     "label": "fuel / sample",
+     "a": "SIBAL Fabric",
+     "b": "Cotton-Fiberglass (SIBAL)"
+    },
+    {
+     "field": "o2_pct",
+     "label": "O₂ %",
+     "a": "21.6",
+     "b": "22.1"
+    },
+    {
+     "field": "burn_time_s",
+     "label": "burn time s",
+     "a": "420.0",
+     "b": "145.0"
+    }
+   ],
+   "held": [
+    {
+     "field": "material_id",
+     "label": "material",
+     "value": "cotton"
+    },
+    {
+     "field": "flow_cms",
+     "label": "flow cm/s",
+     "value": "20.0"
+    },
+    {
+     "field": "outcome",
+     "label": "outcome",
+     "value": "burnout"
+    },
+    {
+     "field": "extinction_type",
+     "label": "extinction mode",
+     "value": "none"
+    },
+    {
+     "field": "cool_flame",
+     "label": "cool flame",
+     "value": "False"
+    }
+   ],
+   "verified": [
+    true,
+    true
+   ]
+  },
+  {
+   "id": "efield-fuel-matrix",
+   "title": "ACME E-FIELD — fuel matrix under the field",
+   "hook": "100% vs 40% ch₄",
+   "insight": "E-FIELD held burner and electrode rig constant while sweeping fuel composition (100% → 40% CH₄, also C₂H₄) — the ion-wind 'gravity knob' couples differently per fuel, which is what makes it a partial-gravity analog.",
+   "runA": {
+    "runId": "PSI-22-row0",
+    "accession": "PSI-22",
+    "investigationId": "acme",
+    "fuel": "100% CH4",
+    "material_id": "methane",
+    "outcome": "unknown",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "comments": "Test day is formatted YYDDD where YY identifies year and DDD identifies day of year (GMT).",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22"
+   },
+   "runB": {
+    "runId": "PSI-22-row14",
+    "accession": "PSI-22",
+    "investigationId": "acme",
+    "fuel": "40% CH4",
+    "material_id": "methane",
+    "outcome": "unknown",
+    "extinction_type": "none",
+    "cool_flame": "False",
+    "comments": "",
+    "sourceUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22"
+   },
+   "investigationId": "acme",
+   "sameInvestigation": true,
+   "accessions": [
+    "PSI-22",
+    "PSI-22"
+   ],
+   "changed": [
+    {
+     "field": "fuel",
+     "label": "fuel / sample",
+     "a": "100% CH4",
+     "b": "40% CH4"
+    }
+   ],
+   "held": [
+    {
+     "field": "accession",
+     "label": "psi accession",
+     "value": "PSI-22"
+    },
+    {
+     "field": "material_id",
+     "label": "material",
+     "value": "methane"
+    },
+    {
+     "field": "outcome",
+     "label": "outcome",
+     "value": "unknown"
+    },
+    {
+     "field": "extinction_type",
+     "label": "extinction mode",
+     "value": "none"
+    },
+    {
+     "field": "cool_flame",
+     "label": "cool flame",
+     "value": "False"
+    }
+   ],
+   "verified": [
+    true,
+    true
+   ]
+  }
+ ]
+}

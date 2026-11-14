@@ -33,7 +33,12 @@
    "verified": "false",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "Flames spread over PMMA at oxygen concentrations as low as ~15% in quiescent microgravity \u2014 below typical Earth extinction limits (~17\u201318%)."
+   "notes": "Flames spread over PMMA at oxygen concentrations as low as ~15% in quiescent microgravity \u2014 below typical Earth extinction limits (~17\u201318%).",
+   "themes": "spread; flammability",
+   "objectives": "Map the ignition and extinction boundaries of flame spread over flat solid fuels in sustained microgravity.; Test whether materials qualified as low-flammability on Earth remain non-propagating in \u00b5g.",
+   "apparatus": "CIR flat solid-fuel holder \u2014 thin PMMA sheets in an opposed-flow duct",
+   "sensors": "video flame imaging; radiometers; flame-spread position tracking",
+   "test_variables": "held: flat PMMA sheet geometry; ambient pressure ~101 kPa | varied: O2 15\u201324%; opposed flow 0\u201325 cm/s"
   },
   {
    "record_type": "investigation",
@@ -66,7 +71,12 @@
    "verified": "true",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": "Characterized opposed-flow flame spread and extinction over small solid samples across oxygen and flow regimes."
+   "notes": "Characterized opposed-flow flame spread and extinction over small solid samples across oxygen and flow regimes.",
+   "themes": "suppression; duct-flow; spread",
+   "objectives": "Measure opposed-flow flame spread and extinction over small solid samples across O2 and ventilation regimes.; Characterize \u00b5g-unique transitions: steady burn \u2192 abrupt extinction \u2192 smolder.",
+   "apparatus": "MSG modular flow duct with fan \u2014 spheres, slabs and sheets on a sample holder",
+   "sensors": "video flame imaging; radiometers; thermocouples; O2/CO2 gas analyzers",
+   "test_variables": "held: MSG duct rig; ambient pressure | varied: fuel (PMMA, cotton, Nomex, polycarbonate); sample form/size (1\u20132 cm spheres, slabs, sheets); O2 17\u201340%; duct flow 0\u201320 cm/s"
   },
   {
    "record_type": "investigation",
@@ -76,8 +86,8 @@
    "material_id": "heptane",
    "fuel_or_material": "n-heptane, methanol, iso-octane, decanol blends",
    "o2_pct": "",
-   "o2_min": 14,
-   "o2_max": 21,
+   "o2_min": 13,
+   "o2_max": 25,
    "flow_cms": "",
    "flow_min": 0,
    "flow_max": 10,
@@ -99,7 +109,12 @@
    "verified": "true",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished."
+   "notes": "Discovered sustained 'cool flame' chemistry: droplets kept burning invisibly at ~600 K long after the visible hot flame extinguished.",
+   "themes": "suppression; detection",
+   "objectives": "Map flammability limits of isolated fuel droplets and quantify gaseous suppressant effectiveness \u2014 CO2, He and N2 dilution.; Measure droplet burning rates, extinction diameters and post-flameout cool-flame chemistry in quiescent \u00b5g.",
+   "apparatus": "CIR Multi-user Droplet Combustion Apparatus (MDCA) \u2014 free-floating ~1\u20134 mm droplets",
+   "sensors": "backlit droplet imaging (LLUV); UV/visible flame cameras; radiometers",
+   "test_variables": "held: free droplet geometry; ambient pressure ~1 atm | varied: fuel (n-heptane, methanol, dodecane, iso-octane); O2 14\u201325%; diluent species & fraction (N2 / CO2 / He); droplet d\u2080"
   },
   {
    "record_type": "investigation",
@@ -132,7 +147,12 @@
    "verified": "true",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": "Mapped soot inception and growth in laminar coflow diffusion flames without buoyancy-driven distortion."
+   "notes": "Mapped soot inception and growth in laminar coflow diffusion flames without buoyancy-driven distortion.",
+   "themes": "flammability; duct-flow",
+   "objectives": "Measure structure, soot inception and extinction of laminar coflow diffusion flames without buoyant distortion.; Emulate solid-fuel burning rates with a gas burner (BRE) to enable ground-based flammability testing.",
+   "apparatus": "CIR coflow burner \u2014 gaseous fuel jet in coflowing oxidizer (E-FIELD adds high-voltage mesh electrodes)",
+   "sensors": "color/UV flame imaging; laser soot diagnostics; ion probes; thermocouples",
+   "test_variables": "held: coflow burner geometry | varied: fuel (CH4, C2H4, C3H8, JP-8 surrogates); O2 16\u201340%; coflow velocity 0\u201370 cm/s; fuel dilution; E-FIELD voltage & polarity"
   },
   {
    "record_type": "investigation",
@@ -165,7 +185,12 @@
    "verified": "true",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-100",
-   "notes": "Largest deliberate fires ever set in an uncrewed spacecraft \u2014 flame behavior at ~meter scale differs from small CIR samples."
+   "notes": "Largest deliberate fires ever set in an uncrewed spacecraft \u2014 flame behavior at ~meter scale differs from small CIR samples.",
+   "themes": "large-scale; spread",
+   "objectives": "Observe a realistic large-scale fire inside an uncrewed cargo vehicle after departure from the ISS.; Measure flame spread, material flammability, O2 draw-down and CO/CO2 production at vehicle scale.",
+   "apparatus": "Cygnus pressurized volume \u2014 instrumented flow duct and large material panels",
+   "sensors": "video flame imaging; O2/CO/CO2 gas analyzers; temperature & pressure loggers; post-fire aerosol sampling",
+   "test_variables": "held: uncrewed vehicle post-departure; ducted flow path | varied: material (SIBAL, Nomex, PMMA panels); O2 21\u201334%; flow 5\u201325 cm/s; vehicle (OA-6 \u2192 later flights)"
   },
   {
    "record_type": "investigation",
@@ -198,7 +223,12 @@
    "verified": "false",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "Measured particle size distribution of smoke from overheated and ignited spacecraft materials."
+   "notes": "Measured particle size distribution of smoke from overheated and ignited spacecraft materials.",
+   "themes": "detection",
+   "objectives": "Measure the size distribution and concentration of smoke particles from overheated and ignited spacecraft materials.; Benchmark real smoke-detector response against reference aerosol instruments in \u00b5g.",
+   "apparatus": "MSG sealed aerosol chamber \u2014 heated material samples on a carousel",
+   "sensors": "aerosol moment instruments (number/diameter/mass concentration); thermal precipitator \u2192 TEM microscopy; ISS/Shuttle ionization & photoelectric detectors",
+   "test_variables": "held: sealed aerosol chamber; aerosol instrument stack | varied: material (Teflon, Kapton, Pyrell foam, silicone rubber, cellulose); overheated vs ignited regime; smoke aging time"
   },
   {
    "record_type": "investigation",
@@ -231,7 +261,12 @@
    "verified": "false",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "Flame spread between close parallel plates (confined geometry, like racks/ducts) is strongly affected by wall heat recirculation."
+   "notes": "Flame spread between close parallel plates (confined geometry, like racks/ducts) is strongly affected by wall heat recirculation.",
+   "themes": "duct-flow; spread",
+   "objectives": "Quantify how confinement \u2014 parallel plates, rack and duct gaps \u2014 changes flame spread versus open \u00b5g tests.; Measure spread under exploration-like atmospheres: reduced pressure with elevated O2 fraction.",
+   "apparatus": "CIR confined-channel rig \u2014 twin parallel plates with adjustable gap",
+   "sensors": "flame imaging; thermocouples; pressure sensors",
+   "test_variables": "held: confined-channel geometry per run | varied: gap width; O2 19\u201340%; pressure ~57 kPa; fuel (thin paper/PP sheets, PMMA)"
   },
   {
    "record_type": "investigation",
@@ -264,7 +299,240 @@
    "verified": "false",
    "source": "NASA PSI",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "Directly maps material flammability limits at Lunar (0.17 g) and Martian (0.38 g) gravity using an on-orbit centrifuge."
+   "notes": "Directly maps material flammability limits at Lunar (0.17 g) and Martian (0.38 g) gravity using an on-orbit centrifuge.",
+   "themes": "partial-gravity; flammability",
+   "objectives": "Map material flammability limits directly at lunar (0.17 g) and martian (0.38 g) gravity.; Provide the partial-g data anchor that ISS and Earth results cannot interpolate.",
+   "apparatus": "Kibo module combustion cell mounted on a centrifuge \u2014 selectable g level",
+   "sensors": "flame imaging; flame-spread tracking; controlled O2/flow loop",
+   "test_variables": "held: sample set (PMMA, thin sheets); centrifuge rig | varied: gravity level (\u00b5g / 0.17 g / 0.38 g / 1 g); O2 15\u201340%; flow 0\u201330 cm/s"
+  },
+  {
+   "record_type": "investigation",
+   "id": "bass",
+   "name": "BASS",
+   "investigation_id": "bass",
+   "material_id": "",
+   "fuel_or_material": "PMMA spheres (1\u20132 cm), SIBAL cloth, Nomex blends, wax slabs and candles, Ultem sheets",
+   "o2_pct": "",
+   "o2_min": "",
+   "o2_max": "",
+   "flow_cms": "",
+   "flow_min": "",
+   "flow_max": "",
+   "pressure_kpa": 101,
+   "gravity_g": 0.0,
+   "loc_pct": "",
+   "spread_mm_s": "",
+   "droplet_d0_mm": "",
+   "burn_rate_mm2_s": "",
+   "extinction_d_mm": "",
+   "extinction_type": "",
+   "outcome": "",
+   "cool_flame": "false",
+   "smolder": "true",
+   "soot_index": "",
+   "hidden_factor": "",
+   "psi_runs": "",
+   "psi_cool_flame_runs": "",
+   "verified": "false",
+   "source": "NASA",
+   "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
+   "notes": "Showed that sample geometry and form factor \u2014 sphere diameter, sheet thickness, candle vs slab \u2014 shift extinction boundaries in \u00b5g even when the polymer is unchanged.",
+   "themes": "duct-flow; suppression; spread",
+   "objectives": "Quantify burning and extinction behavior of solid fuels in opposed and concurrent forced flow inside the MSG duct.; Isolate the effect of sample geometry and size on \u00b5g flammability limits.",
+   "apparatus": "MSG modular flow duct with fan \u2014 spheres, slabs, sheets and candles on a sample tree",
+   "sensors": "video flame imaging; radiometers; thermocouples; flow velocity probes",
+   "test_variables": "held: MSG duct rig; ambient pressure | varied: fuel and form factor (1\u20132 cm spheres, slabs, sheets, candles); flow direction (opposed vs concurrent); O2 atmosphere"
+  },
+  {
+   "record_type": "investigation",
+   "id": "same-r",
+   "name": "SAME-R",
+   "investigation_id": "same-r",
+   "material_id": "",
+   "fuel_or_material": "Teflon, Kapton, Pyrell foam, silicone rubber, cellulose",
+   "o2_pct": "",
+   "o2_min": 21,
+   "o2_max": 21,
+   "flow_cms": "",
+   "flow_min": "",
+   "flow_max": "",
+   "pressure_kpa": 101,
+   "gravity_g": 0.0,
+   "loc_pct": "",
+   "spread_mm_s": "",
+   "droplet_d0_mm": "",
+   "burn_rate_mm2_s": "",
+   "extinction_d_mm": "",
+   "extinction_type": "",
+   "outcome": "",
+   "cool_flame": "false",
+   "smolder": "true",
+   "soot_index": "",
+   "hidden_factor": "",
+   "psi_runs": "",
+   "psi_cool_flame_runs": "",
+   "verified": "false",
+   "source": "NASA",
+   "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-101",
+   "notes": "Reflew the SAME diagnostic stack on the SAME flight hardware to extend \u00b5g smoke-particle statistics and validate the lognormal size-distribution assumption used by the moment method.",
+   "themes": "detection",
+   "objectives": "Extend SAME smoke-aerosol measurements to additional materials and longer smoke aging.; Validate detector-response models required for next-generation spacecraft smoke detectors.",
+   "apparatus": "SAME hardware reflight \u2014 sealed aerosol chamber with sample carousel",
+   "sensors": "aerosol moment instruments; ionization smoke detector (SAME heritage); thermal precipitator \u2192 TEM; reference photometers",
+   "test_variables": "held: SAME hardware stack; sealed aerosol chamber | varied: target material; smoke aging time"
+  },
+  {
+   "record_type": "investigation",
+   "id": "spice",
+   "name": "SPICE",
+   "investigation_id": "spice",
+   "material_id": "",
+   "fuel_or_material": "gas-jet fuels (methane, propane)",
+   "o2_pct": "",
+   "o2_min": 21,
+   "o2_max": 21,
+   "flow_cms": "",
+   "flow_min": "",
+   "flow_max": "",
+   "pressure_kpa": 101,
+   "gravity_g": 0.0,
+   "loc_pct": "",
+   "spread_mm_s": "",
+   "droplet_d0_mm": "",
+   "burn_rate_mm2_s": "",
+   "extinction_d_mm": "",
+   "extinction_type": "",
+   "outcome": "",
+   "cool_flame": "false",
+   "smolder": "false",
+   "soot_index": "",
+   "hidden_factor": "",
+   "psi_runs": "",
+   "psi_cool_flame_runs": "",
+   "verified": "false",
+   "source": "NASA",
+   "source_url": "https://psi.nasa.gov/physci/repo",
+   "notes": "Determined laminar smoke points \u2014 the largest soot-free flame \u2014 for non-buoyant gas-jet flames.",
+   "themes": "duct-flow",
+   "objectives": "Measure smoke-point properties of non-buoyant jet diffusion flames across fuels and nozzle/coflow configurations.; Provide soot-inception data to validate combustion and fire-spread models.",
+   "apparatus": "MSG enclosed coflow burner \u2014 gas jet inside a coaxial oxidizer stream",
+   "sensors": "still/video flame imaging; smoke-point onset determination; coflow velocity control",
+   "test_variables": "held: enclosed coflow burner | varied: fuel; nozzle diameter; coflow velocity"
+  },
+  {
+   "record_type": "investigation",
+   "id": "slice",
+   "name": "SLICE",
+   "investigation_id": "slice",
+   "material_id": "",
+   "fuel_or_material": "methane, ethylene, nitrogen-diluted methane/ethylene",
+   "o2_pct": "",
+   "o2_min": 21,
+   "o2_max": 21,
+   "flow_cms": "",
+   "flow_min": "",
+   "flow_max": "",
+   "pressure_kpa": 101,
+   "gravity_g": 0.0,
+   "loc_pct": "",
+   "spread_mm_s": "",
+   "droplet_d0_mm": "",
+   "burn_rate_mm2_s": "",
+   "extinction_d_mm": "",
+   "extinction_type": "",
+   "outcome": "",
+   "cool_flame": "false",
+   "smolder": "false",
+   "soot_index": "",
+   "hidden_factor": "",
+   "psi_runs": "",
+   "psi_cool_flame_runs": "",
+   "verified": "false",
+   "source": "NASA",
+   "source_url": "https://psi.nasa.gov/physci/repo",
+   "notes": "Captured a unique coflow-jet dataset spanning weak near-extinction flames to strong heavily-sooting flames.",
+   "themes": "duct-flow",
+   "objectives": "Determine laminar diffusion flame structure and liftoff (stabilization) limits as functions of fuel and burner diameter.; Provide a validation dataset for combustion models including radiation, soot and detailed kinetics.",
+   "apparatus": "MSG coflow burner (SPICE heritage) \u2014 fuel jet in coflowing air",
+   "sensors": "color digital flame imaging; thermocouple-calibrated soot volume fraction; CH* chemiluminescence",
+   "test_variables": "held: burner and coflow geometry | varied: fuel (methane vs ethylene vs N2-diluted); jet velocity \u2192 liftoff boundary"
+  },
+  {
+   "record_type": "investigation",
+   "id": "acme-efield",
+   "name": "ACME E-FIELD Flames",
+   "investigation_id": "acme-efield",
+   "material_id": "",
+   "fuel_or_material": "methane, ethylene, diluted CH4/C2H4",
+   "o2_pct": "",
+   "o2_min": "",
+   "o2_max": "",
+   "flow_cms": "",
+   "flow_min": "",
+   "flow_max": "",
+   "pressure_kpa": 101,
+   "gravity_g": 0.0,
+   "loc_pct": "",
+   "spread_mm_s": "",
+   "droplet_d0_mm": "",
+   "burn_rate_mm2_s": "",
+   "extinction_d_mm": "",
+   "extinction_type": "",
+   "outcome": "",
+   "cool_flame": "false",
+   "smolder": "false",
+   "soot_index": "",
+   "hidden_factor": "",
+   "psi_runs": "",
+   "psi_cool_flame_runs": "",
+   "verified": "false",
+   "source": "NASA",
+   "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22",
+   "notes": "Applied electric fields to flame ions \u2014 the resulting ion wind mimics buoyant convection, giving a controllable body-force 'gravity knob' between 0g and 1g behavior.",
+   "themes": "partial-gravity",
+   "objectives": "Quantify how electric fields modify laminar flame structure, soot and extinction via ion wind.; Use the field as a controllable body-force analog to interpolate flame behavior between 0g and 1g.",
+   "apparatus": "CIR coflow burner with high-voltage mesh electrodes around the flame",
+   "sensors": "flame imaging; mesh polarity/voltage logs; soot diagnostics",
+   "test_variables": "held: coflow burner + electrode geometry | varied: fuel (CH4, C2H4 and dilutions); field polarity; voltage magnitude"
+  },
+  {
+   "record_type": "investigation",
+   "id": "cfi",
+   "name": "ACME CFI / CFI-G",
+   "investigation_id": "cfi",
+   "material_id": "",
+   "fuel_or_material": "ethane, propane, butane, diluted alkane feeds",
+   "o2_pct": "",
+   "o2_min": 21,
+   "o2_max": 39,
+   "flow_cms": "",
+   "flow_min": "",
+   "flow_max": "",
+   "pressure_kpa": 101,
+   "gravity_g": 0.0,
+   "loc_pct": "",
+   "spread_mm_s": "",
+   "droplet_d0_mm": "",
+   "burn_rate_mm2_s": "",
+   "extinction_d_mm": "",
+   "extinction_type": "",
+   "outcome": "",
+   "cool_flame": "true",
+   "smolder": "false",
+   "soot_index": "",
+   "hidden_factor": "",
+   "psi_runs": "",
+   "psi_cool_flame_runs": "",
+   "verified": "false",
+   "source": "NASA",
+   "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
+   "notes": "Largest single corpus in this dataset \u2014 333 PSI-159 runs mapping the boundary between no-ignition, oxygen-limit extinction and sustained burnout for gaseous alkanes.",
+   "themes": "flammability; detection",
+   "objectives": "Map ignition, extinction and cool-flame boundaries of gaseous alkane flames in a spherical burner.; Quantify the effect of fuel dilution on flammability limits at elevated O2.",
+   "apparatus": "CIR spherical gaseous burner \u2014 ignition at the center of a quiescent chamber",
+   "sensors": "flame imaging; ignition logs; chamber pressure/temperature",
+   "test_variables": "held: spherical burner geometry; ambient pressure | varied: fuel (ethane, propane, butane); fuel dilution (30\u2013100%); O2 ~21\u201339%"
   },
   {
    "record_type": "material",
@@ -297,7 +565,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 16.5% O\u2082; soot index 0.25; smoldering; refs: same"
+   "notes": "LOC 16.5% O\u2082; soot index 0.25; smoldering; refs: same",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -330,7 +603,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii, saffire"
+   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii, saffire",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -363,7 +641,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 12.5% O\u2082; soot index 0.5; cool-flame capable (FLEX regime); refs: flex-2"
+   "notes": "LOC 12.5% O\u2082; soot index 0.5; cool-flame capable (FLEX regime); refs: flex-2",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -396,7 +679,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 11.0% O\u2082; soot index 0.9; refs: acme"
+   "notes": "LOC 11.0% O\u2082; soot index 0.9; refs: acme",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -429,7 +717,12 @@
    "verified": "true",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 16.0% O\u2082; soot index 0.55; cool-flame capable (FLEX regime); refs: flex-2"
+   "notes": "LOC 16.0% O\u2082; soot index 0.55; cool-flame capable (FLEX regime); refs: flex-2",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -462,7 +755,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 12.0% O\u2082; soot index 0.6; cool-flame capable (FLEX regime); refs: flex-2"
+   "notes": "LOC 12.0% O\u2082; soot index 0.6; cool-flame capable (FLEX regime); refs: flex-2",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -495,7 +793,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 11.5% O\u2082; soot index 0.85; cool-flame capable (FLEX regime); refs: acme"
+   "notes": "LOC 11.5% O\u2082; soot index 0.85; cool-flame capable (FLEX regime); refs: acme",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -528,7 +831,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 24.0% O\u2082; soot index 0.4; smoldering; refs: same"
+   "notes": "LOC 24.0% O\u2082; soot index 0.4; smoldering; refs: same",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -561,7 +869,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 12.0% O\u2082; soot index 0.2; refs: acme"
+   "notes": "LOC 12.0% O\u2082; soot index 0.2; refs: acme",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -594,7 +907,12 @@
    "verified": "true",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 12.0% O\u2082; soot index 0.1; cool-flame capable (FLEX regime); refs: flex-2"
+   "notes": "LOC 12.0% O\u2082; soot index 0.1; cool-flame capable (FLEX regime); refs: flex-2",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -627,7 +945,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii, saffire"
+   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii, saffire",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -660,7 +983,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 18.0% O\u2082; soot index 0.45; smoldering; refs: saffire"
+   "notes": "LOC 18.0% O\u2082; soot index 0.45; smoldering; refs: saffire",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -693,7 +1021,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 15% O\u2082; soot index 0.3; smoldering; refs: sofie-gel, saffire, confined-combustion, flare"
+   "notes": "LOC 15% O\u2082; soot index 0.3; smoldering; refs: sofie-gel, saffire, confined-combustion, flare",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -726,7 +1059,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii"
+   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -759,7 +1097,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii"
+   "notes": "LOC 17% O\u2082; soot index 0.3; smoldering; refs: bass-ii",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -792,7 +1135,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 11.5% O\u2082; soot index 0.5; refs: acme"
+   "notes": "LOC 11.5% O\u2082; soot index 0.5; refs: acme",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -825,7 +1173,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 15.0% O\u2082; soot index 0.7; smoldering; refs: same"
+   "notes": "LOC 15.0% O\u2082; soot index 0.7; smoldering; refs: same",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -858,7 +1211,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 22.0% O\u2082; soot index 0.2; smoldering; refs: same"
+   "notes": "LOC 22.0% O\u2082; soot index 0.2; smoldering; refs: same",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -891,7 +1249,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 30.0% O\u2082; soot index 0.05; smoldering; refs: same"
+   "notes": "LOC 30.0% O\u2082; soot index 0.05; smoldering; refs: same",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "material",
@@ -924,7 +1287,12 @@
    "verified": "false",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 16.0% O\u2082; soot index 0.3; smoldering; refs: confined-combustion, flare"
+   "notes": "LOC 16.0% O\u2082; soot index 0.3; smoldering; refs: confined-combustion, flare",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "incident",
@@ -957,7 +1325,12 @@
    "verified": "true",
    "source": "NASA historical record",
    "source_url": "",
-   "notes": "Cabin pressurized to 16.7 psia with 100% O\u2082 during a plugs-out test. An electrical fault ignited materials that are marginal at sea level \u2014 the enriched atmosphere turned a spark into a flashover in seconds. \u2014 Lesson: M\u2026"
+   "notes": "Cabin pressurized to 16.7 psia with 100% O\u2082 during a plugs-out test. An electrical fault ignited materials that are marginal at sea level \u2014 the enriched atmosphere turned a spark into a flashover in seconds. \u2014 Lesson: M\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "incident",
@@ -990,7 +1363,12 @@
    "verified": "true",
    "source": "NASA historical record",
    "source_url": "",
-   "notes": "Damaged Teflon wire insulation inside a stirred liquid-oxygen tank ignited at ~1000 psi; the rupture cascaded into the adjacent tank and crippled life support across modules. \u2014 Lesson: Electrical faults inside pressuriz\u2026"
+   "notes": "Damaged Teflon wire insulation inside a stirred liquid-oxygen tank ignited at ~1000 psi; the rupture cascaded into the adjacent tank and crippled life support across modules. \u2014 Lesson: Electrical faults inside pressuriz\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "incident",
@@ -1023,7 +1401,12 @@
    "verified": "true",
    "source": "NASA historical record",
    "source_url": "",
-   "notes": "A solid-fuel oxygen generator (lithium perchlorate 'candle') ruptured and burned for ~14 minutes. The fire fed its own oxidizer \u2014 cutting ventilation did NOT extinguish it; crew needed masks, sector isolation and water\u2026"
+   "notes": "A solid-fuel oxygen generator (lithium perchlorate 'candle') ruptured and burned for ~14 minutes. The fire fed its own oxidizer \u2014 cutting ventilation did NOT extinguish it; crew needed masks, sector isolation and water\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1056,7 +1439,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1089,7 +1477,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1122,7 +1515,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1155,7 +1553,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1188,7 +1591,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1221,7 +1629,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1254,7 +1667,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1287,7 +1705,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1320,7 +1743,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1353,7 +1781,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1386,7 +1819,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1419,7 +1857,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1452,7 +1895,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1485,7 +1933,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1518,7 +1971,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1551,7 +2009,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1584,7 +2047,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1617,7 +2085,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1650,7 +2123,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1683,7 +2161,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1716,7 +2199,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1749,7 +2237,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1782,7 +2275,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1815,7 +2313,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1848,7 +2351,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1881,7 +2389,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1914,7 +2427,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1947,7 +2465,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -1980,7 +2503,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2013,7 +2541,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2046,7 +2579,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2079,7 +2617,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2112,7 +2655,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2145,7 +2693,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2178,7 +2731,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2211,7 +2769,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2244,7 +2807,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2277,7 +2845,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2310,7 +2883,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2343,7 +2921,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2376,7 +2959,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2409,7 +2997,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2442,7 +3035,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2475,7 +3073,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2508,7 +3111,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2541,7 +3149,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2574,7 +3187,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2607,7 +3225,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2640,7 +3263,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2673,7 +3301,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2706,7 +3339,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "Igniter voltage: 2.1V and 2.6V for 10 sec and 20 sec respectively."
+   "notes": "Igniter voltage: 2.1V and 2.6V for 10 sec and 20 sec respectively.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2739,7 +3377,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "hot flame, the igniter stayed in the flame longer than others."
+   "notes": "hot flame, the igniter stayed in the flame longer than others.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2772,7 +3415,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2805,7 +3453,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2838,7 +3491,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2871,7 +3529,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2904,7 +3567,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2937,7 +3605,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "Not spherical shape flame"
+   "notes": "Not spherical shape flame",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -2970,7 +3643,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3003,7 +3681,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "No ignition"
+   "notes": "No ignition",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3036,7 +3719,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3069,7 +3757,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3102,7 +3795,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3135,7 +3833,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3168,7 +3871,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3201,7 +3909,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3234,7 +3947,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3267,7 +3985,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3300,7 +4023,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3333,7 +4061,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3366,7 +4099,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3399,7 +4137,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3432,7 +4175,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3465,7 +4213,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3498,7 +4251,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-100",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-100",
-   "notes": "flow concurrent"
+   "notes": "flow concurrent",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3531,7 +4289,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-98",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-98",
-   "notes": "flow concurrent"
+   "notes": "flow concurrent",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3564,7 +4327,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-99",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
-   "notes": "flow concurrent"
+   "notes": "flow concurrent",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3597,7 +4365,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Free-floating, stays in FOV. Radiative extinction, cool-flame burning and extinction, large vapor cloud."
+   "notes": "Free-floating, stays in FOV. Radiative extinction, cool-flame burning and extinction, large vapor cloud.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3630,7 +4403,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Fiber-supported, radiative extinction, cool flame, large vapor cloud, no residual droplet."
+   "notes": "Fiber-supported, radiative extinction, cool flame, large vapor cloud, no residual droplet.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3663,7 +4441,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Free-floated, Radiative extinction, long cool-flame burn and extinction. Vapor cloud."
+   "notes": "Free-floated, Radiative extinction, long cool-flame burn and extinction. Vapor cloud.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3696,7 +4479,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Fiber-supported. Radiative extinction, long cool flame burn and large vapor cloud."
+   "notes": "Fiber-supported. Radiative extinction, long cool flame burn and large vapor cloud.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3729,7 +4517,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Fiber-supported. Radiative extinction, cool flame burning and extinction, vapor cloud."
+   "notes": "Fiber-supported. Radiative extinction, cool flame burning and extinction, vapor cloud.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3762,7 +4555,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Input comments about test here"
+   "notes": "Input comments about test here",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3795,7 +4593,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Fiber-supported. Radiative extinction, cool flame burning and re-ignition."
+   "notes": "Fiber-supported. Radiative extinction, cool flame burning and re-ignition.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3828,7 +4631,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Fiber-supported. Long, low power ignition. Radiative extinction, cool flame burning and extinction."
+   "notes": "Fiber-supported. Long, low power ignition. Radiative extinction, cool flame burning and extinction.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3861,7 +4669,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Fiber-supported. Radiative extinction, cool flame burning and burnout or extinction, large vapor cloud."
+   "notes": "Fiber-supported. Radiative extinction, cool flame burning and burnout or extinction, large vapor cloud.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3894,7 +4707,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Fiber-supported. Long, low-power ignition. Radiative extinction, cool flame burning and extinction."
+   "notes": "Fiber-supported. Long, low-power ignition. Radiative extinction, cool flame burning and extinction.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3927,7 +4745,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-39",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39",
-   "notes": "Free-floated, stays in FOVs of all cameras. Radiative extinction, cool flame burning and extinction and vapor cloud."
+   "notes": "Free-floated, stays in FOVs of all cameras. Radiative extinction, cool flame burning and extinction and vapor cloud.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3960,7 +4783,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -3993,7 +4821,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4026,7 +4859,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4059,7 +4897,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4092,7 +4935,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4125,7 +4973,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "same bottle, will get a timer reset"
+   "notes": "same bottle, will get a timer reset",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4158,7 +5011,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "Repeat of F2"
+   "notes": "Repeat of F2",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4191,7 +5049,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4224,7 +5087,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4257,7 +5125,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4290,7 +5163,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "Timed out"
+   "notes": "Timed out",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4323,7 +5201,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4356,7 +5239,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-68",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4389,7 +5277,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4422,7 +5315,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4455,7 +5353,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4488,7 +5391,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4521,7 +5429,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4554,7 +5467,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4587,7 +5505,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4620,7 +5543,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4653,7 +5581,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4686,7 +5619,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4719,7 +5657,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-20",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-20",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4752,7 +5695,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-22",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4785,7 +5733,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4818,7 +5771,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4851,7 +5809,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4884,7 +5847,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a cabin air (nominally 0.21/0.79 O2/N2), 1.0 atm ambient environment. The droplet deploys and ignites with little residual velocity and stays within the HiBMS\u2026"
+   "notes": "Free-floating heptane droplet burning in a cabin air (nominally 0.21/0.79 O2/N2), 1.0 atm ambient environment. The droplet deploys and ignites with little residual velocity and stays within the HiBMS\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4917,7 +5885,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet in a nominally air (0.21/0.79 O2/N2, 1.0 atm) ambient environment. The droplet stays in the HiBMS FOV for the entire test including a long time after visible flame extin\u2026"
+   "notes": "Free-floating heptane droplet in a nominally air (0.21/0.79 O2/N2, 1.0 atm) ambient environment. The droplet stays in the HiBMS FOV for the entire test including a long time after visible flame extin\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4950,7 +5923,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.20/0.80 O2/N2, 0.70 atm ambient environment. The droplet drifts E after ignition and leaves the HiBMS FOV shortly after visible flame extinction. The drop\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.20/0.80 O2/N2, 0.70 atm ambient environment. The droplet drifts E after ignition and leaves the HiBMS FOV shortly after visible flame extinction. The drop\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -4983,7 +5961,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.13/0.85 O2/N2, 1.0 atm ambient environment. Very short burn that is entirely transient. This ambient is likely below the quasi-steady flammability limit.\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.13/0.85 O2/N2, 1.0 atm ambient environment. Very short burn that is entirely transient. This ambient is likely below the quasi-steady flammability limit.\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5016,7 +5999,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.21/0.49/0.30 O2/N2/CO2, 0.70 atm ambient environment. The droplet drifts N in the HiBMS FOV after deployment and ignition and out of the HiBMS FOV shortly\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.21/0.49/0.30 O2/N2/CO2, 0.70 atm ambient environment. The droplet drifts N in the HiBMS FOV after deployment and ignition and out of the HiBMS FOV shortly\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5049,7 +6037,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet in a 0.24/0.56/0.20 O2/N2/CO2, 1.0 atm ambient environment. There were problems with gas bubbles during the dispense/stretch/deployment. On this test there was a small g\u2026"
+   "notes": "Free-floating heptane droplet in a 0.24/0.56/0.20 O2/N2/CO2, 1.0 atm ambient environment. There were problems with gas bubbles during the dispense/stretch/deployment. On this test there was a small g\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5082,7 +6075,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.18/0.67/0.15 O2/N2/CO2, 1.0 atm ambient environment. This is a very small droplet that has a high NW drift velocity in HiBMS FOV. The droplet leaves the H\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.18/0.67/0.15 O2/N2/CO2, 1.0 atm ambient environment. This is a very small droplet that has a high NW drift velocity in HiBMS FOV. The droplet leaves the H\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5115,7 +6113,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.19/0.71/0.10 O2/N2/CO2, 0.7 atm ambient environment. The droplet stays in HiBMS FOV for the entire test including after the visible flame extinction. The\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.19/0.71/0.10 O2/N2/CO2, 0.7 atm ambient environment. The droplet stays in HiBMS FOV for the entire test including after the visible flame extinction. The\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5148,7 +6151,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a nominally air, 0.21/0.79 O2/N2, 1.0 atm ambient environment. The droplet drifts SE after deployment, does not touch the igniter and continues to drift SE in\u2026"
+   "notes": "Free-floating heptane droplet burning in a nominally air, 0.21/0.79 O2/N2, 1.0 atm ambient environment. The droplet drifts SE after deployment, does not touch the igniter and continues to drift SE in\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5181,7 +6189,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.21/0.79 O2/N2, 1.0 atm (nominally air) ambient environment. The droplet stays in HiBMS FOV for most of lifetime. The droplet burns to a very small size, w\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.21/0.79 O2/N2, 1.0 atm (nominally air) ambient environment. The droplet stays in HiBMS FOV for most of lifetime. The droplet burns to a very small size, w\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5214,7 +6227,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.24/0.56/0.20 O2/N2/He, 0.70 atm ambient envrionment. The droplet drifts out of HiBMS FOV (but remains in the FOV of the LLUV and Color Camera) close to ex\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.24/0.56/0.20 O2/N2/He, 0.70 atm ambient envrionment. The droplet drifts out of HiBMS FOV (but remains in the FOV of the LLUV and Color Camera) close to ex\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5247,7 +6265,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.21/0.79 O2/N2, 1.0 atm (nominally air) ambient environment. The droplet stays in HiBMS FOV (it briefly drifts out well after visible flame extinction) for\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.21/0.79 O2/N2, 1.0 atm (nominally air) ambient environment. The droplet stays in HiBMS FOV (it briefly drifts out well after visible flame extinction) for\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5280,7 +6303,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-68",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5313,7 +6341,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5346,7 +6379,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5379,7 +6417,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5412,7 +6455,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5445,7 +6493,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5478,7 +6531,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5511,7 +6569,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5544,7 +6607,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5577,7 +6645,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-20",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-20",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5610,7 +6683,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": "Test Day - includes the year as the first two digits followed by the 3-digit day of the year (where any late-hour transition to the next day is neglected). MFC - identifies the maximum flow rate of t\u2026"
+   "notes": "Test Day - includes the year as the first two digits followed by the 3-digit day of the year (where any late-hour transition to the next day is neglected). MFC - identifies the maximum flow rate of t\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5643,7 +6721,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-21",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-21",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5676,7 +6759,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-22",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22",
-   "notes": "Mesh polarity refers to the polarity of the high-voltage power supply and the copper electrode relative to the burner."
+   "notes": "Mesh polarity refers to the polarity of the high-voltage power supply and the copper electrode relative to the burner.",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5709,7 +6797,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-22",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5742,7 +6835,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-22",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5775,7 +6873,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-22",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5808,7 +6911,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-22",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5841,7 +6949,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5874,7 +6987,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5907,7 +7025,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5940,7 +7063,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-23",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-23",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -5973,7 +7101,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a cabin air, 1.0 atm ambient environment. This is the first FLEX test. The droplet remains in the FOV of all of the cameras for the entire test. The LLUV set\u2026"
+   "notes": "Free-floating methanol droplet burning in a cabin air, 1.0 atm ambient environment. This is the first FLEX test. The droplet remains in the FOV of all of the cameras for the entire test. The LLUV set\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6006,7 +7139,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.34/0.66 O2/N2, 0.70 atm ambient environment. The droplet drifts S in the HiBMS FOV after deployment and ignition. It is in the HiBMS for only a short tim\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.34/0.66 O2/N2, 0.70 atm ambient environment. The droplet drifts S in the HiBMS FOV after deployment and ignition. It is in the HiBMS for only a short tim\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6039,7 +7177,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Fiber-supported methanol droplet with 3 mm/sec translation burning in a 0.30/0.70 O2/N2, 0.7 atm ambient environment. The droplet exhibits significant axial oscillations during and after the start an\u2026"
+   "notes": "Fiber-supported methanol droplet with 3 mm/sec translation burning in a 0.30/0.70 O2/N2, 0.7 atm ambient environment. The droplet exhibits significant axial oscillations during and after the start an\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6072,7 +7215,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.15/0.85 O2/N2, 1.0 atm ambient environment. The droplet drifts slowly E and then SE and out of the HiBMS FOV, but not until after flame extinction. The f\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.15/0.85 O2/N2, 1.0 atm ambient environment. The droplet drifts slowly E and then SE and out of the HiBMS FOV, but not until after flame extinction. The f\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6105,7 +7253,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.25/0.60/0.15 O2/N2/CO2, 0.70 atm ambient environment. The droplet deploys and ignites with almost no residual motion. It stays within the HiBMS FOV for t\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.25/0.60/0.15 O2/N2/CO2, 0.70 atm ambient environment. The droplet deploys and ignites with almost no residual motion. It stays within the HiBMS FOV for t\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6138,7 +7291,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.21/0.49/0.30 O2/N2/CO2, 0.70 atm ambient environment. The droplet remains within the FOV of all cameras and burns to diffusive extinction. The LLUV data\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.21/0.49/0.30 O2/N2/CO2, 0.70 atm ambient environment. The droplet remains within the FOV of all cameras and burns to diffusive extinction. The LLUV data\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6171,7 +7329,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.15/0.35/0.50 O2/N2/CO2, 0.70 atm ambient environment. The droplet has a very small S drift after deployment and ignition, but remains in the HiBMS FOV fo\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.15/0.35/0.50 O2/N2/CO2, 0.70 atm ambient environment. The droplet has a very small S drift after deployment and ignition, but remains in the HiBMS FOV fo\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6204,7 +7367,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.19/0.59/0.25 O2/N2/CO2, 1.0 atm ambient environment. The droplet stays with the FOV of all the cameras for the entire burn. The flame diffusively extingu\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.19/0.59/0.25 O2/N2/CO2, 1.0 atm ambient environment. The droplet stays with the FOV of all the cameras for the entire burn. The flame diffusively extingu\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6237,7 +7405,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.23/0.52/0.25 O2/N2/CO2, 0.70 atm ambient environment. The droplet drifts S and out of the HiBMS and color camera FOVs relatively quickly after ignition.\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.23/0.52/0.25 O2/N2/CO2, 0.70 atm ambient environment. The droplet drifts S and out of the HiBMS and color camera FOVs relatively quickly after ignition.\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6270,7 +7443,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet in a 0.20/0.75/0.05 O2/N2/CO2, 1.0 atm ambient environment. The droplet has very little residual motion after deployment and ignition, drifting S in the HiBMS FOV, but\u2026"
+   "notes": "Free-floating methanol droplet in a 0.20/0.75/0.05 O2/N2/CO2, 1.0 atm ambient environment. The droplet has very little residual motion after deployment and ignition, drifting S in the HiBMS FOV, but\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6303,7 +7481,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet burning in a 0.18/0.67/0.15 O2/N2/He, 1.0 atm ambient environment. The droplet slowly drifts S after deployment and ignition in the HiBMS FOV, but never leaves the FOV.\u2026"
+   "notes": "Free-floating methanol droplet burning in a 0.18/0.67/0.15 O2/N2/He, 1.0 atm ambient environment. The droplet slowly drifts S after deployment and ignition in the HiBMS FOV, but never leaves the FOV.\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6336,7 +7519,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating methanol droplet in a 0.23/0.52/0.25 O2/N2/He, 0.70 atm ambient environment. The droplet drifts SE in the HiBMS FOV after ignition and out of FOV right near diffusive extinction. The ex\u2026"
+   "notes": "Free-floating methanol droplet in a 0.23/0.52/0.25 O2/N2/He, 0.70 atm ambient environment. The droplet drifts SE in the HiBMS FOV after ignition and out of FOV right near diffusive extinction. The ex\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6369,7 +7557,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-68",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6402,7 +7595,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6435,7 +7633,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6468,7 +7671,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6501,7 +7709,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6534,7 +7747,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6567,7 +7785,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6600,7 +7823,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6633,7 +7861,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6666,7 +7899,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6699,7 +7937,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6732,7 +7975,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6765,7 +8013,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6798,7 +8051,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6831,7 +8089,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6864,7 +8127,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6897,7 +8165,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6930,7 +8203,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6963,7 +8241,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -6996,7 +8279,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7029,7 +8317,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7062,7 +8355,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7095,7 +8393,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7128,7 +8431,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7161,7 +8469,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7194,7 +8507,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7227,7 +8545,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7260,7 +8583,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": "Irregular Oscillation"
+   "notes": "Irregular Oscillation",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7293,7 +8621,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7326,7 +8659,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7359,7 +8697,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7392,7 +8735,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-159",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7425,7 +8773,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7458,7 +8811,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-10",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7491,7 +8849,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-68",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7524,7 +8887,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-68",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-68",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7557,7 +8925,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-99",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
-   "notes": "flow concurrent"
+   "notes": "flow concurrent",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7590,7 +8963,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-99",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
-   "notes": "flow concurrent; spread 1.2 mm/s"
+   "notes": "flow concurrent; spread 1.2 mm/s",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7623,7 +9001,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-99",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
-   "notes": "flow concurrent"
+   "notes": "flow concurrent",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7656,7 +9039,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-99",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
-   "notes": "flow opposed; spread 0.6 mm/s"
+   "notes": "flow opposed; spread 0.6 mm/s",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7689,7 +9077,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7722,7 +9115,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7755,7 +9153,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-26",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26",
-   "notes": ""
+   "notes": "",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7788,7 +9191,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Fber-supported methanol droplet burning in a 0.21/0.49/0.30 O2/N2/CO2, 0.70 atm ambient environment. There was no fiber translation on this test. The droplet initially moves W in the HiBMS FOV before\u2026"
+   "notes": "Fber-supported methanol droplet burning in a 0.21/0.49/0.30 O2/N2/CO2, 0.70 atm ambient environment. There was no fiber translation on this test. The droplet initially moves W in the HiBMS FOV before\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7821,7 +9229,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Fiber-supported heptane droplet with fiber translation burning in a 0.18/0.42/0.40 O2/N2/CO2, 0.70 atm ambient environment. The droplet does not oscillate much on the fiber during or after the burn.\u2026"
+   "notes": "Fiber-supported heptane droplet with fiber translation burning in a 0.18/0.42/0.40 O2/N2/CO2, 0.70 atm ambient environment. The droplet does not oscillate much on the fiber during or after the burn.\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7854,7 +9267,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-69",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-69",
-   "notes": "Free-floating heptane droplet burning in a 0.24/0.56/0.20 O2/N2/CO2, 1.0 atm ambient environment. The droplet drifts NW in the HiBMS view after deployment, then hits the igniter and moves in the NE d\u2026"
+   "notes": "Free-floating heptane droplet burning in a 0.24/0.56/0.20 O2/N2/CO2, 1.0 atm ambient environment. The droplet drifts NW in the HiBMS view after deployment, then hits the igniter and moves in the NE d\u2026",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7887,7 +9305,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-99",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
-   "notes": "flow concurrent"
+   "notes": "flow concurrent",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   },
   {
    "record_type": "experiment_run",
@@ -7920,7 +9343,12 @@
    "verified": "true",
    "source": "NASA PSI PSI-99",
    "source_url": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-99",
-   "notes": "flow concurrent"
+   "notes": "flow concurrent",
+   "themes": "",
+   "objectives": "",
+   "apparatus": "",
+   "sensors": "",
+   "test_variables": ""
   }
  ]
 }

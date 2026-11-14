@@ -4,7 +4,9 @@ import Crew from './components/Crew'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import Hero from './components/Hero'
+import Insights from './components/Insights'
 import Shipyard from './components/Shipyard'
+import SiConsole from './components/SiConsole'
 import Stars from './components/Stars'
 import { initScroll } from './lib/scroll'
 
@@ -48,8 +50,10 @@ export default function App() {
       <Stars />
       <Hero />
       <Challenge />
+      <Insights />
       <Crew />
       <Shipyard />
+      <SiConsole />
       <Footer />
     </main>
   )

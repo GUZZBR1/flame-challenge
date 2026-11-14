@@ -5,7 +5,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    fs: { allow: ['.', '../shared'] },
+    fs: { allow: ['.', '../shared', '../data'] },
     proxy: {
       '/api': 'http://localhost:8000',
       '/health': 'http://localhost:8000',
