@@ -108,8 +108,8 @@
     "heptane": {
       "id": "heptane",
       "name": "n-heptane",
-      "locPct": 12.0,
-      "locSource": "calibration",
+      "locPct": 15.0,
+      "locSource": "psi-data",
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.55,
@@ -123,7 +123,8 @@
       "extinctionLimitMinPct": 13.0,
       "extinctionLimitMaxPct": 34.0,
       "extinctionDiameterMedianMm": 2.31,
-      "burnRateMedianMm2s": 0.54
+      "burnRateMedianMm2s": 0.54,
+      "locMethod": "extinction-floor"
     },
     "iso-octane": {
       "id": "iso-octane",
@@ -184,8 +185,8 @@
     "methanol": {
       "id": "methanol",
       "name": "methanol",
-      "locPct": 12.5,
-      "locSource": "calibration",
+      "locPct": 12.0,
+      "locSource": "psi-data",
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.1,
@@ -199,7 +200,8 @@
       "extinctionLimitMinPct": 12.0,
       "extinctionLimitMaxPct": 34.0,
       "extinctionDiameterMedianMm": 1.61,
-      "burnRateMedianMm2s": 0.46
+      "burnRateMedianMm2s": 0.46,
+      "locMethod": "extinction-floor"
     },
     "nomex": {
       "id": "nomex",
@@ -342,7 +344,7 @@
   },
   "provenance": {
     "psiRunsParsed": 1090,
-    "materialsFittedFromPsi": 0,
-    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets with clean burn/extinct separation; locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit)."
+    "materialsFittedFromPsi": 2,
+    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit)."
   }
 }

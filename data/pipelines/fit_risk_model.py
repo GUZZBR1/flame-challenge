@@ -48,6 +48,20 @@ FRONTEND_OUT = REPO / "frontend" / "src" / "data" / "risk_model.json"
 BURNED = {"burnout", "disruption"}
 EXTINCT = {"extinction", "no-ignition"}
 
+# extinction regimes that actually bound flammability — 'radiative' and
+# 'cool-flame' extinctions happen at ANY O2 (they are not limit evidence)
+LIMIT_EXTINCT = {"oxygen-limit", "suppressant", "quiescent", "blow-off"}
+# no-ignition is direct LOC evidence, but only below a plausible ceiling —
+# ACME burner rows record no-ignition at 21-85% O2 for mechanical reasons
+NOIGN_MAX_O2 = 25.0
+# LOC fitting is restricted to droplet-family fuels (FLEX): for coflow
+# gaseous flames "extinction" is a strain/blowoff limit, not an oxygen
+# flammability limit — a boundary fit there produces meaningless LOCs
+DROPLET_INVESTIGATIONS = {"flex-2"}
+# sanity window for a fitted LOC (rejects degenerate envelopes; the
+# literature range for condensable/gaseous fuels is ~10.5-16.5%)
+LOC_FIT_MIN, LOC_FIT_MAX = 10.0, 17.0
+
 # ventilation factor anchor points (cm/s -> multiplier); linear between
 # anchors: quiescent radiative window, mid-flow O2 supply, high-flow blow-off
 FLOW_ANCHORS = [
@@ -111,8 +125,11 @@ def main() -> int:
         if not mid:
             continue
         s = stats.setdefault(mid, {"burned": [], "extinct": [], "cool": 0,
-                                   "n": 0, "kavg": [], "dext": []})
+                                   "n": 0, "kavg": [], "dext": [],
+                                   "ext_limit": [], "droplet": False})
         s["n"] += 1
+        if r.get("investigation_id") in DROPLET_INVESTIGATIONS:
+            s["droplet"] = True
         try:
             o2 = float(r["o2_pct"]) if r.get("o2_pct") else None
         except ValueError:
@@ -122,6 +139,10 @@ def main() -> int:
                 s["burned"].append(o2)
             elif r.get("outcome") in EXTINCT:
                 s["extinct"].append(o2)
+                if (r.get("extinction_type") in LIMIT_EXTINCT
+                        or (r.get("outcome") == "no-ignition"
+                            and o2 <= NOIGN_MAX_O2)):
+                    s["ext_limit"].append(o2)
         try:
             d = float(r["extinction_d_mm"]) if r.get("extinction_d_mm") else None
             if d:
@@ -168,21 +189,56 @@ def main() -> int:
                     statistics.median(s["dext"]), 2)
             if s["kavg"]:
                 entry["burnRateMedianMm2s"] = round(statistics.median(s["kavg"]), 3)
-            # LOC refit only on clean burn/extinct separation — overlapping
-            # envelopes mean radiative extinctions dominate and the boundary
-            # is not a flammability limit
+            # LOC refit — two estimators, both labelled in locMethod:
+            #  1. boundary-midpoint: clean burn/extinct separation (rare —
+            #     radiative extinctions at high O2 usually overlap)
+            #  2. extinction-floor: droplet fuels only; the median of the
+            #     three lowest limit-type extinctions approximates the
+            #     empirical flammability floor — the O2 at which the flame
+            #     demonstrably still dies. Robust to a single outlier row;
+            #     radiative/cool-flame extinctions excluded via ext_limit.
             loc_fit = empirical_loc(s["burned"], s["extinct"])
             if (loc_fit is not None and s["burned"] and s["extinct"]
                     and max(s["extinct"]) < min(s["burned"])
                     and len(s["burned"]) + len(s["extinct"]) >= 6):
                 entry["locPct"] = loc_fit
                 entry["locSource"] = "psi-data"
+                entry["locMethod"] = "boundary-midpoint"
                 fitted += 1
+            elif s["droplet"] and len(s["ext_limit"]) >= 10:
+                floor = statistics.median(sorted(s["ext_limit"])[:3])
+                if LOC_FIT_MIN <= floor <= LOC_FIT_MAX:
+                    entry["locPct"] = round(floor, 1)
+                    entry["locSource"] = "psi-data"
+                    entry["locMethod"] = "extinction-floor"
+                    fitted += 1
         entry["hiddenFactor"] = round(
             1.0 + 0.25 * entry["coolFlameCapable"]
             + 0.15 * entry["smoldering"]
             + 0.10 * float(entry["sootIndex"]), 3)
         materials[mid] = entry
+
+    # propagate fitted LOCs back into calibration.json — the C++ chamber
+    # (materials[].locPct), the backend bridge and the TS fallback must all
+    # burn with ONE canonical value; investigations[].effectiveLoc follows
+    # the same loc ?? material rule calibrate_constants.py emits
+    if fitted:
+        for m in cal.get("materials", []):
+            fitted_mat = materials.get(m["id"])
+            if fitted_mat and fitted_mat.get("locSource") == "psi-data":
+                m["locPct"] = fitted_mat["locPct"]
+                m["locSource"] = "psi-data"
+                if fitted_mat.get("locMethod"):
+                    m["locMethod"] = fitted_mat["locMethod"]
+        mat_loc = {m["id"]: m.get("locPct") for m in cal.get("materials", [])}
+        for spec in cal.get("investigations", {}).values():
+            spec["effectiveLoc"] = spec.get("loc") \
+                if spec.get("loc") is not None \
+                else mat_loc.get(spec.get("materialId"))
+        CALIBRATION.write_text(json.dumps(cal, indent=2))
+        fe_cal = REPO / "frontend" / "src" / "data" / "calibration.json"
+        if fe_cal.exists():
+            fe_cal.write_text(json.dumps(cal))
 
     model = {
         "generated": "fit_risk_model.py",
@@ -198,11 +254,14 @@ def main() -> int:
             "psiRunsParsed": len(rows),
             "materialsFittedFromPsi": fitted,
             "note": "locSource=psi-data -> LOC re-estimated from parsed PSI "
-                    "test sheets with clean burn/extinct separation; "
+                    "test sheets: locMethod=boundary-midpoint for clean "
+                    "burn/extinct separation, extinction-floor for "
+                    "droplet fuels (median of 3 lowest limit-type "
+                    "radiative/cool-flame extinctions excluded). "
                     "locSource=calibration -> literature-seeded. "
-                    "extinctionLimitMin/MaxPct = measured extinction envelope "
-                    "(includes radiative extinctions — not a flammability "
-                    "limit).",
+                    "extinctionLimitMin/MaxPct = measured extinction "
+                    "envelope (includes radiative extinctions — not a "
+                    "flammability limit).",
         },
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)

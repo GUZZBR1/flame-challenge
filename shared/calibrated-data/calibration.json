@@ -57,7 +57,7 @@
     {
       "id": "heptane",
       "name": "n-heptane",
-      "locPct": 12.0,
+      "locPct": 15.0,
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.55,
@@ -65,7 +65,9 @@
       "smoldering": false,
       "sourceInvestigations": [
         "flex-2"
-      ]
+      ],
+      "locSource": "psi-data",
+      "locMethod": "extinction-floor"
     },
     {
       "id": "iso-octane",
@@ -122,7 +124,7 @@
     {
       "id": "methanol",
       "name": "methanol",
-      "locPct": 12.5,
+      "locPct": 12.0,
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.1,
@@ -130,7 +132,9 @@
       "smoldering": false,
       "sourceInvestigations": [
         "flex-2"
-      ]
+      ],
+      "locSource": "psi-data",
+      "locMethod": "extinction-floor"
     },
     {
       "id": "nomex",
@@ -283,6 +287,7 @@
       "pressureKpa": 101,
       "partialGravity": false,
       "loc": 15,
+      "effectiveLoc": 15,
       "hazards": [
         "low-oxygen-persistence",
         "exploration-atmosphere"
@@ -302,6 +307,7 @@
       "pressureKpa": 101,
       "partialGravity": false,
       "loc": 17,
+      "effectiveLoc": 17,
       "hazards": [
         "low-oxygen-persistence",
         "smolder-risk",
@@ -322,6 +328,7 @@
       "pressureKpa": 101,
       "partialGravity": false,
       "loc": null,
+      "effectiveLoc": 15.0,
       "hazards": [
         "cool-flames",
         "detection-gap",
@@ -342,6 +349,7 @@
       "pressureKpa": 101,
       "partialGravity": false,
       "loc": null,
+      "effectiveLoc": 11.0,
       "hazards": [
         "toxic-aerosol"
       ]
@@ -360,6 +368,7 @@
       "pressureKpa": 70,
       "partialGravity": false,
       "loc": null,
+      "effectiveLoc": 17,
       "hazards": [
         "large-scale-spread",
         "toxic-aerosol",
@@ -381,6 +390,7 @@
       "pressureKpa": 101,
       "partialGravity": false,
       "loc": null,
+      "effectiveLoc": 30.0,
       "hazards": [
         "detection-gap",
         "toxic-aerosol",
@@ -401,6 +411,7 @@
       "pressureKpa": 57,
       "partialGravity": false,
       "loc": null,
+      "effectiveLoc": 16.0,
       "hazards": [
         "exploration-atmosphere",
         "large-scale-spread"
@@ -420,6 +431,7 @@
       "pressureKpa": 101,
       "partialGravity": true,
       "loc": null,
+      "effectiveLoc": 15,
       "hazards": [
         "partial-gravity",
         "exploration-atmosphere",

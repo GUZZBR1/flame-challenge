@@ -146,6 +146,12 @@ def main() -> int:
             "pressureKpa": c.get("pressureKpa") or 101,
             "partialGravity": inv["gravity"] == "partial-gravity",
             "loc": loc,
+            # canonical LOC the engines actually burn with: the dataset's
+            # measured limit when present, else the primary material's —
+            # fit_risk_model.py may later patch this to a psi-data value.
+            # TS mirror must read THIS, not o2Range[0], for engine parity.
+            "effectiveLoc": loc if loc is not None
+            else materials[primary]["locPct"],
             "hazards": inv["hazards"],
         }
 

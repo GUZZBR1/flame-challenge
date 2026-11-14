@@ -13,6 +13,18 @@ export const INV_MATERIAL: Record<string, string | undefined> = Object.fromEntri
   ).map(([k, v]) => [k, v.materialId]),
 )
 
+/** investigation_id -> canonical LOC the engines burn with
+ *  (calibration.json effectiveLoc: dataset LOC ?? material locPct, possibly
+ *  psi-fitted by fit_risk_model.py) — keeps the TS mirror in parity with
+ *  the C++ chamber, which always uses the material table */
+export const INV_LOC: Record<string, number | undefined> = Object.fromEntries(
+  Object.entries(
+    (calib as {
+      investigations: Record<string, { effectiveLoc?: number | null }>
+    }).investigations,
+  ).map(([k, v]) => [k, v.effectiveLoc ?? undefined]),
+)
+
 function num(v: string | number | undefined): number | undefined {
   if (v === undefined || v === '') return undefined
   const n = Number(v)

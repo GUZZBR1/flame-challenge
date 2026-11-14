@@ -253,3 +253,74 @@ def test_legacy_flex_emits_burn_rate():
         pytest.skip("flex_test_points.csv not present")
     assert any(r["burn_rate_mm2_s"] for r in rows)
     assert all(r["investigation_id"] == "flex-2" for r in rows)
+
+
+# ---- effectiveLoc parity contract (calibrate -> fit round-trip) ----
+
+def test_calibrate_emits_effective_loc(monkeypatch, tmp_path):
+    import calibrate_constants as calib
+    ds = {"investigations": [{
+        "id": "demo-flex", "name": "DEMO", "fuels": ["heptane"],
+        "category": "droplet", "gravity": "microgravity", "hazards": [],
+        "metrics": {"limitingOxygenPct": None, "flameSpreadRateCms": None,
+                    "coolFlameObserved": True, "smolderObserved": False},
+        "conditions": {"oxygenPct": [12, 25], "flowCms": None,
+                       "pressureKpa": None, "explorationRelevant": True},
+        "data": {"psiUrl": None},
+    }]}
+    (tmp_path / "ds.json").write_text(json.dumps(ds))
+    (tmp_path / "shared" / "calibrated-data").mkdir(parents=True)
+    for f in ("historical_scenarios.json", "tech_spinoffs.json"):
+        (tmp_path / "shared" / "calibrated-data" / f).write_text("{}")
+    (tmp_path / "fe").mkdir()
+    monkeypatch.setattr(calib, "ROOT", tmp_path)
+    monkeypatch.setattr(calib, "DATASET", tmp_path / "ds.json")
+    monkeypatch.setattr(calib, "OUT", tmp_path / "calibration.json")
+    monkeypatch.setattr(calib, "RISK_OUT", tmp_path / "risk_profiles.json")
+    monkeypatch.setattr(calib, "FRONTEND_DATA", tmp_path / "fe")
+    assert calib.main() == 0
+    cal = json.loads((tmp_path / "calibration.json").read_text())
+    spec = cal["investigations"]["demo-flex"]
+    # no measured LOC -> canonical value is the primary material's (12.0)
+    assert spec["loc"] is None
+    assert spec["effectiveLoc"] == 12.0
+
+
+def test_fit_propagates_fitted_loc_to_calibration(monkeypatch, tmp_path):
+    cal = {"materials": [{"id": "heptane", "name": "Heptane", "locPct": 12.0,
+                          "sootIndex": 0.4, "coolFlameCapable": True,
+                          "smoldering": False, "spreadMinCms": 0.2,
+                          "spreadMaxCms": 4.0}],
+           "investigations": {"demo": {"materialId": "heptane", "loc": None}}}
+    cal_path = tmp_path / "calibration.json"
+    cal_path.write_text(json.dumps(cal))
+    header = ",".join(norm.FIELDS) + "\n"
+    def _row(i: int) -> str:
+        r = ["run_id", "accession", "investigation_id", "fuel",
+             "material_id", "o2_pct", "n2_pct", "co2_pct", "he_pct",
+             "pressure_kpa", "temp_k", "flow_cms", "droplet_d0_mm",
+             "burn_rate_mm2_s", "burn_time_s", "extinction_d_mm",
+             "outcome", "extinction_type", "cool_flame", "fiber_support",
+             "comments", "source_file", "source_url", "verified"]
+        vals = [f"r{i}", "PSI-69", "flex-2", "heptane", "heptane",
+                str(round(14 + i * 0.1, 1)), "", "", "", "", "", "", "",
+                "", "", "", "extinction", "oxygen-limit", "False", "",
+                "", "f.txt", "u", "True"]
+        assert len(vals) == len(r)
+        return ",".join(vals)
+    body = "".join(_row(i) + "\n" for i in range(12))
+    exp = tmp_path / "experiments.csv"
+    exp.write_text(header + body)
+    monkeypatch.setattr(fit_risk_model, "EXP_CSV", exp)
+    monkeypatch.setattr(fit_risk_model, "CALIBRATION", cal_path)
+    monkeypatch.setattr(fit_risk_model, "OUT", tmp_path / "risk_model.json")
+    monkeypatch.setattr(fit_risk_model, "FRONTEND_OUT", tmp_path / "fe.json")
+    monkeypatch.setattr(fit_risk_model, "REPO", tmp_path)
+    assert fit_risk_model.main() == 0
+    patched = json.loads(cal_path.read_text())
+    # median of the three lowest limit-extinctions (~14) becomes canonical
+    assert patched["materials"][0]["locPct"] == 14.1
+    assert patched["materials"][0]["locSource"] == "psi-data"
+    assert patched["investigations"]["demo"]["effectiveLoc"] == 14.1
+    rm = json.loads((tmp_path / "risk_model.json").read_text())
+    assert rm["materials"]["heptane"]["locMethod"] == "extinction-floor"

@@ -413,7 +413,7 @@
    "flow_max": "",
    "pressure_kpa": "",
    "gravity_g": "",
-   "loc_pct": 12.0,
+   "loc_pct": 15.0,
    "spread_mm_s": "2\u201340",
    "droplet_d0_mm": "",
    "burn_rate_mm2_s": "",
@@ -426,10 +426,10 @@
    "hidden_factor": 1.305,
    "psi_runs": 114,
    "psi_cool_flame_runs": 37,
-   "verified": "false",
+   "verified": "true",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 12.0% O\u2082; soot index 0.55; cool-flame capable (FLEX regime); refs: flex-2"
+   "notes": "LOC 15.0% O\u2082; soot index 0.55; cool-flame capable (FLEX regime); refs: flex-2"
   },
   {
    "record_type": "material",
@@ -578,7 +578,7 @@
    "flow_max": "",
    "pressure_kpa": "",
    "gravity_g": "",
-   "loc_pct": 12.5,
+   "loc_pct": 12.0,
    "spread_mm_s": "2\u201340",
    "droplet_d0_mm": "",
    "burn_rate_mm2_s": "",
@@ -591,10 +591,10 @@
    "hidden_factor": 1.26,
    "psi_runs": 156,
    "psi_cool_flame_runs": 0,
-   "verified": "false",
+   "verified": "true",
    "source": "ACME/BASS-II flammability matrix",
    "source_url": "https://psi.nasa.gov/physci/repo",
-   "notes": "LOC 12.5% O\u2082; soot index 0.1; cool-flame capable (FLEX regime); refs: flex-2"
+   "notes": "LOC 12.0% O\u2082; soot index 0.1; cool-flame capable (FLEX regime); refs: flex-2"
   },
   {
    "record_type": "material",
