@@ -22,7 +22,6 @@
     { "id": "thrusters", "label": "Take 4: Engine Burn", "focus": "patrol", "scale": 1.5 },
     { "id": "thrusters-close", "label": "Take 5: Thruster Close-up", "focus": "patrol", "scale": 1.9 },
     { "id": "thrusters-burn", "label": "Take 6: Full Burn", "focus": "patrol", "scale": 1.25 },
-    { "id": "comets", "label": "Take 7: Background Comets", "focus": "space", "scale": 0.95 },
     { "id": "comets", "label": "Take 7: Background Comets", "focus": "space", "scale": 0.95 }
   ],
   "sequences": {
