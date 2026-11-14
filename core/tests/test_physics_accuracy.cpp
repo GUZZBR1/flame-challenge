@@ -1,11 +1,15 @@
 // Sanity tests validating reduced-order models against published
 // microgravity-combustion behavior (FLEX d²-law, SoFIE extinction
 // regimes, LOC thresholds).
-#include <cassert>
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <string>
+#include <vector>
 
+#include "airflow_propagator.hpp"
 #include "chamber.hpp"
+#include "combustion_solver.hpp"
 #include "material_risk.hpp"
 
 using namespace ff;
@@ -19,29 +23,146 @@ static int failures = 0;
         }                                                           \
     } while (0)
 
+static bool hasEvent(const std::vector<std::string>& v, const char* s) {
+    return std::find(v.begin(), v.end(), s) != v.end();
+}
+
 int main() {
     MaterialRisk risks;
 
-    // --- d²-law: droplet d² must shrink ~linearly while burning ---
+    // --- d²-law: droplet d² must shrink ~linearly while hot-burning,
+    //     and burnFraction must track consumed *mass* (∝ d³) ---
+    {
+        DropletFlame flame;
+        DropletFlame::Config c;
+        c.material = *risks.get("heptane");
+        c.o2Pct = 21.0;
+        c.dropletD0Mm = 1.0;
+        c.seed = 7;
+        flame.configure(c);
+
+        const double dt = 0.01;
+        const double K = flame.burnRateK();
+        CHECK(K > 0.4 && K < 1.5,
+              "heptane burn rate at 21% O2 must sit in the PSI range");
+
+        double prevD2 = -1;
+        int hotSteps = 0;
+        bool d2Linear = true, fracOk = true;
+        for (int i = 0; i < 2000 &&
+             flame.state().regime != DropletFlame::Regime::Extinguished; ++i) {
+            flame.step(dt);
+            const auto& s = flame.state();
+            if (s.regime != DropletFlame::Regime::HotFlame) continue;
+            ++hotSteps;
+            if (prevD2 >= 0 && s.dropletDMm > 0.02 &&
+                std::fabs(s.dropletDMm * s.dropletDMm - (prevD2 - K * dt)) > 1e-9)
+                d2Linear = false;
+            const double expectFrac =
+                1.0 - std::pow(s.dropletDMm / c.dropletD0Mm, 3.0);
+            if (std::fabs(s.burnFraction - expectFrac) > 1e-3) fracOk = false;
+            prevD2 = s.dropletDMm * s.dropletDMm;
+        }
+        CHECK(hotSteps > 50, "droplet must sustain hot burning at 21% O2");
+        CHECK(d2Linear, "droplet d^2 must decrease by K*dt each step");
+        CHECK(fracOk, "burnFraction must equal 1-(d/d0)^3 during hot burn");
+        CHECK(flame.state().regime == DropletFlame::Regime::Extinguished,
+              "droplet must extinguish once fuel is exhausted");
+        CHECK(flame.state().burnFraction > 0.999,
+              "burnFraction must reach ~1.0 at fuel exhaustion");
+    }
+
+    // --- degenerate droplet: non-positive initial diameter ---
+    {
+        DropletFlame flame;
+        DropletFlame::Config c;
+        c.material = *risks.get("heptane");
+        c.o2Pct = 21.0;
+        c.dropletD0Mm = 0.0;
+        flame.configure(c);
+        for (int i = 0; i < 200 &&
+             flame.state().regime != DropletFlame::Regime::Extinguished; ++i)
+            flame.step(0.01);
+        CHECK(flame.state().regime == DropletFlame::Regime::Extinguished,
+              "zero-fuel droplet must extinguish immediately");
+        CHECK(flame.state().burnFraction >= 0.0 &&
+              flame.state().burnFraction <= 1.0,
+              "burnFraction must stay inside [0,1] for a degenerate droplet");
+    }
+
+    // --- cool flame: actually observed, then ends on fuel exhaustion
+    //     long before the 8–14 s fade timer can fire ---
+    {
+        DropletFlame flame;
+        DropletFlame::Config c;
+        c.material = *risks.get("heptane"); // coolFlameCapable
+        c.o2Pct = 10.5;                     // under the LOC edge
+        c.dropletD0Mm = 0.3;                // ~3.8 s of cool-flame fuel
+        c.seed = 3;
+        flame.configure(c);
+
+        const double dt = 0.01;
+        bool sawCool = false, fracOk = true;
+        int coolSteps = 0;
+        for (int i = 0; i < 5000 &&
+             flame.state().regime != DropletFlame::Regime::Extinguished; ++i) {
+            flame.step(dt);
+            const auto& s = flame.state();
+            if (s.regime != DropletFlame::Regime::CoolFlame) continue;
+            sawCool = true;
+            ++coolSteps;
+            const double expectFrac =
+                1.0 - std::pow(s.dropletDMm / c.dropletD0Mm, 3.0);
+            if (std::fabs(s.burnFraction - expectFrac) > 1e-3) fracOk = false;
+        }
+        CHECK(sawCool, "heptane at 10.5% O2 must enter cool burning");
+        CHECK(fracOk, "burnFraction must track 1-(d/d0)^3 in cool flame");
+        CHECK(coolSteps > 0 && coolSteps < 800,
+              "cool flame must end on fuel exhaustion, not the fade timer");
+        CHECK(flame.state().regime == DropletFlame::Regime::Extinguished,
+              "cool flame must reach the extinguished regime");
+        CHECK(flame.state().heatReleaseW == 0.0,
+              "heat release must be cleared at cool-flame fuel exhaustion");
+        CHECK(flame.state().burnFraction > 0.999,
+              "cool flame must consume the remaining fuel");
+    }
+
+    // --- cool→hot re-ignition: reachable through a live atmosphere update
+    //     (restoring cabin O2 must not reset fuel/regime/elapsed state) ---
     {
         Chamber ch(risks);
         Chamber::Config c;
         c.materialId = "heptane";
         c.model = "droplet";
-        c.o2Pct = 21.0;
-        c.dropletD0Mm = 1.0;
-        c.seed = 7;
+        c.o2Pct = 10.5;
+        c.dropletD0Mm = 1.0; // enough fuel to outlive the cool phase
+        c.seed = 3;
         ch.configure(c);
 
-        double d2_0 = 0, d2_1 = 0, d2_2 = 0;
-        for (int i = 0; i < 600; ++i) {
-            ch.step(0.01);
-            const auto& s = ch.stateJson();
-            (void)s;
+        const double dt = 0.01;
+        bool sawCool = false;
+        for (int i = 0; i < 3000 && !sawCool && !ch.finished(); ++i) {
+            ch.step(dt);
+            sawCool = ch.coolFlame();
         }
-        // sample via JSON would be clunky — use regime + pressure instead
-        CHECK(ch.regime() >= 1, "heptane droplet should ignite at 21% O2");
-        (void)d2_0; (void)d2_1; (void)d2_2;
+        CHECK(sawCool, "droplet must be in cool flame before O2 restoration");
+        CHECK(!ch.finished(), "droplet must still hold fuel for re-ignition");
+
+        // cabin airflow restored → O2 back above the material LOC
+        ch.updateAtmosphere(18.0, 0.0, 101.0);
+        CHECK(ch.coolFlame(), "atmosphere update must preserve the cool flame");
+
+        bool reignited = false;
+        for (int i = 0; i < 20000 && !reignited && !ch.finished(); ++i) {
+            ch.step(dt);
+            reignited = ch.hotBurning();
+        }
+        CHECK(reignited, "restored O2 must allow cool→hot re-ignition");
+
+        const auto events = ch.drainEvents();
+        CHECK(hasEvent(events, "cool-flame-onset"),
+              "chamber must emit cool-flame-onset");
+        CHECK(hasEvent(events, "reignited"), "chamber must emit reignited");
     }
 
     // --- LOC gate: PMMA below its LOC must not sustain flame ---
@@ -57,38 +178,44 @@ int main() {
         CHECK(!ch.hotBurning(), "PMMA must not spread below LOC");
     }
 
-    // --- spread rate stays inside measured [min,max] ---
+    // --- spread rate: inside the material's measured [min,max] range and
+    //     the pyrolysis front must integrate at the reported rate ---
     {
-        Chamber ch(risks);
-        Chamber::Config c;
-        c.materialId = "pmma";
-        c.model = "spread";
+        SolidSpread spread;
+        SolidSpread::Config c;
+        c.material = *risks.get("pmma");
         c.o2Pct = 21.0;
-        c.flowCms = 0.0;
-        ch.configure(c);
-        for (int i = 0; i < 300; ++i) ch.step(0.02);
-        CHECK(ch.regime() == 1, "PMMA should be spreading at 21% O2");
-    }
+        c.flowCms = 0.0;      // quiescent → no flow multiplier
+        c.slabLengthCm = 5.0; // short slab → traverses quickly
+        spread.configure(c);
 
-    // --- cool flame regime only for capable fuels ---
-    {
-        Chamber ch(risks);
-        Chamber::Config c;
-        c.materialId = "heptane"; // coolFlameCapable
-        c.model = "droplet";
-        c.o2Pct = 10.5; // just at/under LOC edge → hot extinction → cool flame
-        c.dropletD0Mm = 1.2;
-        c.seed = 3;
-        ch.configure(c);
-        bool sawCool = false;
-        for (int i = 0; i < 4000 && !ch.finished(); ++i) {
-            ch.step(0.01);
-            if (ch.coolFlame()) sawCool = true;
+        const auto& m = c.material;
+        const double dt = 0.02;
+        bool rateOk = true, integrates = true;
+        double prevFront = -1;
+        int spreadingSteps = 0;
+        for (int i = 0; i < 4000 &&
+             spread.state().regime != SolidSpread::Regime::Out; ++i) {
+            spread.step(dt);
+            const auto& s = spread.state();
+            if (s.regime != SolidSpread::Regime::Spreading) {
+                prevFront = -1;
+                continue;
+            }
+            ++spreadingSteps;
+            if (s.spreadRateCms < m.spreadMinCms - 1e-9 ||
+                s.spreadRateCms > m.spreadMaxCms + 1e-9)
+                rateOk = false;
+            if (prevFront >= 0 &&
+                std::fabs(s.frontPosCm - prevFront - s.spreadRateCms * dt) > 1e-9)
+                integrates = false;
+            prevFront = s.frontPosCm;
         }
-        // either never ignited (below LOC) or went through cool flame —
-        // both are valid; must NOT hot-burn at 10.5% O2.
-        CHECK(!ch.hotBurning(), "no hot burning at 10.5% O2");
-        (void)sawCool;
+        CHECK(spreadingSteps > 50, "PMMA must be spreading at 21% O2");
+        CHECK(rateOk, "quiescent spread rate must stay in the measured range");
+        CHECK(integrates, "front must advance by spreadRateCms*dt each step");
+        CHECK(spread.state().regime == SolidSpread::Regime::Out,
+              "flame must traverse the slab and burn out");
     }
 
     // --- ignition pressure monotonic in O2 ---

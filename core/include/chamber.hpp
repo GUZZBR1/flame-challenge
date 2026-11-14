@@ -36,6 +36,14 @@ class Chamber {
     void configure(const Config& cfg);
     void step(double dtSec);
 
+    /**
+     * Change the chamber atmosphere mid-run (O₂, opposed flow, pressure).
+     * Forwards to the active model without resetting its state — enables
+     * cool-flame re-ignition when O₂ is restored and live extinction when
+     * it is depleted.
+     */
+    void updateAtmosphere(double o2Pct, double flowCms, double pressureKpa);
+
     /** 0..1 relative ignition pressure at the configured atmosphere */
     double ignitionPressure() const;
 

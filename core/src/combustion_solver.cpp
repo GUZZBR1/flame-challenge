@@ -20,13 +20,27 @@ double DropletFlame::nextRandom() {
 
 void DropletFlame::configure(const Config& cfg) {
     c_ = cfg;
+    c_.dropletD0Mm = std::max(0.0, cfg.dropletD0Mm);
     rng_ = cfg.seed ? cfg.seed : 1u;
     s_ = State{};
-    s_.dropletDMm = cfg.dropletD0Mm;
+    s_.dropletDMm = c_.dropletD0Mm;
     s_.regime = Regime::Ignition;
     coolPhaseT_ = 0;
     // stochastic ignition delay ~ tens of ms, seeded
     s_.tSec = -0.02 - nextRandom() * 0.08;
+}
+
+void DropletFlame::updateAtmosphere(double o2Pct, double pressureKpa) {
+    c_.o2Pct = o2Pct;
+    c_.pressureKpa = pressureKpa;
+}
+
+// remaining droplet mass ∝ d³ (constant-density sphere), so the consumed
+// fraction is 1 − (d/d0)³ — not the d² ratio the d²-law tracks
+double DropletFlame::burnedFraction() const {
+    if (c_.dropletD0Mm <= 0) return 1.0;
+    const double r = std::clamp(s_.dropletDMm / c_.dropletD0Mm, 0.0, 1.0);
+    return 1.0 - r * r * r;
 }
 
 double DropletFlame::burnRateK() const {
@@ -57,7 +71,7 @@ void DropletFlame::step(double dtSec) {
         const double K = burnRateK(); // mm²/s
         const double d2 = s_.dropletDMm * s_.dropletDMm - K * dtSec;
         s_.dropletDMm = d2 > 0 ? std::sqrt(d2) : 0;
-        s_.burnFraction = 1.0 - (d2 > 0 ? d2 : 0) / (c_.dropletD0Mm * c_.dropletD0Mm);
+        s_.burnFraction = burnedFraction();
 
         // spherical flame standoff: r_f/r_d ∝ oxidizer flux margin
         const double margin = std::max(0.0, c_.o2Pct - c_.material.locPct);
@@ -91,10 +105,18 @@ void DropletFlame::step(double dtSec) {
         s_.heatReleaseW *= std::max(0.0, 1.0 - dtSec * 0.4);
         const double d2 = s_.dropletDMm * s_.dropletDMm - 0.05 * burnRateK() * dtSec;
         s_.dropletDMm = d2 > 0 ? std::sqrt(d2) : 0;
-        // cool flames either fade or flash back to hot combustion
-        if (coolPhaseT_ > 8.0 + nextRandom() * 6.0) {
+        s_.burnFraction = burnedFraction();
+        // fuel exhaustion ends cool burning just like hot burning — a cool
+        // flame cannot outlive its droplet; otherwise it fades on a timer or
+        // flashes back to hot combustion if O₂ is restored above the LOC
+        if (s_.dropletDMm <= 0.02) {
+            s_.flameRMm = 0;
+            s_.heatReleaseW = 0;
             transition(Regime::Extinguished);
-        } else if (c_.o2Pct > c_.material.locPct && nextRandom() < dtSec * 0.05) {
+        } else if (coolPhaseT_ > 8.0 + nextRandom() * 6.0) {
+            s_.heatReleaseW = 0;
+            transition(Regime::Extinguished);
+        } else if (c_.o2Pct > c_.material.locPct && nextRandom() < dtSec * 0.5) {
             transition(Regime::HotFlame);
         }
         break;

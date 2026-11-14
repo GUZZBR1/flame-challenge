@@ -10,6 +10,21 @@ using namespace emscripten;
 using namespace ff;
 
 EMSCRIPTEN_BINDINGS(freefall_engine) {
+    // value types returned by the collection APIs below — embind throws
+    // UnboundTypeError at call time for any unregistered return type
+    value_object<Material>("Material")
+        .field("id", &Material::id)
+        .field("name", &Material::name)
+        .field("locPct", &Material::locPct)
+        .field("spreadMinCms", &Material::spreadMinCms)
+        .field("spreadMaxCms", &Material::spreadMaxCms)
+        .field("sootIndex", &Material::sootIndex)
+        .field("coolFlameCapable", &Material::coolFlameCapable)
+        .field("smoldering", &Material::smoldering);
+
+    register_vector<Material>("MaterialVector");
+    register_vector<std::string>("StringVector");
+
     class_<MaterialRisk>("MaterialRisk")
         .constructor<>()
         .function("loadJson", &MaterialRisk::loadJson)
@@ -37,6 +52,7 @@ EMSCRIPTEN_BINDINGS(freefall_engine) {
         .constructor<MaterialRisk>()
         .function("configure", &Chamber::configure)
         .function("step", &Chamber::step)
+        .function("updateAtmosphere", &Chamber::updateAtmosphere)
         .function("ignitionPressure", &Chamber::ignitionPressure)
         .function("regime", &Chamber::regime)
         .function("hotBurning", &Chamber::hotBurning)
