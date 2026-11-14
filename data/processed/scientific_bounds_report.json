@@ -187,16 +187,16 @@
     "pass": true
   },
   "conformal": {
-    "method": "mapie SplitConformalRegressor (prefit adapter over backend.services.risk.risk_index), absolute conformity score; per-level halfwidths verified against the closed-form finite-sample quantile",
+    "method": "cross-fit (CV+) conformal: 5-fold sha1(run_id) split, ignition logits refit per fold, closed-form finite-sample quantile over out-of-fold residuals",
     "labeledRows": 378,
     "global": {
-      "0.80": 0.4728,
-      "0.90": 0.7168,
-      "0.95": 0.8271
+      "0.80": 0.5078,
+      "0.90": 0.7244,
+      "0.95": 0.8389
     },
     "empiricalCoverage": {
       "0.80": 0.8042,
-      "0.90": 0.9101,
+      "0.90": 0.9021,
       "0.95": 0.9577
     }
   },

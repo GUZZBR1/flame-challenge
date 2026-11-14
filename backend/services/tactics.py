@@ -118,9 +118,10 @@ def decision_cards(
             "why": why,
             "score": _pct(s),
             "action": action,
-            # conformal band on the counterfactual point itself — the
-            # score is as honest as the model is at that location
-            "uncertainty": ri.get("uncertainty"),
+            # conformal band only rides scores derived from the burn
+            # model — suppression efficacy comes from fixed priors and
+            # must not borrow the risk predictor's interval
+            "uncertainty": ri.get("uncertainty") if score is None else None,
             "model": {"materialId": mat, "o2Pct": round(o2m, 2),
                       "flowCms": round(flowm, 2), "gravity": gravity},
         }

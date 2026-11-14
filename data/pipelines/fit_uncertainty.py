@@ -95,52 +95,6 @@ def _conformal_qhat(residuals: list[float], level: float) -> float:
     return sorted(residuals)[k - 1]
 
 
-def _mapie_predict(material_ids: list[str], model: dict, X_cal, y_cal):
-    """Run MAPIE split-conformal on (X_cal, y_cal); returns the
-    per-level halfwidths MAPIE produces for the absolute score.
-    `model` is the train-fold refit — scoring calibration rows with the
-    shipped model would leak in-sample residuals."""
-    import numpy as np
-    from mapie.regression import SplitConformalRegressor
-    from sklearn.base import BaseEstimator, RegressorMixin
-
-    class RiskRegressor(RegressorMixin, BaseEstimator):
-        """Prefit adapter — predict() delegates to the train-fold refit
-        via risk.predict_risk so MAPIE calibrates out-of-sample
-        residuals, not the model that saw these rows at fit time.
-        X rows are [material_index, o2_pct, flow_cms]."""
-
-        # prefit marker — MAPIE inspects this instead of calling fit()
-        n_features_in_ = 3
-
-        def fit(self, X, y=None):  # noqa: N803 - sklearn signature
-            return self
-
-        def predict(self, X):  # noqa: N803 - sklearn signature
-            X = np.asarray(X, dtype=float).reshape(-1, 3)
-            return np.array([
-                risk.predict_risk(model, material_ids[int(mi)],
-                                  float(o2), float(fl), "microgravity")
-                for mi, o2, fl in X
-            ])
-
-    reg = SplitConformalRegressor(
-        estimator=RiskRegressor(),
-        confidence_level=list(LEVELS),
-        conformity_score="absolute",
-        prefit=True,
-    )
-    reg.conformalize(np.asarray(X_cal, dtype=float),
-                     np.asarray(y_cal, dtype=float))
-    # absolute score -> symmetric, point-independent intervals: read the
-    # halfwidth off a single conformalized row per level.
-    _, bounds = reg.predict_interval(np.asarray(X_cal[:1], dtype=float))
-    bounds = np.asarray(bounds, dtype=float)
-    # shape: (n, 2, n_levels) — lower/upper per level
-    hw = (bounds[0, 1, :] - bounds[0, 0, :]) / 2.0
-    return {lvl: float(w) for lvl, w in zip(LEVELS, hw)}
-
-
 def _envelope(group_rows: list[tuple]) -> dict:
     margins = [r[3] for r in group_rows]
     flows = [r[2] for r in group_rows]
@@ -162,17 +116,13 @@ def _coverage(group_rows: list[tuple], qhat: dict) -> dict:
     return out
 
 
-def _split(rows: list[dict]) -> tuple[list[dict], list[dict]]:
-    """Deterministic 70/30 train/calibration split keyed on run_id —
-    every rerun assigns the same runs to the same side, and no labeled
-    row may both fit the ignition curve and calibrate its interval."""
-    train, cal = [], []
-    for i, r in enumerate(rows):
-        key = r.get("run_id") or f"{r.get('accession')}#{i}"
-        fold = int(hashlib.sha1(str(key).encode()).hexdigest()[:8],
-                   16) % 10
-        (train if fold < 7 else cal).append(r)
-    return train, cal
+FOLDS = 5
+
+
+def _fold(row: dict, i: int) -> int:
+    key = row.get("run_id") or f"{row.get('accession')}#{i}"
+    return int(hashlib.sha1(str(key).encode()).hexdigest()[:8], 16) \
+        % FOLDS
 
 
 def _refit_ignition(model: dict, train_rows: list[dict],
@@ -284,16 +234,20 @@ def main() -> int:
 
     mat_family = {mid: family_of(mid) for mid in mats}
 
-    # --- the split: fit on 70%, conformalize on the held-out 30% ------
-    train_rows, cal_rows = _split(rows)
-    train_model = _refit_ignition(model, train_rows, loc_of, mat_family)
-
-    # calibration row tuple: (mat_idx, o2, flow, margin, y, yhat) —
-    # yhat from the train-fold refit so residuals are out-of-sample
+    # --- cross-fit (CV+): every labeled row is scored by a model refit
+    # on the other K-1 folds, so each residual is out-of-sample and the
+    # pooled quantile attaches to the shipped full-data predictor — the
+    # standard construction when you can't ship the calibration model
     kept: list[tuple] = []
     material_ids: list[str] = []
     mat_idx: dict[str, int] = {}
-    for r in cal_rows:
+    fold_models: list[dict | None] = [None] * FOLDS
+    for i, r in enumerate(rows):
+        k = _fold(r, i)
+        if fold_models[k] is None:
+            fold_models[k] = _refit_ignition(
+                model, [x for j, x in enumerate(rows) if _fold(x, j) != k],
+                loc_of, mat_family)
         mid = r["material_id"]
         if mid not in mat_idx:
             mat_idx[mid] = len(material_ids)
@@ -301,64 +255,34 @@ def main() -> int:
         o2 = float(r["o2_pct"])
         flow = _fnum(r.get("flow_cms")) or 0.0
         y = 1.0 if r["outcome"] in BURNED else 0.0
-        yhat = risk.predict_risk(train_model, mid, o2, flow,
+        yhat = risk.predict_risk(fold_models[k], mid, o2, flow,
                                  "microgravity")
         kept.append((mat_idx[mid], o2, flow, o2 - loc_of[mid], y, yhat))
     if not kept:
-        print("[FAIL] calibration fold empty — check the run-id split",
+        print("[FAIL] no labeled rows survived the fold split",
               file=sys.stderr)
         return 1
 
-    try:
-        import numpy as np
-        by_scope = {"global": kept}
-        for fam in FAMILIES:
-            idx = {mat_idx[m] for m, f in mat_family.items()
-                   if f == fam and m in mat_idx}
-            by_scope[fam] = [r for r in kept if r[0] in idx]
-        for mid, i in mat_idx.items():
-            by_scope[f"material:{mid}"] = [r for r in kept if r[0] == i]
+    # residuals are already out-of-fold — the finite-sample quantile is
+    # the exact CV+ construction; a MAPIE wrapper would re-score every
+    # row with a single predictor and undo the per-fold refits
+    by_scope = {"global": kept}
+    for fam in FAMILIES:
+        idx = {mat_idx[m] for m, f in mat_family.items()
+               if f == fam and m in mat_idx}
+        by_scope[fam] = [r for r in kept if r[0] in idx]
+    for mid, i in mat_idx.items():
+        by_scope[f"material:{mid}"] = [r for r in kept if r[0] == i]
 
-        qhats: dict[str, dict] = {}
-        residuals: dict[str, list] = {}
-        for scope, rows_sc in by_scope.items():
-            residuals[scope] = [abs(r[4] - r[5]) for r in rows_sc]
-        # single MAPIE call per scope that has enough rows
-        for scope, rows_sc in by_scope.items():
-            if len(rows_sc) < FAM_MIN:
-                continue
-            X = [[r[0], r[1], r[2]] for r in rows_sc]
-            y = [r[4] for r in rows_sc]
-            qh = _mapie_predict(material_ids, train_model, X, y)
-            # cross-check against the closed-form quantile — identical
-            # math, so a divergence means the MAPIE call path drifted
-            for lvl in LEVELS:
-                ref = _conformal_qhat(residuals[scope], lvl)
-                assert abs(qh[lvl] - ref) < 1e-6, \
-                    f"mapie/manual quantile drift on {scope}@{lvl}"
-            qhats[scope] = {f"{k:.2f}": round(v, 4) for k, v in qh.items()}
-        mapie_note = "mapie SplitConformalRegressor (prefit adapter over " \
-                     "backend.services.risk.risk_index), absolute " \
-                     "conformity score; per-level halfwidths verified " \
-                     "against the closed-form finite-sample quantile"
-    except ImportError:
-        # no sci deps — emit the same artifact from the closed-form
-        # quantile so the pipeline stays runnable on a lean venv
-        qhats = {}
-        residuals = {"global": [abs(r[4] - r[5]) for r in kept]}
-        for fam in FAMILIES:
-            idx = {mat_idx[m] for m, f in mat_family.items()
-                   if f == fam and m in mat_idx}
-            residuals[fam] = [abs(r[4] - r[5]) for r in kept if r[0] in idx]
-        for mid, i in mat_idx.items():
-            residuals[f"material:{mid}"] = \
-                [abs(r[4] - r[5]) for r in kept if r[0] == i]
-        for scope, res in residuals.items():
-            if len(res) >= FAM_MIN:
-                qhats[scope] = {f"{lvl:.2f}": round(
-                    _conformal_qhat(res, lvl), 4) for lvl in LEVELS}
-        mapie_note = "closed-form finite-sample quantile (mapie not " \
-                     "installed — same split-conformal math)"
+    qhats: dict[str, dict] = {}
+    for scope, rows_sc in by_scope.items():
+        res = [abs(r[4] - r[5]) for r in rows_sc]
+        if len(res) >= FAM_MIN:
+            qhats[scope] = {f"{lvl:.2f}": round(
+                _conformal_qhat(res, lvl), 4) for lvl in LEVELS}
+    mapie_note = ("cross-fit (CV+) conformal: 5-fold sha1(run_id) split, "
+                  "ignition logits refit per fold, closed-form "
+                  "finite-sample quantile over out-of-fold residuals")
 
     def scope_entry(scope: str, rows_sc: list[tuple]) -> dict | None:
         q = qhats.get(scope)
@@ -390,12 +314,15 @@ def main() -> int:
         "gravityNote": "all calibration runs are microgravity — any "
                        "partial-gravity query is out-of-distribution",
         "calibrationSplit": {
-            "scheme": "sha1(run_id) % 10 < 7 → train, else calibration",
-            "trainRows": len(train_rows),
-            "calibrationRows": len(cal_rows),
-            "note": "ignition logits refit on train rows only; bands "
-                    "calibrated on held-out residuals — split-conformal "
-                    "requires calibration data excluded from fitting",
+            "scheme": f"{FOLDS}-fold cross-fit on sha1(run_id): every "
+                      "row's residual scored by a model refit on the "
+                      "other folds; pooled out-of-fold residuals",
+            "folds": FOLDS,
+            "calibrationRows": len(kept),
+            "note": "bands attach to the shipped full-data predictor — "
+                    "each residual is out-of-sample w.r.t. its fold's "
+                    "refit, so the quantile estimates the fitting "
+                    "procedure's error, not an in-sample fit",
         },
         "global": scope_entry("global", kept),
         "families": families,

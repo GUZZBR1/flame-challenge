@@ -29,6 +29,7 @@ export default function LiveChamber() {
   const wsRef = useRef<WebSocket | null>(null)
   const [inv, setInv] = useState<string>('flex-2')
   const [o2, setO2] = useState(21)
+  const [flow, setFlow] = useState(0)
   const [sealed, setSealed] = useState(false)
   const [frame, setFrame] = useState<ChamberState | null>(null)
   const [status, setStatus] = useState<Status>('idle')
@@ -47,6 +48,7 @@ export default function LiveChamber() {
     const req = {
       investigationId: inv,
       o2Pct: o2,
+      flowCms: flow,
       seed: 1,
       ...(sealed
         ? { volumeLiters: 50, ambientO2Pct: o2, ventPerSec: 0.0005 }
@@ -92,6 +94,11 @@ export default function LiveChamber() {
           Math.min(Math.max(cmd.set_o2_percent, 0), 40) * 10) / 10)
         touched = true
       }
+      if (typeof cmd.set_airflow_cm_s === 'number') {
+        setFlow(Math.round(
+          Math.min(Math.max(cmd.set_airflow_cm_s, 0), 40) * 10) / 10)
+        touched = true
+      }
       // restart only when the chamber runs the investigation the answer
       // was scoped to — otherwise the state lands for the next manual
       // run without spawning a misleading experiment
@@ -107,7 +114,7 @@ export default function LiveChamber() {
       retune.current = false
       run()
     }
-  }, [run, inv, o2])
+  }, [run, inv, o2, flow])
 
   // ---------- canvas ----------
   useEffect(() => {

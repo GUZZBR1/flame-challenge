@@ -388,7 +388,7 @@
     "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit). burnRateK0/KO2Mm2sPct = least-squares K(o2) over measured kavg (engine d\u00b2-law rate). extinctionDHotMm = median Dext over radiative+cool-flame extinctions (large-droplet hot-flame death); extinctionDMinMm = median Dext over oxygen-limit extinctions (terminal diameter all combustion dies at). ignitionLogitA/B = logistic P(sustained burn | o2-loc): scope=material (per-material MLE), material-null (all labeled runs extinct \u2014 no MLE exists, ~0 curve written explicitly), or family:<name> (pooled droplet-fuels/gaseous-fuels/solid-materials fit). ignitionFitMcFadden = pseudo-R2 of the fit."
   },
   "uncertainty": {
-    "method": "mapie SplitConformalRegressor (prefit adapter over backend.services.risk.risk_index), absolute conformity score; per-level halfwidths verified against the closed-form finite-sample quantile",
+    "method": "cross-fit (CV+) conformal: 5-fold sha1(run_id) split, ignition logits refit per fold, closed-form finite-sample quantile over out-of-fold residuals",
     "levels": [
       0.8,
       0.9,
@@ -398,22 +398,22 @@
     "residual": "|y - riskIndex| over labeled burn/extinct PSI runs",
     "gravityNote": "all calibration runs are microgravity \u2014 any partial-gravity query is out-of-distribution",
     "calibrationSplit": {
-      "scheme": "sha1(run_id) % 10 < 7 \u2192 train, else calibration",
-      "trainRows": 267,
-      "calibrationRows": 111,
-      "note": "ignition logits refit on train rows only; bands calibrated on held-out residuals \u2014 split-conformal requires calibration data excluded from fitting"
+      "scheme": "5-fold cross-fit on sha1(run_id): every row's residual scored by a model refit on the other folds; pooled out-of-fold residuals",
+      "folds": 5,
+      "calibrationRows": 378,
+      "note": "bands attach to the shipped full-data predictor \u2014 each residual is out-of-sample w.r.t. its fold's refit, so the quantile estimates the fitting procedure's error, not an in-sample fit"
     },
     "global": {
-      "n": 111,
+      "n": 378,
       "qhat": {
-        "0.80": 0.4752,
-        "0.90": 0.5796,
-        "0.95": 0.6926
+        "0.80": 0.5078,
+        "0.90": 0.7244,
+        "0.95": 0.8389
       },
       "empiricalCoverage": {
-        "0.80": 0.8018,
-        "0.90": 0.9099,
-        "0.95": 0.964
+        "0.80": 0.8042,
+        "0.90": 0.9021,
+        "0.95": 0.9577
       },
       "envelope": {
         "marginMin": 0.0,
@@ -424,16 +424,16 @@
     },
     "families": {
       "droplet-fuels": {
-        "n": 87,
+        "n": 274,
         "qhat": {
-          "0.80": 0.5248,
-          "0.90": 0.6321,
-          "0.95": 0.6926
+          "0.80": 0.5129,
+          "0.90": 0.6903,
+          "0.95": 0.8106
         },
         "empiricalCoverage": {
-          "0.80": 0.8276,
-          "0.90": 0.908,
-          "0.95": 0.9655
+          "0.80": 0.7993,
+          "0.90": 0.9051,
+          "0.95": 0.9526
         },
         "envelope": {
           "marginMin": 0.0,
@@ -443,19 +443,19 @@
         }
       },
       "gaseous-fuels": {
-        "n": 21,
+        "n": 99,
         "qhat": {
-          "0.80": 0.3421,
-          "0.90": 0.6579,
-          "0.95": 0.8324
+          "0.80": 0.3139,
+          "0.90": 0.8414,
+          "0.95": 0.873
         },
         "empiricalCoverage": {
-          "0.80": 0.6667,
-          "0.90": 0.9524,
-          "0.95": 1.0
+          "0.80": 0.7677,
+          "0.90": 0.9091,
+          "0.95": 0.9596
         },
         "envelope": {
-          "marginMin": 9.38,
+          "marginMin": 6.5,
           "marginMax": 73.5,
           "flowMin": 0.0,
           "flowMax": 0.0
@@ -464,57 +464,57 @@
     },
     "materials": {
       "propane": {
-        "n": 21,
+        "n": 99,
         "qhat": {
-          "0.80": 0.3421,
-          "0.90": 0.6579,
-          "0.95": 0.8324
+          "0.80": 0.3139,
+          "0.90": 0.8414,
+          "0.95": 0.873
         },
         "empiricalCoverage": {
-          "0.80": 0.6667,
-          "0.90": 0.9524,
-          "0.95": 1.0
+          "0.80": 0.7677,
+          "0.90": 0.9091,
+          "0.95": 0.9596
         },
         "envelope": {
-          "marginMin": 9.38,
+          "marginMin": 6.5,
           "marginMax": 73.5,
           "flowMin": 0.0,
           "flowMax": 0.0
         }
       },
       "methanol": {
-        "n": 46,
+        "n": 157,
         "qhat": {
-          "0.80": 0.1754,
-          "0.90": 0.6522,
-          "0.95": 0.8246
+          "0.80": 0.3097,
+          "0.90": 0.6052,
+          "0.95": 0.8386
         },
         "empiricalCoverage": {
-          "0.80": 0.6304,
-          "0.90": 0.8913,
-          "0.95": 0.9783
+          "0.80": 0.7962,
+          "0.90": 0.9108,
+          "0.95": 0.9554
         },
         "envelope": {
           "marginMin": 0.0,
-          "marginMax": 18.0,
+          "marginMax": 22.0,
           "flowMin": 0.0,
           "flowMax": 0.0
         }
       },
       "heptane": {
-        "n": 41,
+        "n": 117,
         "qhat": {
-          "0.80": 0.5311,
-          "0.90": 0.5796,
-          "0.95": 0.6815
+          "0.80": 0.5569,
+          "0.90": 0.7105,
+          "0.95": 0.7723
         },
         "empiricalCoverage": {
-          "0.80": 0.7805,
-          "0.90": 0.9268,
-          "0.95": 0.9756
+          "0.80": 0.812,
+          "0.90": 0.9145,
+          "0.95": 0.9573
         },
         "envelope": {
-          "marginMin": 2.0,
+          "marginMin": 1.0,
           "marginMax": 22.0,
           "flowMin": 0.0,
           "flowMax": 0.0

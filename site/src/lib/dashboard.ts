@@ -246,6 +246,8 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
       context: 'suppression & detection',
       question: 'which response ends the event — and which only hides it?',
       evidence,
+      // suppression scores come from fixed priors, not the burn-risk
+      // predictor — no conformal band on them (matches tactics.py)
       options: [
         {
           id: 'inert-gas',
@@ -254,7 +256,6 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           why: smolder
             ? 'smolder-capable material — knock-down risks re-ignition'
             : 'displaces oxidizer at the seat — the FLEX suppressant result',
-          uncertainty: un(s.o2Pct, s.flowCms),
         },
         {
           id: 'water-mist',
@@ -263,7 +264,6 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           why: smolder
             ? 'penetrates the polymer — best against smolder pockets'
             : 'cools below re-ignition temperature',
-          uncertainty: un(s.o2Pct, s.flowCms),
         },
         {
           id: 'monitor',
@@ -272,7 +272,6 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           why: cool
             ? 'cool-flame fuels defeat optical clear — documented FLEX hazard'
             : 'accept the burn and watch it',
-          uncertainty: un(s.o2Pct, s.flowCms),
         },
       ],
     },
