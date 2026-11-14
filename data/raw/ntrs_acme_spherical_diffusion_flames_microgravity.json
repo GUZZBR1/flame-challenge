@@ -1,0 +1,2332 @@
+{
+ "stats": {
+  "took": 78,
+  "total": 35,
+  "estimate": false,
+  "maxScore": 268.16522
+ },
+ "results": [
+  {
+   "_meta": {
+    "score": 268.16522
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20010074022,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "202602f9e0fe49e88d0df9d22fc8096f",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Inorganic, Organic And Physical Chemistry"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20010074022,
+    "ear": "NO",
+    "id": "f6e14ccd17b74014b4dae320863bfa91",
+    "itar": "NO"
+   },
+   "distributionDate": "2016-06-06T00:00:00.0000000+00:00",
+   "title": "Unsteady Spherical Diffusion Flames in Microgravity",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-20T11:24:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20010074022,
+     "meta": {
+      "author": {
+       "name": "Atreya, Arvind"
+      },
+      "organization": {
+       "name": "Michigan Univ.",
+       "location": "Ann Arbor, MI United States"
+      }
+     },
+     "id": "48a959acbb42437586210bb1c54dba58"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20010074022,
+     "meta": {
+      "author": {
+       "name": "Berhan, S."
+      },
+      "organization": {
+       "name": "Michigan Univ.",
+       "location": "Ann Arbor, MI United States"
+      }
+     },
+     "id": "28b7e23417a04c9ebca8f460cb6a78af"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20010074022,
+     "meta": {
+      "author": {
+       "name": "Chernovsky, M."
+      },
+      "organization": {
+       "name": "Michigan Univ.",
+       "location": "Ann Arbor, MI United States"
+      }
+     },
+     "id": "9de2ac538d624a6d9bfabae255d37f30"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20010074022,
+     "meta": {
+      "author": {
+       "name": "Sacksteder, Kurt R."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "6acf43d2628c497ea5c154c98fc65e5d"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20010074022,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-20T11:24:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "The absence of buoyancy-induced flows in microgravity (mu-g) and the resulting increase in the reactant residence time significantly alters the fundamentals of many combustion processes. Substantial differences between normal gravity (ng) and (mu-g) flames have been reported in experiments on candle flames, flame spread over solids, droplet combustion, and others. These differences are more basic than just in the visible flame shape. Longer residence times and higher concentration of combustion products in the flame zone create a thermochemical environment that changes the flame chemistry and the heat and mass transfer processes. Processes such as flame radiation, that are often ignored in ng, become very important and sometimes even controlling. Furthermore, microgravity conditions considerably enhance flame radiation by: (i) the build-up of combustion products in the high-temperature reaction zone which increases the gas radiation, and (ii) longer residence times make conditions appropriate for substantial amounts of soot to form which is also responsible for radiative heat loss. Thus, it is anticipated that radiative heat loss may eventually extinguish the \"weak\" (low burning rate per unit flame area) mu-g diffusion flame. Yet, space shuttle experiments on candle flames show that in an infinite ambient atmosphere, the hemispherical candle flame in mu-g will burn indefinitely. This may be because of the coupling between the fuel production rate and the flame via the heat-feedback mechanism for candle flames, flames over solids and fuel droplet flames. Thus, to focus only on the gas-phase phenomena leading to radiative extinction, aerodynamically stabilized gaseous diffusion flames are examined. This enables independent control of the fuel flow rate to help identify conditions under which radiative extinction occurs. Also, spherical geometry is chosen for the mu-g experiments and modeling because: (i) It reduces the complexity by making the problem one-dimensional; (ii) The spherical diffusion flame completely encloses the soot which is formed on the fuel rich side of the reaction zone. This increases the importance of flame radiation because now both soot and gaseous combustion products co-exist inside the high temperature spherical diffusion flame. (iii) For small fuel injection velocities, as is usually the case for a pyrolyzing solid, the diffusion flame in mu-g around the solid naturally develops spherical symmetry. Thus, spherical diffusion flames are of interest to fires in mu-g and identifying conditions that lead to radiation-induced extinction is important for spacecraft fire safety.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "publications": [
+    {
+     "submissionId": 20010074022,
+     "id": "0e4c88258d654273aa590de13fa98981",
+     "publicationName": "Sixth International Microgravity Combustion Workshop",
+     "publicationDate": "2001-05-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 20010073993,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Sixth International Microgravity Combustion Workshop",
+     "stiType": "CONFERENCE_PROCEEDINGS",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    },
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 20010073993,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Sixth International Microgravity Combustion Workshop",
+     "stiType": "CONFERENCE_PROCEEDINGS",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    }
+   ],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20010074022.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20010074022/downloads/20010074022.pdf",
+      "pdf": "/api/citations/20010074022/downloads/20010074022.pdf",
+      "fulltext": "/api/citations/20010074022/downloads/20010074022.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 253.86404
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20020027073,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "5116934bdbd8453193010eb4dddb1f53",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Inorganic, Organic And Physical Chemistry"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20020027073,
+    "ear": "NO",
+    "id": "8703e961a4bf4c6b92814c4373b7338b",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "fundingNumbers": [
+    {
+     "number": "NCC3-696",
+     "submissionId": 20020027073,
+     "id": "489fb13034a740538743cc1fe279c8d9",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NAG3-1910",
+     "submissionId": 20020027073,
+     "id": "2ff02fb89ceb4a18b473086b40cbcbe5",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NCC3-697",
+     "submissionId": 20020027073,
+     "id": "d2fa5169d55444fb9a387d1bba4ab67f",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "RTOP 101-42-08",
+     "submissionId": 20020027073,
+     "id": "2081ab2a486d49cb976fa9b07124a7b3",
+     "type": "PROJECT"
+    },
+    {
+     "number": "NAG3-1912",
+     "submissionId": 20020027073,
+     "id": "40a60c4990784cf6843a3602f8120996",
+     "type": "CONTRACT_GRANT"
+    }
+   ],
+   "title": "Sooting Limits Of Microgravity Spherical Diffusion Flames",
+   "stiType": "PREPRINT",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-09-07T12:40:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20020027073,
+     "meta": {
+      "author": {
+       "name": "Sunderland, P. B."
+      },
+      "organization": {
+       "name": "National Center for Microgravity Research on Fluids and Combustion",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "b7a68b2b8abd462484ae94d3b22f2016"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20020027073,
+     "meta": {
+      "author": {
+       "name": "Urban, D. L."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "cc8c46e342c44e5e8dc8842deee9655d"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20020027073,
+     "meta": {
+      "author": {
+       "name": "Stocker, D. P."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "76bae2f005434cefa49c5ff1ed86c11a"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20020027073,
+     "meta": {
+      "author": {
+       "name": "Chao, B.-H."
+      },
+      "organization": {
+       "name": "Hawaii Univ.",
+       "location": "Honolulu, HI United States"
+      }
+     },
+     "id": "6d4da69b207148d4a3303fe2656cdbaf"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20020027073,
+     "meta": {
+      "author": {
+       "name": "Axelbaum, Richard L."
+      },
+      "organization": {
+       "name": "Washington Univ.",
+       "location": "Saint Louis, MO United States"
+      }
+     },
+     "id": "a1dc1e7c4cf04f77bc85cde294435b2c"
+    },
+    {
+     "sequence": 5,
+     "submissionId": 20020027073,
+     "meta": {
+      "author": {
+       "name": "Salzman, Jack"
+      },
+      "organization": {}
+     },
+     "id": "ce089513f25f42daba225c809285607e"
+    }
+   ],
+   "stiTypeDetails": "Preprint (Draft being sent to journal)",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20020027073,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-09-07T12:40:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Limiting conditions for soot-particle inception were studied in microgravity spherical diffusion flames burning ethylene at atmospheric pressure. Nitrogen was supplied in the fuel and/or oxidizer to obtain the broadest range of stoichiometric mixture fraction. Both normal flames (oxygen in ambience) and inverted flames (fuel in ambience) were considered. Microgravity was obtained in the NASA Glenn 2.2-second drop tower. The flames were observed with a color video camera and sooting conditions were defined as conditions for which yellow emission was present throughout the duration of the drop. Sooting limit results were successfully correlated in terms of adiabatic flame temperature and stoichiometric mixture fraction. Soot free conditions were favored by increased stoichiometric mixture fractions. No statistically significant effect of convection direction on sooting limits was observed. The relationship between adiabatic flame temperature and stoichiometric mixture fraction at the sooting limits was found to be in qualitative agreement with a simple theory based on the assumption that soot inception can occur only where temperature and local C/O ratio exceed threshold values (circa 1250 K and 1, respectively).",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "Japan",
+     "submissionId": 20020027073,
+     "endDate": "2002-07-26T00:00:00.0000000+00:00",
+     "name": "29th International Symposium on Combustion",
+     "location": "Sapporo",
+     "id": "441169246e8e474c9ecc0c18cb410cbd",
+     "startDate": "2002-07-21T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20020027073,
+     "id": "91e7c3f4edf34769aa19ece832abaa95",
+     "publicationDate": "2001-01-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20020027073.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20020027073/downloads/20020027073.pdf",
+      "pdf": "/api/citations/20020027073/downloads/20020027073.pdf",
+      "fulltext": "/api/citations/20020027073/downloads/20020027073.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 238.3672
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20000057049,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "8471e0fdb4ee4a2e88a1a900d5bbff9d",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Inorganic, Organic And Physical Chemistry"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20000057049,
+    "ear": "NO",
+    "id": "3e8f0118f4fa4bd1ab0da38535df6a48",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "fundingNumbers": [
+    {
+     "number": "NCC3-697",
+     "submissionId": 20000057049,
+     "id": "175f72cadb41456286e037584a9d7182",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NAG3-1910",
+     "submissionId": 20000057049,
+     "id": "aff19f940fc945ae9cc245b6e3891191",
+     "type": "CONTRACT_GRANT"
+    }
+   ],
+   "title": "Effects of Structure and Hydrodynamics on the Sooting Behavior of Spherical Microgravity Diffusion Flames",
+   "stiType": "PREPRINT",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-09-07T12:13:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20000057049,
+     "meta": {
+      "author": {
+       "name": "Sunderland, P. B."
+      },
+      "organization": {
+       "name": "National Center for Microgravity Research on Fluids and Combustion",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "1f901bf245054d5ba91c29bb1120cefa"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20000057049,
+     "meta": {
+      "author": {
+       "name": "Axelbaum, Richard L."
+      },
+      "organization": {
+       "name": "Washington Univ.",
+       "location": "Saint Louis, MO United States"
+      }
+     },
+     "id": "c3eb66cf4703485a8f4a91b3fb7eb503"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20000057049,
+     "meta": {
+      "author": {
+       "name": "Urban, D. L."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "d882f42167584aa984746a1ef5032123"
+    }
+   ],
+   "stiTypeDetails": "Preprint (Draft being sent to journal)",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20000057049,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-09-07T12:13:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "We have examined the sooting behavior of spherical microgravity diffusion flames burning ethylene at atmospheric pressure in the NASA Glenn 2.2-second drop tower. In a novel application of microgravity, spherical flames allowed convection across the flame to be either from fuel to oxidizer or from oxidizer to fuel. Thus, microgravity flames are uniquely capable of allowing independent variation of convection direction across the flame and stoichiometric mixture fraction, Z(sub st). This allowed us to determine the dominant mechanism responsible for the phenomenon of permanently-blue diffusion flames -- flames that remain blue as strain rate approaches zero. Stoichiometric mixture fraction was varied by changing inert concentrations such that adiabatic flame temperature did not change. At low and high Z(sub st) nitrogen was supplied with the oxidizer and the fuel, respectively. For the present flames, structure (Z(sub st)) was found to have a profound effect on soot production. Soot-free conditions were observed at high Z(sub st) (Z(sub st) = 0.78) and sooting conditions were observed at low Z(sub st) (Z(sub st) = 0.064) regardless of the direction of convection. Convection direction was found to have a lesser impact on soot inception, with formation being suppressed when convection at the flame sheet was directed towards the oxidizer.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "United Kingdom",
+     "submissionId": 20000057049,
+     "endDate": "2000-08-04T00:00:00.0000000+00:00",
+     "name": "Combustion",
+     "location": "Edinburgh",
+     "id": "5f2b822e80424d90bda934db97a07dd6",
+     "startDate": "2000-07-30T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20000057049,
+     "id": "c399bf2522694d088f7ef6e90f9fc81b",
+     "publicationDate": "2000-01-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20000057049.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20000057049/downloads/20000057049.pdf",
+      "pdf": "/api/citations/20000057049/downloads/20000057049.pdf",
+      "fulltext": "/api/citations/20000057049/downloads/20000057049.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 234.64735
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20010074100,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "1d20c08cd6db43b499a1b66a1dc73e8f",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Inorganic, Organic And Physical Chemistry"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20010074100,
+    "ear": "NO",
+    "id": "4a6c15d9cee0488ca8417be5d383b9b2",
+    "itar": "NO"
+   },
+   "distributionDate": "2016-06-06T00:00:00.0000000+00:00",
+   "title": "Spherical Ethylene/Air Diffusion Flames Subject to Concentric DC Electric Field in Microgravity",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-20T11:27:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20010074100,
+     "meta": {
+      "author": {
+       "name": "Yuan, Z. -G."
+      },
+      "organization": {
+       "name": "National Center for Microgravity Research on Fluids and Combustion",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "8dae98aec9574d788aec86f8fc219958"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20010074100,
+     "meta": {
+      "author": {
+       "name": "Hegde, U."
+      },
+      "organization": {
+       "name": "National Center for Microgravity Research on Fluids and Combustion",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "04f4203eb7124bf79561fbcdf04bda28"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20010074100,
+     "meta": {
+      "author": {
+       "name": "Faeth, G. M."
+      },
+      "organization": {
+       "name": "Michigan Univ.",
+       "location": "Ann Arbor, MI United States"
+      }
+     },
+     "id": "ef72ba48fb6943d591e24d8c7679090e"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20010074100,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-20T11:27:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "It is well known that microgravity conditions, by eliminating buoyant flow, enable many combustion phenomena to be observed that are not possible to observe at normal gravity. One example is the spherical diffusion flame surrounding a porous spherical burner. The present paper demonstrates that by superimposing a spherical electrical field on such a flame, the flame remains spherical so that we can study the interaction between the electric field and flame in a one-dimensional fashion. Flames are susceptible to electric fields that are much weaker than the breakdown field of the flame gases owing to the presence of ions generated in the high temperature flame reaction zone. These ions and the electric current of the moving ions, in turn, significantly change the distribution of the electric field. Thus, to understand the interplay between the electric field and the flame is challenging. Numerous experimental studies of the effect of electric fields on flames have been reported. Unfortunately, they were all involved in complex geometries of both the flow field and the electric field, which hinders detailed study of the phenomena. In a one-dimensional domain, however, the electric field, the flow field, the thermal field and the chemical species field are all co-linear. Thus the problem is greatly simplified and becomes more tractable.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "publications": [
+    {
+     "submissionId": 20010074100,
+     "id": "a6500e2f696f4a41932fd6334cad9dd5",
+     "publicationName": "Sixth International Microgravity Combustion Workshop",
+     "publicationDate": "2001-05-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 20010073993,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Sixth International Microgravity Combustion Workshop",
+     "stiType": "CONFERENCE_PROCEEDINGS",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    },
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 20010073993,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Sixth International Microgravity Combustion Workshop",
+     "stiType": "CONFERENCE_PROCEEDINGS",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    }
+   ],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20010074100.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20010074100/downloads/20010074100.pdf",
+      "pdf": "/api/citations/20010074100/downloads/20010074100.pdf",
+      "fulltext": "/api/citations/20010074100/downloads/20010074100.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 226.01166
+   },
+   "copyright": {
+    "disclosedInvention": false,
+    "submissionId": 20260002014,
+    "containsThirdPartyMaterial": false,
+    "containsIndication": false,
+    "belongsToPublisher": true,
+    "id": "15a9a111688e4a959c4d8745298135f3",
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET"
+   },
+   "subjectCategories": [
+    "Inorganic, Organic and Physical Chemistry"
+   ],
+   "keywords": [
+    "Radiative heat loss",
+    "Optical thickness",
+    "Cool flames",
+    "Warm flames",
+    "Microgravity"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20260002014,
+    "ear": "NO",
+    "id": "bf4bb3a818e64ed18fdf1634d7e65b52",
+    "category": [
+     {
+      "submissionExportControlId": "bf4bb3a818e64ed18fdf1634d7e65b52",
+      "id": "102b6f9a178d4f35b840eb03ad9efd80",
+      "category": 0
+     }
+    ],
+    "itar": "NO"
+   },
+   "distributionDate": "2026-05-01T04:00:00.0000000+00:00",
+   "fundingNumbers": [
+    {
+     "number": "673882.05.22.01.01",
+     "submissionId": 20260002014,
+     "id": "054a3108b6f041d1bfadd752360dc900",
+     "type": "WBS"
+    }
+   ],
+   "title": "The Effect of Pressure on Radiative Losses in Hot, Warm, and Cool Microgravity Spherical Diffusion Flames",
+   "stiType": "ACCEPTED_MANUSCRIPT",
+   "distribution": "PUBLIC",
+   "submittedDate": "2026-03-06T20:48:13.9995800+00:00",
+   "authorAffiliations": [
+    {
+     "organizationId": "fdea3daf3b5156699f511edf3e9b9ec4",
+     "sequence": 0,
+     "submissionId": 20260002014,
+     "meta": {
+      "author": {
+       "name": "Kendyl A Waddell"
+      },
+      "organization": {
+       "name": "Glenn Research Center",
+       "location": "Cleveland, United States"
+      }
+     },
+     "id": "1cdcd6a262474f22ba07f7686d23157a",
+     "userType": "OTHER",
+     "userId": "da18fc57af5a4fd6a862cea8d338409b"
+    },
+    {
+     "organizationId": "fdea3daf3b5156699f511edf3e9b9ec4",
+     "sequence": 1,
+     "submissionId": 20260002014,
+     "meta": {
+      "author": {
+       "orcidId": "",
+       "name": "Daniel L Dietrich"
+      },
+      "organization": {
+       "name": "Glenn Research Center",
+       "location": "Cleveland, United States"
+      }
+     },
+     "id": "5afd03eae9c34bcfbfcc9d916e009ad9",
+     "userType": "CIVIL",
+     "userId": "addb6443628246ef86b6e9dabd8e81dd"
+    },
+    {
+     "organizationId": "ef57c2628ac159568c05f9b33526619e",
+     "sequence": 2,
+     "submissionId": 20260002014,
+     "meta": {
+      "author": {
+       "orcidId": "",
+       "name": "Vedha Nayagam"
+      },
+      "organization": {
+       "name": "Case Western Reserve University",
+       "location": "Cleveland, United States"
+      }
+     },
+     "id": "0553405f52d649e89b8bf3ffcb4ef77f",
+     "userType": "CONTRACTOR_GRANTEE",
+     "userId": "1aac2709535f4da2818ba42f938b6d90"
+    }
+   ],
+   "stiTypeDetails": "Accepted Manuscript (Version with final changes)",
+   "technicalReviewType": "NASA_PEER_COMMITTEE",
+   "modified": "2026-03-09T18:12:15.9762480+00:00",
+   "id": 20260002014,
+   "created": "2026-03-06T18:45:51.2577780+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "This work investigates the effects of ambient pressure on radiative heat losses in hot, warm, and cool microgravity spherical diffusion flames using a numerical model and compares the results to observations from microgravity experiments. The experimental data was obtained during droplet combustion experiments, and the numerical model simulates burner-supported flames. The similarities in the gas phase between the two configurations allow these simulations to provide accurate insights into the experimental results. The model uses a statistical narrow-band model that includes emission and reabsorption. The effect as pressure was varied between 0.5 and 10 atm on the relative radiation contributions from CO<sub>2</sub> and H<sub>2</sub>O, the primary radiating species, was examined. As the pressure increased H<sub>2</sub>O contributed more to radiative loss than CO<sub>2</sub> in both the experiments and computations. This was determined to be caused by increased absorption coefficients leading to increased reabsorption at higher pressures. Calculations performed without reabsorption did not see this effect, confirming it is due to the optically thick nature of the system. Reabsorption was higher for CO<sub>2</sub> due to the prominence of the absorption band at 4.3 μm, which became saturated at higher pressures. These results demonstrated the importance of using the optically thick assumption to accurately account for radiative losses in these flames, which are crucial to capture flame behaviours such as radiative extinction and reignitions.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "cui": {
+    "isCui": false,
+    "submissionId": 20260002014,
+    "id": "dbfbb2cf46f54581bc0a01d203f92a64"
+   },
+   "publications": [
+    {
+     "volume": "287",
+     "submissionId": 20260002014,
+     "issn": "0010-2180",
+     "publisher": "Elsevier",
+     "eissn": "1556-2921",
+     "id": "af1ffba5c0f849d0a7f6049d4dac9c00",
+     "publicationName": "Combustion and Flame",
+     "publicationDate": "2026-03-05T05:00:00.0000000+00:00",
+     "issuePublicationDate": "2026-05-01T04:00:00.0000000+00:00",
+     "doi": "10.1016/j.combustflame.2026.114884"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "Radiation Paper CNF final.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20260002014/downloads/Radiation%20Paper%20CNF%20final.pdf",
+      "pdf": "/api/citations/20260002014/downloads/Radiation%20Paper%20CNF%20final.pdf",
+      "fulltext": "/api/citations/20260002014/downloads/Radiation%20Paper%20CNF%20final.pdf.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 224.94615
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 19990054004,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "0a9d4faf09a848c994f609f9c009e370",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Inorganic And Physical Chemistry"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 19990054004,
+    "ear": "NO",
+    "id": "663033c18b8746cb9291aef142c91172",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-06-27T00:00:00.0000000+00:00",
+   "fundingNumbers": [
+    {
+     "number": "NAG3-1604",
+     "submissionId": 19990054004,
+     "id": "0c3a5a34d82e485485d1b0faed11324e",
+     "type": "CONTRACT_GRANT"
+    }
+   ],
+   "title": "Diffusion Flames: Extinction and Stability",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-19T03:33:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 19990054004,
+     "meta": {
+      "author": {
+       "name": "Matalon, Moshe"
+      },
+      "organization": {
+       "name": "Northwestern Univ.",
+       "location": "Evanston, IL United States"
+      }
+     },
+     "id": "410d92a3169540f5af7289945e1f19e5"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 19990054004,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-19T03:33:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Some recent results, concerning extinction limits and stability in spherical diffusion flames, cellular diffusion flames and oscillations in diffusion flames are summarized. Results obtained from experiments carried out in microgravity ground facilities are presented.",
+   "isLessonsLearned": false,
+   "disseminated": "METADATA_ONLY",
+   "publications": [
+    {
+     "submissionId": 19990054004,
+     "id": "c5737e5c0d6a44deb5f8966c721b9560",
+     "publicationName": "Fifth International Microgravity Combustion Workshop",
+     "publicationDate": "1999-05-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 19990053965,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Fifth International Microgravity Combustion Workshop",
+     "stiType": "CONFERENCE_PUBLICATION",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    },
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 19990053965,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Fifth International Microgravity Combustion Workshop",
+     "stiType": "CONFERENCE_PUBLICATION",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    }
+   ],
+   "downloads": [],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 221.97672
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20070017909,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "1c78d9ec309f48ef9551c2967be297c1",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Mechanical Engineering"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20070017909,
+    "ear": "NO",
+    "id": "505c92efecbd4448be79690671088c6b",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "Paper A06",
+    "Report Number: Paper A06"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "WBS 732759.03.01.02.21",
+     "submissionId": 20070017909,
+     "id": "ecaf02138658461e9c8df6aff4ad51f3",
+     "type": "WBS"
+    }
+   ],
+   "title": "Radiative Extinction of Gaseous Spherical Diffusion Flames in Microgravity",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-23T22:54:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20070017909,
+     "meta": {
+      "author": {
+       "name": "Santa, K. J."
+      },
+      "organization": {
+       "name": "Hawaii Univ.",
+       "location": "Honolulu, HI, United States"
+      }
+     },
+     "id": "ed4599098cac4521b504006257f071fc"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20070017909,
+     "meta": {
+      "author": {
+       "name": "Chao, B. H."
+      },
+      "organization": {
+       "name": "Hawaii Univ.",
+       "location": "Honolulu, HI, United States"
+      }
+     },
+     "id": "f537451ec91347e1bae2018ad339e7a0"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20070017909,
+     "meta": {
+      "author": {
+       "name": "Sunderland, P. B."
+      },
+      "organization": {
+       "name": "Maryland Univ.",
+       "location": "College Park, MD, United States"
+      }
+     },
+     "id": "65c706080bf54674840571ab77be4fd4"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20070017909,
+     "meta": {
+      "author": {
+       "name": "Urban, D. L."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "d82646d6ed3e4acfa8f2248dcb798c58"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20070017909,
+     "meta": {
+      "author": {
+       "name": "Stocker, D. P."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "7e8e26d507f44456b2fc0f953e9ffa08"
+    },
+    {
+     "sequence": 5,
+     "submissionId": 20070017909,
+     "meta": {
+      "author": {
+       "name": "Axelbaum, R. L."
+      },
+      "organization": {
+       "name": "Washington Univ.",
+       "location": "Saint Louis, MO, United States"
+      }
+     },
+     "id": "86396b8302364c90b02f264ebbff65d8"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20070017909,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-23T22:54:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Radiative extinction of spherical diffusion flames was investigated experimentally and numerically. The experiments involved microgravity spherical diffusion flames burning ethylene and propane at 0.98 bar. Both normal (fuel flowing into oxidizer) and inverse (oxidizer flowing into fuel) flames were studied, with nitrogen supplied to either the fuel or the oxygen. Flame conditions were chosen to ensure that the flames extinguished within the 2.2 s of available test time; thus extinction occurred during unsteady flame conditions. Diagnostics included color video and thin-filament pyrometry. The computations, which simulated flow from a porous sphere into a quiescent environment, included detailed chemistry, transport and radiation, and yielded transient results. Radiative extinction was observed experimentally and simulated numerically. Extinction time, peak temperature, and radiative loss fraction were found to be independent of flow rate except at very low flow rates. Radiative heat loss was dominated by the combustion products downstream of the flame and was found to scale with flame surface area, not volume. For large transient flames the heat release rate also scaled with surface area and thus the radiative loss fraction was largely independent of flow rate. Peak temperatures at extinction onset were about 1100 K, which is significantly lower than for kinetic extinction. One observation of this work is that while radiative heat losses can drive transient extinction, this is not because radiative losses are increasing with time (flame size) but rather because the heat release rate is falling off as the temperature drops.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "United States",
+     "submissionId": 20070017909,
+     "endDate": "2006-03-28T00:00:00.0000000+00:00",
+     "sponsors": [
+      {
+       "organizationId": "d968d42435284179b29c55435a650400",
+       "meta": {
+        "organization": {
+         "name": "California Univ.",
+         "location": "San Diego, CA, United States"
+        }
+       },
+       "meetingId": "206b0035720d4a49abceea9ad55810a4",
+       "id": "4f2e044904ff412f9997d1316625ffe2"
+      }
+     ],
+     "name": "5th U.S. Combustion Meeting",
+     "location": "San Diego, CA",
+     "id": "206b0035720d4a49abceea9ad55810a4",
+     "startDate": "2006-03-25T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20070017909,
+     "id": "73a74494ce9643dc858d37f62c39da33",
+     "publicationDate": "2007-03-28T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20070017909.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20070017909/downloads/20070017909.pdf",
+      "pdf": "/api/citations/20070017909/downloads/20070017909.pdf",
+      "fulltext": "/api/citations/20070017909/downloads/20070017909.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 218.77794
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20040053573,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "4a5944e9e47e42448704a9ba78657ebe",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Inorganic, Organic And Physical Chemistry"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20040053573,
+    "ear": "NO",
+    "id": "ee9c4dafeee14daba8b6a53a5f04cf82",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-08-14T14:46:38.0870000+00:00",
+   "title": "Oscillatory Extinction Of Spherical Diffusion Flames",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-09-07T11:35:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20040053573,
+     "meta": {
+      "author": {
+       "name": "Law, C. K."
+      },
+      "organization": {
+       "name": "Princeton Univ.",
+       "location": "NJ, United States"
+      }
+     },
+     "id": "7bb93befd7f1401bb6c181d3524b5a77"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20040053573,
+     "meta": {
+      "author": {
+       "name": "Yoo, S. W."
+      },
+      "organization": {
+       "name": "Princeton Univ.",
+       "location": "NJ, United States"
+      }
+     },
+     "id": "6b88e5c29301496ba56bd42f35116439"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20040053573,
+     "meta": {
+      "author": {
+       "name": "Christianson, E. W."
+      },
+      "organization": {
+       "name": "Princeton Univ.",
+       "location": "NJ, United States"
+      }
+     },
+     "id": "097030a5d886456fa8b102cd94f2e873"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20040053573,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-09-07T11:35:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Since extinction has been observed in an oscillatory manner in Le greater than 1 premixed flames, it is not unreasonable to expect that extinction could occur in an unsteady manner for diffusion flames. Indeed, near-limit oscillations have been observed experimentally under microgravity conditions for both candle flames and droplet flames. Furthermore, the analysis of Cheatham and Matalon on the unsteady behavior of diffusion flames with heat loss, identified an oscillatory regime which could be triggered by either a sufficiently large Lewis number (even without heat loss) or an appreciable heat loss (even for Le=1). In light of these recent understanding, the present investigation aims to provide a well-controlled experiment that can unambiguously demonstrate the oscillation of diffusion flames near both the transport- and radiation-induced limits. That is, since candle and jet flames are stabilized through flame segments that are fundamentally premixed in nature, and since premixed flames are prone to oscillate, there is the possibility that the observed oscillation of these bulk diffusion flames could be triggered and sustained by the oscillation of the premixed flame segments. Concerning the observed oscillatory droplet extinction, it is well-known that gas-phase oscillation in heterogeneous burning can be induced by and is thereby coupled with condensed-phase unsteadiness. Consequently, a convincing experiment on diffusion flame oscillation must exclude any ingredients of premixed flames and other sources that may either oscillate themselves or promote the oscillation of the diffusion flame. The present experiment on burner-generated spherical flames with a constant reactant supply endeavored to accomplish this goal. The results are further compared with those from computational simulation for further understanding and quantification of the flame dynamics and extinction.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "publications": [
+    {
+     "submissionId": 20040053573,
+     "id": "a496e9665897462c986639a22cf42349",
+     "publicationName": "Seventh International Workshop on Microgravity Combustion and Chemically Reacting Systems",
+     "publicationDate": "2003-08-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 20040053504,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Seventh International Workshop on Microgravity Combustion and Chemically Reacting Systems",
+     "stiType": "CONFERENCE_PROCEEDINGS",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    },
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 20040053504,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Seventh International Workshop on Microgravity Combustion and Chemically Reacting Systems",
+     "stiType": "CONFERENCE_PROCEEDINGS",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    }
+   ],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20040053573.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20040053573/downloads/20040053573.pdf",
+      "pdf": "/api/citations/20040053573/downloads/20040053573.pdf",
+      "fulltext": "/api/citations/20040053573/downloads/20040053573.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 205.84158
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20070017900,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "c9bd724e8e984eb880f972836807d0ea",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Spacecraft Propulsion And Power"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20070017900,
+    "ear": "NO",
+    "id": "6c5f93de9a794f7ea437a58120439262",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "Paper F-23",
+    "Report Number: Paper F-23"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "NAG3-1912",
+     "submissionId": 20070017900,
+     "id": "5100e5c4a95744cfa023dd9b5d32e7ff",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NAG3-1910",
+     "submissionId": 20070017900,
+     "id": "bb41d12afbf74c60ab0d2ffb480a88ab",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NNC05AA46A",
+     "submissionId": 20070017900,
+     "id": "20ddc9087a864748ad91e846afe75363",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "WBS 732759.03.01.02.21",
+     "submissionId": 20070017900,
+     "id": "b38a3cb37e864908b9cc33381f051f69",
+     "type": "WBS"
+    },
+    {
+     "number": "NCC3-696",
+     "submissionId": 20070017900,
+     "id": "5ad5f1d1f92a4ca2a64d1f69376f4a58",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NCC3-697",
+     "submissionId": 20070017900,
+     "id": "2ea7a88f7744418e803f3c666560d903",
+     "type": "CONTRACT_GRANT"
+    }
+   ],
+   "title": "A Computational Investigation of Sooting Limits of Spherical Diffusion Flames",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-23T22:54:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20070017900,
+     "meta": {
+      "author": {
+       "name": "Lecoustre, V. R."
+      },
+      "organization": {
+       "name": "Maryland Univ.",
+       "location": "College Park, MD, United States"
+      }
+     },
+     "id": "5933205489b24d2387792c09a5f88673"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20070017900,
+     "meta": {
+      "author": {
+       "name": "Chao, B. H."
+      },
+      "organization": {
+       "name": "Hawaii Univ.",
+       "location": "Honolulu, HI, United States"
+      }
+     },
+     "id": "19506234292c4f3ea8c8e40c31665625"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20070017900,
+     "meta": {
+      "author": {
+       "name": "Sunderland, P. B."
+      },
+      "organization": {
+       "name": "Maryland Univ.",
+       "location": "College Park, MD, United States"
+      }
+     },
+     "id": "9396bf573ab5436184ba468fcd9bc24b"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20070017900,
+     "meta": {
+      "author": {
+       "name": "Urban, D. L."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "a420c33e01034f0e9aaab1dc2a82fb54"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20070017900,
+     "meta": {
+      "author": {
+       "name": "Stocker, D. P."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "17f4f1c217eb4bb7a70e457fb99defc7"
+    },
+    {
+     "sequence": 5,
+     "submissionId": 20070017900,
+     "meta": {
+      "author": {
+       "name": "Axelbaum, R. L."
+      },
+      "organization": {
+       "name": "Washington Univ.",
+       "location": "Saint Louis, MO, United States"
+      }
+     },
+     "id": "3aca208d635b467fa11859ff7daa767d"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20070017900,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-23T22:54:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Limiting conditions for soot particle inception in spherical diffusion flames were investigated numerically. The flames were modeled using a one-dimensional, time accurate diffusion flame code with detailed chemistry and transport and an optically thick radiation model. Seventeen normal and inverse flames were considered, covering a wide range of stoichiometric mixture fraction, adiabatic flame temperature, and residence time. These flames were previously observed to reach their sooting limits after 2 s of microgravity. Sooting-limit diffusion flames with residence times longer than 200 ms were found to have temperatures near 1190 K where C/O = 0.6, whereas flames with shorter residence times required increased temperatures. Acetylene was found to be a reasonable surrogate for soot precursor species in these flames, having peak mole fractions of about 0.01.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "United States",
+     "submissionId": 20070017900,
+     "endDate": "2007-03-28T00:00:00.0000000+00:00",
+     "name": "5th U.S. Combustion Meeting",
+     "location": "San Diego, CA",
+     "id": "670cb21a02914a948aab0734fad958e7",
+     "startDate": "2007-03-25T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20070017900,
+     "id": "0c785431637d4859a7983041a11fe4a4",
+     "publicationDate": "2007-03-28T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20070017900.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20070017900/downloads/20070017900.pdf",
+      "pdf": "/api/citations/20070017900/downloads/20070017900.pdf",
+      "fulltext": "/api/citations/20070017900/downloads/20070017900.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 201.18279
+   },
+   "copyright": {
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "MAY_INCLUDE_COPYRIGHT_MATERIAL",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 19970020559,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "2ebbc8dfb39747118b02cf4e9d747d01",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Inorganic, Organic and Physical Chemistry"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 19970020559,
+    "ear": "NO",
+    "id": "6fdcc3b29e0d4ba7aa045d6a9bf05f6e",
+    "category": [
+     {
+      "submissionExportControlId": "6fdcc3b29e0d4ba7aa045d6a9bf05f6e",
+      "id": "be09c33da65643d4b6e53acb5b374831",
+      "category": 0
+     }
+    ],
+    "itar": "NO"
+   },
+   "distributionDate": "1997-07-15T04:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "NASA-CP-10194"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "NAG3-1604",
+     "submissionId": 19970020559,
+     "id": "5e7c2ddce84e4b05a19d869638613ebb",
+     "type": "CONTRACT_GRANT"
+    }
+   ],
+   "title": "Spherical Diffusion Flames: Structure and Dynamics",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-17T15:14:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "organizationId": "3ed3138380724e729211d50411710403",
+     "sequence": 0,
+     "submissionId": 19970020559,
+     "meta": {
+      "author": {
+       "name": "Moshe Matalon"
+      },
+      "organization": {
+       "name": "Northwestern University",
+       "location": "Evanston, IL, United States"
+      }
+     },
+     "id": "94c03ded0ce94e45902106071ed100b2",
+     "userType": "OTHER"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2026-05-21T13:24:13.6913460+00:00",
+   "id": 19970020559,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": "97N21832"
+   },
+   "created": "2013-08-17T15:14:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "The spherical geometry is the most suitable one to study fundamental issues concerning the structure and the dynamics of diffusion flames. From a theoretical point of view, it is the only geometry that permits the existence of a truly one dimensional stationary diffusion flame. A stationary planar diffusion flame with the fuel supplied upstream, at x approaches -infinity say, and the oxidant downstream, at x approaches +infinity is not possible. For a steady diffusion flame to exist, one must have nonzero fluxes of fuel and oxidant towards the flame. However, in the unlimited region behind the planar flame the only bounded solutions to the reaction-free convective-diffusive operator are constants. Hence the oxidant concentration behind the flame remains constant and there is no mechanism to generate the necessary flux towards the flame. A one-dimensional problem can be formulated if the reactants are supplied at finite locations; but the boundary conditions in this case introduce unnecessary complications and do not appropriately model the physical reality. Indeed, a planar diffusion flame can be established in the stagnation-point flow of two opposed jets but the flame in this case is stretched and the flow is essentially two-dimensional. The only stationary one-dimensional diffusion flame in an unlimited environment is therefore the spherical flame.",
+   "isLessonsLearned": false,
+   "disseminated": "METADATA_ONLY",
+   "cui": {
+    "isCui": false,
+    "submissionId": 19970020559,
+    "id": "ce07babdd36c4e408e6b480b4acc7f32"
+   },
+   "meetings": [
+    {
+     "country": "US",
+     "submissionId": 19970020559,
+     "endDate": "1997-05-21T04:00:00.0000000+00:00",
+     "sponsors": [
+      {
+       "organizationId": "e53641f275f15469a1b19a8980e09171",
+       "meta": {
+        "organization": {
+         "name": "National Aeronautics and Space Administration",
+         "location": "Washington, United States"
+        }
+       },
+       "meetingId": "2bcd7cfccb824918b63a3e3c651087f7",
+       "id": "fdf9bfff65864074a531ab95dd935574"
+      }
+     ],
+     "name": "Fourth International Microgravity Combustion Workshop",
+     "location": "Cleveland, OH",
+     "id": "2bcd7cfccb824918b63a3e3c651087f7",
+     "startDate": "1997-05-19T04:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 19970020559,
+     "publisher": "National Aeronautics and Space Administration",
+     "id": "536baaf131fa4316aa8777c22403db9f",
+     "publicationName": "Fourth International Microgravity Combustion Workshop",
+     "publicationDate": "1997-05-01T04:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [
+    {
+     "disseminated": "DOCUMENT_AND_METADATA",
+     "id": 19970020547,
+     "type": "ANALYTIC_PRIMARY",
+     "title": "Fourth International Microgravity Combustion Workshop",
+     "stiType": "CONFERENCE_PROCEEDINGS",
+     "distribution": "PUBLIC",
+     "status": "CURATED"
+    }
+   ],
+   "downloads": [],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  }
+ ],
+ "aggregations": {
+  "created": {
+   "buckets": [
+    {
+     "key_as_string": "2013",
+     "key": 1356998400000,
+     "doc_count": 30
+    },
+    {
+     "key_as_string": "2026",
+     "key": 1767225600000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2015",
+     "key": 1420070400000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2024",
+     "key": 1704067200000,
+     "doc_count": 1
+    }
+   ]
+  },
+  "author": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 46,
+   "buckets": [
+    {
+     "key": "Sunderland, P. B.",
+     "doc_count": 8
+    },
+    {
+     "key": "Urban, D. L.",
+     "doc_count": 8
+    },
+    {
+     "key": "Stocker, D. P.",
+     "doc_count": 6
+    },
+    {
+     "key": "Axelbaum, R. L.",
+     "doc_count": 5
+    },
+    {
+     "key": "Chao, B. H.",
+     "doc_count": 5
+    },
+    {
+     "key": "Atreya, Arvind",
+     "doc_count": 3
+    },
+    {
+     "key": "Axelbaum, Richard L.",
+     "doc_count": 3
+    },
+    {
+     "key": "Kendyl A. Waddell",
+     "doc_count": 3
+    },
+    {
+     "key": "Sacksteder, Kurt R.",
+     "doc_count": 3
+    },
+    {
+     "key": "Berhan, S.",
+     "doc_count": 2
+    },
+    {
+     "key": "Chernovsky, M.",
+     "doc_count": 2
+    },
+    {
+     "key": "Denis Constales",
+     "doc_count": 2
+    },
+    {
+     "key": "Lecoustre, V. R.",
+     "doc_count": 2
+    },
+    {
+     "key": "Matalon, Moshe",
+     "doc_count": 2
+    },
+    {
+     "key": "Peter B. Sunderland",
+     "doc_count": 2
+    },
+    {
+     "key": "Phillip H. Irace",
+     "doc_count": 2
+    },
+    {
+     "key": "Richard L. Axelbaum",
+     "doc_count": 2
+    },
+    {
+     "key": "Sacksteder, Kurt",
+     "doc_count": 2
+    },
+    {
+     "key": "Santa, K. J.",
+     "doc_count": 2
+    },
+    {
+     "key": "Shaw, Benjamin D.",
+     "doc_count": 2
+    }
+   ]
+  },
+  "reportNumber": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 20,
+   "buckets": [
+    {
+     "key": "NASA-CP-10194",
+     "doc_count": 3
+    },
+    {
+     "key": "AIAA PAPER 89-0157",
+     "doc_count": 1
+    },
+    {
+     "key": "AIAA Paper 2004-0958",
+     "doc_count": 1
+    },
+    {
+     "key": "AIAA Paper 2007-736",
+     "doc_count": 1
+    },
+    {
+     "key": "AIAA Paper-2008-827",
+     "doc_count": 1
+    },
+    {
+     "key": "E-10678",
+     "doc_count": 1
+    },
+    {
+     "key": "E-11671",
+     "doc_count": 1
+    },
+    {
+     "key": "E-12750",
+     "doc_count": 1
+    },
+    {
+     "key": "E-13952-1",
+     "doc_count": 1
+    },
+    {
+     "key": "E-14351-1",
+     "doc_count": 1
+    },
+    {
+     "key": "GRC-E-DAA-TN23501",
+     "doc_count": 1
+    },
+    {
+     "key": "NAS 1.15:109395",
+     "doc_count": 1
+    },
+    {
+     "key": "NAS 1.55:10194",
+     "doc_count": 1
+    },
+    {
+     "key": "NAS 1.55:208917",
+     "doc_count": 1
+    },
+    {
+     "key": "NAS 1.55:210826",
+     "doc_count": 1
+    },
+    {
+     "key": "NASA-TM-109395",
+     "doc_count": 1
+    },
+    {
+     "key": "NASA/CP-1999-208917",
+     "doc_count": 1
+    },
+    {
+     "key": "NASA/CP-2001-210826",
+     "doc_count": 1
+    },
+    {
+     "key": "NASA/CP-2003-212376/REV1",
+     "doc_count": 1
+    },
+    {
+     "key": "NASA/FS-2002-06-071-MSFC",
+     "doc_count": 1
+    }
+   ]
+  },
+  "center": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "GRC",
+     "doc_count": 28
+    },
+    {
+     "key": "CDMS",
+     "doc_count": 5
+    }
+   ]
+  },
+  "index": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "submissions-2026-11-12-06-24",
+     "doc_count": 33
+    },
+    {
+     "key": "chorus-2026-11-14-07-03",
+     "doc_count": 2
+    }
+   ]
+  },
+  "fundingNumber": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 12,
+   "buckets": [
+    {
+     "key": "NAG3-1910",
+     "doc_count": 6
+    },
+    {
+     "key": "NCC3-696",
+     "doc_count": 5
+    },
+    {
+     "key": "NCC3-697",
+     "doc_count": 5
+    },
+    {
+     "key": "NAG3-1912",
+     "doc_count": 4
+    },
+    {
+     "key": "80NSSC20M0072",
+     "doc_count": 2
+    },
+    {
+     "key": "80NSSC20M0073",
+     "doc_count": 2
+    },
+    {
+     "key": "CBET1740490",
+     "doc_count": 2
+    },
+    {
+     "key": "DGE-1745038",
+     "doc_count": 2
+    },
+    {
+     "key": "DGE-2139839",
+     "doc_count": 2
+    },
+    {
+     "key": "NAG3-1604",
+     "doc_count": 2
+    },
+    {
+     "key": "NNC05AA46A",
+     "doc_count": 2
+    },
+    {
+     "key": "WBS 732759.03.01.02.21",
+     "doc_count": 2
+    },
+    {
+     "key": "619352.01.02.03.01.01",
+     "doc_count": 1
+    },
+    {
+     "key": "673882.05.22.01.01",
+     "doc_count": 1
+    },
+    {
+     "key": "NAG3-1713",
+     "doc_count": 1
+    },
+    {
+     "key": "NAG3-2511",
+     "doc_count": 1
+    },
+    {
+     "key": "NAG3-482",
+     "doc_count": 1
+    },
+    {
+     "key": "NAG3-697",
+     "doc_count": 1
+    },
+    {
+     "key": "NCC-544",
+     "doc_count": 1
+    },
+    {
+     "key": "NCC3-1912",
+     "doc_count": 1
+    }
+   ]
+  },
+  "published": {
+   "buckets": [
+    {
+     "key_as_string": "2001",
+     "key": 978307200000,
+     "doc_count": 5
+    },
+    {
+     "key_as_string": "1999",
+     "key": 915148800000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "2003",
+     "key": 1041379200000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "1997",
+     "key": 852076800000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2007",
+     "key": 1167609600000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "1993",
+     "key": 725846400000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2000",
+     "key": 946684800000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2004",
+     "key": 1072915200000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "1989",
+     "key": 599616000000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "1991",
+     "key": 662688000000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "1995",
+     "key": 788918400000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2002",
+     "key": 1009843200000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2008",
+     "key": 1199145600000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2015",
+     "key": 1420070400000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2026",
+     "key": 1767225600000,
+     "doc_count": 1
+    }
+   ]
+  },
+  "distribution": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "PUBLIC",
+     "doc_count": 35
+    }
+   ]
+  },
+  "stiType": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "CONFERENCE_PAPER",
+     "doc_count": 22
+    },
+    {
+     "key": "CONFERENCE_PROCEEDINGS",
+     "doc_count": 4
+    },
+    {
+     "key": "ACCEPTED_MANUSCRIPT",
+     "doc_count": 3
+    },
+    {
+     "key": "OTHER",
+     "doc_count": 2
+    },
+    {
+     "key": "PREPRINT",
+     "doc_count": 2
+    },
+    {
+     "key": "CONFERENCE_PUBLICATION",
+     "doc_count": 1
+    },
+    {
+     "key": "TECHNICAL_MEMORANDUM",
+     "doc_count": 1
+    }
+   ]
+  },
+  "subjectCategory": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "Inorganic, Organic And Physical Chemistry",
+     "doc_count": 11
+    },
+    {
+     "key": "Inorganic And Physical Chemistry",
+     "doc_count": 5
+    },
+    {
+     "key": "Materials Processing",
+     "doc_count": 5
+    },
+    {
+     "key": "Chemistry And Materials (General)",
+     "doc_count": 2
+    },
+    {
+     "key": "Inorganic, Organic and Physical Chemistry",
+     "doc_count": 2
+    },
+    {
+     "key": "Propellants And Fuels",
+     "doc_count": 2
+    },
+    {
+     "key": "Aircraft Propulsion And Power",
+     "doc_count": 1
+    },
+    {
+     "key": "Chemistry and Materials (General)",
+     "doc_count": 1
+    },
+    {
+     "key": "Fluid Mechanics And Thermodynamics",
+     "doc_count": 1
+    },
+    {
+     "key": "Man/System Technology And Life Support",
+     "doc_count": 1
+    },
+    {
+     "key": "Mechanical Engineering",
+     "doc_count": 1
+    },
+    {
+     "key": "Optics",
+     "doc_count": 1
+    },
+    {
+     "key": "Spacecraft Propulsion And Power",
+     "doc_count": 1
+    }
+   ]
+  },
+  "disseminated": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "DOCUMENT_AND_METADATA",
+     "doc_count": 28
+    },
+    {
+     "key": "METADATA_ONLY",
+     "doc_count": 7
+    }
+   ]
+  },
+  "stiTypeDetails": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "Conference Paper",
+     "doc_count": 22
+    },
+    {
+     "key": "Conference Proceedings",
+     "doc_count": 4
+    },
+    {
+     "key": "Accepted Manuscript",
+     "doc_count": 2
+    },
+    {
+     "key": "Other",
+     "doc_count": 2
+    },
+    {
+     "key": "Preprint (Draft being sent to journal)",
+     "doc_count": 2
+    },
+    {
+     "key": "Accepted Manuscript (Version with final changes)",
+     "doc_count": 1
+    },
+    {
+     "key": "Conference Publication (CP)",
+     "doc_count": 1
+    },
+    {
+     "key": "Technical Memorandum (TM)",
+     "doc_count": 1
+    }
+   ]
+  },
+  "organization": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 2,
+   "buckets": [
+    {
+     "key": "NASA Glenn Research Center",
+     "doc_count": 17
+    },
+    {
+     "key": "Washington Univ.",
+     "doc_count": 8
+    },
+    {
+     "key": "Hawaii Univ.",
+     "doc_count": 6
+    },
+    {
+     "key": "National Center for Microgravity Research on Fluids and Combustion",
+     "doc_count": 5
+    },
+    {
+     "key": "Maryland Univ.",
+     "doc_count": 4
+    },
+    {
+     "key": "Michigan Univ.",
+     "doc_count": 4
+    },
+    {
+     "key": "Glenn Research Center",
+     "doc_count": 3
+    },
+    {
+     "key": "",
+     "doc_count": 2
+    },
+    {
+     "key": "California Univ.",
+     "doc_count": 2
+    },
+    {
+     "key": "Case Western Reserve University",
+     "doc_count": 2
+    },
+    {
+     "key": "Northwestern Univ.",
+     "doc_count": 2
+    },
+    {
+     "key": "Princeton University",
+     "doc_count": 2
+    },
+    {
+     "key": "University of Southern California",
+     "doc_count": 2
+    },
+    {
+     "key": "Case Western Reserve Univ.",
+     "doc_count": 1
+    },
+    {
+     "key": "Innovative Scientific Solutions, Inc.",
+     "doc_count": 1
+    },
+    {
+     "key": "Lewis Research Center",
+     "doc_count": 1
+    },
+    {
+     "key": "Michigan State Univ.",
+     "doc_count": 1
+    },
+    {
+     "key": "NASA Stennis Space Center",
+     "doc_count": 1
+    },
+    {
+     "key": "NPP POST-DOC CONTRACT",
+     "doc_count": 1
+    },
+    {
+     "key": "National Inst. of Standards and Technology",
+     "doc_count": 1
+    }
+   ]
+  },
+  "modified": {
+   "buckets": [
+    {
+     "key_as_string": "2025",
+     "key": 1735689600000,
+     "doc_count": 28
+    },
+    {
+     "key_as_string": "2026",
+     "key": 1767225600000,
+     "doc_count": 7
+    }
+   ]
+  },
+  "keyword": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "Microgravity",
+     "doc_count": 2
+    },
+    {
+     "key": "Combustion",
+     "doc_count": 1
+    },
+    {
+     "key": "Cool flames",
+     "doc_count": 1
+    },
+    {
+     "key": "Fires",
+     "doc_count": 1
+    },
+    {
+     "key": "Flammability",
+     "doc_count": 1
+    },
+    {
+     "key": "Optical thickness",
+     "doc_count": 1
+    },
+    {
+     "key": "Radiative heat loss",
+     "doc_count": 1
+    },
+    {
+     "key": "Warm flames",
+     "doc_count": 1
+    },
+    {
+     "key": "diffusion flame",
+     "doc_count": 1
+    },
+    {
+     "key": "negative temperature coefficient",
+     "doc_count": 1
+    },
+    {
+     "key": "pulsating flames",
+     "doc_count": 1
+    }
+   ]
+  }
+ }
+}

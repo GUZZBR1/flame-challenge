@@ -1,92 +1,50 @@
-# Flame in Freefall — SI-Powered Fire Safety Insights
+# Freefall Foundry — Flame in Freefall
 
-> **NASA Space Apps Challenge 2026** — "Flame in Freefall: SI-Powered Fire Safety
-> Insights from Microgravity Combustion Data" (Intermediate / Advanced · Space
-> Exploration)
+**NASA Space Apps Challenge 2026.** An orbital shipyard management sim
+(Prison-Architect-style, 2.5D isometric) where scientists and engineers
+build modules, run microgravity combustion experiments, and fabricate a
+spacecraft — while every ignition risk, fire spread and hidden-flame
+incident is computed from **real NASA Physical Sciences Informatics
+records** and a compiled **C++20 physics core**.
 
-An interactive dashboard that **summarizes, ranks and interprets** decades of
-NASA microgravity combustion research — turning the PSI data archive into
-actionable fire-safety insights for human exploration of the Moon and Mars.
-
-## What it does
-
-- **Ranking** — every investigation gets a transparent safety-risk score
-  (flammability, hidden hazard, exploration relevance, data richness).
-- **Summaries** — each record produces a plain-language "SI summary" plus
-  key findings and fire-safety implications.
-- **Insights** — a rule-based SI engine derives cross-cutting insights
-  (cool flames, low-O₂ flame spread, smoke-detector gaps, partial-gravity
-  needs, exploration atmospheres) and links them to source investigations.
-- **Charts** — limiting-oxygen comparison and score decomposition (Recharts).
-- **Data pipeline** — Python scripts ingest NASA PSI searches and NTRS papers
-  and normalize them into the app dataset.
-
-## Quick start
+## Play it
 
 ```bash
-npm install
-npm run dev        # http://localhost:5173
+# 1) frontend (required)
+cd frontend && npm install && npm run dev        # → http://localhost:5173
+
+# 2) C++ physics backend (optional — the game falls back to a local model)
+python3 -m venv .venv && .venv/bin/pip install -r backend/requirements.txt
+cd core && cmake -S . -B build -DPython3_EXECUTABLE=/usr/bin/python3 \
+  && cmake --build build -j && cd ..
+.venv/bin/python data/pipelines/calibrate_constants.py
+.venv/bin/uvicorn backend.api.main:app --port 8000
+# the "C++" badge in the top bar turns green
 ```
 
-```bash
-npm run build      # typecheck + production build
-npm run lint       # oxlint
-npm run preview    # serve the build
-```
+## Loop
 
-Data pipeline (Python 3.12+, stdlib only):
+- **Build** modules adjacent to the dock (deck, quarters, lab, combustion
+  chamber, fabrication bay). Engineers construct and repair.
+- **Experiment**: click a Combustion Chamber → pick a real PSI
+  investigation (SoFIE-GEL, BASS-II, FLEX-2, SAFFIRE…) → dial O₂ inside
+  its tested range. Higher above the limiting oxygen concentration → more
+  science, more ignition risk.
+- **Incidents**: failures ignite fires that spread at the record's real
+  flame-spread rate. Cool flames burn near-invisibly; smolder reignites.
+  Crew flee, engineers extinguish. Casualties cost safety.
+- **Win**: 100% hull completion. **Lose**: safety hits 0% or crew dies.
 
-```bash
-python scripts/psi_search.py --all      # PSI repository searches -> data/raw/
-python scripts/ntrs_search.py "microgravity flame spread"   # papers -> data/raw/
-python scripts/build_dataset.py         # merge structured records -> src/data/
-python scripts/build_dataset.py --sample  # restore starter dataset
-```
-
-See `docs/data-schema.md` for the record format.
-
-## Architecture
+## Layout
 
 ```
-NASA PSI / NTRS ──► scripts/*.py ──► data/raw/ ──► src/data/investigations.json
-                                                          │
-                                            src/lib/insights.ts (SI engine)
-                                                          │
-                                          React dashboard (Vite + Tailwind)
+core/      C++20 physics: droplet d²-law (FLEX), SAFFIRE spread,
+                  ACME material risk + pybind11 + (Emscripten-ready)
+data/    NASA PSI/NTRS ETL + calibrate_constants.py
+backend/      FastAPI bridge: /api/chamber/preview, WS /ws/chamber
+frontend/     React + TypeScript + PixiJS game client
+docs/             ARCHITECTURE.md, NASA_PSI_REFERENCES.md, challenge brief
 ```
 
-The insights engine is deliberately **deterministic and offline** so the demo
-never depends on network or API keys. An LLM provider can be plugged in later
-behind the same interface for richer narrative summaries.
-
-## Data honesty
-
-The bundled dataset covers 8 real investigations (SoFIE-GEL, BASS-II, FLEX,
-ACME, Saffire I–VI, SAME, Confined Combustion, FLARE). Quantitative metrics
-are representative values from public literature and are flagged
-`verified: false` until replaced by PSI file data via the pipeline.
-
-## Links
-
-- Challenge: https://www.spaceappschallenge.org/2026/challenges/flame-in-freefall/
-- PSI repository: https://psi.nasa.gov/physci/repo
-- Brief & data schema: `docs/challenge-brief.md`, `docs/data-schema.md`
-
----
-
-## Guia rápido (PT-BR)
-
-**Para que serve:** dashboard interativo para o desafio da NASA Space Apps
-2026 que resume, ranqueia e interpreta dados de combustão em microgravidade
-(arquivo PSI da NASA) e gera insights de segurança contra incêndio para
-missões à Lua e a Marte.
-
-**Stack:** Vite + React 19 + TypeScript + Tailwind v4 + Recharts (frontend),
-Python 3 (pipeline de dados), motor de insights determinístico local.
-
-**Rodar:** `npm install && npm run dev` → http://localhost:5173
-
-**Dados:** 8 investigações reais catalogadas (SoFIE-GEL, BASS-II, FLEX, ACME,
-Saffire, SAME, Confined Combustion, FLARE). Métricas são valores
-representativos da literatura pública, marcados `verified: false` até serem
-substituídos por dados reais do PSI via `scripts/`.
+See `docs/ARCHITECTURE.md` for the data flow and
+`docs/NASA_PSI_REFERENCES.md` for the mechanic→dataset mapping.

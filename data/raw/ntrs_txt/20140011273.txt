@@ -1,0 +1,3165 @@
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+www.atmos-chem-phys.net/14/6643/2014/
+doi:10.5194/acp-14-6643-2014
+© Author(s) 2014. CC Attribution 3.0 License.
+
+Global top-down smoke-aerosol emissions estimation using satellite
+ﬁre radiative power measurements
+C. Ichoku1 and L. Ellison1,2
+1 Climate
+2 Science
+
+and Radiation Laboratory, NASA Goddard Space Flight Center, Greenbelt, MD 20771, USA
+Systems and Applications, Inc., Lanham, MD 20706, USA
+
+Correspondence to: C. Ichoku (charles.ichoku@nasa.gov)
+Received: 16 August 2013 – Published in Atmos. Chem. Phys. Discuss.: 22 October 2013
+Revised: 8 May 2014 – Accepted: 23 May 2014 – Published: 2 July 2014
+
+Abstract. Fire emissions estimates have long been based on
+bottom-up approaches that are not only complex, but also
+fraught with compounding uncertainties. We present the development of a global gridded (1◦ × 1◦ ) emission coefﬁcients (Ce ) product for smoke total particulate matter (TPM)
+based on a top-down approach using coincident measurements of ﬁre radiative power (FRP) and aerosol optical thickness (AOT) from the Moderate-resolution Imaging Spectroradiometer (MODIS) sensors aboard the Terra and Aqua
+satellites. This new Fire Energetics and Emissions Research
+version 1.0 (FEER.v1) Ce product has now been released
+to the community and can be obtained from http://feer.gsfc.
+nasa.gov/, along with the corresponding 1-to-1 mapping of
+their quality assurance (QA) ﬂags that will enable the Ce values to be ﬁltered by quality for use in various applications.
+The regional averages of Ce values for different ecosystem types were found to be in the ranges of 16–21 g MJ−1
+for savanna and grasslands, 15–32 g MJ−1 for tropical forest, 9–12 g MJ−1 for North American boreal forest, and 18–
+26 g MJ−1 for Russian boreal forest, croplands and natural vegetation. The FEER.v1 Ce product was multiplied by
+time-integrated FRP data to calculate regional smoke TPM
+emissions, which were compared with equivalent emissions
+products from three existing inventories. FEER.v1 showed
+higher and more reasonable smoke TPM estimates than two
+other emissions inventories that are based on bottom-up approaches and already reported in the literature to be too low,
+but portrayed an overall reasonable agreement with another
+top-down approach. This suggests that top-down approaches
+may hold better promise and need to be further developed
+to accelerate the reduction of uncertainty associated with ﬁre
+emissions estimation in air-quality and climate research and
+
+applications. Results of the analysis of FEER.v1 data for
+2004–2011 show that 65–85 Tg yr−1 of TPM is emitted globally from open biomass burning, with a generally decreasing
+trend over this short time period. The FEER.v1 Ce product
+is the ﬁrst global gridded product in the family of “emission
+factors”, that is based essentially on satellite measurements,
+and requires only direct satellite FRP measurements of an
+actively burning ﬁre anywhere to evaluate its emission rate
+in near-real time, which is essential for operational activities,
+such as the monitoring and forecasting of smoke emission
+impacts on air quality.
+
+1
+
+Introduction
+
+Smoke emitted from biomass burning is composed of a wide
+variety of particle and trace gas species that can inﬂuence
+air quality, weather, and climate variability in a signiﬁcant
+way (e.g., Crutzen and Andreae, 1990; Andreae and Merlet,
+2001; Randerson et al., 2006; Schultz et al., 2008). Among
+other sources of important atmospheric constituents (natural and anthropogenic), open-air biomass burning is one of
+the largest contributors of both gaseous and particulate emissions to the atmosphere, and is estimated to be responsible
+for 34–38 % and 40 % of the global loadings of total carbonaceous aerosols and black carbon (BC), respectively, as
+well as 25 % of the total global carbon dioxide (CO2 ) increases since pre-industrial times (e.g., Forster et al., 2007).
+This is because open biomass burning occurs in most vegetated parts of the world annually, in the form of natural or
+man-made burning of forests, savannas, peat lands, agricultural residues, and other ecosystem types. It is recognized
+
+Published by Copernicus Publications on behalf of the European Geosciences Union.
+
+6644
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+that an accurate understanding of smoke impacts can only be
+accomplished through accurate estimates of ﬁre emissions
+(e.g., Langmann et al., 2009). Therefore, researchers have
+invested considerable effort over the last several decades to
+estimate smoke emissions at different spatial and temporal
+scales from various types of biomes. Before the advent of
+satellite remote sensing, smoke emissions were estimated
+through small-scale biomass burning experiments, modeling,
+or by approximation based on proxy data such as population
+or cultural practices (e.g., Seiler and Crutzen, 1980; Hao and
+Liu, 1994; Liousse et al., 1996). The satellite era has brought
+signiﬁcant improvement in biomass burning characterization
+and emissions estimation (e.g., Dozier, 1981; Prins and Menzel, 1992; Justice et al., 1993, 2002; Cahoon et al., 1994;
+Kaufman et al., 1998; Giglio et al., 2003, 2008; Wooster et
+al., 2003, 2005; Ito and Penner, 2004; Ichoku and Kaufman,
+2005; Ichoku et al., 2008, 2012; Schroeder et al., 2005, 2014;
+van der Werf et al., 2006, 2010; Giglio, 2007; Roberts and
+Wooster, 2008; Zhang et al., 2008; Reid et al., 2009; Vermote
+et al., 2009; Kaiser et al., 2012).
+Despite the considerable advancement achieved in satellite remote sensing and atmospheric modeling during the last
+couple of decades, there still remains a large uncertainty in
+the overall atmospheric impacts of aerosols and certain shortlived trace gases, particularly those originating from biomass
+burning such as BC and carbon monoxide (CO) (e.g., Urbanski et al., 2011; Yurganov et al., 2011; Ichoku et al. 2012;
+Bond et al., 2013). A major part of the uncertainty stems
+from the fact that their emission from ﬁres are still very
+poorly constrained mainly due to the rather sporadic and
+transient character of biomass burning, which makes it difﬁcult to characterize experimentally (e.g., Forster et al., 2007,
+Yokelson et al., 2011). This can be contrasted, for instance,
+with emissions from industries and fossil-fuel burning, which
+can be quantiﬁed in a fairly straightforward manner, as the
+sources are generally stable and relatively easy to characterize. For instance, the global total fossil-fuel CO2 emissions
+are accurate to within 10 % at a 95 % conﬁdence interval
+(e.g., Andres et al., 2012), whereas the uncertainty associated with biomass burning CO2 emissions is still not quantiﬁable because of lack of sufﬁcient information (e.g., Andreae
+and Merlet, 2001), although one could infer that it would be
+as much as 100 % considering the propagation of uncertainties from the various parameters that inﬂuence the emissions
+estimates (van der Werf et al., 2010). Similar uncertainty ratios exist for other types of particulate and gaseous emissions
+from various source types (biogenic, industrial, volcanic) as
+compared to biomass burning (e.g., Diehl et al., 2012; Bond
+et al., 2013; Carslaw et al., 2013).
+Many of the currently available biomass burning emissions inventories and other related products, including those
+derived from satellite data, are based on bottom-up approaches, whereby estimates of burned biomass are derived
+from satellite-retrieved ﬁre pixel counts, burned areas, and/or
+ﬁre radiative power (FRP), and are then multiplied by emisAtmos. Chem. Phys., 14, 6643–6667, 2014
+
+sion factors (EFs) of different smoke constituents derived
+from laboratory or ﬁeld experiments to obtain the smoke
+emissions of these constituents (e.g., Chin et al., 2002, Ito
+and Penner, 2004; Hoelzemann et al., 2004, Liousse et al.,
+2004; Michel et al., 2005; van der Werf et al., 2006, 2010;
+Generoso et al., 2007). Examples of such inventories that are
+currently being used by the community include GFED (van
+der Werf et al., 2006, 2010), GFAS (Kaiser et al., 2012),
+FLAMBE (Reid et al., 2009), FINN (Weidinmyer et al.,
+2011), and GBBEP-Geo (Zhang et al., 2012). Recent research ﬁndings suggest that such bottom-up approaches lead
+to severe underestimations particularly of smoke aerosols unless bias correction is applied through modeling (e.g., Liousse et al., 2010; Kaiser et al., 2012). Top-down approaches
+are starting to be investigated for deriving biomass-burning
+emissions, sometimes in conjunction with model assimilation (e.g., Soﬁev et al., 2009; Kaiser et al., 2012; Darmenov
+and da Silva, 2013). Although biomass burning emits several
+dozens of particulate and gaseous species (e.g., Andreae and
+Merlet, 2001; Akagi et al., 2011), this study is speciﬁcally
+focused on smoke aerosol or total particulate matter (TPM)
+emissions.
+This paper presents the development of the ﬁrst gridded
+global top-down biomass burning aerosol emission coefﬁcients product that is based strictly on locally collocated
+satellite measurements of both ﬁre radiative power (FRP)
+and aerosol optical thickness (AOT). The original idea and
+an initial algorithm were developed in Ichoku and Kaufman (2005) in which FRP and AOT retrieved from the
+Moderate-resolution Imaging Spectro-radiometer (MODIS)
+sensor aboard the NASA Terra and Aqua satellites were utilized together with wind vectors from the National Center for Environmental Prediction/National Center for Atmospheric Research (NCEP/NCAR) meteorological reanalysis
+data to generate smoke-aerosol emission coefﬁcients (Ce in
+kg MJ−1 ) for several biomass burning regions. Such topdown emission coefﬁcients are found to be useful, as simply
+multiplying Ce by the satellite-retrieved FRP of a ﬁre gives
+the corresponding instantaneous TPM emission rate for that
+ﬁre. Likewise, in the case of consistent and frequent ﬁre observations such as from a geostationary platform, multiplying Ce by the time-integrated FRP (or ﬁre radiative energy,
+FRE) gives the TPM emission for that time interval. This
+Ce × FRP (or Ce × FRE) emissions estimation approach and
+variants of it have been subsequently developed and implemented successfully in various regional studies (e.g., Jordan et al., 2008; Henderson et al., 2008, 2010; Soﬁev et al.,
+2009; Vermote et al., 2009). However, the original Ichoku
+and Kaufman (2005) algorithm has been substantially enhanced and used to generate a gridded global Ce product
+using an updated algorithm and newer versions of FRP and
+AOT data from MODIS as well as wind vectors from the
+Modern Era Retrospective-Analysis for Research and Applications (MERRA) data sets (Rienecker et al., 2011) provided
+by the NASA Goddard Global Modeling and Assimilation
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+Ofﬁce (GMAO). The newly generated gridded Ce data products are available at the NASA Fire Energetics and Emissions Research (FEER) web site (http://feer.gsfc.nasa.gov/)
+together with MODIS FRP data and links to other relevant
+satellite FRP data.
+Section 2 provides the background and theoretical basis
+of the approach. Section 3 describes the characteristics of
+the various input data (FRP, AOT, winds) used to calculate
+Ce . Section 4 gives the full details of the updated methodology for deriving Ce and the associated uncertainty analyses. Section 5 presents the use of the gridded Ce product to
+estimate smoke particulate emissions over different regions
+and comparisons with similar emission products, namely,
+the Global Fire Emissions Database version 3.1 (GFED.v3:
+van der Werf et al., 2006, 2010), the Global Fire Assimilation System version 1.0 (GFAS.v1: Kaiser et al., 2012), and
+the Quick Fire Emission Dataset version 2.4 (QFED.v2: van
+Donkelaar et al., 2011; Darmenov and da Silva, 2013). Finally, Sect. 6 provides a summary and relevant concluding
+statements.
+2
+
+Background and theoretical considerations
+
+Traditionally, the amount of a given aerosol or trace-gas
+species emitted from open biomass burning is derived by
+multiplying that species’ emission factor (in grams of species
+per kilogram of dry matter burned) by the mass of biomass
+burned. The basic equation is of the form (e.g., Andreae and
+Merlet, 2001):
+Mx = EFx · Mbiomass ,
+
+(1)
+
+where Mx is the mass of emitted smoke species x, EFx is the
+emission factor for the emitted species x, and Mbiomass is the
+mass of the dry biomass burned.
+A similar relationship to Eq. (1) was established by Ichoku
+x
+and Kaufman (2005) in which EFx is replaced with Ce ,
+which is designated as the emission coefﬁcient (for any given
+species x), and Mbiomass is replaced with either FRE or its release rate Rfre (i.e., FRP). Thus,
+x
+Mx = Ce · FRE
+
+or
+x
+Rx = Ce · Rfre ,
+
+set up, and the retrieved FRP and AOT were used to derive
+Ce for smoke aerosols (Ichoku et al., 2008b).
+Equations (1) and (2) are functionally very similar, and relating the two would suggest that there is a linear relationship
+between Mbiomass and FRE. Indeed, a series of ﬁeld experiments showed that FRE is proportional to Mbiomass in a linear
+fashion, such that Mbiomass = 0.368(± 0.015)· FRE, in which
+the numeric coefﬁcient (0.368 kg MJ−1 ) is designated as the
+biomass consumption factor (Fc ) (Wooster et al., 2005). The
+Wooster et al. (2005) study indicated that the same relationship is expected to hold for satellite observations when total
+biomass consumed Mbiomass is substituted with the rate of
+biomass consumption and FRE with Rfre . That relationship
+has also been veriﬁed in laboratory experiments (Freeborn
+et al., 2008; Ichoku et al., 2008b), and has been applied in
+the estimation of Mbiomass over Africa using FRE derived by
+integrating Rfre measurements from the Spinning Enhanced
+Visible and Infrared Imager (SEVIRI) aboard the Meteosat
+second generation (MSG) series of European geostationary
+meteorological satellites (Roberts et al. 2005, 2011). Similarly, as derived in Ichoku et al. (2008b), the mass-based
+emission factor, EFx , in Eq. (1) is related to the FRE-based
+x
+emission coefﬁcient Ce for any given ﬁre-emitted species x
+as
+x
+EFx = Ce Fc ,
+
+(3)
+
+where Fc is the biomass consumption factor (Fc ) deﬁned in
+Wooster et al. (2005).
+This ability to relate the satellite-measured ﬁre radiant
+heat release rate Rfre and the top-down derived emission
+coefﬁcient Ce to physical quantities of combusted biomass
+Mbiomass and its associated bottom-up smoke emission factor
+EFx , respectively, is a major motivation buttressing the study
+described in this paper. Currently, only a few generalized values of EFx are available for certain ecosystem types, which
+is highly limiting given that EFx is likely to vary by location
+in the same manner as fuel characteristics, even within the
+same ecosystem type. Therefore, by using satellite-measured
+Rfre and smoke aerosols to derive Ce globally as a gridded
+product based on the developed top-down approach, it is not
+only possible to compare these results with those based on
+bottom-up approaches, but it can even lead to the development of a gridded EFx product that would offer a much ﬁner
+spatial coverage and resolution than do the current products.
+
+(2)
+3
+
+where Rx is the rate of emission of species x (expressed
+in kg s−1 ) since Rfre is the FRE release rate expressed in
+x
+MJ s−1 , or MW. Ce is therefore expressed in kg MJ−1 . The
+validity of the relationship in Eq. (2) has been veriﬁed in
+a laboratory experiment, where satellite measurements of
+ﬁre energetics and smoke were replicated by burning small
+biomass fuel samples in a burn chamber equipped with a giant smoke stack upon which the relevant instruments were
+www.atmos-chem-phys.net/14/6643/2014/
+
+6645
+
+Data
+
+The main data products used in generating the gridded Ce
+are satellite measurements of FRP and AOT, as well as assimilated wind ﬁelds from MERRA. Both the FRP and AOT
+products used in this work are derived from the MODIS sensors aboard the (1) Terra satellite launched in 1999 with local
+equator crossing times of 10:30 a.m. and 10:30 p.m., and (2)
+Aqua satellite launched in 2002 with local equator crossing
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6646
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+times of 1:30 p.m. and 1:30 a.m. The analysis in this paper is
+based on data covering the period between 2003 and 2010,
+inclusive. The speciﬁc attributes of these products, such as
+their spatial and temporal resolutions, versions, and uncertainties are discussed in the following sub-sections. It should
+be noted that MODIS data versions are essentially referred
+to as data “collections”, a terminology that will be used
+throughout this paper.
+3.1
+
+Fire radiative power
+
+Active ﬁre observation products from MODIS on Terra
+(MOD14) and Aqua (MYD14) are provided at a nominal
+spatial resolution of 1 km at nadir (Justice et al., 2002; Giglio
+et al., 2003). FRP (or Rfre ) is one of the main parameters provided within these products for every ﬁre pixel detected. The
+original formulation for derivation of Rfre was developed in
+Kaufman et al. (1998, p. 32 226, Eq. (1)) as
+8
+Rfre = 4.34 × 10−19 · T48 − T4b ,
+
+(4)
+
+where Rfre is the pixel ﬁre radiative power (in W m−2 ), T4
+is the ﬁre pixel brightness temperature (in K) at the 4 µm
+channel (3.96 µm for MODIS), and T4b is the 4 µm brightness
+temperature of the background surrounding the ﬁre pixel.
+Equation (3) was used to derive FRP values from MODIS
+up to the collection 4 data set released in 2004. Those collection 4 data were used for the Ichoku and Kaufman (2005)
+study. Starting from collection 5, the right hand side of
+Eq. (3) was multiplied by the area of each pixel to account for
+the variation of ground pixel size with MODIS scan angle, resulting in units of MW for Rfre (Giglio, 2010). The collection
+5 FRP data set, which is the latest data version available at the
+time of this study, has been used for the calculations reported
+here. The potential effects that this change in FRP values has
+on computed Ce is analyzed in Sect. 4.6. However, it is noteworthy that FRP retrievals from MODIS have not yet been
+validated, even though the uncertainty associated with the
+detection of ﬁre locations has been characterized using ﬁre
+detections at 30 m nominal spatial resolution from the Enhanced Thematic Mapper Plus (ETM+) sensor aboard the
+Landsat-7 satellite and the Advanced Spaceborne Thermal
+Emission and Reﬂection Radiometer (ASTER) aboard Terra
+(e.g., Morisette et al., 2005a, b; Schroeder et al., 2008a, b).
+3.2
+
+Aerosol optical thickness
+
+The AOT (τaλ ) data used for this study were also retrieved from MODIS on Terra (MOD04_L2) and Aqua
+(MYD04_L2) at 10 km spatial resolution at nadir. MODIS
+measures AOT at 470, 550, 660, and 2100 nm wavelengths
+(λ) over land, and at 470, 550, 660, 870, 1200, 1600, and
+2100 nm wavelengths over ocean (e.g., Remer et al., 2005,
+2008; Ichoku et al., 2005; Levy et al., 2010). However, only
+the AOT data retrieved over land are used in this study,
+since smoke from biomass burning can only be emitted over
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+land where ﬁres normally occur, although this makes it difﬁcult to get a sufﬁcient amount of retrievals for ﬁres occurring very close to coastlines. Speciﬁcally, we use AOT
+measurements at 550 nm wavelength, as this falls within the
+mid-visible or green region of the electromagnetic spectrum,
+which is the most commonly used wavelength region in
+aerosol radiation studies. Unlike the FRP data, MODIS AOT
+data have been extensively characterized and validated using
+ground-based sun-photometer measurements from the global
+Aerosol Robotic Network (AERONET, e.g., Holben et al.,
+1998, 2001). However, as with the ﬁre product, the collection
+5 MODIS Level 2 Aerosol Product (http://modis-atmos.gsfc.
+nasa.gov/C005_Changes/C005_Aerosol_5.2.pdf) was used
+in this study instead of the collection 4 that was used in
+Ichoku and Kaufman (2005). Detailed analyses of the effects
+of this change in AOT data version and other factors on the
+computed Ce results are presented in Sect. 4.6.
+3.3
+
+Wind vectors
+
+The wind vectors used for this study were extracted from
+MERRA’s inst3_3d_asm_Cp product provided at a spatial
+resolution of 1.25◦ × 1.25◦ and a temporal resolution of
+3 h. The documentation for that product is available at
+http://disc.sci.gsfc.nasa.gov/mdisc/data-holdings/merra/
+inst3_3d_asm_Cp.shtml. Wind data at pressure levels of
+925, 850, and 700 mb, roughly corresponding to heights
+above mean sea level (a.s.l.) of 750 m, 1.5 km, and 3 km,
+respectively, were extracted and used for spatial aerosol data
+analysis to derive smoke TPM emission rates. However, after
+the analyses, the wind data at 850 mb (roughly 1.5 km a.s.l.)
+were used to generate the ﬁnal product as described in
+Sect. 4 and in Ichoku and Kaufman (2005), because most
+ﬁres observable from satellite at ~1 km spatial resolution
+in different parts of the world typically inject plumes to
+heights of about 1.5±1.0 km above ground level (a.g.l.), with
+the exception of very large ﬁres (e.g., Lavoué et al., 2000;
+Freitas et al., 2006; Kahn et al., 2007; Val Martin et al.,
+2012; Yang et al., 2013).
+3.4
+
+Other data
+
+Several other data types, products, and parameters were used
+in this study. The global average aerosol mass extinction efﬁciency value of βe = 4.6 m2 g−1 that was used in Ichoku and
+Kaufman (2005), based on the work of Reid et al. (2005), has
+also been used in the current work. Coincident digital elevation model (DEM) data and ecosystem data were obtained
+for each data point during processing for reference. DEM
+data at 30 arcsec resolution (GTOPO30: https://lta.cr.usgs.
+gov/GTOPO30) are provided by the US Geological Surveys
+(USGS). We used the DEM data sets to determine the landsurface elevation, land–sea mask, slope, and aspect. Ecosystem data used in this work are from the 1 arcmin resolution
+global ecosystem map of 2004 derived from MODIS (http:
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+6647
+
+//modis-atmos.gsfc.nasa.gov/ECOSYSTEM/) using the International Geosphere/Biosphere Program (IGBP) classiﬁcation scheme. Digitized smoke plume data from the Multiangle Imaging Spetro-Radiometer (MISR) INteractive eXplorer (MINX) tool (Nelson et al., 2008, 2013) were used
+to evaluate the relationship between the wind direction from
+MERRA and the actual plume direction as observed on the
+MODIS imagery.
+
+4
+
+Methodology
+
+The basic methodology for deriving the smoke-aerosol emission coefﬁcients Ce from satellite measurements of Rfre and
+τaλ was developed in Ichoku and Kaufman (2005). However,
+although the basic structure and processing sequence of the
+original algorithm have been maintained, several adjustments
+and updates were required, in terms of both the algorithm and
+input data, in order to generate the gridded products reported
+in this paper.
+4.1
+
+Algorithm logic for Ce calculation
+
+The logic progression within the algorithm to calculate Ce is
+generally similar to that described in Ichoku and Kaufman
+(2005) in that the ﬁrst stage of the algorithm is completed
+on a 10 km resolution aerosol-pixel level, followed by a second stage where these units are aggregated within larger areas (1◦ × 1◦ regular grid in the present case), and then ending
+with the actual calculation of Ce . The core of the algorithm is
+outlined in this section and visualized in Fig. 1. The speciﬁc
+details of the three analysis stages, including the main adjustments and updates applied in the current study, are described
+in Sects. 4.2, 4.3, and 4.4.
+The ﬁrst stage of the algorithm is designed to generate values of Rfre and Rsa (the smoke-aerosol emission rate) for
+each aerosol pixel with detected ﬁre(s). Fitting the MODIS
+1 km resolution active ﬁre data into the corresponding 10 km
+resolution aerosol-pixel data is very straightforward because
+both data sets originate from the same instrument on the same
+platform and from the same original data product. Therefore,
+the Rfre for a given aerosol pixel is derived as
+Rfre =
+
+Nf
+
+FRPi ,
+
+(5)
+
+i=1
+
+where FRP is the ﬁre radiative power measurement of individual active ﬁre pixels, and Nf is the total number of active
+ﬁre detections within a given aerosol pixel.
+Derivation of Rsa is less straightforward and involves calculations utilizing AOT and wind vectors in a 3 × 3 aerosol
+matrix centered on the ﬁre-affected aerosol pixel, as depicted
+in Fig. 2. Since the plume can easily inﬂuence neighboring pixels, the 3 × 3 matrix is split into four quadrants, one
+of which is deemed to be the “downwind quadrant” based
+www.atmos-chem-phys.net/14/6643/2014/
+
+Figure 1. Flowchart of the core algorithm for deriving FEER.v1
+emission coefﬁcients (Ce ) of smoke total particulate matter (TPM),
+as outlined in Sect. 4.1, showing only the relevant input and output
+variables/parameters and their associated equation numbers. This
+does not include the various sensitivity studies, data selection, reﬁnement, and ﬁltration processes, as well as the post-processing
+gap-ﬁlling and evaluation steps that are described in the rest of
+Sect. 4.
+
+on the wind direction, and the four pixels therein are assumed to contain parts of the plume, whereas the remaining ﬁve pixels are the background. The zonal (u) and meridional (v) components of the wind vector at the 850 mb atmospheric √
+pressure level are used to calculate the wind speed
+(WS = u2 + v 2 ) and azimuth (θ = cos−1 v WS ). The
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6648
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+t
+b
+whose τa550 appropriately exceeds τa550 . This ﬁre-emitted
+f
+AOT (τa550 ) is converted to smoke-aerosol column mass density (Md in g m−2 ) as
+f
+
+Md = τa550 βe ,
+
+(8)
+
+where βe (expressed in m2 g−1 ) is the smoke aerosol speciﬁc
+extinction or mass extinction efﬁciency derived from Reid et
+al. (2005). Using the total area of the four downwind pixels,
+AT , the mass of smoke-aerosol emission is then calculated
+by
+Msa = Md · AT .
+
+Figure 2. Spatial conﬁguration of a 3 × 3 aerosol-pixel matrix layout, whose central pixel contains ﬁres, showing the four downwind
+pixels (shaded red, quadrant IV) classiﬁed as having smoke, and the
+ﬁve remaining upwind pixels (shaded blue) constituting the background. The downwind quadrant is determined by the wind direction. The pixel indices (0–8) shown in their bottom left-hand corners are deﬁned by their scanning conﬁguration, signiﬁed here by
+the directions of line and sample coordinates. The sample direction
+is along-scan and the line direction is along-track. (The background
+image taken by Aqua/MODIS at 20:45 UTC on 1 July 2012 shows
+the Fontenelle Fire in Wyoming, USA.)
+
+azimuth is compared with the MODIS along-track direction
+to determine the downwind quadrant in which the plume is
+located (see Fig. 2). The AOT that is attributable to the ﬁre(s)
+within the central aerosol pixel can be determined as
+f
+t
+b
+τa550 = τa550 − τa550 ,
+
+(6)
+
+where the superscripts f, t, and b, respectively, designate the
+ﬁre-emitted, total, and background AOT at 550 nm waveb
+length. The background AOT value, τa550 , is calculated as
+the mean of the valid background AOT values (shown in blue
+in Fig. 2), weighted by aerosol-pixel area. The ﬁre-emitted
+b
+f
+AOT, τa550 , is found by subtracting this mean τa550 value
+t
+from τa550 of each aerosol pixel in the downwind quadrant
+f
+(plume direction). Individual τa550 values that are negative
+f
+are set to zero. Subsequently, an area-weighted average τa550
+value is calculated from the downwind aerosol pixels to represent the unit plume being analyzed. Thus,
+Naf
+f
+τa550 =
+
+i=1
+
+t
+b
+τa550,i − τa550 · Ai
+Nat
+j =1 Aj
+
+,
+
+(7)
+
+where A is the aerosol-pixel area, Nat is the number of valid
+aerosol retrievals in the downwind quadrant, and Naf is the
+number of valid aerosol retrievals in the downwind quadrant
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+(9)
+
+Determining the smoke-aerosol emission rate Rsa requires
+knowledge of how much time, T , it must have taken to emit
+Md . For a given plume, T is assumed to be the time it would
+take for the wind to clear all smoke aerosol from the downwind quadrant within the 3 × 3 aerosol-pixel matrix, and is
+estimated as
+T = L W S,
+
+(10)
+
+where L represents the length of the plume within the 3 × 3
+aerosol-pixel matrix. In the case where there are multiple active ﬁre detections within one aerosol pixel, the plume distances are averaged to yield one value for L. Finally, the rate
+of smoke-aerosol emission is estimated as
+Rsa = Msa T ,
+
+(11)
+
+where Rsa is expressed in kg s−1 . Thus, paired values of Rfre
+and Rsa are calculated for each ﬁre-containing aerosol pixel
+and collected into a “pixel-level” product, which is used in
+the second stage to generate similar measurements at larger
+scales.
+The second stage of the algorithm involves aggregating the
+pixel-level calculations of Rfre and Rsa to determine corresponding values for larger areas or regions at each MODIS
+overpass event. Since it is the aim of this study to render the
+FEER.v1 Ce product in a 1◦ × 1◦ – grid conﬁguration, corresponding pixel-level Rfre and Rsa values within each 1◦ × 1◦
+grid cell are aggregated as
+Rfre =
+
+i
+Rfre
+
+(12)
+
+i
+Rsa .
+
+(13)
+
+i
+
+and,
+Rsa =
+
+i
+
+Details of the implementation of this stage, including its
+unique sensitivity analyses and data ﬁltering processes, are
+described in Sect. 4.3. The output is the “grid-level” data set
+to be used for the third and ﬁnal stage during which Ce is
+actually derived.
+The procedure to derive Ce is to generate a scatter plot
+for each 1◦ × 1◦ grid cell using the Rfre and Rsa data calculated in the second stage for a speciﬁed time domain (in our
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+6649
+
+Figure 3. Scatter plots of smoke emission rate (Rsa ) against ﬁre radiative power (FRP or Rfre ) derived from both Terra and Aqua MODIS
+observations during the period 2003–2010 for a 1◦ × 1◦ grid cell centered at (a) 1.5◦ S, 15.5◦ E, and (b) 22.5◦ N, 115.5◦ E. The latter
+demonstrates the effect of removing outliers in such scatter plots. The outlier is identiﬁed in red and the blue line is the linear least-squares
+regression ﬁt through the remaining points, which in this case results in a Ce value of 0.0747 and an r 2 value of 0.82. This is a great increase
+over the case without the outlier removal process, whose regression line is shown in gray and has much lower values of both Ce (0.0128) and
+level of conﬁdence (r 2 = 0.16).
+
+case 2003–2010), with Rsa on the dependent axis. A minimum of six points is allowed for a scatter plot, as we consider six to be a minimally reasonable number of data points
+for linear regression ﬁtting. A zero-intercept regression line
+(of the form y =mx, where y = Rsa and x = Rfre ) is ﬁtted to
+the scatter plot for each grid cell (Fig. 3). The gradient m is
+the coefﬁcient of emission Ce and the goodness of ﬁt is evaluated on the basis of the coefﬁcient of determination (r 2 ),
+as will be described in Sect. 4.4. Hence, for grid cells with
+good ﬁts, Rfre only needs to be multiplied by Ce to derive the
+smoke emission rate Rsa , even in near-real time, bearing in
+mind the possibility of large biases due to the inherent differences in individual ﬁre characteristics even within the same
+ﬁre regime (e.g., Schroeder et al., 2014).
+4.2
+
+First stage: pixel-level data analysis
+
+The calculations of Rfre and Rsa begin at the pixel-level.
+Several changes have been made in the current study relative to the original method described in Ichoku and Kaufman
+t
+(2005). In that paper, τa550 was deﬁned as the maximum AOT
+b
+measured in the 3 × 3 matrix, whereas τa550 was deﬁned as
+the minimum AOT measured in the eight pixels immediately
+surrounding the center pixel, regardless of the actual direction of the plume. That methodology should produce good
+results when the plume is prominent and the background is
+uniform and clear. Otherwise, such as when the plume is
+thin or highly dispersed, or when plumes from a different
+ﬁre enter any of the aerosol pixels within the 3 × 3 matrix,
+the result can be unpredictable. To characterize such situations, 240 digitized MISR plumes from ﬁres that occurred
+in Siberia in May 2003 were analyzed. The outlines of the
+3 × 3 matrix of MODIS aerosol pixels centered on each ﬁre
+were delineated over a MISR true-color imagery, and the corwww.atmos-chem-phys.net/14/6643/2014/
+
+responding MODIS AOT values were recorded along with
+wind directions from both MISR (observed) and MERRA
+(modeled). For each of the 240 surveyed plumes, visual classiﬁcations were made with the help of the MISR ﬁne (275 m)
+spatial-resolution imagery to identify which 3 × 3 matrices
+of MODIS aerosol pixels contained: plumes, clouds, haze, or
+ﬁres. Of the cases analyzed, 64 % had detected ﬁres in the
+surrounding pixels and 61 % had background smoke or haze.
+These proportions can be quite different in other regions because ﬁre density and smoke dispersion characteristics vary
+by region, biome, and season. In particular, regions that typically have relatively smaller ﬁre sizes, such as the African savannas, are likely to be more impacted by this phenomenon.
+This signiﬁcant percentage of extraneous aerosol contamination can have an adverse impact on the determination of
+t
+b
+τa550 and τa550 , and consequently also on the accuracy of
+f
+τa550 (see Eq. 7). For instance, in the Ichoku and Kaufman
+(2005) method: (i) if a larger plume exists in a neighboring
+t
+pixel its AOT can be erroneously taken as the τa550 for the
+current plume, and (ii) unless any external smoke entering
+into the 3 × 3 matrix affects every one of the aerosol pixels
+b
+similarly, the minimum AOT eventually used as τa550 may be
+much lower than the average background AOT. Furthermore,
+t
+in case (ii) τa550 may be likely boosted to a higher value, pob
+f
+tentially resulting in the overestimation of τa550 when τa550
+t
+is subtracted from τa550 . To mitigate such situations in the
+current study, the plume direction is ﬁrst identiﬁed based on
+the relative wind direction, as shown in Fig. 2, whereupon a
+combination of the four downwind pixels are used to calcut
+late more realistic values of τa550 . Likewise, instead of using
+the overall minimum AOT, the average AOT of the ﬁve upb
+wind pixels are used to more realistically determine τa550 . It
+is assumed that where smaller smoke plumes from ﬁres in the
+neighboring or external pixels are present, the distribution of
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+
+
+their effects among the four downwind and/or ﬁve upwind
+aerosol pixels will tend to dilute the smoke contamination on
+t
+b
+τa550 and τa550 values, thereby minimizing its impact on the
+f
+resulting τa550 value. Cases that have more serious contamination also have a good chance of being eliminated both by
+the threshold requirements outlined in Sect. 4.3 and the outlier removal process described in Sect. 4.4. However, another
+issue that can potentially affect the result, though it is not dif
+rectly related to this τa550 algorithm, is the fact that nearsource thick smoke plumes are occasionally misclassiﬁed
+as clouds and therefore omitted in the collection 5 MODIS
+aerosol product (e.g., Livingston et al., 2014; Schroeder et
+al., 2014). For instance, if any of the four downwind pixels
+in a 3 × 3 matrix has no AOT value, this could lead to unf
+derestimation of τa550 and consequently also of Msa and Rsa
+for the speciﬁc plume unit being analyzed. Such situations
+are expected to improve with future enhancements in aerosol
+retrieval algorithms particularly close to smoke sources, but
+the ﬁltering and outlier removal processes implemented in
+this study are helpful in the meantime.
+One important condition in classifying downwind and upwind sections is that the wind direction needs to be correct.
+The level of accuracy, however, is variable since the actual
+requirement is that only the correct downwind quadrant is
+identiﬁed. The MINX data set for Siberia in May 2003 also
+makes the evaluation of this condition possible, and showed
+that the success rate of using MERRA to correctly identify
+the downwind quadrant was on the order of 80 %. This is an
+acceptable rate, especially considering the fact that most of
+the failed cases will likely be ﬁltered out in the second stage
+of the Ce algorithm (Sect. 4.3) due to a probable decrease in
+t
+b
+f
+τa550 and increase in τa550 such that τa550 will be too low. It
+should also be noted that there was no increase in accuracy
+when data were matched to the closest plume injection level
+as recorded in the MINX database than when only the 850 mb
+pressure level data were used. This reafﬁrms the validity of
+the use of wind data at 850 mb for generating the FEER.v1
+Ce product, although since this is based only on data from
+Siberia, it may not be ideal for other parts of the world where
+smoke plumes are typically injected either much lower or
+much higher than the 850 mb pressure level. Examples include the African Sahel region where ﬁres are typically small
+in sizes and inject plumes lower than 1 km (e.g., Yang et al.,
+2013) and the Canadian boreal forest region where very large
+ﬁres can inject plumes higher than 2 km (e.g., Lavoué et al.,
+2000; Val Martin et al., 2012).
+Another measure taken to minimize uncertainty in the
+pixel-level analysis relative to the original algorithm in
+Ichoku and Kaufman (2005) is the use of the wind vectors in
+the derivation of the distance (L) the plume travels within the
+analysis unit (the 3 × 3 aerosol-pixel matrix). The original
+method equates L to the square root of the central aerosolpixel area without considering the actual relative positions
+of the individual 1 km resolution ﬁre pixels within the 10 km
+
+ 
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+
+
+6650
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+  
+
+Figure 4. Probability density functions of plume time (Eq. 10) for
+different ﬁlter conﬁgurations (Table 2) used in data screening and
+selection for generating Ce scatter plots.
+
+resolution aerosol pixel. The new algorithm takes into account the relative positions of these ﬁre pixels within the central aerosol pixel in estimating the distance traveled by each
+smoke plume from its source (center of the ﬁre pixel) to the
+edge of the 3 × 3 aerosol-pixel matrix (see Fig. 2). L is extended to the edge of the 3 × 3 pixel matrix, instead of only
+to the edge of the central aerosol pixel, to prevent any ambiguity in L from introducing large errors in Rsa calculations
+(Eqs. 10 and 11), particularly when the ﬁre is very close to
+the downwind edge of the central aerosol pixel. Therefore,
+provided the smoke plume follows MERRA’s wind direction at 850 mb, it is believed that the derived values for L
+and consequently T , Rsa , and Ce will be much more accurate. Although conceptually this algorithm change is an important improvement, however, for relatively small ﬁres and
+low wind-speed situations, plumes may not reach the edge of
+the 3 × 3 aerosol-pixel matrix, resulting in overestimation of
+L and consequently T (Eq. 10). Figure 4 shows the probability density functions (PDF) of the plume time, T , for the
+four data-ﬁlter settings (00000, 10000, 11000, 11 300: lowest to highest quality) used in this study, as explained later
+in Sect. 4.3. Overall, the maximum probability for T lies in
+the range of 45–55 min, with a gradual decrease beyond the
+peak. For such large time periods of Rsa estimation, the ﬁre
+f
+that emitted τa550 may have changed signiﬁcantly relative to
+the FRP value recorded at the time of observation. This is the
+weakness of using the instantaneous and simultaneous observations of a ﬁre and corresponding plume based on a relatively low spatial-resolution aerosol product. However, if the
+spatial resolution of the input aerosol product improves (as is
+currently being developed by the MODIS aerosol team), this
+issue will be alleviated.
+Lastly, in the original algorithm by Ichoku and Kaufman
+(2005), single values of Rsa and Rfre were calculated for large
+regions or areas (in this case 1◦ × 1◦ grid cells) involving
+multiple ﬁre/plume units only after the upstream variables
+had been aggregated into these regions. That approach has
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Figure 5. Selected 1◦ × 1◦ grid cells for a sensitivity analysis on Ce
+scatter plots and values based on using different threshold parameters and settings are identiﬁed on this MODIS true-color image.
+These sites were selected with the intention of maintaining diversity
+in location, ﬁre type, biome, number of data points, and expected
+goodness-of-ﬁt of linear regression.
+
+been modiﬁed in the current implementation to minimize its
+vulnerability to errors that may be inherent in the aggregation processes preceding the calculations. In the current algorithm, the pixel-level analysis is continued up until the calculation of Rsa and Rfre for each ﬁre/plume unit. This allows
+for ﬂexibility in the use and aggregation of these products at
+different scales and corresponding uncertainty estimation. In
+the current work, the values of Rsa and Rfre generated at the
+pixel-level are aggregated into the 1◦ resolution grid cells for
+creating scatter plots.
+4.3
+
+Second stage: gridded data analysis
+
+The creation of a gridded product at 1◦ resolution arises from
+the need for derivation of a gridded smoke emission coefﬁcient Ce that would be available for use in generating emissions wherever ﬁres occur around the world for various types
+of applications and modeling. Because the pixel-level smokeaerosol emission rates parameter (Rsa ) simply reports values
+for all aerosol pixels containing ﬁre regardless of the quality of the aerosol retrievals, the development of this gridded product necessitates a methodology for removing invalid
+or erroneous data, which is accomplished through the use
+of thresholds applied to selected parameters. These are described in Table 1, along with the purpose for using each one
+of them.
+To determine appropriate thresholds for these parameters,
+several 1◦ × 1◦ grid cells were selected around the globe
+from a variety of biomass burning regions to conduct sensitivity analyses using data from the full time period of 2003–
+2010 (Fig. 5). The selections were made by examining random grid cells spread out throughout the entire globe and
+manually ensuring that the ﬁnal selection maintained diversity in location, ﬁre type, biome, number of data points,
+www.atmos-chem-phys.net/14/6643/2014/
+
+6651
+
+and expected goodness-of-ﬁt of linear regression. Data contained within these sample grid cells were used to perform
+a dynamic, detailed analysis of the calculations described in
+Sect. 4.1 (and illustrated in Fig. 1) to quickly generate different emission coefﬁcients. For each site, these algorithmic calculations to aggregate pixel-level values of Rfre and Rsa into
+the grid cell and to calculate Ce were applied inside an Excel
+workbook, where provisions were made for a user to control
+the threshold parameters listed in Table 1. Each threshold parameter was varied and studied in different combinations as
+their effects on the ﬁnal results were visualized. The calculations were followed through all the way to the scatter plots of
+Rsa and Rfre , and a linear least-squares regression line passing through the origin was ﬁtted, resulting in values of Ce . In
+this way, the corresponding change in the look of the scatter
+plot and in the value for Ce due to varying threshold settings
+was observed in real time. Thus, the results were dynamic in
+nature and allowed for proﬁcient sensitivity analysis at each
+of the sites.
+A ﬁve-digit code was developed to represent the different
+combinations of the threshold settings, as designated in the
+header row of Table 2. Each digit within the ﬁve-digit code
+represents one set of parameters that are changed, and the
+digit number represents different settings for those parameters. Thus, the 00000 setting represents the case when no
+ﬁltering is applied to the data set at all, except the standard
+requirement that there be valid retrievals of Rfre (F_power)
+and Rsa . A basic set of parameters were selected as a common improvement in all the selected sites, identiﬁed as a “1”
+for the ﬁrst digit in the settings code (i.e., 10000 is a setting with only these basic settings turned on). These basic
+parameters are (Tables 1 and 2) the scan angle of the aerosol
+pixel, the wind speed, the number of available surrounding
+aerosol retrievals, the lowest AOT quality assurance ﬂags
+speciﬁed for selecting the upwind and downwind aerosol pixels, and the number of valid AOT retrievals of the upwind
+and downwind pixels. The second digit of value “1” (i.e.,
+11000) represents the elimination of cloud contamination by
+setting A_cloud_fraction_mean to 0. This setting produced
+the largest single noticeable improvement across the board,
+not only in reduced point scatter, but also in improved regression line ﬁts. The third digit setting corresponds to the
+next set of thresholds used to impose restrictions on extreme
+minima in the main parameters contributing to the calculaf
+tion of Ce , namely τa550 (A_AOT550_ﬁre) and Rfre . Over
+the course of examining sufﬁcient threshold values to use
+for these parameters, two values for each parameter were
+selected for further testing with all the sites collectively,
+f
+creating four possible combinations: “1” (τa550 > 0.01 and
+f
+Rfre > 15 MW), “2” (τa550 > 0.01 and Rfre > 20 MW), “3”
+f
+f
+(τa550 > 0.02 and Rfre > 15 MW), and “4” (τa550 > 0.02 and
+Rfre > 20 MW). This was motivated by the realization that
+f
+extremely low τa550 and Rfre values within a 10 km × 10 km
+aerosol pixel would be too close to the noise level to be good
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6652
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Table 1. List of parameters that are used for data ﬁltering in the gridded product development step described in Sect. 4.3 (parameter-name
+preﬁxes “A”, “F” and “M” indicate whether a parameter belongs to the MODIS Aerosol, MODIS Fire, or MERRA Meteorological data sets,
+respectively.)
+Parameter
+
+Description
+
+Purpose
+
+A_scan_angle
+
+The scan angle of the aerosol pixel.
+
+M_wind_speed
+
+The wind speed from MERRA.
+
+A_retrievals_nearby
+
+The number of available aerosol retrievals immediately
+surrounding the center pixel.
+
+A_AOT550_ﬁre
+
+A_AOT550_retr_total
+
+Fire-emitted AOT at 550 nm (i.e., total – background
+AOT at 550 nm).
+The smallest QA used in selecting total AOT from the
+downwind pixels.
+The smallest QA used in selecting background AOT
+from the upwind pixels.
+The number of valid downwind aerosol retrievals.
+
+A_AOT550_retr_bkgd
+
+The number of valid upwind aerosol retrievals.
+
+A_cloud_frac_mean
+
+Mean cloud fraction of the 3 × 3 aerosol-pixel matrix
+for unit plume analysis.
+The number of MODIS ﬁre pixels inside the center
+aerosol pixel.
+The number of MODIS ﬁre pixels in surrounding 8
+aerosol pixels.
+The number of ﬁre pixels in three downwind pixels (excluding center).
+The cumulative FRP value of all ﬁres within the center
+aerosol pixel.
+The rate of smoke emission.
+
+Eliminate the effect of pixel overlap, which adds too
+much complexity in determining total and upwind AOT
+values.
+Eliminate slow air mass that would escalate T and make
+Rsa very small.
+Ensure the pixel is not along the edge of the MODIS
+scene (granule), and that no nearby feature prevents
+aerosol retrieval.
+Eliminate cases where the plume signal is weak relative
+to the background.
+Allow ﬂexibility to specify desired range of AOT quality
+ﬂags.
+Reduce uncertainty in background (upwind) AOT measurements.
+Ensure that enough valid pixels are available for accurate total AOT determination.
+Ensure that enough valid pixels are available for accurate background AOT determination.
+Reduce the chances of cloud being falsely identiﬁed as
+smoke and vice versa, or cloud obscuration of ﬁre.
+Optimize number of ﬁre pixels within aerosol pixel for
+accurate FRP total.
+Eliminate uneven contamination of AOT by emissions
+from nearby ﬁres.
+Eliminate contamination of target plume by those from
+nearby ﬁres.
+Limit small ﬁres and underestimated FRP values that
+can cause large errors.
+Limit invalid values or cases with insigniﬁcant amounts
+of smoke production
+
+A_QA_AOT_total
+A_QA_AOT_bkgd
+
+F_pcounts
+F_pcounts_nearby
+F_pcounts_DW3
+F_power
+Rsa
+
+for useful analysis. However, between the two values of the
+f
+τa550 threshold tested, 0.02 was adopted as more realistic for
+further analysis because it is closer to the absolute component (i.e., 0.05) of the expected AOT retrieval error ± (0.05
++ 15 %) from MODIS over land (e.g., Levy et al., 2010).
+Also, by observing the effect of different choices of Rfre
+thresholds on the sites collectively, it became visually apparent that using Rfre > 15 MW was the better solution (compared to 20 MW). The fourth digit setting is used for controlling the number of MODIS ﬁre pixels within the center
+aerosol pixel (F_pcounts), with “1” and “2” designating one
+and two-or-more ﬁre pixels, respectively. It was noted that
+setting F_pcounts ≥ 2 seems to produce similar effects on
+Ce scatter plots as setting the minimum FRP value because
+both tend to eliminate small ﬁres that potentially have underestimated FRP values. The ﬁfth digit corresponds to thresholds imposed on ﬁre pixel counts like the fourth digit except that it refers to surrounding aerosol pixels in the 3 × 3
+aerosol-pixel matrix other than the central one. Two parameters are used: setting “1” counts all the ﬁre pixels within
+all eight aerosol pixels immediately surrounding the central one (F_pcounts_nearby), and setting “2” counts all the
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+ﬁres within the downwind pixels excluding the central one
+(F_pcounts_DW3). This last setting was studied as a possible method to ensure that there is no background aerosol
+contamination from spurious plume sources that are not well
+dispersed within the 3 × 3 aerosol-pixel matrix.
+Table 3 shows a summary of the overall sensitivity of each
+parameter to the various threshold settings in Table 2. The
+analysis was based on global MODIS-Aqua retrievals for the
+ﬁrst day of each month in 2010, for which the total number of retrievals over this data set without any ﬁltering was
+43 211, whereas the number of valid retrievals (after applying the 00000 ﬁlter to ensure that valid values exist for both
+Rsa and Rfre ) was 28 494. Thus, roughly 34 % of the recorded
+data is invalid. The values in the table are the percentages of
+the data remaining after applying each of the thresholds. It is
+evident that the amount of available data severely decreases
+as more and more restrictions are applied. Therefore, a much
+more detailed analysis was required in order to determine the
+best choice in settings to use in the ﬁnal product. After a careful evaluation of the different ﬁlters, considering their effects
+on the point scatter on plots of Rsa against Rfre and the associated correlations of the linear regression ﬁtting vis-à-vis
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+6653
+
+Table 2. Value ranges of the threshold parameters in Table 1 and the combinations of their threshold settings used to derive the different
+ﬁve-digit ﬁlter conﬁgurations (00000, 10000, 11000, etc.) that were applied in screening out potentially erroneous or corrupted data during
+the grid-level data analysis described in Sect. 4.3.
+Parameter
+
+Range
+
+A_scan_angle
+M_wind_speed
+A_retrievals_nearby
+A_AOT550_ﬁre
+A_QA_AOT_total
+A_QA_AOT_bkgd
+A_AOT550_retr_total
+A_AOT550_retr_bkgd
+A_cloud_frac_mean
+F_pcounts
+F_pcounts_nearby
+F_pcounts_DW3
+F_power
+Rsa
+
+[0,55]
+[0,∞]
+[0,8]
+[0,5.05∗ ]
+[0,3]
+[0,3]
+[0,4]
+[0,5]
+[0,100]
+[1,100]
+[0,800]
+[0,300]
+[0,≈ 20 500∗ ]
+[0,∞]
+
+00000
+
+11000
+
+11100
+
+11200
+
+11300
+
+11400
+
+11310
+
+11320
+
+11321
+
+11322
+
+< 30
+>2
+=8
+
+< 30
+>2
+=8
+
+≥1
+≥1
+=4
+=5
+
+>0
+>0
+
+10000
+
+≥1
+≥1
+=4
+=5
+=0
+
+< 30
+>2
+=8
+> .01
+≥1
+≥1
+=4
+=5
+=0
+
+< 30
+>2
+=8
+> .01
+≥1
+≥1
+=4
+=5
+=0
+
+< 30
+>2
+=8
+> .02
+≥1
+≥1
+=4
+=5
+=0
+
+< 30
+>2
+=8
+> .02
+≥1
+≥1
+=4
+=5
+=0
+
+< 30
+>2
+=8
+> .02
+≥1
+≥1
+=4
+=5
+=0
+=1
+
+< 30
+>2
+=8
+> .02
+≥1
+≥1
+=4
+=5
+=0
+≥2
+
+< 30
+>2
+=8
+> .02
+≥1
+≥1
+=4
+=5
+=0
+≥2
+=0
+
+< 30
+>2
+=8
+> .02
+≥1
+≥1
+=4
+=5
+=0
+≥2
+
+>0
+>0
+
+>0
+>0
+
+> 15
+>0
+
+> 20
+>0
+
+> 15
+>0
+
+> 20
+>0
+
+> 15
+>0
+
+> 15
+>0
+
+> 15
+>0
+
+=0
+> 15
+>0
+
+∗ Value estimated from computations based on sensor speciﬁcations and observation geometry.
+
+the percentage of available valid data, 11300 was selected
+for generating the ﬁnal Ce product. Table 3 reports that only
+about 10 % of the available valid data is used to generate Ce
+with the 11300 setting, but the conﬁdence in the resulting Ce
+values is increased by a satisfactory amount while retaining
+enough data for product development.
+This systematic data ﬁltration process in conjunction with
+f
+the algorithmic improvements in τa550 calculations described
+in Sect. 4.2 have resulted in about a 67 % drop globally in
+f
+τa550 (which directly affects Rsa and Ce ), as will be seen in
+Table 6. This is a signiﬁcant improvement over the Ichoku
+and Kaufman (2005) method, whose Ce values were found
+to be overestimated (Soﬁev et al., 2009; Kaiser et al., 2012),
+as discussed in Sect. 4.6. However, these results are still susceptible to uncertainty and bias, as ﬁres located in the neighboring aerosol pixels are not speciﬁcally accounted for. Although a provision was made to ﬁlter out such cases, this
+was not implemented because of high data reduction without
+a signiﬁcant improvement in the result. This step will be reevaluated for possible implementation in future versions of
+the FEER Ce algorithm.
+4.4
+
+Third stage: generation of smoke emission
+coefﬁcients
+
+Scatter plots of Rsa against Rfre were generated for each
+1◦ × 1◦ grid cell, as illustrated in Fig. 3, using all available
+MODIS data for the period of 2003–2010 after ﬁltering as
+described in Sect. 4.3. Scatter plots with fewer than six data
+points were discarded. A linear least-squares regression line
+passing through the origin was ﬁtted to each scatter plot, and
+the slope and coefﬁcient of determination (r 2 ) were calculated. The slope is the Ce value for that grid cell. However,
+the general equation of r 2 for a regular linear least-squares
+regression analysis cannot be used for this zero-intercept ﬁtwww.atmos-chem-phys.net/14/6643/2014/
+
+ting approach. Instead, going back to the derivation of r 2 and
+making the correct adjustments, the appropriate equation described in Eisenhauer (2003) was used for our situation.
+Although the process of using thresholds to remove inaccurate data as described in Sect. 4.3 has been successful at
+retaining the relatively higher quality Rsa and Rfre data series for derivation of reliable Ce , in some cases there remain
+examples where a few erroneous data points that are not successfully detected and ﬁltered out can constitute outliers and
+cause large errors in this process (e.g., Fig. 3b). Such outliers potentially originate from undetected errors in the data
+source, such as when the existence of clouds is undetected by
+the cloud detection algorithm. In the Fig. 3b example, when
+contrasted with Fig. 3a, only one outlier out of a total of 18
+data points cause r 2 to be as low as 0.16, and Ce to be lower
+than the expected value by a factor of six. Although the effect
+of removing outliers is usually not as drastic as this example,
+the importance of applying a ﬁlter in order to remove outliers from these scatter plots before generating the ﬁnal Ce
+product is evident.
+The process of identifying a robust outlier removal algorithm proved to be non-trivial. Regression analysis assumes linearity, independence, homoscedasticity, and normality. Residual plots produced from data similar to those of
+Fig. 3 show violations of at least one of these requirements,
+the most persistent being the non-normality of Rsa versus
+Rfre scatter plots due to the persistent positive skewness of
+the residuals. This characteristic seems to render most if not
+all mainstream outlier algorithms unusable for the current
+study. Wisnowski (2001) describes a few highly respected
+multiple outlier detection algorithms, some of which were
+tested and found to produce many false alarms with our Rsa
+vs Rfre scatter plots. It became increasingly apparent that a
+custom outlier algorithm would have to be developed specifically for these data sets. A detailed empirical study was
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6654
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+11 000
+
+11 100
+
+11 200
+
+11 300
+
+11 400
+
+11 010
+
+11 020
+
+11 310
+
+11 320
+
+11 301
+
+11 302
+
+A_scan_angle
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+60.4
+
+M_wind_speed
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+84.7
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+98.0
+
+47.6
+
+47.6
+
+34.7
+
+34.7
+
+34.7
+
+34.7
+
+34.7
+
+34.7
+
+Parameter
+
+00000
+
+10 000
+
+Table 3. Percentages of all available data that meet the threshold requirements in Table 2. These numbers were derived using the global
+coverage of MODIS-Aqua retrievals for the ﬁrst day of each month in 2010. The number of retrievals over this data set totaled 43 211,
+whereas the number of valid retrievals (where “F_power” and “Rsa” are both greater than zero, see setting 00000 in Table 2) totaled 28 494.
+The last row (“ % of Valid”) shows the overall percentages based on the 00000 setting, which gives an estimate using only valid data. Values
+are color-coded in different shades of red < 15 %, 15 % < orange < 50 %, 50 % < yellow < 70 %, green > 70 %.
+
+A_retrievals_
+nearby
+A_AOT550_fire
+A_QA_AOT_total
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+A_QA_AOT_bkgd
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+70.3
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+62.6
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+57.8
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+52.1
+
+59.8
+
+40.2
+
+59.8
+
+40.2
+
+A_AOT550_retr_
+total
+A_AOT550_retr_
+bkgd
+A_cloud_fraction
+_mean
+F_pcounts
+F_pcounts_
+24.9
+
+nearby
+F_pcounts_DW3
+
+47.5
+
+F_power
+
+100.
+
+100.
+
+100.
+
+81.0
+
+71.2
+
+81.0
+
+71.2
+
+100.
+
+100.
+
+81.0
+
+81.0
+
+81.0
+
+81.0
+
+Rsa
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+65.9
+
+% of Total
+
+65.9
+
+23.2
+
+17.5
+
+8.8
+
+7.5
+
+6.2
+
+5.3
+
+9.3
+
+8.3
+
+1.8
+
+4.4
+
+0.8
+
+2.1
+
+% of Valid
+
+100
+
+35.2
+
+26.6
+
+13.4
+
+11.3
+
+9.5
+
+8.1
+
+14.1
+
+12.5
+
+2.8
+
+6.7
+
+1.2
+
+3.2
+
+undertaken to fully understand the variety of point distributions that can occur in our data sets and their potential impacts on Ce and r 2 resulting from the linear regression ﬁtting
+in order to develop a robust outlier removal algorithm that
+would be optimal for our data set. The central idea behind
+the resulting outlier algorithm is to compare the fraction of
+mean squared error (MSE) measurements between the scatter
+plot with all points and without potential outliers against an
+empirically developed function in order to properly identify
+outliers. This outlier algorithm was then applied to 110 test
+scatter plots, each of which was manually assigned to one of
+15 identiﬁed scatter-point distribution categories, in order to
+rate its performance. Overall, outliers were correctly identiﬁed and removed in 75 % of the 110 cases tested, although
+three of the 15 types of scatter-point distributions showed
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+a high failure rate. However, the fact that 75 % of available
+linear regression lines with outlier contamination can be rectiﬁed using this algorithm is still a vast improvement over the
+conventional outlier removal algorithms that were tested.
+When this outlier algorithm is applied to the full data set
+from both Terra and Aqua, the outlier detection rate is very
+consistent at around 30 %, regardless of the ﬁlter setting (as
+described in Sect. 4.3) that is used. If these outliers are correctly identiﬁed, then combined with the earlier conclusion
+that 75 % of contaminated grid cells are identiﬁed by the algorithm, it is deduced that roughly 40 % of all grid cells contain outliers. Figure 6 offers an informative display of how
+the application of this outlier algorithm impacts the ﬁnal Ce
+product. After outlier removal, the distribution of Ce values
+shifts noticeably towards higher values. This would be the
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Figure 6. Percentages of binned Ce values from all scatter plots
+based on Aqua-MODIS data and the 11300 ﬁlter (see Tables 1, 2,
+and 3) before and after outlier removal. Ce appears to have shifted
+towards higher values overall.
+
+expected behavior for successful outlier detection since outliers below the regression line (and close to the independent
+axis) have a very signiﬁcant inﬂuence on the linear leastsquares ﬁt as compared to outliers above the line and close to
+the dependent axis.
+Initially, the scatter plots and associated linear regression
+ﬁtting and calculations were done separately for Terra and
+Aqua data. Although a majority of the plots showed agreement between Terra and Aqua, we decided to combine them
+for deriving the ﬁnal Ce product. This combination offered
+two advantages: (1) it increased the number of data points
+on scatter plots with an insufﬁcient amount of data due to
+the ﬁltering performed above (Sect. 4.3) such that Ce values could be determined, and (2) it avoided the necessity to
+develop methods of conducting weighted averaging between
+two independent Ce values for each grid cell. The resulting
+Ce product is shown in Fig. 7 along with its corresponding
+r 2 map.
+4.5
+
+Gap ﬁlling and quality assurance
+
+This polished Ce product presented in Sect. 4.4 and Fig. 7
+offers the advantage of including only the highest conﬁdence
+data, since it is based on the stringent 11300 ﬁlter and outlierremoval processes. However, the tight constraints imposed
+by these processes have the effect of limiting the data suitable
+for the ﬁnal product generation, such that many parts of the
+world that are known to be affected by ﬁre do not have Ce
+values generated, despite the efforts to increase coverage by
+combining Terra and Aqua data into one input stream. The
+concern of having incomplete coverage is that if a signiﬁcant
+ﬁre event were to occur in an important region, it may not
+be possible to make even a rough estimation of the smoke
+emission rates. Therefore, it is evident that some sort of ﬁlled
+product is needed.
+The possibility of a gap-ﬁlled product whereby missing Ce
+values would be determined by interpolation using surrounding existing values for similar land cover types was initially
+www.atmos-chem-phys.net/14/6643/2014/
+
+6655
+
+pursued. However, this procedure could not be applied at ﬁrst
+because the gaps are quite extensive in certain areas, with unreasonably great distances between the grid cells that need to
+be ﬁlled and those containing valid data from which their
+values can be interpolated. Thus, gaps were ﬁrst ﬁlled in,
+as much as possible, using Ce values based on successively
+lower ﬁlter settings starting from the 11300 setting (see Tables 2 and 3) such that those with higher quality but less data
+are utilized before moving to those with lower quality and
+more data. To account for the differences in quality introduced by this procedure, a quality assurance (QA) product is
+provided in conjunction with the ﬁlled Ce product, to serve
+as an indication of its reliability as well as to give users ﬂexibility in the application of this product.
+The compilation process begins with the 11300-ﬁlterbased Ce product, which is the highest conﬁdence product,
+and progressively ﬁlls in missing data with products of lesser
+conﬁdence: ﬁrst 11000, then 10000 and ﬁnally 00000. The
+outlier removal algorithm has been applied to all except the
+00000 product. A QA ﬂag of 0 is assigned to the lowest conﬁdence product (i.e., 00000) and steps up to 3 for the highest conﬁdence product (i.e., 11300). Ce values of the 11300
+product with r 2 ≥ 0.7 are assigned the highest QA value of 4.
+In order to account for cases of low data availability during
+this ﬁlling process, grid cells that are already ﬁlled may be
+replaced with values from the lesser conﬁdence product under certain conditions. The decision to replace such existing
+values is determined based on the number of data points used
+to determine Ce for the previously ﬁlled value, Nf , and for the
+new value, Nn , and based on their respective r 2 values, such
+that the conditions,
+2
+Nf < Nlimit ; Nn > Nf ; rn > rf2
+
+(14)
+
+must all be met, where Nlimit represents the minimum number of data points needed to conﬁdently ﬁt a linear regression
+line, set to 30, which is the conventional minimum sample
+size for statistical signiﬁcance. It is pertinent to recall that
+any scatter plot with less than the bare minimum of six data
+points is discarded. If Eq. (14) is satisﬁed for a given grid
+cell, then the Ce value in the current grid cell of the new (less
+ﬁltered) product is substituted for the existing value in the
+ﬁlled product. Likewise, the QA of the ﬁlled data is replaced
+with that of the new data.
+Finally, as many of the gaps remaining in the ﬁlled product as possible are ﬁlled using the Ce values in nearby grid
+cells with identical land cover types. Land cover type may
+vary signiﬁcantly within a grid cell at the spatial resolution
+of 1◦ × 1◦ used in this product, which can cause issues especially since the dominant land cover type within a given
+grid cell may very well not be the one that burns most often. Thus, the MODIS ecosystem classiﬁcation map for 2004
+at 1 arcmin resolution was used to develop a custom land
+cover product at 1◦ × 1◦ resolution that reports the dominant
+ﬁre-prone land cover type, which is used in the following
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6656
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Figure 7. (a) The coefﬁcient of emission (Ce ) product based on MODIS 2003–2010 FRP and AOT observations from Terra and Aqua, after
+applying the 11 300 ﬁlter setting (Table 2) and outlier removal processing steps described in Sects. 4.3 and 4.4., respectively, and (b) the
+corresponding coefﬁcient of determination (r 2 ) map.
+
+analysis. Grid cells that are potentially vegetated (not completely classiﬁed as water, barren, or snow/ice) are identiﬁed
+as candidates for gap-ﬁlling, and carefully analyzed. First, a
+15 × 15 grid cell box is drawn around each candidate grid
+cell, and all grid cells with valid Ce within this box and
+whose ﬁre-prone land cover type is identical to that of the
+center grid cell are selected. The QA values of these selected
+grid cells are observed, and the highest minimum QA value
+(QAmin ) is set such that there will be at least eight total qualiﬁed grid cells with QA ≥ QAmin . If this condition cannot be
+met, then no gap-ﬁlling procedure is completed in that case.
+This QA requirement is a method of balancing quantity with
+quality of data to get the most certainty in the results. Then,
+starting with a 3 × 3 box centered around the grid cell whose
+Ce is being ﬁlled, the box is expanded only as necessary
+(up to a maximum of 15 × 15 window) until it contains at
+least eight grid cells that have valid Ce values, the same ﬁreprone land cover type, and QA values greater than or equal to
+QAmin . If there are a sufﬁcient number of grid cells that meet
+these criteria, the Ce values of these grid cells are averaged
+and used to ﬁll in the missing value. The gap-ﬁlled grid cell
+is assigned a QA value of zero, irrespective of those of the
+source grid cells.
+The ﬁnal global 1◦ × 1◦ gridded Ce product (Fig. 8a) has
+much better spatial coverage than the original (Fig. 7). The
+land areas that are not covered seem to comprise only desert
+and snow/ice regions, except for the farthest reaches of eastern Russia where the last gap-ﬁlling procedure did not have a
+large enough extent to ﬁll that area. Nevertheless, this product provides sufﬁcient coverage for nearly 100 % of all vegetation ﬁres that might occur around the globe. Furthermore,
+the corresponding QA and r 2 products (Fig. 8b, c) provide
+the user with parameters for determining how accurate the
+Ce in a given area might be. Table 4 shows the relative QA
+and r 2 distribution of all 13919 grid cells with Ce values.
+With the exception of the grid cells whose QA equals zero,
+the majority of grid cells within each QA category are either
+in the 0.7–1 or 0.5–0.7 r 2 range. Therefore, a user can apply
+the QA (and r 2 ) values as a ﬁlter to select only the Ce values that meet or exceed the minimum quality requirement for
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+Table 4. The distribution of FEER.v1 Ce product QA ﬂags among
+different coefﬁcients of determination (r 2 ) ranges. The “N/A” category is for the 1◦ × 1◦ grid cells that have been ﬁlled in using the
+gap-ﬁlling process due to lack of sufﬁcient data (and therefore lack
+an r 2 value). The r 2 range containing the most grid cells is shown
+in boldface type for each QA ﬂag.
+r2
+QA
+
+0.7 –1
+
+0.5 –0.7
+
+0.3 –0.5
+
+0 –0.3
+
+N/A
+
+Total
+
+4
+
+1745
+0
+
+0
+
+0
+
+0
+
+-
+
+1745
+
+1646
+420
+
+773
+321
+
+182
+155
+
+-
+
+2601
+1444
+
+395
+470
+2931
+
+291
+921
+2306
+
+119
+1556
+2012
+
+3756
+3756
+
+1183
+6946
+13 919
+
+3
+2
+1
+0
+Total
+
+548
+378
+243
+2914
+
+speciﬁc applications. On the other hand, if a major ﬁre occurs
+in a grid cell with a QA value of zero, an emissions estimate
+can still be derived, as long as the user recognizes that it is in
+fact a low-conﬁdence estimate. This Ce product is being released as the Fire Energetics and Emissions Research version
+1 (FEER.v1) product.
+4.6
+
+Relative evaluation of the FEER.v1 Ce product
+
+Although there is no equivalent “ground truth” data to
+validate the new FEER.v1 gridded Ce product, the latter still requires a certain level of evaluation to determine
+where it stands in the spectrum of existing comparable
+products/parameters. This was done by comparing the new
+FEER.v1 Ce data to regional values of Ce that were reported
+for 19 different regions in Table II of Ichoku and Kaufman
+(2005), hereafter referred to as “IK05”. Since the FEER Ce
+product is gridded at 1◦ × 1◦ , it became necessary to generate
+a comparative set of average Ce values that ﬁt the 19 regions
+for comparison against the IK05 values. Simply averaging
+the Ce grid cells within each region is unrealistic due to the
+fact that the spatial distribution of ﬁres within each region is
+non-uniform and the certainty of the Ce varies. Therefore, a
+weighted average of Ce based on the number of ﬁres within
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+6657
+
+Figure 8. (a) The gap-ﬁlled, combined Terra and Aqua, global 1◦ × 1◦ coefﬁcient of emission (Ce ) product along with (b) the corresponding
+quality assurance (QA) map and (c) the coefﬁcient of determination (r 2 ) map. These products were based on MODIS 2003–2010 observations
+of FRP and AOT from Terra and Aqua.
+
+each grid cell and also on the QA was used to generate the
+mean and standard deviation of the Ce values within each
+region.
+Table 5 shows that the Ce average values from the
+FEER.v1 product are distinctly lower than those of IK05 by
+a factor of 2–4.5, with the exception of East Kazakhstan,
+where they are practically equal. It is pertinent to mention
+that Ichoku and Kaufman (2005) estimated that Ce values
+were probably overestimated by a factor of 2, and Soﬁev
+et al. (2009) by applying a more rigorous plume dispersion
+modeling found Ce values that were lower than those of IK05
+by a factor of 2 to 3. Kaiser et al (2012) also found values
+that were lower than those of IK05. The fact that those subsequent studies, including the current study, produced lower
+values than those of IK05, conﬁrms that IK05 values were
+indeed probably overestimated and suggests that those from
+the current study are more realistic. The change from IK05 to
+the current study can be categorized into two types, namely,
+algorithms and input data versions/sources. It is necessary
+to characterize these two types of change independently in
+order to determine their relative contributions (as will be reported in Table 6).
+To account for the effects of using new input data versions/sources, an updated version of the IK05 product (hereafter referred to as IKu) was generated by ingesting the
+new data being used in the current study into an algorithm
+that matches that of IK05 as closely as possible. Recall that
+the IK05 Ce values were based on the MODIS collection 4
+FRP and AOT products, with wind data from the NCEP reanalysis data set (GDAS1). By contrast, the IKu Ce values
+are based on the MODIS collection 5 FRP and AOT products, with wind data from the MERRA reanalysis data set.
+Differences in Ce from IK05 to IKu should only be due to
+changes in data versions and sources, whereas the effects of
+the algorithmic alterations described in Sect. 4.2 can be isolated by comparing IKu to FEER.v1.
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+Using the relationships deﬁned in Sect. 4.1, it is evident
+that
+Rsa
+(15)
+FRP
+Msa
+Msa · WS Md · A · WS τf · A · WS
+∝
+∝
+∝
+∝
+.
+T · F RP
+L · FRP
+L · FRP
+L · FRP
+
+Ce ∝
+
+In other words, Ce is directly proportional to the ﬁre-emitted
+f
+AOT (τa550 ), aerosol-pixel area and wind speed, but inversely
+proportional to the plume length and FRP. Three of the
+f
+ﬁve variables on the right-hand side of Eq. (15) (τa550 , WS
+and FRP) have updated data sources in FEER.v1, and three
+f
+(τa550 , A and L) have updated derivations. However, both
+A and L, which are dependent on each other, can be adjusted together here to emulate the IK05 algorithm such that
+A would be equal to the area of only one aerosol pixel, and
+L would be halved (using IK05 deﬁnitions, LIK05 LFEER =
+√
+√
+A
+4A = 0.5). These adjustments are made for the following analysis. If the ratio of a variable in FEER.v1 to the
+same in IK05 is represented by R, then
+RCe
+
+Ce,FEER
+=
+=
+Ce,IK05
+
+τf ·A·WS
+L·FRP FEER
+τf ·A·WS
+L·FRP IK05
+
+=
+
+Rτf · RWS
+.
+RL · RFRP
+
+(16)
+
+Equation (16) quantiﬁes the change in Ce due to both input
+source and algorithmic alterations from IK05 to FEER.v1.
+Changes in only data sources from IK05 to IKu are captured
+in the relationship:
+RCe =
+
+Rτf · RWS
+RFRP
+
+(17)
+
+because the calculation of L does not involve the use of data
+from different sources. The relationship that quantiﬁes the
+algorithmic changes from IKu to FEER.v1 is given by
+RCe =
+
+Rτf
+RL
+
+(18)
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6658
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Table 5. Estimates of regional FRE-based smoke-aerosol emission coefﬁcients (Ce ) from MODIS are shown here for different regions using
+both the original method as reported in Ichoku and Kaufman (2005) and version 1 of the new FEER Ce product (FEER.v1).
+
+Region
+
+PM emission coefﬁcients
+(kg MJ−1 )
+
+Description
+
+IK05
+calculated
+
+FEER.v1
+mean st.dev.
+
+Savanna and grassland regions
+Brazil-Cer
+S. America
+W. Africa
+Zambia
+
+Brazil Cerrado savanna region
+South America below 20◦ S
+West Africa
+Zambia in southern Africa
+
+0.048
+0.061
+0.059
+0.076
+
+0.016
+0.020
+0.021
+0.018
+
+0.009
+0.013
+0.012
+0.005
+
+0.079
+0.063
+0.068
+0.048
+
+0.032
+0.019
+0.028
+0.015
+
+0.019
+0.009
+0.020
+0.006
+
+0.020
+0.020
+0.020
+0.057
+
+0.012
+0.012
+0.009
+0.024
+
+0.016
+0.013
+0.021
+0.018
+
+0.100
+0.084
+0.104
+
+0.026
+0.018
+0.023
+
+0.011
+0.007
+0.009
+
+0.056
+0.018
+0.033
+0.127
+
+0.024
+0.019
+0.022
+0.039
+
+0.017
+0.011
+0.014
+0.024
+
+Tropical forest regions
+Borneo
+Brazil-For
+Celebes-Moluccas
+Congo
+
+Borneo Island of Indonesia
+Brazil tropical forest region
+Celebes and Moluccas Islands, Indonesia
+Congo tropical forest, Africa
+Boreal forest regions
+
+Alaska
+Canada
+Quebec
+Siberia
+
+Alaska
+Canada below 70◦ N (excluding Quebec)
+Quebec and eastern Ontario
+Siberia North of 60◦ N
+Cropland/natural vegetation regions
+
+Moscow
+S. Russia
+St. Petersburg
+
+Moscow and environs
+Southern Russia
+St. Petersburg and environs
+Unclassiﬁed
+
+Europe
+E. Kazakhstan
+Mongolia
+Philippines
+
+Europe (excluding Russia)
+East Kazakhstan
+Mongolia
+The Philippines
+
+because the way in which FRP and wind speed are calculated
+remains the same between the two algorithms.
+The relationships shown in Eqs. (16), (17) and (18) can be
+utilized to test whether the differences between the IK05, IKu
+and FEER.v1 product data sets can fully explain the change
+in Ce between IK05 and FEER.v1 shown in Table 5 as well
+as to identify the main factor responsible for the change –
+change in algorithm or the input data version/source. The
+only available data from the original IK05 data set cover relatively short time periods (Terra: 25 June 2002 to 4 October
+2002, and Aqua: 25 June 2002 to 31 December 2002). The
+fact that these ranges do not cover a full year means that any
+seasonal differences that may exist will be lost and will therefore cause the resulting data to be biased low or high. Nevertheless, these 2002 data sets were used to estimate RCe ,
+by ﬁrst pairing corresponding individual data points in the
+IK05, IKu and FEER.v1 data sets. The ratios between IK05
+and IKu, between IKu and FEER.v1, and between IK05 and
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+FEER.v1 were calculated for each data point for AOT, wind
+speed, FRP, and plume length. Subsequently, the ratio of Ce
+was calculated for each data point pair according to Eq. (16)
+for the transition from IK05 to FEER.v1, Eq. (17) for the
+transition from IK05 to IKu, and Eq. (18) for the transition from IKu to FEER.v1. To appropriately represent these
+matched data points and ratios in a uniform fashion within
+the spatial domains outlined in Table 5, they were binned
+into a global grid at a spatial resolution of 0.5 × 0.5◦ and
+then ﬁltered according to the appropriate settings reported in
+Table 2 using the QA values from the FEER.v1 Ce product
+in Fig. 8. Finally, the median of those ratios within each grid
+cell was retrieved, and the mean of these values (weighted
+identically as was done in Table 5 for Ce ) within each region
+were reported, as displayed in Table 6.
+In Table 6, column 1 (highlighted yellow) shows observed changes in Ce from IK05 to FEER.v1. The subsequent columns outline the process of deriving the predicted
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+6659
+
+Table 6. The observed changes of Ce and intermediate parameters from the original Ichoku and Kaufman (2005) method (IK05) to FEER.v1
+is shown here for the regions listed in Table 5. The values in the yellow highlighted column on the left-hand side are the observed changes
+in Ce from IK05 to FEER.v1 from Table 5. The subsequent columns outline the sample size and mean parameter changes during the process
+of deriving the predicted changes in Ce from IK05 to FEER.v1 according to Eqs. (16), (17), and (18), the results of which are highlighted in
+orange and yellow. The “IK ⇒ FEER.v1” on the ﬁrst header row indicates that both the IKu to FEER.v1 and IK05 to FEER.v1 transitions
+are included in the columns beneath. Both Terra and Aqua data were used in these calculations.
+IK05 => IKu
+Ce
+Ce
+(IKu/
+(FEER/
+Region
+N FRP WS AOT IK05)
+IK05)
+Savanna and grassland regions
+Brazil-Cer
+0.33 851 1.61 0.88 0.99 0.56
+S. America
+0.32 897 1.57 0.86 0.99 0.55
+W. Africa
+0.35 766 1.60 1.02 0.96 0.62
+Zambia
+0.23 518 1.59 0.79 0.99 0.50
+Tropical forest regions
+Borneo
+0.40 193 1.34 1.03 1.02 0.82
+Brazil-For
+0.29 832 1.50 0.72 1.04 0.51
+Celebes0.41 116 1.28 0.66 0.99 0.52
+Moluccas
+Congo
+0.31 913 1.65 0.91 1.00 0.56
+Boreal forest regions
+Alaska
+0.62
+26 2.32 1.14 1.00 0.55
+Canada
+0.58
+65 2.39 0.99 0.97 0.46
+Quebec
+0.46
+54 2.10 0.82 0.98 0.43
+Siberia
+0.42 290 1.65 0.86 0.98 0.53
+Cropland/natural vegetation regions
+Moscow
+0.26 123 1.38 1.01 1.00 0.76
+S. Russia
+0.21 101 1.59 0.94 0.97 0.60
+St. Petersburg 0.23
+58 1.33 1.02 1.01 0.78
+Unclassified
+Europe
+0.43 544 1.49 0.94 0.96 0.64
+E. Kazakhstan 1.06 431 1.72 1.01 0.86 0.55
+Mongolia
+0.67 149 1.59 0.91 0.88 0.54
+Philippines
+0.30
+20 1.17 0.86 0.89 0.68
+Global avg.
+
+13312 1.62 0.90 0.98
+
+295
+385
+565
+470
+
+FRP WS
+
+0.35
+0.32
+0.35
+0.35
+
+0.38
+0.31
+0.32
+0.32
+
+0.41
+0.41
+0.43
+0.41
+
+0.26
+0.23
+0.25
+0.19
+
+98 1.26 1.03 0.83 0.29
+391 1.50 0.83 0.83 0.31
+
+0.35
+0.36
+
+0.35
+0.38
+
+0.37
+0.21
+
+81
+
+1.25 0.86 0.81 0.30
+
+0.30
+
+0.38
+
+0.25
+
+621 1.50 1.04 0.84 0.33
+
+0.32
+
+0.40
+
+0.21
+
+12
+31
+35
+174
+
+2.01
+2.36
+1.83
+1.63
+
+0.29
+0.33
+0.28
+0.32
+
+0.25
+0.35
+0.23
+0.27
+
+0.36
+0.41
+0.34
+0.39
+
+0.21
+0.20
+0.14
+0.18
+
+60
+62
+35
+
+1.32 1.09 0.85 0.29
+1.42 1.03 0.85 0.34
+1.27 1.20 0.84 0.30
+
+0.29
+0.29
+0.30
+
+0.34
+0.40
+0.35
+
+0.26
+0.23
+0.29
+
+172
+152
+46
+6
+
+1.40
+1.50
+1.62
+1.06
+
+0.29
+0.30
+0.31
+0.23
+
+0.29
+0.27
+0.31
+0.19
+
+0.35
+0.37
+0.36
+0.29
+
+0.24
+0.21
+0.24
+0.22
+
+0.56 6452 1.48 1.00 0.83 0.33
+
+0.32
+
+0.40
+
+0.22
+
+changes in Ce from IK05 to FEER.v1 according to Eqs.
+(16), (17), and (18), the results of which are shown in
+the last column (highlighted yellow). Both Terra and Aqua
+data were used in these calculations. The two main process changes have been separated out: columns 2–6 (labeled
+“IK05 ⇒ IKu”) clearly showing the effect of altering only the
+data inputs, and columns 7–14 (labeled “IK ⇒ FEER.v1”)
+showing both the effect of altering only the algorithm
+(IKu ⇒ FEER.v1) and the combination of algorithm alteration and data updates (IK05 ⇒ FEER.v1). From the resultf
+ing maps showing the global variation in ratios of τa550 , WS,
+FRP, and L, it was apparent that the change in each variable
+is uniform throughout the globe. On average, the change in
+Ce due to differing data sources is about a 40 % decrease
+(column 6), mostly from the change in FRP from collection 4 to 5 (i.e., without and with multiplication by ﬁre-pixel
+area, respectively), whereas the algorithm alterations cause
+about a 60 % decrease in Ce (column 13), resulting in an
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+N
+
+1.48
+1.44
+1.50
+1.46
+
+0.97
+0.91
+1.03
+0.90
+
+IK => FEER.v1
+AOT AOT
+Ce
+Ce
+(FEER (FEER (FEER (FEER
+L /IKu) /IK05) /IKu) /IK05)
+
+1.14
+0.93
+0.85
+0.87
+
+0.97
+1.09
+0.96
+0.87
+
+0.85
+0.79
+0.82
+0.85
+
+0.81
+0.82
+0.82
+0.82
+
+0.84
+0.84
+0.85
+0.79
+
+overall decrease in Ce of about 80 % globally (column 14).
+Even though these combined effects of data-source and algorithm changes are slightly overcompensating compared to
+the observed differences listed in column 1, it can be stated
+that the observed reduction in Ce values between the IK05
+and FEER.v1 is indeed realistic. The changes in wind speed,
+plume distance and FRP due to algorithmic changes are small
+relative to the large change in AOT. Therefore, most of the
+change in Ce is attributable to the change in ﬁre-emitted
+f
+f
+AOT (τa550 ). Figure 9 shows the global distribution of τa550
+changes due to data version/source change (i.e., from IK05
+to IKu, Fig. 9a) and due to algorithm change (i.e., from IKu
+to FEER.v1, Fig. 9b). Interestingly, when the new collection
+f
+5 AOT data are used in lieu of collection 4, τa550 actually increases in most cases around the globe, conﬁrming that the
+lower Ce values from IK05 to FEER.v1 due to AOT is very
+f
+strongly attributable to the change in the τa550 algorithm. In
+f
+fact, the ratios of τa550 in the data-source part are very near
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6660
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+f
+Figure 9. The ratio of ﬁre-emitted AOT values at 550 nm wavelength (τa550 ) between the new (FEER.v1) and old (IK05) products mapped
+f
+on a 0.5 × 0.5◦ global grid. The changes in τa550 are due only to (a) upgrading the data source from collection 4 to collection 5, and
+(b) algorithmic changes.
+
+unity (column 5, Fig. 9a), whereas in the algorithm alteration
+part it is around 0.3 (columns 11 and 12, Fig. 9b). It is perf
+tinent to recall that the τa550 algorithmic changes mainly involve (1) using wind direction to determine which AOT values to classify as plume or background, and (2) taking the
+average of the upwind AOT values (instead of just the minimum value) as the background in an effort to account for
+contamination from external aerosols. Although these modif
+ﬁcations have resulted in a severe change in the derived τa550 ,
+this change translates to increased conﬁdence in Ce .
+5
+
+Emissions calculation results
+
+The new FEER.v1 Ce product is used to demonstrate the topdown derivation of emission rates and totals from satellite
+measurements of FRP. The resulting emissions are compared
+against other emission inventories to gain a general understanding for how model simulations will change when using
+this new FEER.v1 inventory.
+5.1
+
+Emissions estimates (rates and totals)
+
+The FEER.v1 Ce product is used to derive smoke-aerosol
+emissions by simple multiplication, as represented in Eq. (2)
+and the associated discussion. When Ce (kg MJ−1 ) is multiplied directly by FRP (in MW or MJ s−1 ), instantaneous
+emission rates (in kg s−1 ) are derived, whereas when multiplied by FRE (in MJ) representing a ﬁnite (e.g., daily,
+monthly, or yearly) time period, the result is emission totals
+(in kg) for that time period. Generating a global FRE product for use in this analysis is not straightforward due to the
+fact that semi-continuous measurements of unsaturated FRP
+around the entire globe is not currently available, though it
+is expected that this situation will improve within the next
+decade or so, given the anticipated launches of different geostationary and polar-orbiting satellite missions by some of
+the major space agencies. However, to closely compare emissions based on the new FEER.v1 Ce product with other emissions products, this study uses FRP data from the 0.5◦ × 0.5◦
+gridded monthly data set derived from MODIS observations
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+aboard the Terra and Aqua satellites as part of the GFAS.v1
+product (http://gmes-atmosphere.eu/ﬁre, Kaiser et al., 2012).
+The GFAS.v1 values of monthly average FRP in W m−2
+were simply multiplied by the number of days in each calendar month to get FRE in J m−2 , as was done in the GFAS.v1
+algorithm (Kaiser et al., 2012). Such derivation of monthly
+average FRE based on only four or less MODIS ﬁre observations a day (from Terra and Aqua satellites) result in high
+uncertainty, as it cannot capture the ﬁre diurnal cycle. However, that is currently the only feasible way to obtain FRE
+globally. Higher-frequency (sub-hourly) observations from
+a few available geostationary satellite sensors that measure
+FRP have different characteristics and produce an average of
+17–38 % underestimation relative to MODIS coincident FRP
+observations (Roberts et al., 2005; Xu et al., 2010). Moreover, a combination of these geostationary FRP data still
+does not provide global coverage, as some large biomassburning regions, including Siberia, Central Asia, and India,
+are left uncovered (Zhang et al., 2012). Since the GFAS.v1based FRE data are global, publicly available, and being used
+in the European Union’s Monitoring Atmospheric Composition and Climate (MACC) project (http://gmes-atmosphere.
+eu/ﬁre), they were considered appropriate for use in deriving emissions using the FEER.v1 Ce product to enable
+comparison with existing emissions inventories, as described
+below. Therefore, these GFAS.v1 monthly FRE values at
+0.5◦ × 0.5◦ resolution were multiplied by the FEER.v1 Ce
+product at 1◦ × 1◦ resolution to obtain the monthly emissions
+of smoke aerosols around the globe at 0.5◦ × 0.5◦ resolution.
+Then, the monthly emissions for all months of a calendar
+year were summed up to get yearly emissions estimates, such
+as the 2010 example shown in Fig. 10.
+5.2
+
+Comparison with other emissions inventories
+
+The FEER.v1 monthly emissions were compared with some
+of the existing emissions products – GFED.v3, GFAS.v1, and
+QFED.v2 – as a way of evaluating the FEER.v1 emissions
+within the context of these existing global emission inventories that are currently used by the research and operational
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Figure 10. FEER.v1 emissions estimates of total particulate matter (TPM) for all of 2010 on a 0.5◦ × 0.5◦ resolution global grid.
+These values are generated from Eq. (2), using the FEER.v1 Ce
+product in conjunction with FRE data derived by multiplying the
+GFAS.v1 monthly average FRP data by the total number of days in
+each month.
+
+communities. It should be noted that there are a few dissimilarities between these products. First, like FEER.v1,
+QFED.v2 is based on the top-down approach using satellite measurements of both aerosols and FRP, whereas both
+GFED.v3 and GFAS.v1 are based on the bottom-up approach
+using literature-extracted emission factors (EF) to multiply
+burned biomass estimates from satellite observations of FRP
+(GFAS.v1) or ﬁre pixel counts and burned areas (GFED.v3).
+Secondly, the emissions values used for comparison from
+both GFED.v3 and GFAS.v1 represent the smoke TPM emissions, whereas for QFED.v2, whose product exists as the
+component species of smoke aerosols, the closest equivalent
+product is particulate matter < 2.5 µm aerodynamic diameter
+(PM2.5 ). The ratio of PM2.5 to TPM (by ratioing their corresponding emission factors) is estimated to range between
+65 % and ∼ 100 % depending on ecosystem type (e.g., Andreae and Merlet, 2001; Akagi et al., 2011). Thus, ideally,
+smoke PM2.5 emissions (from QFED.v2) for a given area
+and time period should be expected to be lower than the corresponding TPM emissions (from FEER.v1, GFED.v3, and
+GFAS.v1). These different data sets were aggregated regionally according to the regional biomass burning partitions provided in Kaiser et al. (2012) as delineated in Fig. 11, and
+plotted as time series annual total smoke TPM emissions
+(Fig. 12).
+All the emissions products portray similar temporal patterns, with lows and highs occurring in the same years, for
+both the global and regional plots (Fig. 12). This may be
+due at least in part to the fact that all products are inﬂuenced by MODIS ﬁre-pixel counts, either directly or indirectly. GFAS.v1 emissions are generally equal to those of
+GFED.v3, because the former was scaled to match the latter
+(Kaiser et al., 2012). Globally, GFED.v3 and GFAS.v1 each
+www.atmos-chem-phys.net/14/6643/2014/
+
+6661
+
+Figure 11. Regional partitions as deﬁned in Kaiser et al. (2012)
+that are used in this paper to compare FEER.v1 emissions with
+GFED.v3, GFAS.v1, and QFED.v2 emission inventories. The background MODIS true-color image shows ﬁre locations (red dots) detected by MODIS from both Terra and Aqua for all of 2010, to illustrate the global spatial distribution of annual ﬁre occurrence.
+
+constitutes only about 55 % of the FEER.v1 annual TPM
+emissions. Since the GFAS.v1 FRE data set was also used for
+FEER.v1, it follows that the large difference between their
+emission products stem from the relative magnitudes of the
+Ce used to generate them. Furthermore, given that it was already established that the TPM emissions in GFAS.v1 (and
+by inference also in GFED.v3) need to be boosted by a factor of 2–4 to match realistic global distributions of aerosols, it
+follows that FEER.v1 Ce results are probably closer to realistic values. However, although the QFED.v2 emissions represent only PM2.5 , which should be lower than TPM, paradoxically, it is slightly higher than FEER.v1 global TPM emissions.
+The relationship between the FEER.v1 emissions and
+those of GFED.v3, GFAS.v1, and QFED.v2 portrays significant regional differences, as indicated by the regional plots
+in Fig. 12. In North America (NAme), incidentally, FEER.v1
+emissions seem to agree closely with those of GFED.v3
+and GFAS.v1, whereas QFED.v2 (though only PM2.5 ) shows
+double the values of the former three TPM emissions inventories. Not surprisingly, out of all the regions, NAme
+has the largest distribution of the lowest QA and r 2 values
+for the FEER.v1 Ce values, as shown in Fig. 8. We suspect
+that FEER.v1 Ce values are severely underestimated in this
+NAme region probably because, among other possible reasons, the gap-ﬁlled areas are quite extensive with very low
+QA values that may have tended toward underestimation. On
+the other hand, QFED.v2 appears to have been overestimated
+in northern and southern Asia (NAsi and SAsi), perhaps due
+to contamination from the persistent regional pollution, since
+QFED.v2 is based on regional aerosol observations in contrast to FEER.v1, which is based on near-source AOT measurements. Similarly, GFED.v3 is probably overestimated in
+tropical Asia (TAsi) only in 2002 and 2006, although the
+investigation of possible reasons for these two anomalous
+years is beyond the scope of this paper.
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6662
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Figure 12. Time series of yearly total global and regional emissions of total particulate matter (TPM) in Tg from 2000–2012 for FEER.v1,
+GFED.v3, QFED.v2 and GFAS.v1, depending on data availability for this study. QFED.v2 values (dotted line) are for PM2.5 . The regions
+represented are delimited on the map in Fig. 11.
+
+6
+
+Summary and conclusions
+
+This study has presented a ﬁrst attempt at providing Ce –
+an index that is similar to EF – for every 1◦ × 1◦ cell containing burnable vegetation globally. Whereas EF is used to
+multiply burned biomass estimates to calculate emissions, Ce
+is the equivalent parameter used to multiply time-integrated
+satellite measurements of FRP to estimate emissions. Thus
+the FEER.v1 global gridded Ce product developed in this
+study for TPM emissions estimation has several important
+attributes, of which the most signiﬁcant are that it (1) is
+the ﬁrst global gridded product in the family of “emission
+factors”, whereas existing products specify one value per
+ecosystem type; (2) requires only direct satellite measurements of FRP or its time-integrated FRE to generate emission rates or totals, respectively, whereas regular EF values
+still require estimation of burned biomass through an intricate process fraught with high uncertainty; and (3) is the
+only variable in the family of “emission factors” that does
+not require pre-determination of the ecosystem type of an
+actively burning ﬁre to evaluate its emission rate in near-real
+time, which is essential for operational activities, such as the
+monitoring and forecasting of smoke emission impacts on air
+quality.
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+Although the FEER.v1 global gridded Ce product was
+based on the original approach proposed by Ichoku and
+Kaufman (2005), this study implemented signiﬁcant improvements in all stages of the product development. The latest available versions (collection 5) of both the aerosol and
+ﬁre products from MODIS were used, along with MERRA
+meteorological data from the GEOS-5 global assimilation
+model. The identiﬁcation of near-source plume and background pixels from the MODIS AOT data set was based
+on actual wind directions from MERRA. Rigorous methods
+were used to determine the valid ranges of all parameters utilized in the algorithm, in order to limit the effects of spurious errors and uncertainties from measurements and assumptions. These updates in data versions and algorithm resulted
+in an overall decrease in regional average Ce values by a factor of 2–4.5 relative to those of Ichoku and Kaufman (2005).
+This decrease seems reasonable, as observed by recent studies that evaluated those Ce values based on model analyses
+(e.g., Soﬁev et al., 2009; Kaiser et al., 2012). Nevertheless,
+the FEER.v1 global gridded Ce product may still contain several limitations and uncertainties, which may be due to various factors, such as (1) uncertainties in the satellite retrievals
+of AOT and FRP, (2) omission of smaller ﬁres or even larger
+ﬁres that are mostly smoldering with signiﬁcant smoke emission but limited radiant energy signal below the MODIS detection limit, (3) possibility of erroneously including external
+aerosols to speciﬁc plumes being analyzed or having large
+variations in the aerosol background surrounding the plume,
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+(4) smoke underestimation due to the erroneous masking
+out of near-source thick smoke plumes as cloud during the
+aerosol retrieval process, (5) lack of knowledge of plume injection heights, (6) use of wind vectors at 850 mb globally,
+(7) uncertainty in the MERRA wind vectors used in the calculations of smoke emission rate and trajectory, (8) assumption of a single value of smoke-aerosol mass extinction efﬁciency globally, and (9) uncertainties due to the gap-ﬁlling
+process of the FEER.v1 global gridded Ce product. Therefore, there is need to ﬁnd ways of validating this product.
+Fortunately, the fact that this global Ce product is anchored
+on a geographically ﬁxed grid system makes validation much
+more feasible than is the case for existing EF values whose
+geographical attributes may have been lost, thereby making
+them difﬁcult to replicate or to trace to a speciﬁc geographic
+domain. Thus, for the FEER.v1 global gridded Ce product,
+deliberate effort could be made to conduct ﬁeld experiments
+within any 1◦ × 1◦ grid cell for use in validating its Ce value.
+Pending the validation of this FEER.v1 global gridded
+Ce product in a representative sample of locations, perhaps
+through the use of observations in conjunction with regional
+modeling, QA ﬂags (ranging from 0 to 4 in increasing order
+of quality) have been provided with the product to guide the
+user in using this product for different applications. These
+QA ﬂags were based on several qualitative and quantitative
+considerations including the r 2 from the zero-intercept linear least-squares regression ﬁtting of smoke-aerosol emission rates against FRP. A corresponding gridded map of r 2
+is also provided for reference. Thus, a user desiring to derive only high-quality emissions can use the QA as a ﬁlter
+to select only the Ce values with the highest quality required,
+while the corresponding r 2 value can give a general idea as to
+whether this QA is based on quantitative or qualitative considerations. On the other hand, if a ﬁre occurs in a grid cell
+for which emissions estimates are needed to determine the
+general smoke trajectory without the need for precise quantitative estimates of concentrations, even Ce values having a
+QA value of zero can be used to accomplish the desired task.
+The FEER.v1 global gridded Ce product was used to generate global and regional total emissions of TPM, which
+were compared against existing emissions inventories, including GFED.v3, GFAS.v1, and QFED.v2. The FEER.v1
+annual total TPM emissions are low in North America, where
+they had comparable magnitudes as those of GFED.v3 and
+GFAS.v1, each of which was about half of the PM2.5 emissions from QFED.v2. Pending validation, with the exception
+of the North America, FEER.v1 and QFED.v2 seem comparable in most regions relative to GFED.v3 and GFAS.v1
+emissions, which are considered low. Since GFED.v3 and
+GFAS.v1 products are based on bottom up approaches (with
+regards to the determination of the emission factors used),
+whereas FEER.v1 and QFED.v2 are based on top-down approaches (in relation to the emission coefﬁcients used), it
+is reasonable to assume that top-down approaches based
+on satellite measurements would yield smoke distributions
+www.atmos-chem-phys.net/14/6643/2014/
+
+6663
+
+that have a closer resemblance to satellite observations of
+aerosols. Therefore, it is recommended that increased effort be made toward further enhancement of top-down approaches, not only for aerosol emissions, but also for gaseous
+emissions. It is hoped that this approach will become more
+and more accurate and beneﬁcial with continued improvement in the satellite retrievals of these aerosols and gases.
+The FEER.v1 Ce product, which is currently based on
+2003–2010 MODIS observations, will certainly require future updates as new, improved, and more representative data
+inputs become available from other relevant sources. Furthermore, even in places where the current Ce values are reasonably accurate, over time, changing land-cover conditions and
+ﬁre regimes will invariably necessitate the revision of these
+Ce values, which may indicate diurnal, seasonal, annual or
+longer-term temporal variability. Future studies will reveal
+the approaches required to ensure optimal accuracy in time
+and space.
+The current study has been focused on the development
+of a global gridded Ce product for smoke TPM because it is
+based on the total columnar AOT parameter as retrieved from
+satellite observations. Although it is recognized that modeling activities often require smoke-aerosol speciation into
+its various components such as organic carbon (OC), BC,
+or PM2.5 , it was beyond the scope of this study to derive
+emission coefﬁcients for these smoke constituent species,
+as it would have involved several assumptions (with associated compounding uncertainties) to estimate any one of
+them from satellite AOT retrievals. However, the user of the
+FEER.v1 TPM Ce product may optionally estimate corresponding Ce values for any of the other smoke-aerosol constituents by multiplying with their emission ratios relative to
+TPM. Such emission ratios can be obtained from the literature or derived from the constituent emission factors, which
+are also available in the literature depending on ecosystem
+type (e.g., Andreae and Merlet, 2001; Akagi et al., 2011).
+Indeed, the FEER.v1 global gridded TPM Ce product developed in this paper represents a versatile foundational product
+that can lead to several important advances in ﬁre emissions
+research and applications.
+
+Acknowledgements. This research was supported by the National
+Aeronautics and Space Administration (NASA) Science Mission
+Directorate under its Atmospheric Composition Modeling and
+Analysis (ACMAP) and Interdisciplinary Studies (IDS) Earth
+Science Research programs. We thank the Moderate-resolution
+Imaging Spectro-Radiometer (MODIS) ﬁre and aerosol science
+teams for generating and providing these satellite products, the
+Global Modeling and Assimilation Ofﬁce (GMAO) for providing
+the MERRA assimilated meteorological data sets, the Multiangle Imaging Spectro-Radiometer (MISR) INteractive eXplorer
+(MINX) team for developing this MINX tool and the near-source
+smoke plume characterization, and the providers of the GFED.v3,
+GFAS.v1, and QFED.v2 emissions inventories for their products.
+We also thank Arlindo da Silva, Ralph Kahn, Edward Hyer,
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6664
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+Jun Wang, Johannes Kaiser, Cathy Liousse, and several other
+colleagues for valuable discussions. Finally, we are very grateful to
+the Editor, Philip Stier, who handled this manuscript review process
+and the anonymous reviewers who devoted their precious time and
+effort to carefully review the discussion version of this paper and
+to provide excellent comments and insights that have resulted in a
+much-improved ﬁnal version.
+Edited by: P. Stier
+
+References
+Akagi, S. K., Yokelson, R. J., Wiedinmyer, C., Alvarado, M. J.,
+Reid, J. S., Karl, T., Crounse, J. D., and Wennberg, P. O.: Emission factors for open and domestic biomass burning for use
+in atmospheric models, Atmos. Chem. Phys., 11, 4039–4072,
+doi:10.5194/acp-11-4039-2011, 2011.
+Andreae, M. O. and Merlet, P.: Emission of trace gases and aerosols
+from biomass burning, Global Biogeochem. Cy., 15, 955–966,
+2001.
+Andres, R. J., Boden, T. A., Breon, F.-M., Ciais, P., Davis, S., Erickson, D., Gregg, J. S., Jacobson, A., Marland, G., Miller, J., Oda,
+T., Olivier, J. G. J., Raupach, M. R., Rayner, P., and Treanton, K.:
+A synthesis of carbon dioxide emissions from fossil-fuel combustion, Biogeosciences, 9, 1845–1871, doi:10.5194/bg-9-18452012, 2012.
+Bond, T. C., Doherty, S. J., Fahey, D. W., Forster, P. M., Berntsen,
+T., DeAngelo, B. J., Flanner, M. G., Ghan, S., Kärcher, B., Koch,
+D., Kinne, S., Kondo, Y., Quinn, P. K., Saroﬁm, M. C., Schultz,
+M. G., Schulz, M., Venkataraman, C., Zhang, H., Zhang, S.,
+Bellouin, N., Guttikunda, S. K., Hopke, P. K., Jacobson, M.
+Z., Kaiser, J. W., Klimont, Z., Lohmann, U., Schwarz, J. P.,
+Shindell, D., Storelvmo, T., Warren, S. G., and Zender, C. S.:
+Bounding the role of black carbon in the climate system: A scientiﬁc assessment, J. Geophys. Res. Atmos., 118, 5380–5552,
+doi:10.1002/jgrd.50171, 2013.
+Cahoon, D., Jr., Stocks, B. J., Levine, J. S., Cofer III, W. R., and
+Pierson, J.: Satellite analysis of the severe 1987 forest ﬁres in
+northern China and southeastern Siberia, J. Geophys. Res., 99,
+18627–18638, 1994.
+Carslaw, K. S., Lee, L. A., Reddington, C. L., Pringle, K. J., Rap,
+A., Forster, P. M., Mann, G. W., Spracklen, D. V., Woodhouse,
+M. T., Regayre, L. A. and Pierce, J. R.: Large contribution of
+natural aerosols to uncertainty in indirect forcing, Nature, 503,
+67–71, doi:10.1038/nature12674, 2013.
+Chin, M., Ginoux, P., Kinne, S., Torres, O., Holben, B. N., Duncan, B. N., Martin, R. V., Logan, J. A., Higurashi, A., and Nakajima, T.: Tropospheric aerosol optical thickness from the GOCART model and comparisons with satellite and sun photometer
+measurements, J. Atmos. Sci., 59, 461–483, 2002.
+Crutzen, P. J. and Andreae, M. O.: Biomass burning in the tropics: Impact on atmospheric chemistry and biogeochemical cycles, Science, 250, 1669–1678, 1990.
+Darmenov, A. and da Silva, A.: The Quick Fire Emissions Dataset
+(QFED) – Documentation of versions 2.1, 2.2 and 2.4 NASA
+Technical Report Series on Global Modeling and Data Assimilation NASA TM-2013-104606 version 32 http://gmao.gsfc.nasa.
+gov/pubs/docs/Darmenov609.pdf, 2013.
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+Diehl, T., Heil, A., Chin, M., Pan, X., Streets, D., Schultz, M.,
+and Kinne, S.: Anthropogenic, biomass burning, and volcanic
+emissions of black carbon, organic carbon, and SO2 from 1980
+to 2010 for hindcast model experiments, Atmos. Chem. Phys.
+Discuss., 12, 24895–24954, doi:10.5194/acpd-12-24895-2012,
+2012.
+Dozier, J.: A method for satellite identiﬁcation of surface temperature ﬁelds of subpixel resolution, Remote Sens. Environ., 11,
+221–229, 1981.
+Eisenhauer, J. G.: Regression through the origin, Teach. Stat., 25,
+76–80, 2003.
+Forster, P., Ramaswamy, V., Artaxo, P., Berntsen, T., Betts, R., Fahey, D. W., Haywood, J., Lean, J., Lowe, D. C., Myhre, G.,
+Nganga, J., Prinn, R., Raga, G., Schulz, M., and Van Dorland,
+R.: Changes in Atmospheric Constituents and in Radiative Forcing, in: Climate Change 2007: The Physical Science Basis, contribution of Working Group I to the Fourth Assessment Report
+of the Intergovernmental Panel on Climate Change, edited by:
+Solomon, S. D., Qin, M., Manning, Z., Chen, M., Marquis, K.
+B., Averyt, M. T., and Miller, H. L., Cambridge University Press,
+Cambridge, United Kingdom and New York, NY, USA, 129–
+234, 2007.
+Freeborn, P. H., Wooster, M. J., Hao, W. M., Ryan, C. A., Nordgren,
+B. L., Baker, S. P., and Ichoku, C.: Relationships between energy release, fuel mass loss, and trace gas and aerosol emissions
+during laboratory biomass ﬁres, J. Geophys. Res., 113, D01301,
+doi:10.1029/2007JD008679, 2008.
+Freitas, S. R., Longo, K. M., and Andreae, M. O.: Impact of including the plume rise of vegetation ﬁres in numerical simulations of associated atmospheric pollutants, Geophys. Res. Lett.,
+33, L17808, doi:10.1029/2006GL026608, 2006.
+Generoso, S., Bey, I., Attie, J. L., and Breon, F. M.: A satellite and model-based assessment of the 2003 Russian ﬁres: impact on the Arctic region., J. Geophys. Res., 112, D15302,
+doi:10.1029/2006JD008344, 2007.
+Giglio, L.: Characterization of the tropical diurnal cycle using VIRS
+and MODIS observations, Remote Sens. Environ., 108, 407–421,
+2007.
+Giglio, L.: MODIS Collection 5 active ﬁre product user’s guide, version 2.5, available at: http://modis-ﬁre.umd.edu/AF_usermanual.
+html (last access: 30 June 2014), 2013.
+Giglio, L., Descloitres, J., Justice, C., and Kaufman, Y.: An enhanced contextual ﬁre detection algorithm for MODIS, Remote
+Sens. Environ., 87, 273–282, 2003.
+Giglio, L., Csiszar, I., Restás, A., Morisette, J., Schroeder, W., Morton, D., and Justice, C.: Active ﬁre detection and characterization
+with the Advanced Spaceborne Thermal Emission and Reﬂection
+Radiometer (ASTER), Remote Sens. Environ., 112, 3055–3063,
+2008.
+Hao, W. M. and Liu, M.-H.: Spatial and temporal distribution of
+tropical biomass burning, Global Biogeochem. Cy., 8, 495–503,
+1994.
+Henderson, S. B., Burkholder, B., Jackson, P. L., Brauer, M., and
+Ichoku, C.: Use of MODIS products to simplify and evaluate a
+forest ﬁre plume dispersion model for PM10 exposure assessment, Atmos. Environ., 42, 8524–8532, 2008.
+Henderson, S. B., Ichoku, C, Burkholder, B. J., Brauer, M., and
+Jackson, P. L.: The validity and utility of MODIS data for sim-
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+ple estimation of area burned and aerosols emitted by wildﬁre
+events, Int. J. Wildland Fire, 19, 844–852, 2010.
+Hoelzemann, J. J., Schultz, M. G., Brasseur, G. P., Granier, C., and
+Simon, M.: Global wildland ﬁre emission model (GWEM): Evaluating the use of global area burnt satellite data, J. Geophys. Res.,
+109, D14S04, doi:10.1029/2003JD003666, 2004.
+Holben, B. N., Eck, T. F., Slutsker, I., Tanre, D., Buis, J. P., Setzer, A., Vermote, E., Reagan, J. A., Kaufman, Y., Nakajima, T.,
+Lavenu, F., Jankowiak, I., and Smirnov, A.: AERONET – A federated instrument network and data archive for aerosol characterization, Remote Sens. Environ., 66, 1–16, 1998.
+Holben, B. N., Tanré, D., Smirnov, A., Eck, T. F., Slutsker, I.,
+Abuhassan, N., Newcomb, W. W., Schafer, J. S., Chatenet,
+B., Lavenu, F., Kaufman, Y. J., Castle, J. Vande, Setzer, A.,
+Markham, B., Clark, D., Frouin, R., Halthore, R., Karneli, A.,
+O’Neill, N. T., Pietras, C., Pinker, R. T., Voss, K., and Zibordi,
+G.: An emerging ground-based aerosol climatology: Aerosol optical depth from AERONET, J. Geophys. Res., 106, 12067–
+12097, doi:10.1029/2001JD900014, 2001.
+Ichoku, C. and Kaufman, Y. J.: A method to derive smoke emission
+rates from MODIS ﬁre radiative energy measurements, IEEE T.
+Geosci. Remote, 43, 2636–2649, 2005.
+Ichoku, C., Remer, L. A., and Eck, T. F.: Quantitative evaluation
+and intercomparison of morning and afternoon Moderate Resolution Imaging Spectroradiometer (MODIS) aerosol measurements from Terra and Aqua, J. Geophys. Res., 110, D10S03,
+doi:10.1029/2004JD004987, 2005.
+Ichoku, C., Giglio, L., Wooster, M. J., and Remer, L. A.: Global
+characterization of biomass-burning patterns using satellite measurements of Fire Radiative Energy. Remote Sens. Environ., 112,
+2950–2962, 2008a.
+Ichoku, C., Martins, J. V., Kaufman, Y. J., Wooster, M. J., Freeborn, P. H., Hao, W. M., Baker, S., Ryan, C. A., and Nordgren, B. L: Laboratory investigation of ﬁre radiative energy
+and smoke aerosol emissions, J. Geophys. Res., 113, D14S09,
+doi:10.1029/2007JD009659, 2008b.
+Ichoku, C., Kahn, R., and Chin, M.: Satellite contributions to the quantitative characterization of biomass
+burning for climate modeling, Atmos. Res., 111, 1–28,
+doi:10.1016/j.atmosres.2012.03.007, 2012.
+Ito, A. and Penner, J. E.: Global estimates of biomass burning emissions based on satellite imagery for the year 2000, J. Geophys.
+Res., 109, D14S05, doi:10.1029/2003JD004423, 2004.
+Jordan, N., Ichoku, C., and Hoff, R.: Estimating smoke emissions
+over the U.S. Southern Great Plains using MODIS ﬁre radiative
+power and aerosol observations, Atmos. Env., 42, 2007–2022,
+2008.
+Justice, C.O., Malingreau, J.-P., and Setzer, A. W.: Satellite remote
+sensing of ﬁres: Potential and limitations, Crutzen, P. J., and
+Goldammer, J. G. (Eds.): Fire in the Environment, Wiley, New
+York, 77–88, 1993.
+Justice, C., Giglio, L., Korontzi, S., Owens, J., Morisette, J., Roy,
+D., Descloitres, J., Alleaume, S., Petitcolin, F., and Kaufman, Y.:
+The MODIS ﬁre products, Remote Sens. Environ., 83, 244–262,
+2002.
+Kaiser, J. W., Heil, A., Andreae, M. O., Benedetti, A., Chubarova,
+N., Jones, L., Morcrette, J.-J., Razinger, M., Schultz, M. G., Suttie, M., and van der Werf, G. R.: Biomass burning emissions
+estimated with a global ﬁre assimilation system based on ob-
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+6665
+
+servations of ﬁre radiative power, Biogeosciences, 9, 527-554,
+doi:10.5194/bg-9-527-2012, 2012.
+Kahn, R. A., Li, W.-H., Moroney, C., Diner, D. J., Martonchik, J.
+V., and Fishbein, E.: Aerosol source plume physical characteristics from space-based multiangle imaging, J. Geophys. Res., 112,
+D11205, doi:10.1029/2006JD007647, 2007.
+Kaufman, Y., Justice, C., Flynn, L., Kendall, J., Prins, E., Giglio,
+L., Ward, D., Menzel, W., and Setzer, A.: Potential global ﬁre
+monitoring from EOS-MODIS, J. Geophys. Res.-Atmos., 103,
+D24, 32215–32238, 1998.
+Langmann, B., Duncan, B., Textor, C., Trentmann, J., and van
+der Werf, G. R.: Vegetation ﬁre emissions and their impact
+on air pollution and climate, Atmos. Environ., 43, 107–116,
+doi:10.1016/j.atmosenv.2008.09.047, 2009.
+Lavoué, D., Liousse, C., Cachier, H., Stocks, B. J., and Goldammer,
+J. G.: Modeling of carbonaceous particles emitted by boreal and
+temperature wildﬁres at northern latitudes, J. Geophys. Res., 105,
+26871–26890, 2000.
+Levy, R. C., Remer, L. A., Kleidman, R. G., Mattoo, S., Ichoku,
+C., Kahn, R., and Eck, T. F.: Global evaluation of the Collection
+5 MODIS dark-target aerosol products over land, Atmos. Chem.
+Phys., 10, 10399–10420, doi:10.5194/acp-10-10399-2010, 2010.
+Liousse C., Andreae, M. O., Artaxo, P., Barbosa, P., Cachier, H.,
+Gr´egoire, J. M., Hobbs, P., Lavou´e, D., Mouillot, F., Penner,
+J., and Scholes, M.: Deriving Global Quantitative Estimates for
+Spatial and Temporal Distributions of Biomass Burning Emissions, in: Emissions of Atmospheric Trace Compounds, edited
+by: Granier, C., Artaxo, P., and Reeves, C., Kluwer Academic
+Publishers, Dordrecht, The Netherlands, 544 pp., 2004.
+Liousse, C., Penner, J. E., Chuang, C., Walton, J. J., Eddleman, H.,
+and Cachier, H.: A global three-dimensional model study of carbonaceous aerosols, J. Geophys. Res., 105, 26871–26890, 1996.
+Liousse, B., Guillaume, J. M., Grégoire, M., Mallet, C., Galy, C.,
+Pont, V., Akpo, A., Bedou, M., Castéra, P., Dungall, L., Gardrat,
+E., Granier, C., Konaré, A., Malavelle, F., Mariscal, A., Mieville,
+A., Rosset, R., Serça, D., Solmon, F., Tummon, F., Assamoi, E.,
+Yoboué, V., and Van Velthoven, P.: Updated African biomass
+burning emission inventories in the framework of the AMMAIDAF program, with an evaluation of combustion aerosols, Atmos. Chem. Phys., 10, 7347–7382, doi:10.5194/acp-10-73472010, 2010.
+Livingston, J. M., Redemann, J., Shinozuka, Y., Johnson, R., Russell, P. B., Zhang, Q., Mattoo, S., Remer, L., Levy, R., Munchak,
+L., and Ramachandran, S.: Comparison of MODIS 3 km and
+10 km resolution aerosol optical depth retrievals over land with
+airborne sunphotometer measurements during ARCTAS summer
+2008, Atmos. Chem. Phys., 14, 2015–2038, doi:10.5194/acp-142015-2014, 2014.
+Michel, C., Liousse, C., Gregoire, J. M., Tansey, K., Carmichael,
+G. R., and Woo, J. H.: Biomass burning emission inventory from
+burnt area data given by the SPOTVEGETATION system in the
+frame of TRACE-P and ACE-Asia campaigns, J. Geophys. Res.,
+110(D9), D09304, doi:10.1029/2004JD005461, 2005.
+Morisette, J. T., Giglio, L., Csiszar, I., and Justice, C. O.: Validation
+of MODIS active ﬁre detection product over Southern Africa using ASTER data, Int. J. Remote Sens., 26, 19, 4239–4264, 2005a.
+Morisette, J. T., Giglio, L., Csiszar, I., Setzer, A., Schroeder, W.,
+Morton, D., and Justice, C. O.: Validation of MODIS active ﬁre
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+6666
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+
+detection products derived from two algorithms, Earth Interact.,
+9, 1–23, 2005b.
+Nelson, D., Chen, Y., Kahn, R., Diner, D., and Mazzoni, D.: Example applications of the MISR INteractive eXplorer (MINX)
+software tool to wildﬁre smoke plume analyses, edited by: Hao,
+W. M., Remote Sensing of Fire: Science and Application, Proc
+SPIE, 7089, 708909-1–708909-11, 2008.
+Nelson, D. L., Garay M. J., Kahn R. A., and Dunst B. A.: Stereoscopic Height and Wind Retrievals for Aerosol Plumes with the
+MISR INteractive eXplorer (MINX), Remote Sens., 5, 4593–
+4628, 2013.
+Prins, E. M. and Menzel, W. P.: Geostationary satellite detection
+of biomass burning in South America, Int. J. Remote Sens., 13,
+2783–2799, 1992.
+Randerson, J. T., Liu, H., Flanner, M. G., Chambers, S. D., Jin, Y.,
+Hess, P. G., Pﬁster, G., Mack, M. C., Treseder, K. K., Welp, L.
+R., Chapin, F. S., Harden, J. W., Goulden, M. L., Lyons, E., Neff,
+J. C., Schuur, E. A. G., and Zender, C. S.: The impact of boreal forest ﬁre on climate warming, Science, 314, 1130–1132,
+doi:10.1126/science.1132075, 2006.
+Reid, J. S., Eck, T. F., Christopher, S. A., Koppmann, R., Dubovik,
+O., Eleuterio, D. P., Holben, B. N., Reid, E. A., and Zhang, J.:
+A review of biomass burning emissions part III: intensive optical
+properties of biomass burning particles, Atmos. Chem. Phys., 5,
+827–849, doi:10.5194/acp-5-827-2005, 2005.
+Reid, J. S., Hyer, E. J., Prins, E. M., Westphal, D. L., Zhang, J.,
+Wang, J., Christopher, S. A., Curtis, C. A., Schmidt, C. C., Eleuterio, D. P., Richardson, K. A., and Hoffman, J. P.: Global monitoring and forecasting of biomass-burning smoke: Description
+of and lessons from the Fire Locating and Modeling of Burning
+Emissions (FLAMBE) Program, IEEE J. Sel. Top. Appl., 2, 3,
+144–162, doi:10.1109/JSTARS.2009.2027443, 2009.
+Rienecker, M. M., Suarez, M. J., Gelaro, R. Todling, R., Bacmeister, J., Liu, E., Bosilovich, M. G., Schubert, S. D., Takacs, L.,
+Kim, G.-K., Bloom, S., Chen, J., Collins, D., Conaty, A., da
+Silva, A., Gu, W., Joiner, J., Koster, R. D., Lucchesi, R., Molod,
+A., Owens, T., Pawson, S., Pegion, P., Redder, C. R., Reichle,
+R., Robertson, F. R., Ruddick, A. G., Sienkiewicz, M., and
+Woollen, J.: MERRA: NASA’s Modern-Era Retrospective Analysis for Research and Applications, J. Climate, 24, 3624–3648,
+doi:10.1175/JCLI-D-11-00015.1, 2011.
+Remer, L. A., Kaufman, Y. J., Tanre, D., Mattoo, S., Chu, D. A.,
+Martins, J. V., Li, R. -R., Ichoku, C., Levy, R. C., Kleidman,
+R. G., Eck, T. F., Vermote, E., and Holben, B. N.: The MODIS
+aerosol algorithm, products, and validation, J. Atmos. Sci., 62,
+947–973, 2005.
+Remer, L. A., Kleidman, R. G., Levy, R. C., Kaufman, Y. J.,
+Tanré, D., Mattoo, S., Martins, J. V., Ichoku, C., Koren, I.,
+Yu, H., and Holben, B. N.: Global aerosol climatology from
+the MODIS satellite sensors, J. Geophys. Res., 113, D14S07,
+doi:10.1029/2007JD009661, 2008.
+Roberts, G. and Wooster, M. J.: Fire detection and ﬁre characterization over Africa using Meteosat SEVIRI, IEEE T. Geosci. Remote, 46, 4, 1200–1218, 2008.
+Roberts, G., Wooster, M. J., Perry, G. L. W., Drake, N., Rebelo,
+L.-M., and Dipotso, F.: Retrieval of biomass burning combustion
+rates and total from ﬁre radiative power observations: Application to southern Africa using geostationary SEVIRI imagery, J.
+Geophys. Res., 110, D21111, doi:10.1029/2005JD006018, 2005.
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+
+Roberts, G., Wooster, M., Freeborn, P. H., and Xu, W.: Integration
+of geostationary FRP and polar-orbiter burned area datasets for
+an enhanced biomass burning inventory, Remote Sens. Environ.,
+115, 8, 2047–2061, doi:10.1016/j.rse.2011.04.006, 2011.
+Schroeder, W., Morisette, J. T., Csiszar, I., Giglio, L., Morton, D.,
+and Justice, C.: Characterizing vegetation ﬁre dynamics in Brazil
+through multisatellite data: Common trends and practical issues,
+Earth Interactions, 9, 1–26, 2005.
+Schroeder, W., Prins, E., Giglio, L., Csiszar, I., Schmidt, C.,
+Morisette, J., and Morton, D.: Validation of GOES and MODIS
+active ﬁre detection products using ASTER and ETM plus data,
+Remote Sens. Environ., 112, 2711–2726, 2008a.
+Schroeder, W., Ruminski, M., Csiszar, I., Giglio, L., Prins, E.,
+Schmidt, C., and Morisette, J.: Validation analyses of an operational ﬁre monitoring product: The Hazard Mapping System,
+Int. J. Remote Sens., 29, 20, 6059–6066, 2008b.
+Schroeder, W., Ellicott, E., Ichoku, C., Ellison, L., Dickinson, M.,
+Ottmar, R. D., Clements, C., Hall, D., Ambrosia, V., and Kremens, R.: Integrated active ﬁre retrievals and biomass burning emissions using complementary near-coincident ground, airborne and spaceborne sensor data, Remote Sens. Environ., 140,
+719–730, 2014.
+Schultz, M. G., Heil, A., Hoelzemann, J. J., Spessa, A., Thonicke, K., Goldammer, J. G., Held, A. C., Pereira, J. M. C.,
+and van het Bolscher, M.: Global wildland ﬁre emissions
+from 1960 to 2000, Global Biogeochem. Cy., 22, GB2002,
+doi:10.1029/2007GB003031, 2008.
+Seiler, W. and Crutzen, P. J.: Estimates of gross and net ﬂuxes of
+carbon between the biosphere and the atmosphere from biomass
+burning, Clim. Change, 2, 207–248, 1980.
+Soﬁev, M., Vankevich, R., Lotjonen, M., Prank, M., Petukhov, V.,
+Ermakova, T., Koskinen, J., and Kukkonen, J.: An operational
+system for the assimilation of the satellite information on wildland ﬁres for the needs of air quality modelling and forecasting,
+Atmos. Chem. Phys., 9, 6833–6847, doi:10.5194/acp-9-68332009, 2009.
+Urbanski, S. P., Hao, W. M., and Nordgren, B.: The wildland
+ﬁre emission inventory: western United States emission estimates and an evaluation of uncertainty, Atmos. Chem. Phys., 11,
+12973–13000, doi:10.5194/acp-11-12973-2011, 2011.
+Val Martin, M., Kahn, R.A., Logan, J. A., Paugam, R., Wooster, M.,
+and Ichoku, C.: Space-based observational constraints for 1-D
+ﬁre smoke plume-rise models, J. Geophys. Res., 117, D22204,
+doi:10.1029/2012JD018370, 2012.
+van der Werf, G. R., Randerson, J. T., Giglio, L., Collatz, G. J.,
+Kasibhatla, P. S., and Arellano, A. F.: Interannual variability
+in global biomass burning emissions from 1997 to 2004, Atmos. Chem. Phys., 6, 3423–3441, doi:10.5194/acp-6-3523-2006,
+2006.
+van der Werf, G. R., Randerson, J. T., Giglio, L., Collatz, G. J., Mu,
+M., Kasibhatla, P. S., Morton, D. C., DeFries, R. S., Jin, Y., and
+van Leeuwen, T. T.: Global ﬁre emissions and the contribution of
+deforestation, savanna, forest, agricultural, and peat ﬁres (1997–
+2009), Atmos. Chem. Phys., 10, 11707-11735, doi:10.5194/acp10-11707-2010, 2010.
+van Donkelaar, A., Martin, R. V., Levy, R. C., da Silva, A.
+M., Krzyzanowski, M., Chubarova, N. E., Semutnikova, E.,
+and Cohen, A. J.: Satellite-based estimates of ground-level
+ﬁne particulate matter during extreme events: A case study of
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+C. Ichoku and L. Ellison: Global top-down smoke-aerosol emissions estimation
+the Moscow ﬁres in 2010, Atmos. Environ., 45, 6225–6232,
+doi:10.1016/j.atmosenv.2011.07.068, 2011.
+Vermote, E., Ellicott, E., Dubovik, O., Lapyonok, T., Chin, M.,
+Giglio, L., and Roberts, G. J.: An approach to estimate global
+biomass burning emissions of organic and black carbon from
+MODIS ﬁre radiative power, J. Geophys. Res., 114, D18205,
+doi:10.1029/2008JD011188, 2009.
+Wiedinmyer, C., Akagi, S. K., Yokelson, R. J., Emmons, L. K., AlSaadi, J. A., Orlando, J. J., and Soja, A. J. The Fire INventory
+from NCAR (FINN): a high resolution global model to estimate
+the emissions from open burning, Geosci. Model Dev., 4, 625–
+641, doi:10.5194/gmd-4-625-2011, 2011.
+Wisnowski, J. W., Montgomery, D. C., and Simpson, J. R.: A Comparative analysis of multiple outlier detection procedures in the
+linear regression model, Comput. Stat. Data Anal., 36, 3, 351–
+382, doi:10.1016/S0167-9473(00)00042-6, 2001.
+Wooster, M. J., Zhukov, B., and Oertel, D.: Fire radiative energy for
+quantitative study of biomass burning: Derivation from the BIRD
+experimental satellite and comparison to MODIS ﬁre products,
+Remote Sens. Environ., 86, 83–107, 2003.
+Wooster, M. J., Roberts, G., Perry, G. L. W., and Kaufman
+Y. J.: Retrieval of biomass combustion rates and totals from
+ﬁre radiative power observations: 1. FRP derivation and calibration relationships between biomass consumption and ﬁre
+radiative energy release, J. Geophys. Res., 110, D24311,
+doi:10.1029/2005JD006318, 2005.
+Xu, W., Wooster, M. J., Roberts, G., and Freeborn, P.: New
+GOES imager algorithms for cloud and active ﬁre detection
+and ﬁre radiative power assessment across North, South and
+Central America, Remote Sens. Environ., 114, 1876–1895,
+doi:10.1016/j.rse.2010.03.012, 2010.
+
+www.atmos-chem-phys.net/14/6643/2014/
+
+6667
+
+Yang, Z., Wang, J., Ichoku, C., Hyer, E., and Zeng, J.: Mesoscale
+modeling and satellite observation of transport and mixing of smoke and dust particles over northern sub-Saharan
+African region, J. Geophys. Res. Atmos., 118, 12139–12157,
+doi:10.1002/2013JD020644, 2013.
+Yokelson, R. J., Burling, I. R., Urbanski, S. P., Atlas, E. L., Adachi,
+K., Buseck, P. R., Wiedinmyer, C., Akagi, S. K., Toohey, D. W.,
+and Wold, C. E.: Trace gas and particle emissions from open
+biomass burning in Mexico, Atmos. Chem. Phys., 11, 67876808, doi:10.5194/acp-11-6787-2011, 2011.
+Yurganov, L., Rakitin, V., Dzhola, A., August, T., Fokeeva, E., Gorchakov, G., Grechko, E., Hannon, S., Karpov, A., Ott, L., Semutnikova, E., Shumsky, R., and Strow, L.: Satellite- and groundbased CO total column observations over 2010 Russian ﬁres: accuracy of top-down estimates based on thermal IR satellite data,
+Atmos. Chem. Phys., 11, 7925–7942, doi:10.5194/acp-11-79252011, 2011.
+Zhang, X., Kondragunta, S., Schmidt, C., and Kogan, F.: Near
+real time monitoring of biomass burning particulate emissions
+(PM2.5) across contiguous United States using multiple satellite
+instruments, Atmos. Environ., 42, 6959–6972, 2008.
+Zhang, X., Kondragunta, S., Ram, J., Schmidt, C., and Huang,
+H.-C: Near-real-time global biomass burning emissions product
+from geostationary satellite constellation, J. Geophys. Res., 117,
+D14201 doi:10.1029/2012JD017459, 2012.
+
+Atmos. Chem. Phys., 14, 6643–6667, 2014
+

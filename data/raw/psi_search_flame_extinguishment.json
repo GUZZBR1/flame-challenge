@@ -1,0 +1,266 @@
+{
+ "took": 4,
+ "timed_out": false,
+ "_shards": {
+  "total": 45,
+  "successful": 45,
+  "skipped": 0,
+  "failed": 0
+ },
+ "hits": {
+  "total": 5,
+  "max_score": 6.6074677,
+  "hits": [
+   {
+    "_index": "investigation",
+    "_type": "docs",
+    "_id": "MzHJl5MBhlfmYJlKU5sy",
+    "_score": 6.6074677,
+    "_source": {
+     "Accession": "PSI-142",
+     "Public Release Date": 1726617600.0,
+     "Thumbnail": "/geode-py/ws/investigations/PSI-142/image",
+     "Title": "Quantitative Studies of Cool Flame Transitions at Radiation / Stretch Extinction Using Counterflow Flames",
+     "Person": {
+      "Last Name": "Ju Dietrich Reuter",
+      "Middle Initials": "",
+      "First Name": "Yiguang Daniel Christopher"
+     },
+     "Keywords": "Cool Flame Transitions     Ground-based experiments     Flames     Radiation     Low temperature flames     Counterflow flames     Extinction Limit     n-alkane     FLEX     Dibutyl Ether     Modeling     Kinetic experiments     Emissions     Supercritical Reacting Fluids     Low temperature chemistry     PSI Grant",
+     "Acronym": "",
+     "Flight Platform": "Not Applicable",
+     "Research Area": "Combustion Science",
+     "SubResearch Area": "Spacecraft Fire Safety",
+     "Related Investigations": "PSI-69",
+     "Project Type": "Ground Investigation",
+     "Proposal Title": "",
+     "Investigation Start Date": "08-01-2016",
+     "Investigation End Date": "07-31-2021",
+     "Sponsoring Agency": "National Aeronautics and Space Administration (NASA)",
+     "Monitoring Center": "Glenn Research Center (GRC)",
+     "Funding Source": "NNX16AK07G",
+     "Objectives": "By using the Flame Extinguishment (FLEX) experimental data from the Physical Sciences Informatics (PSI) system of combustion science, the purpose of this grant was to conduct new simulations and ground-based experiments using ozone-sensitized counterflow flames to:\n    1) Develop a new diagram of the flammability limits of diffusional cool flames affected by radiation, diffusion, and convection.\n    2) Bridge the knowledge gap between the flammability limits and extinction limits of hot flames and cool flames.\n    3) Verify the phenomena observed on the ISS flame extinguishment experiments.\n    4) Obtain new, quantitative data of extinction limit, flame temperature, and species distribution for the validation of kinetic and radiation models involving cool flames.\n    5) Extend the cool flame experiments from the original ISS droplet experiments to a more general ground-based combustion system involving radiation, diffusion, convection, and low-temperature chemistry while maintaining a one-dimensional geometry.",
+     "Approach": "Using the experimental conditions of FLEX flight, a comparative studies of the oxygen concentration effects on the extinction limits of cool flames was conducted using three different numerical modeling schemes, (a) spark-assisted flame propagation of a n-heptane/air mixture, (b) one dimensional freely-propagating dimethyl ether (DME) flames using an arc-length continuation method and (c) simulated cool flame regimes and burning limits at elevated pressure (up to 20\u202fatm) using DME/air mixtures.\n\nSpecific research details are outlined in the publication, ''Dynamics of cool flames'' [https://doi.org/10.1016/j.pecs.2019.100787]; '' Understanding Cool Flames and Warm Flames'', [https://doi.org/10.1016/j.proci.2020.09.019] and ''Study of the low-temperature reactivity of large n-alkanes through cool diffusion flame extinction'', [https://doi.org/10.1016/j.combustflame.2017.01.028].",
+     "Hypothesis": "This investigation attempts to answer the critical question as to what conditions causes the hot flames transfer to cool flames and how the cool flame flammable region is related to hot flame flammability limit and extinction limit. The investigation hypothesizes that factors such as oxygen concentration, dilution, pressure, diffusion, and convection transport processes affect the cool flame transition.",
+     "Research Impacts/Earth Benefits": "Obtaining a fundamental understanding of the warm diffusion flame is particularly relevant to combustion in highly turbulent flow fields and in microgravity environments, owing to the possibility of long residence times. The results showed that the warm flame has a double reaction zone structure and plays a critical role in the transition between cool flames and hot flames. At elevated pressures, it was found that the flammable region of warm flames and cool flames expands due to the increase in low-temperature and intermediate-temperature reactivity with pressure. Since many real engines operate in the 20-40 atm pressure range, therefore, cool flames and warm flames are relevant and important flame regimes for high-pressure near-limit combustion applications. These calculations from this investigation will serve to advance the understanding of near-limit flame dynamics and provide guidance for experimental observation of different flame regimes.",
+     "Experiment Hardware": {
+      "Name": "Principal Investigator Laboratory Hardware",
+      "Link": "https://doi.org/10.1016/j.combustflame.2016.01.008"
+     },
+     "Publication Author List": "Ju Yiguang  Reuter Christopher B.  Yehia Omar R.  Farouk Tanvir I.  Won Sang Hee     Zhou Mengni  Yehia Omar R.  Xu Wenbin  Reuter Christopher B.  Wang Ziyu  Yan Chao  Jiang Bo  Ju Yiguang     Ju Yiguang     Reuter Christopher B.  Lee Minhyeok  Won Sang Hee  Ju Yiguang     Reuter Christopher B.  Zhang Rui  Yehia Omar R.  Rezgui Yacine  Ju Yiguang     Yehia Omar R.  Reuter Christopher B.  Ju Yiguang     Lin Eric  Reuter Christopher B.  Ju Yiguang     Yehia Omar R.  Reuter Christopher B.  Ju Yiguang     Kurimoto Naoki  Brumfield Brian  Yang Xueliang  Wada Tomoya  Di\u00e9vart Pascal  Wysocki Gerard  Ju Yiguang     Yiguang Ju  Mengni Zhou  Omar R. Yehia  Wenbin Xu  Christopher B. Reuter  Ziyu Wang   Chao Yan     CB. Reuter  E. Lin  Y. Ju     Reuter Christopher B.  Katta Viswanath R.  Yehia Omar R.  Ju Yiguang",
+     "Publication Title": "Dynamics of cool flames     The radical index and the effect of oxygen concentration on non-premixed cool flame extinction of large n-alkanes     On the propagation limits and speeds of premixed cool flames at elevated pressures     Study of the low-temperature reactivity of large n-alkanes through cool diffusion flame extinction     Counterflow flame experiments and chemical kinetic modeling of dimethyl ether/methane mixtures     Low-temperature multistage warm diffusion flames     Dynamics and burning limits of near-limit hot, warm, and cool diffusion flames of dimethyl ether at elevated pressures     On the chemical characteristics and dynamics of n-alkane low-temperature multistage diffusion flames     Quantitative measurements of HO 2 /H 2 O 2 and intermediate species in low and intermediate temperature oxidation of dimethyl ether     SUPPLEMENTARY MATERIAL\nThe radical index and the effect of oxygen concentration on non-premixed cool flame extinction of large n-alkanes     Pressure and Radiation Effects on the Dynamics of Hot and Cool Diffusion Flames     Transient interactions between a premixed double flame and a vortex",
+     "Data Source Type": "psi"
+    },
+    "highlight": {
+     "all": [
+      "<em>PSI</em>-142",
+      "Kinetic experiments     Emissions     Supercritical Reacting Fluids     Low temperature chemistry     <em>PSI</em>",
+      "<em>PSI</em>-69",
+      "By using the <em>Flame</em> <em>Extinguishment</em> (FLEX) experimental data from the Physical Sciences Informatics (<em>PSI</em>",
+      "<em>extinguishment</em> experiments.\n    4) Obtain new, quantitative data of extinction limit, <em>flame</em> temperature"
+     ]
+    }
+   },
+   {
+    "_index": "investigation",
+    "_type": "docs",
+    "_id": "tfhACJIBXmwQ5jcu87Kq",
+    "_score": 6.1020737,
+    "_source": {
+     "Accession": "PSI-69",
+     "Public Release Date": 1469923200.0,
+     "Thumbnail": "/geode-py/ws/investigations/PSI-69/image",
+     "Title": "Flame Extinguishment Experiment",
+     "Person": {
+      "Last Name": "Shaw Hicks Williams Nayagam Choi Dryer Dietrich",
+      "Middle Initials": "D C A Y L",
+      "First Name": "Benjamin Michael Forman Vedha Mun Frederick Daniel"
+     },
+     "Keywords": "FLEX     Droplet     Diffusion Flames     Fuel Sooting     Spacecraft Fire Safety     Flames",
+     "Acronym": "FLEX",
+     "Flight Platform": "International Space Station (ISS)",
+     "Research Area": "Combustion Science",
+     "SubResearch Area": "Spacecraft Fire Safety",
+     "Related Investigations": "",
+     "Project Type": "Microgravity Investigation",
+     "Proposal Title": "Droplet Flame Extinguishment in Microgravity",
+     "Investigation Start Date": "08-01-2007",
+     "Investigation End Date": "07-31-2016",
+     "Sponsoring Agency": "National Aeronautics and Space Administration (NASA)",
+     "Monitoring Center": "Glenn Research Center (GRC)",
+     "Funding Source": "NNX09AM33A",
+     "Objectives": "The FLEX (Flame Extinguishment Experiment) investigation aims to map the flammability limits of liquid fuels in microgravity environments, measure the effectiveness of various gaseous fire suppressants such as CO2, He, and SF6, and develop reliable predictive models for combustion limits under reduced gravity conditions. The mission seeks to validate and improve simplified models by incorporating detailed chemical reactions, heat transfer, and material movement, using both space-based data and extensive ground-based tests. Key flight experiment goals include obtaining high-resolution measurements of droplet burning rates, flame extinction behavior, heat radiation, soot levels, and temperature profiles, while systematically analyzing the effects of different ambient conditions and suppressant concentrations. These investigations are essential for advancing the fundamental understanding of combustion processes in microgravity and enhancing fire safety protocols for future space missions.",
+     "Approach": "The FLEX experiments involve igniting and observing the burning behavior of relatively large droplets. A primary objective of the experiments is to determine the Limiting Oxygen Index (LOI) as a function of ambient pressure and determine how the presence of a suppressant influences the LOI .\nThe basic outline of the procedure to construct this diagram is as follows:\n  1. Select the test pressure (0.5 \u2212 1.5 atm) for the LOI tests.\n  2. Select a smaller droplet size (\u2248 3 mm)\n  3. Select an ambient oxygen mole fraction that, based on ground-based testing, will support droplets burning to completion (as opposed to extinguishing at a finite droplet size).\n  4. Perform a droplet combustion test.\n  5. Increase the droplet size or repeat the test (if finite extinction diameter at flame extinction observed).\n  6. Continue steps 4 and 5 until flame exists for only a short time after ignition (radiative extinction).\n  7. Continue steps 4 thru 6 at a decreased ambient oxygen mole fraction.\n  8. Continue step 7 to an ambient oxygen mole fraction where the droplet does not ignite.\n\nThere were ambient conditions where the extinction droplet sizes at all ambient oxygen mole fractions were too small to either be observed or measured with the available diagnostics. In this case, the determination of the LOI is similar, but more iterative. Instead of observing flame extinction, however, the procedure  involved an iterative sequence of tests (burn to completion followed by a no ignition test) with progressively smaller increments in ambient oxygen mole fraction to determine the LOI . For the slow flow tests (in the flight experiment), the configuration of the flight hardware did not allow for adequate diagnostics over the entire test for a droplet in a uniform, steady convective flow.  In these tests, the procedure will be to duplicate tests above which yield finite-sized extinction droplet diameters. Near the end of the tests, prior to flame extinction, the droplet will be subjected to a small, sub-buoyant, convective flow (imparted by translating the droplet at a slow, uniform speed).\n\nThe goal of the experiment is then to see how the presence of this flow influences the extinction process. Note, a large number of the tests involve free droplets (as opposed to fiber-supported droplets) and a number of these tests will have droplets with a slow drift velocity. Data gathered from these tests to examine the influences of a small, sub-buoyant flow on both the burning and extinction process.",
+     "Hypothesis": "The primary hypothesis of the FLEX mission is that microgravity conditions fundamentally alter the combustion and extinction characteristics of liquid fuel droplets due to changes in species and energy transport dynamics, radiative heat loss, and chemical kinetics. Specifically, the hypothesis posits that the lack of buoyant convection in microgravity will lead to significant differences in the flammability limits and suppression efficacy of various fire suppressant agents compared to normal gravity conditions. This hypothesis underpins the design of the FLEX experiments, which aim to map flammability boundaries, quantify suppressant efficacy, and develop predictive models to improve fire safety in space environments.",
+     "Research Impacts/Earth Benefits": "The research impacts and Earth benefits of the FLEX mission are significant and multifaceted. By enhancing our understanding of microgravity combustion, the mission directly contributes to improved fire safety protocols for future space missions, ensuring the safety of crew members in environments where traditional fire suppression methods may be ineffective. On Earth, the insights gained from these experiments have the potential to advance fire safety in confined and reduced-gravity environments, such as submarines or high-altitude aircraft. The mission's findings on the effectiveness of various fire suppressants, including CO2, He, and SF6, in microgravity can lead to the development of more efficient and less harmful fire suppression systems, reducing the risk of toxic byproducts during fire events. Additionally, the study of ''cool flames'' and low-temperature combustion processes observed in microgravity can inform the design of advanced combustion engines, leading to improved fuel efficiency and reduced emissions in automotive and industrial applications. Overall, the FLEX mission's contributions to combustion science have the potential to enhance both space exploration safety and terrestrial fire safety technologies.",
+     "Experiment Hardware": {
+      "Name": "Combustion Integrated Rack (CIR)-Fluids and Combustion Facility (FCF)  Multi-user Droplet Combustion Appartatus (MDCA)",
+      "Link": "https://issnationallab.org/facilities/combustion-integrated-rack/  https://gipoc.grc.nasa.gov/wp/fcf-cir/mdca/"
+     },
+     "Publication Author List": "V Nayagam  DL Dietrich  MC Hicks  FA Williams     V. Nayagam     Farouk Tanvir  Dryer Frederick     Farouk Tanvir  Dryer Frederick L.     JM Hickman  DL Dietrich  MC Hicks  V Nayagam  D Stocker     MC Hicks  DL Dietrich  V Nayagam  FA Williams     Nayagam Vedha     Liu Yu Cheng  Rah Jeff K.  Trenou Koffi N.  Hicks Michael C.  Avedisian C Thomas     Farouk Tanvir I.  Dryer Frederick L.     Urzay Javier  Nayagam Vedha  Williams Forman A.     Nayagam Vedha  Williams F. A.     Nayagam Vedha  Dietrich Daniel L.  Williams Forman A.     Seshadri Kalyanasundaram  Peters Norbert  Williams Forman A.  Nayagam Vedha  Paczko Guenter     Alam Fahd E.  Liu Y.C.  Avedisian C.T.  Dryer F.L.  Farouk T.I.     Dietrich Daniel L.  Nayagam Vedha  Hicks Michael C.  Ferkul Paul V.  Dryer Frederick L.  Farouk Tanvir  Shaw Benjamin D.  Suh Hyun Kyu  Choi Mun Y.  Liu Yu Cheng  Avedisian C. Thomas  Williams Forman A.     N Ghata  BD Shaw     Shaw Benjamin D.  Vang Chang L.     Shaw Benjamin D.     Xu Yuhao  Avedisian C. Thomas     Ghata Narugopal  Shaw Benjamin D.     Liu Y.C.  Xu Y.  Avedisian C.T.  Hicks M.C.     Nayagam Vedha  Dietrich Daniel L.  Hicks Michael C.  Williams Forman A.     Prince Juan C.  Williams Forman A.  Ovando Guillermo E.     Paczko Guenter  Peters Norbert  Seshadri Kalyanasundaram  Williams Forman Arthur     Aharon I.  Tam V. K.  Shaw B. D.     Farouk T.I.  Liu Y.C.  Savas A.J.  Avedisian C.T.  Dryer F.L.     Liu Yu Cheng  Farouk Tanvir  Savas Anthony J.  Dryer Frederick L.  Thomas Avedisian C.     Liu Yu Cheng  Savas Anthony J.  Avedisian C. Thomas     Liu Yu Cheng  Savas Anthony J.  Thomas Avedisian C.     Dembia Christopher Lee  Liu Yu Cheng  Avedisian C. Thomas     Farouk Tanvir I.  Dryer Frederick L.     Liu Yu Cheng  Avedisian C. Thomas     Liu Yu Cheng  Savas Anthony J.  Avedisian C. Thomas     Nayagam Vedha  Dietrich Daniel L.  Ferkul Paul V.  Hicks Michael C.  Williams Forman A.     Shaw B. D.  Wang D. F.     Shringi D.  Dwyer H.A.  Shaw B.D.     Shringi D.  Dwyer H.A.  Shaw B.D.     Yu Fei  Shaw Benjamin D.     BD Shaw  J Wei     Farouk T.  Dryer F. L.     Shaw B. D.  Wei J. B.     Dzik Justin  Nayagam Vedha  Williams Forman A.     Jin Y.  Shaw B.D.     Yan Jin  Shaw Benjamin D.     Bae J.H.  Avedisian C.T.     Xiao J.S.  Wei J.B.  Shaw B.D.  Peng Z.     Shringi D.S.  Shaw B.D.  Dwyer H.A.     Wei J. B.  Shaw B. D.     SHAW B. D.  WEI J. B.     Avedisian C. Thomas     DL Dietrich  VM Bryg  PV Ferkul  FA Williams  FL Dryer  BD Shaw  MY Choi  MV Nayagam  MC Hicks  CT Avedisian",
+     "Publication Title": "Methanol Droplet Combustion in Oxygen-Inert Environments in Microgravity     Methanol Droplet Extinction in Oxygen/Carbon-dioxide/Nitrogen Mixtures in Microgravity: Results from the International Space Station Experiments     A Numerical Study On The Extinction Characteristics Of Droplet Combustion Under Microgravity Conditions     Tethered methanol droplet combustion in carbon-dioxide enriched environment under microgravity conditions     FLEX: A Decisive Step Forward in NASA's Combustion Research Program     Dynamics of Water Absorption and Evaporation During Methanol Droplet Combustion in Microgravity     Activation energy asymptotics for methanol droplet extinction in microgravity     Experimental Study of Initial Diameter Effects on Convection-free Droplet Combustion in the Standard Atmosphere for n-Heptane, n-Octane, and n-Decane: International Space Station and Ground-based Experiments     Isolated n-heptane droplet combustion in microgravity: \u201cCool Flames\u201d \u2013 Two-stage combustion     Theory of the propagation dynamics of spiral edges of diffusion flames in von K\u00e1rm\u00e1n swirling flows     Analysis of the melt phase of a rotating polymer disc supporting a diffusion flame     Partial-Burning Regime for Quasi-Steady Droplet Combustion Supported by Cool Flames     Asymptotic analysis of quasi-steady n-heptane droplet combustion supported by cool-flame chemistry     n-Butanol droplet combustion: Numerical modeling and reduced gravity experiments     Droplet Combustion Experiments Aboard the International Space Station     Computational modeling of the effects of support fibers on evaporation of fiber-supported droplets in reduced gravity     Oxygen Lewis Number Effects on Reduced Gravity Combustion of Methanol and n-Heptane Droplets     ISS Droplet Combustion Experiments - Uncertainties in Droplet Sizes and Burning Rates     Combustion of n-Butanol, Gasoline, and n-Butanol/Gasoline Mixture Droplets     Computational Modeling of Unsupported and Fiber-Supported n-Heptane Droplet Combustion in Reduced Gravity: A Study of Fiber Effects     The effect of support fibers on micro-convection in droplet combustion experiments     Cool-flame extinction during n-alkane droplet combustion in microgravity     A short mechanism for the low-temperature ignition of n-heptane at high pressures     The role of cool-flame chemistry in quasi-steady combustion and extinction of n-heptane droplets     Combustion of Submillimeter Heptane/Methanol and Heptane/Ethanol Droplets in Reduced Gravity     Sub-millimeter sized methyl butanoate droplet combustion: Microgravity experiments and detailed numerical modeling     On the spherically symmetrical combustion of methyl decanoate droplets and comparisons with detailed numerical modeling     The spherically symmetric droplet burning characteristics of Jet-A and biofuels derived from camelina and tallow     Spherically symmetric droplet combustion of three and four component miscible mixtures as surrogates for Jet-A     AUTOMATED DATA ANALYSIS FOR CONSECUTIVE IMAGES FROM DROPLET COMBUSTION EXPERIMENTS     On the extinction characteristics of alcohol droplet combustion under microgravity conditions \u2013 A numerical study     A comparison of the spherical flame characteristics of sub-millimeter droplets of binary mixtures of n-heptane/iso-octane and n-heptane/toluene with a commercial unleaded gasoline     Comparison of the Burning Characteristics of Indolene and Commercial Grade Gasoline Droplets without Convection     Can cool flames support quasi-steady alkane droplet burning?     Experiments on Submillimeter Free Droplet Flame Extinction     Influences of support fibers on vaporizing fuel droplets     Numerical studies of flows over liquid droplets on cylindrical fibers     Interpretation of Backlit Droplet Images from ISS Droplet Combustion Experiments     Combustion of Methanol Droplets in Air-Diluent Environments with Reduced and Normal Gravity     Microgravity droplet combustion: effect of tethering fiber on burning rate and flame structure     Influence of Gravity and Ambient Pressure on Combustion and Flammability of n-Heptane and 1-Propanol Droplets in Air-Diluent Environments     Ignition and combustion of n-heptane droplets in carbon dioxide enriched environments     Computational modeling of n-heptane droplet combustion in air\u2013diluent environments under reduced-gravity     Numerical Simulation of Unsteady Flows and Shape Oscillations in Liquid Droplets Induced by Deployment Needle Retraction     Nonane droplet combustion with and without buoyant convection: Flame structure, burning rate and extinction in air and helium     Temperature and fiber optic spectroscopy composition measurements of heated propanol\u2013acetone droplets     Laser-induced fluorescence imaging of acetone inside evaporating and burning fuel droplets     Reduced Gravity Combustion of Propanol Droplets in Oxygen-Inert Environments     PROPANOL DROPLET FLAMMABILITY AND COMBUSTION IN AIR-DILUENT ENVIRONMENTS UNDER NORMAL AND REDUCED GRAVITY     Developing Surrogates for Liquid Transportation Fuels: The Role of Spherically Symmetric Droplet Combustion     Detailed results from the flame extinugishment experiment (FLEX) - March 2009 to December 2011",
+     "Data Source Type": "psi"
+    },
+    "highlight": {
+     "all": [
+      "<em>PSI</em>-69",
+      "<em>Flame</em> <em>Extinguishment</em> Experiment",
+      "Droplet <em>Flame</em> <em>Extinguishment</em> in Microgravity",
+      "The FLEX (<em>Flame</em> <em>Extinguishment</em> Experiment) investigation aims to map the flammability limits of liquid",
+      "Continue steps 4 and 5 until <em>flame</em> exists for only a short time after ignition (radiative extinction)"
+     ]
+    }
+   },
+   {
+    "_index": "investigation",
+    "_type": "docs",
+    "_id": "mfg-CJIBXmwQ5jcuW7LN",
+    "_score": 5.792644,
+    "_source": {
+     "Accession": "PSI-26",
+     "Public Release Date": 1372550400.0,
+     "Thumbnail": "/geode-py/ws/investigations/PSI-26/image",
+     "Title": "Burning and Suppression of Solids",
+     "Person": {
+      "Last Name": "Olson Ferkul Takahashi T'ien",
+      "Middle Initials": "",
+      "First Name": "Sandra L. Paul Funiaki James"
+     },
+     "Keywords": "Flame Spread     Fire suppression system     Damkohler number     Boundary layer     Fire safety     Forced Flow Flame     Kinetic regime",
+     "Acronym": "BASS",
+     "Flight Platform": "International Space Station (ISS)",
+     "Research Area": "Combustion Science",
+     "SubResearch Area": "Spacecraft Fire Safety",
+     "Related Investigations": "PSI-107     PSI-25",
+     "Project Type": "Microgravity Investigation",
+     "Proposal Title": "",
+     "Investigation Start Date": "10-01-2009",
+     "Investigation End Date": "06-30-2013",
+     "Sponsoring Agency": "National Aeronautics and Space Administration (NASA)",
+     "Monitoring Center": "Glenn Research Center (GRC)",
+     "Funding Source": "",
+     "Objectives": "The two main objectives for BASS are to:\n    1.) Begin to bridge the gap between the normal gravity NASA-STD-6001 Test#1 method, ground-based microgravity tests, and actual material flammability in microgravity. The relation between these can be investigated by observing flames burning for the longer times available in flight. Practical, realistic (thicker) fuels in typical geometries will be examined, including wake flames which have characteristics of a fire burning behind another object (for example, a fire burning in tight area which may not be easily accessible).\n    2.) Assess the effectiveness of an inert, gaseous extinguishing agent (similar to that used on ISS) in putting out flames over different materials, geometries, preheating, and flow.",
+     "Approach": "The experiment was conducted aboard the International Space Station (ISS) inside the Microgravity Glove Box (MSG). Custom-made fabric samples consisting of 75% cotton and 25% fiberglass (by mass) measuring were used as a fuel source as well as Nomex fabric and Ultem. A Kanthal wire (29-gage)igniter was used to initiate combustion at one end of the fabric. Airflow was controlled using a variable speed fan, with airflow speeds reaching as high as 40 cm/s. The airflow was directed along the fuel surface in either the opposed or concurrent direction.\n\nThis investigation explored two primary air flow configurations; concurrent-flow and opposed-flow. With concurrent-flow air flows in the same direction as the flame spread and in opposed-flow air flows in the opposite direction of flame spread. Flames were observed in the top and edge profiles and data was collected on flame size, shape, color, spread rate, and potential flame quenching. The samples were placed in a small flow duct (76 mm x 76 mm cross section) that allowed for airflow across the fabric. Other sample shapes were utilized as well including spheres and cylinders.",
+     "Hypothesis": "BASS experiments were based on the hypothesis that materials in microgravity, with adequate ventilation, burn as well if not better than the same material in normal gravity with other conditions being identical (pressure, oxygen concentration, temperature, etc.) To test this hypothesis with any but the thinnest materials requires extended microgravity time \u2013 longer than available in drop towers or parabolic aircraft.",
+     "Research Impacts/Earth Benefits": "Current NASA spacecraft materials selection is based on a standard test method (NASA\u2013STD\u20136001 Test 1) that segregates material based on 1-g behavior without consideration of low gravity effects. A critical element of this understanding is the radiative heat emission from the flame. These results are used in first order models and predictions of heat release in spacecraft fires and as a means to extend heat release data from tests like the NASA cone calorimeter test (NASA\u2013STD\u20136001 Test 2) to a performance-based material selection process. Using nitrogen as a flame suppressant in microgravity provides a direct link to current and planned extinguishment techniques.\nBASS results provide essential guidance to ground-based microgravity combustion research efforts. Detailed combustion models are validated using the simpler flow environment afforded by tests in microgravity. Once validated, they can be used to build more complex combustion models needed to capture the important details of flames burning in normal gravity. These models have wide applicability to the general understanding of many terrestrial combustion problems and will guide novel spacecraft design and ensure the safety of future crewed missions.",
+     "Experiment Hardware": {
+      "Name": "Microgravity Science Glovebox",
+      "Link": "https://www1.grc.nasa.gov/space/iss-research/msg/"
+     },
+     "Publication Author List": "Spivey Reggie  Luz Paul     Bhattacharjee Subrata  Laue Matthew  Carmignani Luca  Ferkul Paul  Olson Sandra     Takahashi Shuhei  Ebisawa Tomoya  Bhattacharjee Subrata  Ihara Tadayoshi     S Bhattacharjee  R Nagarkar  Y Nakamura     Bhattacharjee Subrata  Paolini Christopher P.  Miller Fletcher  Nagarkar Rohit     Bhattacharjee Subrata  Cartnignani Luca     JR Villaraza  L Carmignani  S Bhattacharjee     P Ferkul  SL Olson  F Takahashi  M Endo  MC Johnston  JS Tien     S Bhattacharjee  M Bundy  C Paolini  G Patel  W Tran.     GR Bornand  FJ Miller  JM Pepper  SL Olson  IS Wichman",
+     "Publication Title": "The Microgravity Science Glovebox as a Platform for Exploration Research on the International Space Station     Opposed-flow flame spread: A comparison of microgravity and normal gravity experiments to establish the thermal regime     Simplified model for predicting difference between flammability limits of a thin material in normal gravity and microgravity environments     A Correlation for an Effective Flow Velocity for Capturing the Boundary Layer Effect in Opposed-Flow Flame Spread over Thin Fuels     Radiation signature in opposed-flow flame spread     OS24-1 The Effect of Boundary Layer on Blow-Off Extinction in Opposed-Flow Flame Spread: Results of Experiments and Simplified Analysis(invited,Scale modeling on solid combustion,OS24 Scale modeling,FLUID AND THERMODYNAMICS)     Role of Gas Radiation in the Mechanism of Opposed-Flow Flame Spread in a Microgravity Environment     Thickness and Fuel Preheating Effects on Material Flammability in Microgravity from the BASS Experiment     A novel apparatus for flame spread study     Opposed-Flow Flame Spread in a Narrow Channel Apparatus over Thin PMMA Sheets",
+     "Data Source Type": "psi"
+    },
+    "highlight": {
+     "all": [
+      "<em>PSI</em>-26",
+      "Forced Flow <em>Flame</em>     Kinetic regime",
+      "<em>PSI</em>-107     <em>PSI</em>-25",
+      "in the opposite direction of <em>flame</em> spread.",
+      "Using nitrogen as a <em>flame</em> suppressant in microgravity provides a direct link to current and planned <em>extinguishment</em>"
+     ]
+    }
+   },
+   {
+    "_index": "investigation",
+    "_type": "docs",
+    "_id": "JMlqm5kBuqYijXJPQ3tv",
+    "_score": 5.681481,
+    "_source": {
+     "Accession": "PSI-117",
+     "Public Release Date": 1781049600.0,
+     "Thumbnail": "/geode-py/ws/investigations/PSI-117/image",
+     "Title": "Effect of External Thermo-Convective Perturbation on Cool Flame Dynamics: A Multidimensional Multi-Physics CFD Analysis",
+     "Person": {
+      "Last Name": "Farouk Hicks",
+      "Middle Initials": "",
+      "First Name": "Tanvir Mike"
+     },
+     "Keywords": "Cool Flames     thermo-convective perturbation     Droplet combustion     FLEX",
+     "Acronym": "",
+     "Flight Platform": "",
+     "Research Area": "Combustion Science",
+     "SubResearch Area": "Droplet",
+     "Related Investigations": "PSI-69     PSI-142",
+     "Project Type": "Ground Investigation",
+     "Proposal Title": "Effect of External Thermo-Convective Perturbation on Cool Flame Dynamics: A Multidimensional Multi-Physics CFD Analysis",
+     "Investigation Start Date": "02-15-2017",
+     "Investigation End Date": "02-14-2022",
+     "Sponsoring Agency": "National Aeronautics and Space Administration (NASA)  PSI grant",
+     "Monitoring Center": "Glenn Research Center (GRC)",
+     "Funding Source": "NNX17AF97A",
+     "Objectives": "The objective of this ground investigation was to use flight data obtained from PSI through NASA\u2019s Flame Extinguishment Experiment (FLEX) to quantify how externally imposed thermal and convective perturbations regulated the dynamics and ultimate fate of already established droplet cool flames, and to explain run-to-run variability by isolating the roles of deliberate heating and unintentional drift-induced convection. Focusing on both small and large droplets, the work mapped stability windows for ignition, sustained oscillation, transitions to hot ignition and warm-flame behavior, and extinction under microgravity. By leveraging and extending the FLEX data in the PSI, this study produced reusable models and sensitivity analyses that coupled low-temperature chemistry with transport and radiative effects.",
+     "Approach": "OpenFOAM was used to develop a 3-D CFD model of n-alkane droplet cool flames in microgravity, coupling variable-density Navier\u2013Stokes flow with low-temperature combustion chemistry, coupled heat and mass transfer, and radiation. Model fidelity was established against ISS FLEX measurements, after which controlled simulations examined three forcing modes (i) convection alone to mimic droplet drift, (ii) imposed heat flux, and (iii) combined convection plus heating applied to both large (1\u20134 mm) and sub-millimeter (~0.5 mm) droplets.\n\nTo accelerate progress, the study began with simplified chemistry and transitioned to reduced mechanisms for parameter sweeps over forcing amplitude and frequency, ambient composition (including ozone-assisted cases), and pressure. From each case, predictive observables were extracted (ignition delay, oscillation frequency and amplitude, stand-off and extinction diameters), and were used to construct stability maps that delineated conditions for cool-flame onset, persistence, and quenching. These maps were reconciled with FLEX observations and were used to guide next-generation test matrices for both large- and small-droplet experiments.",
+     "Hypothesis": "External thermo-convective perturbations (imposed temperature gradients, non-uniform heating, oscillatory/shear inflow) were expected to govern cool-flame ignition, oscillation, transition to hot ignition, and extinction by shifting residence time and scalar dissipation. In microgravity, where buoyancy was suppressed, this forcing was anticipated to dominate transport. A multidimensional, multi-physics CFD model was used to map perturbation-dependent stability boundaries and predict observables for comparison with FLEX data.",
+     "Research Impacts/Earth Benefits": "Space Benefits: Potential to improve spacecraft fire-safety modeling by resolving cool-flame/extinction behavior in microgravity; leverages FLEX to define safer operating envelopes/materials.\nEarth Benefits: Advances low-temperature combustion understanding relevant to engine knock, efficiency, and emissions; delivers validated CFD tools transferrable to practical combustors.",
+     "Experiment Hardware": {
+      "Name": "",
+      "Link": ""
+     },
+     "Publication Author List": "Farouk Tanvir I.  Dryer Frederick L.     Farouk Tanvir I.  Won Sang Hee  Dryer Frederick L.     Xu Yuhao  Farouk Tanvir I.  Hicks Michael C.  Avedisian C. Thomas     Alam Fahd E.  Aghdam Ali Charchi  Dryer Frederick L.  Farouk Tanvir I.     Farouk T  Won S  Dryer F.     Farouk T  Won S  Dryer F.     Alam F  Dryer F  Farouk T.     Alam F  Dryer F  Farouk T.     Alam F  Charchi A  Dryer F  Farouk T.     Ju Yiguang  Reuter Christopher B.  Yehia Omar R.  Farouk Tanvir I.  Won Sang Hee",
+     "Publication Title": "Extinction characteristics of isolated n-alkane fuel droplets during low temperature cool flame burning in air (2023)     Sub-millimeter sized multi-component jet fuel surrogate droplet combustion: Physicochemical preferential vaporization effects (2021)     Initial diameter effects on combustion of unsupported equi-volume n-heptane/iso-octane mixture droplets and the transition to cool flame behavior: Experimental observations and detailed numerical modeling (2020)     Oscillatory cool flame combustion behavior of submillimeter sized n-alkane droplet under near limit conditions (2019)     Investigating the role of preferential vaporization during submillimeter sized multicomponent jet fuel surrogate droplet combustion (2019)     Multi-component jet fuel surrogate droplet combustion: Preferential vaporization behaviors under spray relevant conditions and effects on combustion behaviors (2019)     Cool Flame Combustion of Sub-Millimeter Sized Higher n-Alkane Droplets at Atmospheric Condition (2017)     Non-Premixed - Partially Premixed to Diffusive Burning: Initial Transient of Direct Cool Flame Burn (2017)     Oscillatory Cool Flame Combustion Behavior of Submillimeter Sized n-Alkane Droplet under Near Limit Conditions (2018)     Dynamics of cool flames (2019)",
+     "Data Source Type": "psi"
+    },
+    "highlight": {
+     "all": [
+      "<em>PSI</em>-117",
+      "<em>PSI</em>-69     <em>PSI</em>-142",
+      "National Aeronautics and Space Administration (NASA)  <em>PSI</em> grant",
+      "The objective of this ground investigation was to use flight data obtained from <em>PSI</em> through NASA\u2019s <em>Flame</em>",
+      "<em>Extinguishment</em> Experiment (FLEX) to quantify how externally imposed thermal and convective perturbations"
+     ]
+    }
+   },
+   {
+    "_index": "investigation",
+    "_type": "docs",
+    "_id": "tPg-CJIBXmwQ5jcuZ7JF",
+    "_score": 5.447221,
+    "_source": {
+     "Accession": "PSI-68",
+     "Public Release Date": 1569801600.0,
+     "Thumbnail": "/geode-py/ws/investigations/PSI-68/image",
+     "Title": "Flame Extinguishment Experiment - 2",
+     "Person": {
+      "Last Name": "Dryer Shaw Choi Nayagam Avedisian Dietrich Hicks Williams",
+      "Middle Initials": " A.",
+      "First Name": "Frederick Benjamin D. Mun Vedha Thomas Daniel Michael Forman"
+     },
+     "Keywords": "FLEX     Decane     Radiative Extinction     Flame Extinction     Microgravity Combustion     Diffusive Extinction     Multiple Droplet Combustion Apparatus     Droplet Combustion     Spacecraft Fire Safety     Ethanol     Soot Formation",
+     "Acronym": "FLEX-2",
+     "Flight Platform": "International Space Station (ISS)",
+     "Research Area": "Combustion Science",
+     "SubResearch Area": "Spacecraft Fire Safety",
+     "Related Investigations": "",
+     "Project Type": "Microgravity Investigation",
+     "Proposal Title": "The Fundamental Studies in Droplet Combustion and Flame Extinguishment in Microgravity",
+     "Investigation Start Date": "08-12-2016",
+     "Investigation End Date": "09-30-2019",
+     "Sponsoring Agency": "National Aeronautics and Space Administration (NASA)",
+     "Monitoring Center": "Glenn Research Center (GRC)",
+     "Funding Source": "NNX16AR09A",
+     "Objectives": "The primary goal of the FLEX-2 flight experiments is to extend the results of FLEX-1 to fuels and environmental conditions that mimic real combustor conditions, as well as, provide benchmark experimental data on bi-component droplet combustion over a wide range of initial conditions in order to validate numerical simulations and to develop new theoretical models.\n\nDetailed experimental objectives can be further itemized as:\n  1. Investigate the role of liquid-phase mixing on the burning characteristics of bi-component fuel droplets.\n  2. Examine the steady and unsteady liquid and gas-phase phenomena in pure fuel combustion.\n  3. Study flame extinction mechanisms and their boundaries.\n  4. Analyze the soot formation process, including soot volume fraction soot-shell dynamics.\n  5. Determine the influence of droplet interactions on the flammability limits and extinction behavior of droplet arrays.\n  6. Validate theoretical models of droplet combustion through comprehensive experimental data collection in microgravity environments.",
+     "Approach": "The chamber was filled with the appropriate atmosphere, which was varied in pressure between 0.5 atm to 3.0 atm and O2 concentration between 0.1 to 0.4 mole fraction with the diluent gas making up the balance. A settling time of approximately 2 minutes  elapsed prior to initiating the test in order to ensure that the temperature and pressure of the chamber gases have stabilized. This settling time was followed by the dispensing of a predetermined amount of fuel (based on the target droplet size) onto the support fiber for those tests in which the droplet is not freely deployed. When sufficient fuel has been dispensed the dispensing needles were retracted and a dwell period of at least 10 seconds was allowed for the droplet internal fluid motion induced by deployment to subside. This was then followed by initiating power to the ignitor for a selectable amount of time ranging from 1 second to 5 seconds after which the ignitor was retracted from the field of view. If the flow field is to be generated by translating the droplet then droplet motion would commence at the same time that the ignitor is retracted. A near real-time download of the color camera video was employed in order to verify successful droplet deployment, ignition, and overall progress of the experiment. Pressure and temperature data of the chamber environment was also recorded in near real time.\n\nThe overall investigation approach can be summarized as:\n  1. Test parameters are determined, including pressure, temperature, fuel mixture, and humidity.\n  2. Fill the combustion chamber with the selected gas mixtures.\n  3. Deploy the droplet(s) carefully controlling the droplet diameter.\n  4. Allow the droplet to stabilize in the microgravity environment.\n  5. Ignite the droplet in a uniform and controlled fashion.\n  6. Monitor combustions and track flame evolution using high speed photography.\n  7. Monitor and adjust experimental conditions as needed.\n  8. Analyze data.\n\nThe independently varied experimental parameters during FLEX-2 experiments were 1) Fuel type 2) Ambient gas composition 3) Ambient Pressure 4) Droplet initial diameter 5) Droplet translation velocity (and acceleration) 6) Droplet spacing and initial size in a binary linear array.",
+     "Hypothesis": "Fairly sophisticated numerical simulations of convective droplet combustion have been developed in the last decade where the key contribution is the inclusion of full Navier-Stokes equations for the gas-phase flow field. However, due to the inherent complexity of the problem, varying degrees of approximations have been made in treating the chemistry, radiation, and the coupling between the gas and liquid phases. The validity of the assumptions or the hypothesis used in these simulation have not been confirmed by using benchmark data. By conducting these experiments in a microgravity environment, the effects of buoyancy are minimized, and the droplet can be characterized only as a function of thermocapillary or solutalcapillary stresses allowing for a clear observation of the fundamental combustion processes,  The present FLEX-2 experiments using bi-component mixtures. In addition, the microgravity environment allows study of such phenomena as the transitions between radiative and diffusive extension of the flame. The primary goal of the flight experiments is to provide benchmark experimental data on bi-component droplet combustion over a wide range of initial conditions that could be used to validate numerical simulations and to develop new theoretical models.",
+     "Research Impacts/Earth Benefits": "The combustion of liquid fuels is the overwhelming energy source in the transportation sector. Insights gained from these studies can lead to more efficient and cleaner combustion technologies which are crucial for reducing pollution and greenhouse gas emissions. By improving fuel efficiency and developing better fuels, these experiments can contribute to:\n\n  1) More sustainable energy production.\n  2) Future combustor designs with minimal carbon footprint, maximum fuel efficiency and less pollutant emissions.\n  3) Allow quantitative evaluation of the performance of future fuels in combustors through the development of surrogates (mixtures of pure fuels that simulate the behavior of real fuels).\n  4) Validation of jet engine models by engine manufacturers with support from prior droplet results.",
+     "Experiment Hardware": {
+      "Name": "Combustion Integrated Rack (CIR)  Multi-user Droplet Combustion Appartatus (MDCA)",
+      "Link": "https://issnationallab.org/facilities/combustion-integrated-rack/  https://gipoc.grc.nasa.gov/wp/fcf-cir/mdca/"
+     },
+     "Publication Author List": "YC Liu  CT Avedisian  KN Trenou  JK Rah  MC Hicks     FE Alam  YC Liu  CT Avedisian  FL Dryer  TI Farouk     Dietrich Daniel L.  Nayagam Vedha  Hicks Michael C.  Ferkul Paul V.  Dryer Frederick L.  Farouk Tanvir  Shaw Benjamin D.  Suh Hyun Kyu  Choi Mun Y.  Liu Yu Cheng  Avedisian C. Thomas  Williams Forman A.     TI Farouk  MC Hicks  FL Dryer     N Ghata  BD Shaw     Shaw Benjamin D.  Vang Chang L.     Shaw Benjamin D.     Xu Yuhao  Avedisian C. Thomas     Ghata Narugopal  Shaw Benjamin D.     YC Liu  Y Xu  CT Avedisian  MC Hicks     V Nayagam  DL Dietrich  MC Hicks  FA Williams     JC Prince  FA Williams  GE Ovando     Paczko Guenter  Peters Norbert  Seshadri Kalyanasundaram  Williams Forman Arthur     Aharon I.  Tam V. K.  Shaw B. D.     Farouk Tanvir I.  Dryer Frederick L.     Farouk T.I.  Liu Y.C.  Savas A.J.  Avedisian C.T.  Dryer F.L.     YC Liu  T Farouk  AJ Savas  FL Dryer  CT Avedisian     YC Liu  AJ Savas  CT Avedisian     YC Liu  AJ Savas  CT Avedisian     Dembia Christopher Lee  Liu Yu Cheng  Avedisian C. Thomas     Farouk Tanvir I.  Dryer Frederick L.     Liu Yu Cheng  Avedisian C. Thomas     Liu Yu Cheng  Savas Anthony J.  Avedisian C. Thomas     V Nayagam  DL Dietrich  PV Ferkul  MC Hicks  FA Williams     Shaw B. D.  Wang D. F.     D Shringi  HA Dwyer  BD Shaw     Shaw Benjamin  Wei Jingbin     Farouk T.  Dryer F. L.     Shaw B. D.  Wei J. B.     Dzik Justin  Nayagam Vedha  Williams Forman A.     Jin Y.  Shaw B.D.     Yan Jin  Shaw Benjamin D.     Bae J.H.  Avedisian C.T.     Xiao J.S.  Wei J.B.  Shaw B.D.  Peng Z.     DS Shringi  BD Shaw  HA Dwyer     Wei J. B.  Shaw B. D.     SHAW B. D.  WEI J. B.     Avedisian C. Thomas     Dietrich D. L.  Calabria R.  Massoli P.  Nayagam V.  Williams F. A.     Williams Forman A.  Nayagam Vedha     Williams Forman A.  Nayagam Vedha     Nayagam Vedha  Dietrich Daniel L.  Williams Forman A.     Nayagam Vedha  Dietrich Daniel L.  Williams Forman A.     Nayagam Vedha  Dietrich Daniel L.  Hicks Michael C.  Williams Forman A.     Nayagam Vedha  Dietrich Daniel L.  Williams Forman A.     Nayagam Vedha  Dietrich Daniel L.  Williams Forman A.     RB Rasul  CT Avedisian  Y Xu  MC Hicks  AP Reeves     Yu Fei  Shaw Benjamin D.",
+     "Publication Title": "Experimental Study of Initial Diameter Effects on Convection-free Droplet Combustion in the Standard Atmosphere for n-Heptane, n-Octane, and n-Decane: International Space Station and Ground-based Experiments     n-Butanol droplet combustion: Numerical modeling and reduced gravity experiments     Droplet Combustion Experiments Aboard the International Space Station     Multistage oscillatory \u201cCool Flame\u201d behavior for isolated alkane droplet combustion in elevated pressure microgravity condition     Computational modeling of the effects of support fibers on evaporation of fiber-supported droplets in reduced gravity     Oxygen Lewis Number Effects on Reduced Gravity Combustion of Methanol and Heptane Droplets     ISS Droplet Combustion Experiments - Uncertainties in Droplet Sizes and Burning Rates     Combustion of Butanol, Gasoline, and Butanol/Gasoline Mixture Droplets     Computational Modeling of Unsupported and Fiber-Supported n-Heptane Droplet Combustion in Reduced Gravity: A Study of Fiber Effects     The effect of support fibers on micro-convection in droplet combustion experiments     Cool-flame extinction during n-alkane droplet combustion in microgravity     A short mechanism for the low-temperature ignition of n-heptane at high pressures     The role of cool-flame chemistry in quasi-steady combustion and extinction of n-heptane droplets     Combustion of Submillimeter Heptane/Methanol and Heptane/Ethanol Droplets in Reduced Gravity     Isolated n-heptane droplet combustion in microgravity: \u201cCool Flames\u201d \u2013 Two-stage combustion     Sub-millimeter sized methyl butanoate droplet combustion: Microgravity experiments and detailed numerical modeling     On the spherically symmetrical combustion of methyl decanoate droplets and comparisons with detailed numerical modeling     The spherically symmetric droplet burning characteristics of Jet-A and biofuels derived from camelina and tallow     Spherically symmetric droplet combustion of three and four component miscible mixtures as surrogates for Jet-A     AUTOMATED DATA ANALYSIS FOR CONSECUTIVE IMAGES FROM DROPLET COMBUSTION EXPERIMENTS     On the extinction characteristics of alcohol droplet combustion under microgravity conditions \u2013 A numerical study     A comparison of the spherical flame characteristics of sub-millimeter droplets of binary mixtures of n-heptane/iso-octane and n-heptane/toluene with a commercial unleaded gasoline     Comparison of the Burning Characteristics of Indolene and Commercial Grade Gasoline Droplets without Convection     Can cool flames support quasi-steady alkane droplet burning?     Experiments on Submillimeter Free Droplet Flame Extinction     Influences of support fibers on vaporizing fuel droplets     Combustion of Methanol Droplets in Air-Diluent Environments with Reduced and Normal Gravity     Microgravity droplet combustion: effect of tethering fiber on burning rate and flame structure     Influence of Gravity and Ambient Pressure on Combustion and Flammability of n-Heptane and 1-Propanol Droplets in Air-Diluent Environments     Ignition and combustion of n-heptane droplets in carbon dioxide enriched environments     Computational modeling of n-heptane droplet combustion in air\u2013diluent environments under reduced-gravity     Numerical Simulation of Unsteady Flows and Shape Oscillations in Liquid Droplets Induced by Deployment Needle Retraction     Nonane droplet combustion with and without buoyant convection: Flame structure, burning rate and extinction in air and helium     Temperature and fiber optic spectroscopy composition measurements of heated propanol\u2013acetone droplets     Laser-induced fluorescence imaging of acetone inside evaporating and burning fuel droplets     Reduced Gravity Combustion of Propanol Droplets in Oxygen-Inert Environments     PROPANOL DROPLET FLAMMABILITY AND COMBUSTION IN AIR-DILUENT ENVIRONMENTS UNDER NORMAL AND REDUCED GRAVITY     Developing Surrogates for Liquid Transportation Fuels: The Role of Spherically Symmetric Droplet Combustion     Experimental Observations of the Low-Temperature Burning of Decane/Hexanol Droplets in Microgravity     Cool-flame dodecane-droplet extinction diameters     Quasi-steady combustion of normal-alkane droplets supported by Cool-Flame chemistry near diffusive extinction     Radiative extinction of burner-supported spherical diffusion flames: A scaling analysis     Unsteady droplet combustion with fuel thermal expansion     Radiative extinction of large n-alkane droplets in oxygen-inert mixtures in microgravity     A Burke-Schumann analysis of dual-flame structure supported by a burning droplet     A Burke\u2013Schumann analysis of diffusion-flame structures supported by a burning droplet     Dynamic Differential Image Circle Diameter Measurement Precision Assessment: Application to Burning Droplets     Interpretation of Backlit Droplet Images from ISS Droplet Combustion Experiments",
+     "Data Source Type": "psi"
+    },
+    "highlight": {
+     "all": [
+      "<em>PSI</em>-68",
+      "<em>Flame</em> <em>Extinguishment</em> Experiment - 2",
+      "The Fundamental Studies in Droplet Combustion and <em>Flame</em> <em>Extinguishment</em> in Microgravity",
+      "Study <em>flame</em> extinction mechanisms and their boundaries.\n  4.",
+      "Monitor combustions and track <em>flame</em> evolution using high speed photography.\n  7."
+     ]
+    }
+   }
+  ]
+ }
+}

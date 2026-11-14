@@ -29,6 +29,9 @@ __pycache__/
 .venv/
 data/raw/
 
+# C++ build
+core/build/
+
 # Local secrets (LLM keys etc.)
 .env
 .env.*

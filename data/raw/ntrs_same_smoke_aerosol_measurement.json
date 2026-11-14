@@ -1,0 +1,2964 @@
+{
+ "stats": {
+  "took": 68,
+  "total": 80,
+  "estimate": false,
+  "maxScore": 150.67598
+ },
+ "results": [
+  {
+   "_meta": {
+    "score": 150.67598
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20130000422,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "6b90242130774662b77ba713f11c161b",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Environment Pollution"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20130000422,
+    "ear": "NO",
+    "id": "757cb44dfc0e47a699875b35147e7460",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "AIAA Paper 2012-3536",
+    "E-18517",
+    "Report Number: AIAA Paper 2012-3536",
+    "Report Number: E-18517"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "WBS 904211 .04.02.30.19",
+     "submissionId": 20130000422,
+     "id": "0ee842ef783d4bdc83b595e66a23bf3b",
+     "type": "WBS"
+    }
+   ],
+   "title": "Particle Morphology and Size Results from the Smoke Aerosol Measurement Experiment-2",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-27T10:35:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Urban, David L."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "605bd352c9ff484796795975453a964c"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Ruff, Gary A."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "a708f790218a4942b816843734f25658"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Greenberg, Paul S."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "16f2a8b5860941f881ff5ba709fd6c72"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Fischer, David"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "64a5646a42bf4f2f8ee6b7572b666e31"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Meyer, Marit"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "ccf7c790218e45c8b7d800ba9042ffe0"
+    },
+    {
+     "sequence": 5,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Mulholland, George"
+      },
+      "organization": {
+       "name": "Maryland Univ.",
+       "location": "College Park, MD, United States"
+      }
+     },
+     "id": "fb83554193e842128db41c11d3469160"
+    },
+    {
+     "sequence": 6,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Yuan, Zeng-Guang"
+      },
+      "organization": {
+       "name": "National Center for Space Exploration Research on Fluids and Combustion",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "4b1a92e82b8a48f0ad5a204fe1a63fd3"
+    },
+    {
+     "sequence": 7,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Bryg, Victoria"
+      },
+      "organization": {
+       "name": "National Center for Space Exploration Research on Fluids and Combustion",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "467cfab42a784cabb8e12a63df6b4e0c"
+    },
+    {
+     "sequence": 8,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Cleary, Thomas"
+      },
+      "organization": {
+       "name": "National Inst. of Standards and Technology",
+       "location": "Gaithersburg, MD, United States"
+      }
+     },
+     "id": "529850ea46344ddc8829ee240d494777"
+    },
+    {
+     "sequence": 9,
+     "submissionId": 20130000422,
+     "meta": {
+      "author": {
+       "name": "Yang, Jiann"
+      },
+      "organization": {
+       "name": "National Inst. of Standards and Technology",
+       "location": "Gaithersburg, MD, United States"
+      }
+     },
+     "id": "5d288e101ffb493783a23f7263d9653a"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20130000422,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-27T10:35:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Results are presented from the Reflight of the Smoke Aerosol Measurement Experiment (SAME-2) which was conducted during Expedition 24 (July-September 2010). The reflight experiment built upon the results of the original flight during Expedition 15 by adding diagnostic measurements and expanding the test matrix. Five different materials representative of those found in spacecraft (Teflon, Kapton, cotton, silicone rubber and Pyrell) were heated to temperatures below the ignition point with conditions controlled to provide repeatable sample surface temperatures and air flow. The air flow past the sample during the heating period ranged from quiescent to 8 cm/s. The smoke was initially collected in an aging chamber to simulate the transport time from the smoke source to the detector. This effective transport time was varied by holding the smoke in the aging chamber for times ranging from 11 to 1800 s. Smoke particle samples were collected on Transmission Electron Microscope (TEM) grids for post-flight analysis. The TEM grids were analyzed to observe the particle morphology and size parameters. The diagnostics included a prototype two-moment smoke detector and three different measures of moments of the particle size distribution. These moment diagnostics were used to determine the particle number concentration (zeroth moment), the diameter concentration (first moment), and the mass concentration (third moment). These statistics were combined to determine the diameter of average mass and the count mean diameter and, by assuming a log-normal distribution, the geometric mean diameter and the geometric standard deviations can also be calculated. Overall the majority of the average smoke particle sizes were found to be in the 200 nm to 400 nm range with the quiescent cases producing some cases with substantially larger particles.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "submissionId": 20130000422,
+     "name": "American Inst. of Aeronautics and Astronautics",
+     "location": "United States",
+     "id": "8cc7ca6cd259421f850978c9024c2845"
+    },
+    {
+     "country": "United States",
+     "submissionId": 20130000422,
+     "endDate": "2012-07-19T00:00:00.0000000+00:00",
+     "sponsors": [
+      {
+       "meta": {
+        "organization": {
+         "name": "American Inst. of Aeronautics and Astronautics",
+         "location": "United States"
+        }
+       },
+       "meetingId": "03f55b6234654db59e4e7d8012f9999e",
+       "id": "c8fbcf43833e487b9eb738b19284d2e1"
+      }
+     ],
+     "name": "42nd International Conference on Environmental Systems (ICES)",
+     "location": "San Diego, CA",
+     "id": "03f55b6234654db59e4e7d8012f9999e",
+     "startDate": "2012-07-15T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20130000422,
+     "id": "04cebe1311884b97ace1d29336249e93",
+     "publicationDate": "2012-07-15T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20130000422.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20130000422/downloads/20130000422.pdf",
+      "pdf": "/api/citations/20130000422/downloads/20130000422.pdf",
+      "fulltext": "/api/citations/20130000422/downloads/20130000422.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 150.14015
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20140011273,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "6c2417845b2f46789c969011d96b2b03",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Environment Pollution"
+   ],
+   "keywords": [
+    "biomass burning",
+    "fire radiative power measurements",
+    "smoke aerosol emissions"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20140011273,
+    "ear": "NO",
+    "id": "17fa8c7643d5450f87d0d921ed0a2699",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-11T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "GSFC-E-DAA-TN11731",
+    "Report Number: GSFC-E-DAA-TN11731"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "NNG08HZ16C",
+     "submissionId": 20140011273,
+     "id": "f6b4958cc577498ba29e2a0d79b1048b",
+     "type": "CONTRACT_GRANT"
+    }
+   ],
+   "title": "Global Top-Down Smoke-Aerosol Emissions Estimation Using Satellite Fire Radiative Power Measurements",
+   "stiType": "REPRINT",
+   "distribution": "PUBLIC",
+   "submittedDate": "2014-09-02T11:24:26.7770000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20140011273,
+     "meta": {
+      "author": {
+       "name": "Ichoku, C."
+      },
+      "organization": {
+       "name": "NASA Goddard Space Flight Center",
+       "location": "Greenbelt, MD United States"
+      }
+     },
+     "id": "fc8d66d290b24a4a824a7770d7e33905"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20140011273,
+     "meta": {
+      "author": {
+       "name": "Ellison, L."
+      },
+      "organization": {
+       "name": "Science Systems and Applications, Inc.",
+       "location": "Lanham, MD, United States"
+      }
+     },
+     "id": "46a53fd4dd244dd696aa2abb255499a9"
+    }
+   ],
+   "stiTypeDetails": "Reprint (Version printed in journal)",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20140011273,
+   "sourceIdentifiers": [
+    {
+     "number": "doi:10.5194/acp-14-6643-2014",
+     "submissionId": 20140011273,
+     "id": "63e19bedbeee417caf9f751f9df1b79e",
+     "type": "DOI"
+    },
+    {
+     "submissionId": 20140011273,
+     "id": "28e8b4bff5eb45a68dd63eb5e2440a27",
+     "descriptor": "doi:10.5194/acp-14-6643-2014"
+    }
+   ],
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2014-09-02T11:24:26.7770000+00:00",
+   "center": {
+    "code": "GSFC",
+    "name": "Goddard Space Flight Center",
+    "id": "973fae00c3584b9fb4c762ae9870d0f6"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Fire emissions estimates have long been based on bottom-up approaches that are not only complex, but also fraught with compounding uncertainties. We present the development of a global gridded (1 deg ×1 deg) emission coefficients (Ce) product for smoke total particulate matter (TPM) based on a top-down approach using coincident measurements of fire radiative power (FRP) and aerosol optical thickness (AOT) from the Moderate-resolution Imaging Spectroradiometer (MODIS) sensors aboard the Terra and Aqua satellites. This new Fire Energetics and Emissions Research version 1.0 (FEER.v1) Ce product has now been released to the community and can be obtained from http://feer.gsfc. nasa.gov/, along with the corresponding 1-to-1 mapping of their quality assurance (QA) flags that will enable the Ce values to be filtered by quality for use in various applications. The regional averages of Ce values for different ecosystem types were found to be in the ranges of 16-21/gMJ−1 for savanna and grasslands, 15-32/gMJ−1 for tropical forest, 9-12/gMJ−1 for North American boreal forest, and 18- 26/MJ−1 for Russian boreal forest, croplands and natural vegetation. The FEER.v1 Ce product was multiplied by time-integrated FRP data to calculate regional smoke TPM emissions, which were compared with equivalent emissions products from three existing inventories. FEER.v1 showed higher and more reasonable smoke TPM estimates than two other emissions inventories that are based on bottom-up approaches and already reported in the literature to be too low, but portrayed an overall reasonable agreement with another top-down approach. This suggests that top-down approaches may hold better promise and need to be further developed to accelerate the reduction of uncertainty associated with fire emissions estimation in air-quality and climate research and applications. Results of the analysis of FEER.v1 data for 2004-2011 show that 65-85 Tg yr−1 of TPM is emitted globally from open biomass burning, with a generally decreasing trend over this short time period. The FEER.v1 Ce product is the first global gridded product in the family of \"emission factors\", that is based essentially on satellite measurements, and requires only direct satellite FRP measurements of an actively burning fire anywhere to evaluate its emission rate in near-real time, which is essential for operational activities, such as the monitoring and forecasting of smoke emission impacts on air quality.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "publications": [
+    {
+     "volume": "14",
+     "submissionId": 20140011273,
+     "publisher": "Copernicus Publications",
+     "id": "44b7b30a4ede4cd59037e131bfffbbd9",
+     "publicationName": "Atmospheric Chemistry and Physics Discussion",
+     "publicationDate": "2014-07-02T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20140011273.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20140011273/downloads/20140011273.pdf",
+      "pdf": "/api/citations/20140011273/downloads/20140011273.pdf",
+      "fulltext": "/api/citations/20140011273/downloads/20140011273.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 146.76736
+   },
+   "copyright": {
+    "disclosedToPublic": false,
+    "containsIndication": true,
+    "belongsToUsGov": false,
+    "determinationType": "MAY_INCLUDE_COPYRIGHT_MATERIAL",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "licenseType": "NO",
+    "submissionId": 20210014880,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "be5158a2c0004b14aeb229cc73046555",
+    "belongsToAuthors": true
+   },
+   "subjectCategories": [
+    "Geosciences (General)"
+   ],
+   "keywords": [
+    "Biomass burning",
+    "smoke aerosols",
+    "measurements"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20210014880,
+    "ear": "NO",
+    "id": "7f187644295d4b9d84dae1b531a8686f",
+    "category": [
+     {
+      "submissionExportControlId": "7f187644295d4b9d84dae1b531a8686f",
+      "id": "e499d53b2da2414eaeb1f2bd3e53c21a",
+      "category": 0
+     }
+    ],
+    "itar": "NO"
+   },
+   "distributionDate": "2021-05-04T04:00:00.0000000+00:00",
+   "fundingNumbers": [
+    {
+     "number": "281945.02.80.01.11",
+     "submissionId": 20210014880,
+     "id": "a9b34f05812f4d6495fbd20d162dd817",
+     "type": "WBS"
+    },
+    {
+     "number": "NNH15AB12I",
+     "submissionId": 20210014880,
+     "id": "869aa056d9e14d8c9fca24f67b8d31ee",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NSF  1852977",
+     "submissionId": 20210014880,
+     "id": "b9758172d34042cda6529ab461d17edd",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NNH15AB12I",
+     "submissionId": 20210014880,
+     "id": "00449163a72448679c28e4c880c02ea6",
+     "type": "OTHER"
+    },
+    {
+     "number": "J-3613",
+     "submissionId": 20210014880,
+     "id": "930d2735470249a7a747ee86a2b7bce9",
+     "type": "OTHER"
+    }
+   ],
+   "title": "Widespread Biomass Burning Smoke Throughout the Remote Troposphere",
+   "stiType": "REPRINT",
+   "distribution": "PUBLIC",
+   "submittedDate": "2021-05-04T15:09:09.4360500+00:00",
+   "authorAffiliations": [
+    {
+     "organizationId": "d566efa72e145ef4a1520a6b239e414c",
+     "sequence": 0,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "0000-0002-4084-0317",
+       "name": "G P Schill"
+      },
+      "organization": {
+       "name": "National Oceanic and Atmospheric Administration",
+       "location": "Washington D.C., District of Columbia, United States"
+      }
+     },
+     "id": "32bd5f4512e74e1a981566b1d698d051",
+     "userType": "OTHER",
+     "userId": "3da1d6555dea49cc82b234865901e210"
+    },
+    {
+     "organizationId": "d566efa72e145ef4a1520a6b239e414c",
+     "sequence": 1,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "0000-0002-0797-6028",
+       "name": "K D Froyd"
+      },
+      "organization": {
+       "name": "National Oceanic and Atmospheric Administration",
+       "location": "Washington D.C., District of Columbia, United States"
+      }
+     },
+     "id": "efa7f667fcbc4972b3e7d6465d364974",
+     "userType": "OTHER",
+     "userId": "6afcbc3f18a34d5f9268945a2dbd3edb"
+    },
+    {
+     "organizationId": "627f0016b5ec58d5ab150cb9a6759b32",
+     "sequence": 2,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "",
+       "name": "H Bian"
+      },
+      "organization": {
+       "name": "University of Maryland, Baltimore County",
+       "location": "Baltimore, Maryland, United States"
+      }
+     },
+     "id": "3e63b1f92f284c69b98cb8088e6c5b50",
+     "userType": "CONTRACTOR_GRANTEE",
+     "userId": "dbb3163cbfb541b9a77c4178e004f02a"
+    },
+    {
+     "organizationId": "d566efa72e145ef4a1520a6b239e414c",
+     "sequence": 3,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "0000-0002-7996-2506",
+       "name": "A Kupc"
+      },
+      "organization": {
+       "name": "National Oceanic and Atmospheric Administration",
+       "location": "Washington D.C., District of Columbia, United States"
+      }
+     },
+     "id": "90faa3388779422397788847b350b68b",
+     "userId": "91d7a868dc6d4f05a43d1a1d7019608b"
+    },
+    {
+     "organizationId": "d566efa72e145ef4a1520a6b239e414c",
+     "sequence": 4,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "0000-0002-5188-9378",
+       "name": "C Williamson "
+      },
+      "organization": {
+       "name": "National Oceanic and Atmospheric Administration",
+       "location": "Washington D.C., District of Columbia, United States"
+      }
+     },
+     "id": "152c1103a01a410a9da90e97909b5f35",
+     "userId": "998117d76fb7440085761a44c5e71e46"
+    },
+    {
+     "organizationId": "d566efa72e145ef4a1520a6b239e414c",
+     "sequence": 5,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "0000-0002-4033-4668",
+       "name": "C A Brock"
+      },
+      "organization": {
+       "name": "National Oceanic and Atmospheric Administration",
+       "location": "Washington D.C., District of Columbia, United States"
+      }
+     },
+     "id": "c36ca8fd7996423c9fc58303ca9dfc72",
+     "userId": "c47d1e3cf88b4a91989c524fb3246274"
+    },
+    {
+     "organizationId": "38273910ccc15728bf53c6d26e483f63",
+     "sequence": 6,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "0000-0001-8727-9849",
+       "name": "E Ray "
+      },
+      "organization": {
+       "name": "NSF National Center for Atmospheric Research",
+       "location": "Boulder, United States"
+      }
+     },
+     "id": "cbfdddfdd9f24f83a09da2cf7d3ae8ff",
+     "userId": "ca542b6aa0fa4de0851db25fe93230c9"
+    },
+    {
+     "organizationId": "38273910ccc15728bf53c6d26e483f63",
+     "sequence": 7,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "name": "R S Hornbrook"
+      },
+      "organization": {
+       "name": "National Center for Atmospheric Research",
+       "location": "Boulder, Colorado, United States"
+      }
+     },
+     "id": "a5be4daffc0c44e399e9a8ba6d752a25",
+     "userId": "7e406f9fdd9c48618c56d536c6d646c4"
+    },
+    {
+     "organizationId": "38273910ccc15728bf53c6d26e483f63",
+     "sequence": 8,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "name": "A J Hills"
+      },
+      "organization": {
+       "name": "National Center for Atmospheric Research",
+       "location": "Boulder, Colorado, United States"
+      }
+     },
+     "id": "fc83aefef34248439365fe4ec8db1eec",
+     "userType": "OTHER"
+    },
+    {
+     "organizationId": "38273910ccc15728bf53c6d26e483f63",
+     "sequence": 9,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "",
+       "name": "E C Apel"
+      },
+      "organization": {
+       "name": "National Center for Atmospheric Research",
+       "location": "Boulder, Colorado, United States"
+      }
+     },
+     "id": "b3dd148b240c4855ace6235b9ec0e111",
+     "userType": "OTHER",
+     "userId": "b1b0084740c547a0979f9a95e23f4b9b"
+    },
+    {
+     "organizationId": "e081fcbdcd5059fa8fa7b6c5c6a2c483",
+     "sequence": 10,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "",
+       "name": "M Chin"
+      },
+      "organization": {
+       "name": "Goddard Space Flight Center",
+       "location": "Greenbelt, Maryland, United States"
+      }
+     },
+     "id": "e097dffb9b7049838136bf459c9e96d4",
+     "userType": "CIVIL",
+     "userId": "8c8e9a99607f4591a9200baaa18b0777"
+    },
+    {
+     "organizationId": "e081fcbdcd5059fa8fa7b6c5c6a2c483",
+     "sequence": 11,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "orcidId": "",
+       "name": "P R Colarco"
+      },
+      "organization": {
+       "name": "Goddard Space Flight Center",
+       "location": "Greenbelt, Maryland, United States"
+      }
+     },
+     "id": "5b3bd47052a84043aa7a7cde6a222387",
+     "userType": "CIVIL",
+     "userId": "bba0259ea31f4f479e3930a755a4f500"
+    },
+    {
+     "organizationId": "d566efa72e145ef4a1520a6b239e414c",
+     "sequence": 12,
+     "submissionId": 20210014880,
+     "meta": {
+      "author": {
+       "name": "D M Murphy"
+      },
+      "organization": {
+       "name": "National Oceanic and Atmospheric Administration",
+       "location": "Washington D.C., District of Columbia, United States"
+      }
+     },
+     "id": "6d052c7221624124aee5b695c3e871cb",
+     "userType": "OTHER"
+    }
+   ],
+   "stiTypeDetails": "Reprint (Version printed in journal)",
+   "technicalReviewType": "NASA_PEER_COMMITTEE",
+   "modified": "2026-03-13T19:34:03.3488880+00:00",
+   "id": 20210014880,
+   "created": "2021-04-30T00:41:54.4273520+00:00",
+   "center": {
+    "code": "GSFC",
+    "name": "Goddard Space Flight Center",
+    "id": "973fae00c3584b9fb4c762ae9870d0f6"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Biomass burning emits ~34–41 Tg yr<sup>−1</sup> of smoke aerosol to the atmosphere. Biomass burning aerosol directly influences the Earth’s climate by attenuation of solar and terrestrial radiation; however, its abundance and distribution on a global scale are poorly constrained, particularly after plumes dilute into the background remote troposphere  and are subject to removal by clouds and precipitation. Here we report global-scale, airborne measurements of biomass burning aerosol in the remote troposphere. Measurements were taken during four series of seasonal flights over the Pacific and Atlantic Ocean basins, each with near pole-to-pole latitude coverage. We find that biomass burning particles in the remote troposphere are dilute but ubiquitous, accounting for one-quarter of the accumulation-mode aerosol number and one-fifth of the aerosol mass. Comparing our observations with a high-resolution global aerosol model, we find that the model overestimates biomass burning aerosol mass in the remote troposphere with a mean bias of >400%, largely due to insufficient wet removal by in-cloud precipitation. After updating the model’s aerosol removal scheme we find that, on a global scale, dilute smoke contributes as much as denser plumes to biomass burning’s scattering and absorption effects on the Earth’s radiation field.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "cui": {
+    "isCui": false,
+    "submissionId": 20210014880,
+    "id": "f30d555f55fa4c688ec22e1fcbffdc52"
+   },
+   "publications": [
+    {
+     "volume": "13",
+     "submissionId": 20210014880,
+     "issn": "1752-0894",
+     "publisher": "Nature Research",
+     "eissn": "1752-0908",
+     "id": "96bea0788b924a5f878e4d378f788024",
+     "publicationName": "Nature Geoscience ",
+     "publicationDate": "2020-06-01T04:00:00.0000000+00:00",
+     "issuePublicationDate": "2020-06-01T04:00:00.0000000+00:00",
+     "url": "",
+     "doi": "10.1038/s41561-020-0586-1"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20210014880 Reprint s41561-020-0586-1.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20210014880/downloads/20210014880%20Reprint%20s41561-020-0586-1.pdf",
+      "pdf": "/api/citations/20210014880/downloads/20210014880%20Reprint%20s41561-020-0586-1.pdf",
+      "fulltext": "/api/citations/20210014880/downloads/20210014880%20Reprint%20s41561-020-0586-1.pdf.txt"
+     }
+    },
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "Accepted Manuscript - Schill (Chin) - Widespread biomass burning smoke - Nature Geoscience 2020.pdf",
+     "notes": "This is the supplemental information",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20210014880/downloads/Accepted%20Manuscript%20-%20Schill%20(Chin)%20-%20Widespread%20biomass%20burning%20smoke%20-%20Nature%20Geoscience%202020.pdf",
+      "pdf": "/api/citations/20210014880/downloads/Accepted%20Manuscript%20-%20Schill%20(Chin)%20-%20Widespread%20biomass%20burning%20smoke%20-%20Nature%20Geoscience%202020.pdf",
+      "fulltext": "/api/citations/20210014880/downloads/Accepted%20Manuscript%20-%20Schill%20(Chin)%20-%20Widespread%20biomass%20burning%20smoke%20-%20Nature%20Geoscience%202020.pdf.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 137.17017
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20000096239,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "3bd49ffe5a2a41748bcd1a596662ed99",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Environment Pollution"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20000096239,
+    "ear": "NO",
+    "id": "55ba1ac9f83c4e77bb2c36e3e818ff59",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-16T00:00:00.0000000+00:00",
+   "title": "Radiative Properties of Smoke and Aerosol Over Land Surfaces",
+   "stiType": "ABSTRACT",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-19T20:49:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20000096239,
+     "meta": {
+      "author": {
+       "name": "King, Michael D."
+      },
+      "organization": {
+       "name": "NASA Goddard Space Flight Center",
+       "location": "Greenbelt, MD United States"
+      }
+     },
+     "id": "2e413596b9c04b9a8263b592331283f2"
+    }
+   ],
+   "stiTypeDetails": "Abstract",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20000096239,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-19T20:49:00.0000000+00:00",
+   "center": {
+    "code": "GSFC",
+    "name": "Goddard Space Flight Center",
+    "id": "973fae00c3584b9fb4c762ae9870d0f6"
+   },
+   "onlyAbstract": true,
+   "sensitiveInformation": 2,
+   "abstract": "This talk discusses smoke and aerosol's radiative properties with particular attention to distinguishing the measurement over clear sky from clouds over land, sea, snow, etc. surfaces, using MODIS Airborne Simulator data from (Brazil, arctic sea ice and tundra and southern Africa, west Africa, and other ecosystems. This talk also discusses the surface bidirectional reflectance using Cloud Absorption Radiometer, BRDF measurements of Saudi Arabian desert, Persian Gulf, cerrado and rain forests in Brazil, sea ice, tundra, Atlantic Ocean, Great Dismal Swamp, Kuwait oil fire smoke. Recent upgrades to instrument (new TOMS UVA channels at 340 and 380 planned use in Africa (SAFARI 2000) and possibly for MEIDEX will also be discussed. This talk also plans to discuss the spectral variation of surface reflectance over land and the sensitivity of off-nadir view angles to correlation between visible near-infrared reflectance for use in remote sensing of aerosol over land.",
+   "isLessonsLearned": false,
+   "disseminated": "METADATA_ONLY",
+   "meetings": [
+    {
+     "country": "Israel",
+     "submissionId": 20000096239,
+     "endDate": "2000-07-08T00:00:00.0000000+00:00",
+     "name": "Remote Sensing of Aerosols",
+     "location": "Tel Aviv",
+     "id": "b44fb905d0764d7bba4d4e7dbca2c0a2",
+     "startDate": "2000-07-03T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20000096239,
+     "id": "164d8d7a031e447991b29e6e35af8780",
+     "publicationDate": "2000-01-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [],
+   "downloadsAvailable": false,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 135.55052
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20070031686,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "f4cb1bf01d6e42c8aef37cd6ed229fa3",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Mechanical Engineering"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20070031686,
+    "ear": "NO",
+    "id": "899b7c03a6ac42be92fc3feeb4827139",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "E-16252",
+    "Report Number: E-16252"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "WBS 732759.03.01.02.21",
+     "submissionId": 20070031686,
+     "id": "e6a28b3203394bc78b28e372f4cd2c3e",
+     "type": "WBS"
+    }
+   ],
+   "title": "Particle and Smoke Detection on ISS for Next Generation Smoke Detectors",
+   "stiType": "PRESENTATION",
+   "distribution": "PUBLIC",
+   "submittedDate": "2013-08-23T23:51:00.0000000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20070031686,
+     "meta": {
+      "author": {
+       "name": "Urban, David L."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "15cc41a018ba4fb6838f2823563e43f3"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20070031686,
+     "meta": {
+      "author": {
+       "name": "Ruff, Gary"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "d78987a05eac4cb08b7bd6e65426d723"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20070031686,
+     "meta": {
+      "author": {
+       "name": "Yuan, Zeng-guang"
+      },
+      "organization": {
+       "name": "National Center for Space Exploration Research on Fluids and Combustion",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "4247ebeb13ad48df8791b34c8a0f2d69"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20070031686,
+     "meta": {
+      "author": {
+       "name": "Sheredy, William"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "441e9bbc4f404c07b12d886c3ee57d8d"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20070031686,
+     "meta": {
+      "author": {
+       "name": "Funk, Greg"
+      },
+      "organization": {
+       "name": "ZIN Technologies, Inc.",
+       "location": "Brook Park, OH, United States"
+      }
+     },
+     "id": "59324715276744a19b4e539d1373354c"
+    }
+   ],
+   "stiTypeDetails": "Presentation",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20070031686,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2013-08-23T23:51:00.0000000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Rapid fire detection requires the ability to differentiate fire signatures from background conditions and nuisance sources. Proper design of a fire detector requires detailed knowledge of all of these signal sources so that a discriminating detector can be designed. Owing to the absence of microgravity smoke data, all current spacecraft smoke detectors were designed based upon normal-g conditions. The removal of buoyancy reduces the velocities in the high temperature zones in flames, increasing the residence time of smoke particles and consequently allowing longer growth time for the particles. Recent space shuttle experiments confirmed that, in some cases, increased particles sizes are seen in low-gravity and that the relative performance of the ISS (International Space Station) and space-shuttle smoke-detectors changes in low-gravity; however, sufficient particle size information to design new detectors was not obtained. To address this issue, the SAME (Smoke Aerosol Measurement Experiment) experiment is manifested to fly on the ISS in 2007. The SAME experiment will make measurements of the particle size distribution of the smoke particulate from several typical spacecraft materials providing quantitative design data for spacecraft smoke detectors. A precursor experiment (DAFT: Dust Aerosol measurement Feasibility Test) flew recently on the ISS and provided the first measurement of the background smoke particulate levels on the ISS. These background levels are critical to the design of future smoke detectors. The ISS cabin was found to be a very clean environment with particulate levels substantially below the space shuttle and typical ground-based environments.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "United States",
+     "submissionId": 20070031686,
+     "name": "International Space Development Conference",
+     "location": "Dallas, TX",
+     "id": "d3b107f4a8b84c3ab7ac1ea6f4a90827",
+     "startDate": "2007-05-24T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20070031686,
+     "id": "87d2db276ac14f7a800c38801fcb644c",
+     "publicationDate": "2007-05-25T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20070031686.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20070031686/downloads/20070031686.pdf",
+      "pdf": "/api/citations/20070031686/downloads/20070031686.pdf",
+      "fulltext": "/api/citations/20070031686/downloads/20070031686.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 124.327194
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20140006585,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "20a840affefb419e9fe1f3afd99fe352",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Mechanical Engineering",
+    "Space Transportation And Safety"
+   ],
+   "keywords": [
+    "Fire",
+    "Fire Safety",
+    "Smoke"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20140006585,
+    "ear": "NO",
+    "id": "2d4325fb64fd4296bb2e459a704b2d4b",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "GRC-E-DAA-TN9488",
+    "Report Number: GRC-E-DAA-TN9488"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "NNX08AX49G",
+     "submissionId": 20140006585,
+     "id": "63ca68e4c330402d8c0df8e15667e3ec",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "WBS 904211.04.02.30.19",
+     "submissionId": 20140006585,
+     "id": "fd125ee47d2544a59c15d14016a6c9bd",
+     "type": "WBS"
+    }
+   ],
+   "title": "Evaluation of Low-Gravity Smoke Particulate for Spacecraft Fire Detection",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2014-06-03T11:16:30.0130000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Urban, David"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "639591c1785640a38ce4414b4c48b18c"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Ruff, Gary A."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "603b0d84906740eb948a57af28c560ef"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Greenberg, Paul"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "e4805b5974f744eeb104bc0da73f0ba6"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Meyer, Marit"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "3fd5a34b686540d4a2421074815adfc8"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Mulholland, George"
+      },
+      "organization": {
+       "name": "Maryland Univ.",
+       "location": "College Park, MD, United States"
+      }
+     },
+     "id": "09f89c5b013140ee9d465dbdc029f6d1"
+    },
+    {
+     "sequence": 5,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Yuan, Zeng-guang"
+      },
+      "organization": {
+       "name": "National Center for Space Exploration Research on Fluids and Combustion",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "18c95f4f60764bad8257dc1a945a94fd"
+    },
+    {
+     "sequence": 6,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Bryg, Victoria"
+      },
+      "organization": {
+       "name": "National Center for Space Exploration Research on Fluids and Combustion",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "fcdb14fbdcbf4afebc585301791a1263"
+    },
+    {
+     "sequence": 7,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Cleary, Thomas"
+      },
+      "organization": {
+       "name": "National Inst. of Standards and Technology",
+       "location": "Boulder, CO, United States"
+      }
+     },
+     "id": "b4698146a7dc48f0bd3b10c8f9d57ee1"
+    },
+    {
+     "sequence": 8,
+     "submissionId": 20140006585,
+     "meta": {
+      "author": {
+       "name": "Yang, Jiann"
+      },
+      "organization": {
+       "name": "National Inst. of Standards and Technology",
+       "location": "Boulder, CO, United States"
+      }
+     },
+     "id": "14634250feda40e191f889f1d924e539"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20140006585,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2014-06-03T11:16:30.0130000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Tests were conducted on the International Space Station to evaluate the smoke particulate size from materials and conditions that are typical of those expected in spacecraft fires. Five different materials representative of those found in spacecraft (Teflon, Kapton, cotton, silicone rubber and Pyrell) were heated to temperatures below the ignition point with conditions controlled to provide repeatable sample surface temperatures and air flow. The air flow past the sample during the heating period ranged from quiescent to 8 cm/s. The effective transport time to the measurement instruments was varied from 11 to 800 seconds to simulate different smoke transport conditions in spacecraft. The resultant aerosol was evaluated by three instruments which measured different moments of the particle size distribution. These moment diagnostics were used to determine the particle number concentration (zeroth moment), the diameter concentration (first moment), and the mass concentration (third moment). These statistics were combined to determine the diameter of average mass and the count mean diameter and by assuming a log-normal distribution, the geometric mean diameter and the geometric standard deviations were also calculated. Smoke particle samples were collected on TEM grids using a thermal precipitator for post flight analysis. The TEM grids were analyzed to determine the particle morphology and shape parameters. The different materials produced particles with significantly different morphologies. Overall the majority of the average smoke particle sizes were found to be in the 200 to 400 nanometer range with the quiescent cases and the cases with increased transport time typically producing with substantially larger particles. The results varied between materials but the smoke particles produced in low gravity were typically twice the size of particles produced in normal gravity. These results can be used to establish design requirements for future spacecraft smoke detectors.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "United States",
+     "submissionId": 20140006585,
+     "endDate": "2013-05-22T00:00:00.0000000+00:00",
+     "sponsors": [
+      {
+       "organizationId": "9b8b9dce88b647adb0010a8c9fab369e",
+       "meta": {
+        "organization": {
+         "name": "Combustion Inst.",
+         "location": "Pittsburgh, PA, United States"
+        }
+       },
+       "meetingId": "7a0673644e7e44f19c713e281913abe7",
+       "id": "ec07098cbdcf4254b51d4279c7d57fb3"
+      }
+     ],
+     "name": "U. S. National Combustion Meeting",
+     "location": "Park City, Utah",
+     "id": "7a0673644e7e44f19c713e281913abe7",
+     "startDate": "2013-05-19T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20140006585,
+     "id": "39e0aae77bd248849bab0f8a05d54557",
+     "publicationDate": "2013-05-19T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20140006585.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20140006585/downloads/20140006585.pdf",
+      "pdf": "/api/citations/20140006585/downloads/20140006585.pdf",
+      "fulltext": "/api/citations/20140006585/downloads/20140006585.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 123.41113
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20140006579,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "78b011da7eaa4cdba3891aed93e7c6f4",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Mechanical Engineering",
+    "Space Transportation And Safety"
+   ],
+   "keywords": [
+    "Fire Safety",
+    "Smoke",
+    "Fire"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20140006579,
+    "ear": "NO",
+    "id": "65520131530343e18334ce6204be81a5",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "GRC-E-DAA-TN8418",
+    "Paper # 070FR-0171",
+    "Report Number: GRC-E-DAA-TN8418",
+    "Report Number: Paper # 070FR-0171"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "NNX088AX49G",
+     "submissionId": 20140006579,
+     "id": "9dd8c4c23d5e467381936768d030129d",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "NNC08BA05B",
+     "submissionId": 20140006579,
+     "id": "0967ecbc6f16466ba4f35f1049d0944d",
+     "type": "CONTRACT_GRANT"
+    },
+    {
+     "number": "WBS 904211.04.02.30.19",
+     "submissionId": 20140006579,
+     "id": "797ca1ebdedf4709af3dc275feeb6e5c",
+     "type": "WBS"
+    }
+   ],
+   "title": "Evaluation of Low-Gravity Smoke Particulate for Spacecraft Fire Detection",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2014-06-03T11:16:29.7600000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Urban, David"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "ce5fe3b9dca147d0ade57ab342c6e71b"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Ruff, Gary A."
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "ebf52d0f1e064067b8f6b7ed959d66c0"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Mulholland George"
+      },
+      "organization": {
+       "name": "Maryland Univ.",
+       "location": "College Park, MD, United States"
+      }
+     },
+     "id": "243d9138032a48d39b09768a3906566b"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Meyer, Marit"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "8dfe996be1294953b10f0ad4acf233b1"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Yuan, Zeng guang"
+      },
+      "organization": {
+       "name": "National Center for Space Exploration Research on Fluids and Combustion",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "75c2017927df4514ad8a1cfdbbc2c7bb"
+    },
+    {
+     "sequence": 5,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Cleary, Thomas"
+      },
+      "organization": {
+       "name": "National Inst. of Standards and Technology",
+       "location": "Gaithersburg, MD, United States"
+      }
+     },
+     "id": "3871bf038e204eec8df7651326a36204"
+    },
+    {
+     "sequence": 6,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Yang, Jiann"
+      },
+      "organization": {
+       "name": "National Inst. of Standards and Technology",
+       "location": "Gaithersburg, MD, United States"
+      }
+     },
+     "id": "0ed5f86d65744431a8d8085e12c64c77"
+    },
+    {
+     "sequence": 7,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Greenberg, Paul"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "ce54b77949c34e92bac65348243b2e2a"
+    },
+    {
+     "sequence": 8,
+     "submissionId": 20140006579,
+     "meta": {
+      "author": {
+       "name": "Bryg, Victoria"
+      },
+      "organization": {
+       "name": "National Center for Space Exploration Research on Fluids and Combustion",
+       "location": "Cleveland, OH, United States"
+      }
+     },
+     "id": "7c26e9a8bffd431f8842c9dd7db05c9b"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20140006579,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2014-06-03T11:16:29.7600000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Tests were conducted on the International Space Station to evaluate the smoke particulate size from materials and conditions that are typical of those expected in spacecraft fires. Five different materials representative of those found in spacecraft (Teflon, Kapton, cotton, silicone rubber and Pyrell) were heated to temperatures below the ignition point with conditions controlled to provide repeatable sample surface temperatures and air flow. The air flow past the sample during the heating period ranged from quiescent to 8 cm/s. The effective transport time to the measurement instruments was varied from 11 to 800 seconds to simulate different smoke transport conditions in spacecraft. The resultant aerosol was evaluated by three instruments which measured different moments of the particle size distribution. These moment diagnostics were used to determine the particle number concentration (zeroth moment), the diameter concentration (first moment), and the mass concentration (third moment). These statistics were combined to determine the diameter of average mass and the count mean diameter and by assuming a log-normal distribution, the geometric mean diameter and the geometric standard deviations were also calculated. Smoke particle samples were collected on TEM grids using a thermal precipitator for post flight analysis. The TEM grids were analyzed to determine the particle morphology and shape parameters. The different materials produced particles with significantly different morphologies. Overall the majority of the average smoke particle sizes were found to be in the 200 to 400 nanometer range with the quiescent cases and the cases with increased transport time typically producing with substantially larger particles. The results varied between materials but the smoke particles produced in low gravity were typically twice the size of particles produced in normal gravity. These results can be used to establish design requirements for future spacecraft smoke detectors.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "United States",
+     "submissionId": 20140006579,
+     "endDate": "2013-05-22T00:00:00.0000000+00:00",
+     "sponsors": [
+      {
+       "organizationId": "4d7bab3285ea463aa946fb174d9d05e0",
+       "meta": {
+        "organization": {
+         "name": "Utah Univ.",
+         "location": "Salt Lake City, UT, United States"
+        }
+       },
+       "meetingId": "dc07a0a4bc924843b20985d6c17feb0b",
+       "id": "eafdbae8c443483a8066642243e85532"
+      }
+     ],
+     "name": "U. S. National Combustion Meeting",
+     "location": "Park City, Utah",
+     "id": "dc07a0a4bc924843b20985d6c17feb0b",
+     "startDate": "2013-05-19T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20140006579,
+     "id": "f40b0b4217d04e9cba36c3408aa503ba",
+     "publicationDate": "2013-05-19T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20140006579.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20140006579/downloads/20140006579.pdf",
+      "pdf": "/api/citations/20140006579/downloads/20140006579.pdf",
+      "fulltext": "/api/citations/20140006579/downloads/20140006579.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 121.38898
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20170000935,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "5f3770ff3f254b23963883fd695909ae",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Earth Resources And Remote Sensing"
+   ],
+   "keywords": [
+    "Aerosol Types",
+    "Chemical Composition",
+    "Remotely Sensed"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20170000935,
+    "ear": "NO",
+    "id": "dc813dc6763e4361b1786a8bf65b0d25",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-17T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "ARC-E-DAA-TN38148",
+    "Report Number: ARC-E-DAA-TN38148"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "NNX12AD05A",
+     "submissionId": 20170000935,
+     "id": "cb43c7719f534f2ea0e37be2b1441342",
+     "type": "CONTRACT_GRANT"
+    }
+   ],
+   "title": "Linking Remotely Sensed Aerosol Types to Their Chemical Composition ",
+   "stiType": "ABSTRACT",
+   "distribution": "PUBLIC",
+   "submittedDate": "2017-01-31T14:43:05.4630000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20170000935,
+     "meta": {
+      "author": {
+       "name": "Dawson, Kyle William"
+      },
+      "organization": {
+       "name": "North Carolina State Univ.",
+       "location": "Raleigh, NC, United States"
+      }
+     },
+     "id": "24375fba78a34601ab36b3adc24d7ba0"
+    },
+    {
+     "sequence": 1,
+     "submissionId": 20170000935,
+     "meta": {
+      "author": {
+       "name": "Kacenelenbogen, Meloe S."
+      },
+      "organization": {
+       "name": "Bay Area Environmental Research Inst.",
+       "location": "Sonoma, CA, United States"
+      }
+     },
+     "id": "fb888b1851354d829d0f0937a2979235"
+    },
+    {
+     "sequence": 2,
+     "submissionId": 20170000935,
+     "meta": {
+      "author": {
+       "name": "Johnson, Matthew S."
+      },
+      "organization": {
+       "name": "NASA Ames Research Center",
+       "location": "Moffett Field, CA United States"
+      }
+     },
+     "id": "dcf5212d79164dc08572fd8e9d13d1e4"
+    },
+    {
+     "sequence": 3,
+     "submissionId": 20170000935,
+     "meta": {
+      "author": {
+       "name": "Burton, Sharon P."
+      },
+      "organization": {
+       "name": "NASA Langley Research Center",
+       "location": "Hampton, VA, United States"
+      }
+     },
+     "id": "98294c9e6bf64db0816b9a3af6729fad"
+    },
+    {
+     "sequence": 4,
+     "submissionId": 20170000935,
+     "meta": {
+      "author": {
+       "name": "Hostetler, Chris A."
+      },
+      "organization": {
+       "name": "NASA Langley Research Center",
+       "location": "Hampton, VA, United States"
+      }
+     },
+     "id": "06f388b6674544b789ed446824513cec"
+    },
+    {
+     "sequence": 5,
+     "submissionId": 20170000935,
+     "meta": {
+      "author": {
+       "name": "Meskhidze, Nicholas"
+      },
+      "organization": {
+       "name": "North Carolina State Univ.",
+       "location": "Raleigh, NC, United States"
+      }
+     },
+     "id": "622358e74490424d9e07f43ba6dae002"
+    }
+   ],
+   "stiTypeDetails": "Abstract",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20170000935,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2017-01-31T14:43:05.4630000+00:00",
+   "center": {
+    "code": "ARC",
+    "name": "Ames Research Center",
+    "id": "4540cd94d24c4bf29f8773a27faf96b2"
+   },
+   "onlyAbstract": true,
+   "sensitiveInformation": 2,
+   "abstract": "Aerosol types measured during the Ship-Aircraft Bio-Optical Research (SABOR) experiment are related to GEOS-Chem model chemical composition. The application for this procedure to link model chemical components to aerosol type is desirable for understanding aerosol evolution over time. The Mahalanobis distance (DM) statistic is used to cluster model groupings of five chemical components (organic carbon, black carbon, sea salt, dust and sulfate) in a way analogous to the methods used by Burton et al. [2012] and Russell et al. [2014]. First, model-to-measurement evaluation is performed by collocating vertically resolved aerosol extinction from SABOR High Spectral Resolution LiDAR (HSRL) to the GEOS-Chem nested high-resolution data. Comparisons of modeled-to-measured aerosol extinction are shown to be within 35% +/- 14%. Second, the model chemical components are calculation into five variables to calculate the DM and cluster means and covariances for each HSRL-retrieved aerosol type. The layer variables from the model are aerosol optical depth (AOD) ratios of (i) sea salt and (ii) dust to total AOD, mass ratios of (iii) total carbon (i.e. sum of organic and black carbon) to the sum of total carbon and sulfate (iv) organic carbon to black carbon, and (v) the natural log of the aerosol-to-molecular extinction ratio. Third, the layer variables and at most five out of twenty SABOR flights are used to form the pre-specified clusters for calculating DM and to assign an aerosol type. After determining the pre-specified clusters, model aerosol types are produced for the entire vertically resolved GEOS-Chem nested domain over the United States and the model chemical component distributions relating to each type are recorded. Resulting aerosol types are Dust/Dusty Mix, Maritime, Smoke, Urban and Fresh Smoke (separated into 'dark' and 'light' by a threshold of the organic to black carbon ratio). Model-calculated DM not belonging to a specific type (i.e. not meeting a threshold probability) is termed an outlier and those DM values that can belong to multiple types (i.e. showing weak probability of belonging to a specific cluster) are termed as Overlap. MODIS active fires are overlaid on the model domain to qualitatively evaluate the model-predicted Smoke aerosol types.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "submissionId": 20170000935,
+     "name": "American Geophysical Union",
+     "location": "Washington, DC, United States",
+     "id": "f6b6dbceae9043178020e2d42bca718f"
+    },
+    {
+     "country": "United States",
+     "submissionId": 20170000935,
+     "endDate": "2016-12-16T00:00:00.0000000+00:00",
+     "sponsors": [
+      {
+       "meta": {
+        "organization": {
+         "name": "American Geophysical Union",
+         "location": "Washington, DC, United States"
+        }
+       },
+       "meetingId": "611ac33debf742ed9e5d09027c066023",
+       "id": "c6759459daee4c6b9daad0479c1b37df"
+      }
+     ],
+     "name": "AGU Fall Meeting 2016",
+     "location": "San Francisco, CA",
+     "id": "611ac33debf742ed9e5d09027c066023",
+     "startDate": "2016-12-12T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20170000935,
+     "id": "992fdaa38f61443cb9ddf4a25ce510c2",
+     "publicationDate": "2016-12-12T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20170000935.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20170000935/downloads/20170000935.pdf",
+      "pdf": "/api/citations/20170000935/downloads/20170000935.pdf",
+      "fulltext": "/api/citations/20170000935/downloads/20170000935.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 120.34941
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20140013052,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "24fa1802e964440a86d096fafc6aa020",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Earth Resources And Remote Sensing",
+    "Environment Pollution"
+   ],
+   "keywords": [
+    "MISR",
+    "MODIS",
+    "Aerosol Remote Sensing"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20140013052,
+    "ear": "NO",
+    "id": "663e9e1109ae42b3917976717c9e315d",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "GSFC-E-DAA-TN7482",
+    "Report Number: GSFC-E-DAA-TN7482"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "WBS 281945.02.31.02.29",
+     "submissionId": 20140013052,
+     "id": "10af9b8f1aa441afa15263134bb8e7c8",
+     "type": "WBS"
+    }
+   ],
+   "title": "Aerosol Remote Sensing from Space - Where We Stand, Where We're Heading",
+   "stiType": "PRESENTATION",
+   "distribution": "PUBLIC",
+   "submittedDate": "2014-10-15T09:05:21.5570000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20140013052,
+     "meta": {
+      "author": {
+       "name": "Kahn, Ralph A."
+      },
+      "organization": {
+       "name": "NASA Goddard Space Flight Center",
+       "location": "Greenbelt, MD United States"
+      }
+     },
+     "id": "b33569b91ce2421788c1258ad1830a73"
+    }
+   ],
+   "stiTypeDetails": "Presentation",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20140013052,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2014-10-15T09:05:21.5570000+00:00",
+   "center": {
+    "code": "GSFC",
+    "name": "Goddard Space Flight Center",
+    "id": "973fae00c3584b9fb4c762ae9870d0f6"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "The MISR and MODIS instruments aboard the NASA Earth Observing System's Terra Satellite have been collecting data containing information about the state of Earth's atmosphere and surface for over eleven years. Among the retrieved quantities are amount and type of wildfire smoke, desert dust, volcanic effluent, urban and industrial pollution particles, and other aerosols. However, the broad scientific challenges of understanding aerosol impacts on climate and health place different, and very exacting demands on our measurement capabilities. And these data sets, though much more advanced in many respects than previous aerosol data records, are imperfect. In this presentation, I will summarize current understanding of MISR and MODIS aerosol product strengths and limitations, discuss how they relate to the bigger aerosol science questions we must address, and give my view of the way forward.",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "Switzerland",
+     "submissionId": 20140013052,
+     "sponsors": [
+      {
+       "organizationId": "8b543480bd75430fa242c01d92e6c10a",
+       "meta": {
+        "organization": {
+         "name": "Eidgenoessische Technische Hochschule",
+         "location": "Grosshesselohe, Switzerland"
+        }
+       },
+       "meetingId": "d9d50fc713ec44089ec3bd7d880fd8c3",
+       "id": "d7c8650fbed24190a8b8029030e4df35"
+      }
+     ],
+     "name": "Invited talk at Eidgenssische Technische Hochschule, Institute for Atmospheric & Climate Sciences (ETH-IACETH)",
+     "location": "Zurich",
+     "id": "d9d50fc713ec44089ec3bd7d880fd8c3",
+     "startDate": "2013-10-31T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20140013052,
+     "id": "898ed217875b4a38bb053cf010a75295",
+     "publicationDate": "2013-10-31T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20140013052.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20140013052/downloads/20140013052.pdf",
+      "pdf": "/api/citations/20140013052/downloads/20140013052.pdf",
+      "fulltext": "/api/citations/20140013052/downloads/20140013052.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  },
+  {
+   "_meta": {
+    "score": 119.21655
+   },
+   "copyright": {
+    "thirdPartyPermissionsProduced": false,
+    "disclosedToPublic": false,
+    "containsIndication": false,
+    "publisherPermissionOrRightsToDistribute": false,
+    "belongsToUsGov": false,
+    "determinationType": "GOV_PUBLIC_USE_PERMITTED",
+    "thirdPartyContentCondition": "NOT_SET",
+    "belongsToContractor": false,
+    "disclosedInvention": false,
+    "submissionId": 20170007283,
+    "containsThirdPartyMaterial": false,
+    "belongsToPublisher": false,
+    "id": "5a629f42db984b09a6fe1b25d2e2775f",
+    "belongsToAuthors": false
+   },
+   "subjectCategories": [
+    "Engineering (General)"
+   ],
+   "keywords": [
+    "Aerosol",
+    "Spacecraft Fire Safety",
+    "Smoke"
+   ],
+   "exportControl": {
+    "isExportControl": "NO",
+    "submissionId": 20170007283,
+    "ear": "NO",
+    "id": "46cf89a157c544c5872e0f47b24d9520",
+    "itar": "NO"
+   },
+   "distributionDate": "2019-07-12T00:00:00.0000000+00:00",
+   "otherReportNumbers": [
+    "GRC-E-DAA-TN32421",
+    "Report Number: GRC-E-DAA-TN32421"
+   ],
+   "fundingNumbers": [
+    {
+     "number": "WBS 067463.01.99.99.99.99.22",
+     "submissionId": 20170007283,
+     "id": "3a4f193f187245029137f66d392b9c95",
+     "type": "WBS"
+    }
+   ],
+   "title": "Spacecraft Fire Safety Research at NASA Glenn Research Center",
+   "stiType": "CONFERENCE_PAPER",
+   "distribution": "PUBLIC",
+   "submittedDate": "2017-08-03T13:59:26.3630000+00:00",
+   "authorAffiliations": [
+    {
+     "sequence": 0,
+     "submissionId": 20170007283,
+     "meta": {
+      "author": {
+       "name": "Meyer, Marit"
+      },
+      "organization": {
+       "name": "NASA Glenn Research Center",
+       "location": "Cleveland, OH United States"
+      }
+     },
+     "id": "349b3027b713410caff049182f866a53"
+    }
+   ],
+   "stiTypeDetails": "Conference Paper",
+   "technicalReviewType": "TECHNICAL_REVIEW_TYPE_NONE",
+   "modified": "2025-08-31T18:39:21.7150190+00:00",
+   "id": 20170007283,
+   "legacyMeta": {
+    "__type": "LegacyMetaIndex, StrivesApi.ServiceModel",
+    "accessionNumber": ""
+   },
+   "created": "2017-08-03T13:59:26.3630000+00:00",
+   "center": {
+    "code": "GRC",
+    "name": "Glenn Research Center",
+    "id": "19eeb25fa404421d9eaa5f876e853e3c"
+   },
+   "onlyAbstract": false,
+   "sensitiveInformation": 2,
+   "abstract": "Appropriate design of fire detection systems requires knowledge of both the expected fire signature and the background aerosol levels. Terrestrial fire detection systems have been developed based on extensive study of terrestrial fires. Unfortunately there is no corresponding data set for spacecraft fires and consequently the fire detectors in current spacecraft were developed based upon terrestrial designs. In low gravity, buoyant flow is negligible which causes particles to concentrate at the smoke source, increasing their residence time, and increasing the transport time to smoke detectors. Microgravity fires have significantly different structure than those in 1-g which can change the formation history of the smoke particles. Finally the materials used in spacecraft are different from typical terrestrial environments where smoke properties have been evaluated. It is critically important to detect a fire in its early phase before a flame is established, given the fixed volume of air on any spacecraft. Consequently, the primary target for spacecraft fire detection is pyrolysis products rather than soot. Experimental investigations have been performed at three different NASA facilities which characterize smoke aerosols from overheating common spacecraft materials. The earliest effort consists of aerosol measurements in low gravity, called the Smoke Aerosol Measurement Experiment (SAME), and subsequent ground-based testing of SAME smoke in 55-gallon drums with an aerosol reference instrument. Another set of experiments were performed at NASAs Johnson Space Center White Sands Test Facility (WSTF), with additional fuels and an alternate smoke production method. Measurements of these smoke products include mass and number concentration, and a thermal precipitator was designed for this investigation to capture particles for microscopic analysis. The final experiments presented are from NASAs Gases and Aerosols from Smoldering Polymers (GASP) Laboratory, with selected results focusing on realistic fuel preparations and heating profiles with regards to early detection of smoke. SAFFIRE is the upcoming large-scale fire experiment which will be executed in a Cygnus vehicle after it undocks from the ISS. ",
+   "isLessonsLearned": false,
+   "disseminated": "DOCUMENT_AND_METADATA",
+   "meetings": [
+    {
+     "country": "Israel",
+     "submissionId": 20170007283,
+     "endDate": "2016-09-01T00:00:00.0000000+00:00",
+     "sponsors": [
+      {
+       "organizationId": "8bf72e8022f6474c8908c31bc079ddaa",
+       "meta": {
+        "organization": {
+         "name": "Technion - Israel Inst. of Tech.",
+         "location": "Haifa, Israel"
+        }
+       },
+       "meetingId": "1527c46019234dc8a990e076af5002a5",
+       "id": "67aa466b18884d49b7df91baf56fe352"
+      }
+     ],
+     "name": "Space Studies Program (SSP 16)",
+     "location": "Haifa",
+     "id": "1527c46019234dc8a990e076af5002a5",
+     "startDate": "2016-07-12T00:00:00.0000000+00:00"
+    }
+   ],
+   "publications": [
+    {
+     "submissionId": 20170007283,
+     "id": "a2009826a08c4e0ca9c141bc6f3e49cc",
+     "publicationDate": "2016-08-01T00:00:00.0000000+00:00"
+    }
+   ],
+   "status": "CURATED",
+   "related": [],
+   "downloads": [
+    {
+     "draft": false,
+     "mimetype": "application/pdf",
+     "name": "20170007283.pdf",
+     "type": "STI",
+     "links": {
+      "original": "/api/citations/20170007283/downloads/20170007283.pdf",
+      "pdf": "/api/citations/20170007283/downloads/20170007283.pdf",
+      "fulltext": "/api/citations/20170007283/downloads/20170007283.txt"
+     }
+    }
+   ],
+   "downloadsAvailable": true,
+   "index": "submissions-2026-11-12-06-24"
+  }
+ ],
+ "aggregations": {
+  "created": {
+   "buckets": [
+    {
+     "key_as_string": "2013",
+     "key": 1356998400000,
+     "doc_count": 31
+    },
+    {
+     "key_as_string": "2014",
+     "key": 1388534400000,
+     "doc_count": 10
+    },
+    {
+     "key_as_string": "2021",
+     "key": 1609459200000,
+     "doc_count": 6
+    },
+    {
+     "key_as_string": "2023",
+     "key": 1672531200000,
+     "doc_count": 6
+    },
+    {
+     "key_as_string": "2020",
+     "key": 1577836800000,
+     "doc_count": 5
+    },
+    {
+     "key_as_string": "2017",
+     "key": 1483228800000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "2019",
+     "key": 1546300800000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "2015",
+     "key": 1420070400000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2018",
+     "key": 1514764800000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2024",
+     "key": 1704067200000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2022",
+     "key": 1640995200000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2026",
+     "key": 1767225600000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2025",
+     "key": 1735689600000,
+     "doc_count": 1
+    }
+   ]
+  },
+  "author": {
+   "doc_count_error_upper_bound": 5,
+   "sum_other_doc_count": 443,
+   "buckets": [
+    {
+     "key": "Bryg, Victoria",
+     "doc_count": 4
+    },
+    {
+     "key": "Meyer, Marit",
+     "doc_count": 4
+    },
+    {
+     "key": "Bhartia, P. K.",
+     "doc_count": 3
+    },
+    {
+     "key": "Cleary, Thomas",
+     "doc_count": 3
+    },
+    {
+     "key": "David M Winker",
+     "doc_count": 3
+    },
+    {
+     "key": "Greenberg, Paul",
+     "doc_count": 3
+    },
+    {
+     "key": "Holben, Brent N.",
+     "doc_count": 3
+    },
+    {
+     "key": "Jason L Tackett",
+     "doc_count": 3
+    },
+    {
+     "key": "Jayanta Kar",
+     "doc_count": 3
+    },
+    {
+     "key": "Kahn, Ralph",
+     "doc_count": 3
+    },
+    {
+     "key": "Mark A Vaughan",
+     "doc_count": 3
+    },
+    {
+     "key": "Mulholland, George",
+     "doc_count": 3
+    },
+    {
+     "key": "Yang, Jiann",
+     "doc_count": 3
+    },
+    {
+     "key": "Brent N Holben",
+     "doc_count": 2
+    },
+    {
+     "key": "Brian J Getzewich",
+     "doc_count": 2
+    },
+    {
+     "key": "Charles R Trepte",
+     "doc_count": 2
+    },
+    {
+     "key": "Edward L Winstead",
+     "doc_count": 2
+    },
+    {
+     "key": "Einaudi, Franco",
+     "doc_count": 2
+    },
+    {
+     "key": "Ferrare, Richard",
+     "doc_count": 2
+    },
+    {
+     "key": "Krueger, Arlin",
+     "doc_count": 2
+    }
+   ]
+  },
+  "reportNumber": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 92,
+   "buckets": [
+    {
+     "key": "E-ISSN: 1867-8548",
+     "doc_count": 2
+    },
+    {
+     "key": "E-ISSN: 2169-8996",
+     "doc_count": 2
+    },
+    {
+     "key": "A-90293",
+     "doc_count": 1
+    },
+    {
+     "key": "AIAA Paper 2012-3536",
+     "doc_count": 1
+    },
+    {
+     "key": "ARC-E-DAA-TN38148",
+     "doc_count": 1
+    },
+    {
+     "key": "ARL-CR-0509",
+     "doc_count": 1
+    },
+    {
+     "key": "ARL-TR-1804",
+     "doc_count": 1
+    },
+    {
+     "key": "E-11360",
+     "doc_count": 1
+    },
+    {
+     "key": "E-13586",
+     "doc_count": 1
+    },
+    {
+     "key": "E-16252",
+     "doc_count": 1
+    },
+    {
+     "key": "E-18517",
+     "doc_count": 1
+    },
+    {
+     "key": "E-661241",
+     "doc_count": 1
+    },
+    {
+     "key": "GRC-E-DAA-TN32421",
+     "doc_count": 1
+    },
+    {
+     "key": "GRC-E-DAA-TN52650",
+     "doc_count": 1
+    },
+    {
+     "key": "GRC-E-DAA-TN74165",
+     "doc_count": 1
+    },
+    {
+     "key": "GRC-E-DAA-TN8418",
+     "doc_count": 1
+    },
+    {
+     "key": "GRC-E-DAA-TN9488",
+     "doc_count": 1
+    },
+    {
+     "key": "GSFC-E-DAA-TN11432",
+     "doc_count": 1
+    },
+    {
+     "key": "GSFC-E-DAA-TN11731",
+     "doc_count": 1
+    },
+    {
+     "key": "GSFC-E-DAA-TN13269",
+     "doc_count": 1
+    }
+   ]
+  },
+  "center": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "GSFC",
+     "doc_count": 50
+    },
+    {
+     "key": "GRC",
+     "doc_count": 11
+    },
+    {
+     "key": "LaRC",
+     "doc_count": 9
+    },
+    {
+     "key": "CDMS",
+     "doc_count": 4
+    },
+    {
+     "key": "ARC",
+     "doc_count": 3
+    },
+    {
+     "key": "HQ",
+     "doc_count": 2
+    },
+    {
+     "key": "MSFC",
+     "doc_count": 1
+    }
+   ]
+  },
+  "index": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "submissions-2026-11-12-06-24",
+     "doc_count": 80
+    }
+   ]
+  },
+  "fundingNumber": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 68,
+   "buckets": [
+    {
+     "key": "NNG11HP16A",
+     "doc_count": 11
+    },
+    {
+     "key": "80GSFC20C0044",
+     "doc_count": 3
+    },
+    {
+     "key": "NNG15HQ01C",
+     "doc_count": 3
+    },
+    {
+     "key": "NNX12AD03A",
+     "doc_count": 3
+    },
+    {
+     "key": "653967.04.12.01",
+     "doc_count": 2
+    },
+    {
+     "key": "80NSSC22M0001",
+     "doc_count": 2
+    },
+    {
+     "key": "NNG08HZ16C",
+     "doc_count": 2
+    },
+    {
+     "key": "NNG17HP01C",
+     "doc_count": 2
+    },
+    {
+     "key": "NNX15AT34A",
+     "doc_count": 2
+    },
+    {
+     "key": "NNX17AE79A",
+     "doc_count": 2
+    },
+    {
+     "key": "WBS 904211.04.02.30.19",
+     "doc_count": 2
+    },
+    {
+     "key": "\t653967.04.12.01",
+     "doc_count": 1
+    },
+    {
+     "key": " 308292",
+     "doc_count": 1
+    },
+    {
+     "key": "089407.01.22",
+     "doc_count": 1
+    },
+    {
+     "key": "19078",
+     "doc_count": 1
+    },
+    {
+     "key": "2020/0442",
+     "doc_count": 1
+    },
+    {
+     "key": "281945.02.04.04.29",
+     "doc_count": 1
+    },
+    {
+     "key": "281945.02.20.03.54",
+     "doc_count": 1
+    },
+    {
+     "key": "281945.02.80.01.11",
+     "doc_count": 1
+    },
+    {
+     "key": "281945.02.80.01.21",
+     "doc_count": 1
+    }
+   ]
+  },
+  "published": {
+   "buckets": [
+    {
+     "key_as_string": "2013",
+     "key": 1356998400000,
+     "doc_count": 7
+    },
+    {
+     "key_as_string": "2019",
+     "key": 1546300800000,
+     "doc_count": 7
+    },
+    {
+     "key_as_string": "2014",
+     "key": 1388534400000,
+     "doc_count": 5
+    },
+    {
+     "key_as_string": "2020",
+     "key": 1577836800000,
+     "doc_count": 5
+    },
+    {
+     "key_as_string": "1998",
+     "key": 883612800000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "2000",
+     "key": 946684800000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "2010",
+     "key": 1262304000000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "2022",
+     "key": 1640995200000,
+     "doc_count": 4
+    },
+    {
+     "key_as_string": "2011",
+     "key": 1293840000000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2012",
+     "key": 1325376000000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2016",
+     "key": 1451606400000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2018",
+     "key": 1514764800000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "2023",
+     "key": 1672531200000,
+     "doc_count": 3
+    },
+    {
+     "key_as_string": "1999",
+     "key": 915148800000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2002",
+     "key": 1009843200000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2017",
+     "key": 1483228800000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2024",
+     "key": 1704067200000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "2026",
+     "key": 1767225600000,
+     "doc_count": 2
+    },
+    {
+     "key_as_string": "1973",
+     "key": 94694400000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "1977",
+     "key": 220924800000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "1991",
+     "key": 662688000000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "1992",
+     "key": 694224000000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2001",
+     "key": 978307200000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2003",
+     "key": 1041379200000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2004",
+     "key": 1072915200000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2005",
+     "key": 1104537600000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2006",
+     "key": 1136073600000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2007",
+     "key": 1167609600000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2021",
+     "key": 1609459200000,
+     "doc_count": 1
+    },
+    {
+     "key_as_string": "2025",
+     "key": 1735689600000,
+     "doc_count": 1
+    }
+   ]
+  },
+  "distribution": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "PUBLIC",
+     "doc_count": 80
+    }
+   ]
+  },
+  "stiType": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "REPRINT",
+     "doc_count": 20
+    },
+    {
+     "key": "ABSTRACT",
+     "doc_count": 13
+    },
+    {
+     "key": "ACCEPTED_MANUSCRIPT",
+     "doc_count": 13
+    },
+    {
+     "key": "CONFERENCE_PAPER",
+     "doc_count": 9
+    },
+    {
+     "key": "PRESENTATION",
+     "doc_count": 8
+    },
+    {
+     "key": "PREPRINT",
+     "doc_count": 7
+    },
+    {
+     "key": "CONFERENCE_PROCEEDINGS",
+     "doc_count": 4
+    },
+    {
+     "key": "OTHER",
+     "doc_count": 2
+    },
+    {
+     "key": "POSTER",
+     "doc_count": 2
+    },
+    {
+     "key": "CONTRACTOR_REPORT",
+     "doc_count": 1
+    },
+    {
+     "key": "TECHNICAL_MEMORANDUM",
+     "doc_count": 1
+    }
+   ]
+  },
+  "subjectCategory": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "Earth Resources And Remote Sensing",
+     "doc_count": 23
+    },
+    {
+     "key": "Environment Pollution",
+     "doc_count": 15
+    },
+    {
+     "key": "Meteorology And Climatology",
+     "doc_count": 15
+    },
+    {
+     "key": "Geosciences (General)",
+     "doc_count": 13
+    },
+    {
+     "key": "Earth Resources and Remote Sensing",
+     "doc_count": 8
+    },
+    {
+     "key": "Geophysics",
+     "doc_count": 4
+    },
+    {
+     "key": "Mechanical Engineering",
+     "doc_count": 3
+    },
+    {
+     "key": "Space Transportation And Safety",
+     "doc_count": 3
+    },
+    {
+     "key": "Aeronautics (General)",
+     "doc_count": 1
+    },
+    {
+     "key": "Aircraft Propulsion And Power",
+     "doc_count": 1
+    },
+    {
+     "key": "Chemistry and Materials (General)",
+     "doc_count": 1
+    },
+    {
+     "key": "Computer Programming and Software",
+     "doc_count": 1
+    },
+    {
+     "key": "Engineering (General)",
+     "doc_count": 1
+    },
+    {
+     "key": "Instrumentation And Photography",
+     "doc_count": 1
+    },
+    {
+     "key": "Man/System Technology And Life Support",
+     "doc_count": 1
+    },
+    {
+     "key": "Meteorology and Climatology",
+     "doc_count": 1
+    },
+    {
+     "key": "Space Processing",
+     "doc_count": 1
+    }
+   ]
+  },
+  "disseminated": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "DOCUMENT_AND_METADATA",
+     "doc_count": 62
+    },
+    {
+     "key": "METADATA_ONLY",
+     "doc_count": 18
+    }
+   ]
+  },
+  "stiTypeDetails": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 0,
+   "buckets": [
+    {
+     "key": "Reprint (Version printed in journal)",
+     "doc_count": 20
+    },
+    {
+     "key": "Abstract",
+     "doc_count": 13
+    },
+    {
+     "key": "Accepted Manuscript (Version with final changes)",
+     "doc_count": 13
+    },
+    {
+     "key": "Conference Paper",
+     "doc_count": 9
+    },
+    {
+     "key": "Presentation",
+     "doc_count": 8
+    },
+    {
+     "key": "Preprint (Draft being sent to journal)",
+     "doc_count": 7
+    },
+    {
+     "key": "Conference Proceedings",
+     "doc_count": 4
+    },
+    {
+     "key": "Other",
+     "doc_count": 2
+    },
+    {
+     "key": "Poster",
+     "doc_count": 2
+    },
+    {
+     "key": "Contractor Report (CR)",
+     "doc_count": 1
+    },
+    {
+     "key": "Technical Memorandum (TM)",
+     "doc_count": 1
+    }
+   ]
+  },
+  "organization": {
+   "doc_count_error_upper_bound": 2,
+   "sum_other_doc_count": 114,
+   "buckets": [
+    {
+     "key": "NASA Goddard Space Flight Center",
+     "doc_count": 28
+    },
+    {
+     "key": "Goddard Space Flight Center",
+     "doc_count": 16
+    },
+    {
+     "key": "Science Systems and Applications (United States)",
+     "doc_count": 11
+    },
+    {
+     "key": "Universities Space Research Association",
+     "doc_count": 10
+    },
+    {
+     "key": "Maryland Univ.",
+     "doc_count": 9
+    },
+    {
+     "key": "NASA Glenn Research Center",
+     "doc_count": 9
+    },
+    {
+     "key": "Science Systems and Applications, Inc.",
+     "doc_count": 9
+    },
+    {
+     "key": "Langley Research Center",
+     "doc_count": 8
+    },
+    {
+     "key": "NASA Langley Research Center",
+     "doc_count": 6
+    },
+    {
+     "key": "Maryland Univ. Baltimore County",
+     "doc_count": 5
+    },
+    {
+     "key": "NASA Ames Research Center",
+     "doc_count": 5
+    },
+    {
+     "key": "National Center for Space Exploration Research on Fluids and Combustion",
+     "doc_count": 5
+    },
+    {
+     "key": "Universities Space Research Association (USRA)",
+     "doc_count": 5
+    },
+    {
+     "key": "National Inst. of Standards and Technology",
+     "doc_count": 4
+    },
+    {
+     "key": "National Institute of Aerospace",
+     "doc_count": 4
+    },
+    {
+     "key": "National Oceanic and Atmospheric Administration",
+     "doc_count": 3
+    },
+    {
+     "key": "Rutgers University - The State University of New Jersey",
+     "doc_count": 3
+    },
+    {
+     "key": "University of Maryland, Baltimore County",
+     "doc_count": 3
+    },
+    {
+     "key": "Alabama Univ.",
+     "doc_count": 2
+    },
+    {
+     "key": "Colorado State Univ.",
+     "doc_count": 2
+    }
+   ]
+  },
+  "modified": {
+   "buckets": [
+    {
+     "key_as_string": "2025",
+     "key": 1735689600000,
+     "doc_count": 77
+    },
+    {
+     "key_as_string": "2026",
+     "key": 1767225600000,
+     "doc_count": 3
+    }
+   ]
+  },
+  "keyword": {
+   "doc_count_error_upper_bound": 0,
+   "sum_other_doc_count": 37,
+   "buckets": [
+    {
+     "key": "Smoke",
+     "doc_count": 3
+    },
+    {
+     "key": "aerosols",
+     "doc_count": 3
+    },
+    {
+     "key": "biomass burning",
+     "doc_count": 3
+    },
+    {
+     "key": "CALIOP and MODIS",
+     "doc_count": 2
+    },
+    {
+     "key": "Fire",
+     "doc_count": 2
+    },
+    {
+     "key": "Fire Safety",
+     "doc_count": 2
+    },
+    {
+     "key": "remote sensing",
+     "doc_count": 2
+    },
+    {
+     "key": " CALIOP",
+     "doc_count": 1
+    },
+    {
+     "key": " MODIS",
+     "doc_count": 1
+    },
+    {
+     "key": " satellite datasets",
+     "doc_count": 1
+    },
+    {
+     "key": "Aerosol",
+     "doc_count": 1
+    },
+    {
+     "key": "Aerosol Remote Sensing",
+     "doc_count": 1
+    },
+    {
+     "key": "Aerosol Types",
+     "doc_count": 1
+    },
+    {
+     "key": "Aerosol optical thickness",
+     "doc_count": 1
+    },
+    {
+     "key": "Aerosol type",
+     "doc_count": 1
+    },
+    {
+     "key": "BASE ASIA",
+     "doc_count": 1
+    },
+    {
+     "key": "Biomass Burning",
+     "doc_count": 1
+    },
+    {
+     "key": "Biomass burning",
+     "doc_count": 1
+    },
+    {
+     "key": "Canadian",
+     "doc_count": 1
+    },
+    {
+     "key": "Chemical Composition",
+     "doc_count": 1
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,1868 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Widespread biomass burning smoke throughout the remote troposphere
+
+
+Articles
+https://doi.org/10.1038/s41561-020-0586-1
+
+1Chemical Sciences Laboratory, NOAA Earth System Research Laboratories, Boulder, CO, USA. 2Cooperative Institute for Research in Environmental 
+Sciences, University of Colorado, Boulder, CO, USA. 3Joint Center for Environmental Technology University of Maryland Baltimore County, Baltimore, MD, 
+USA. 4Laboratory for Atmospheres, NASA Goddard Space Flight Center, Greenbelt, MD, USA. 5Faculty of Physics, Aerosol Physics and Environmental 
+Physics, University of Vienna, Vienna, Austria. 6Atmospheric Chemistry Observations & Modeling Laboratory, National Center for Atmospheric Research, 
+Boulder, CO, USA. ✉e-mail: gregory.schill@noaa.gov
+
+Wildfires and open burning emit ~2.8–4.9 Tg yr
+–1 of black 
+
+carbon (BC) aerosol and ~31–36 Tg yr–1 of primary 
+organic aerosol1,2. These estimates correspond to ~40–
+
+59% of global BC and ~60–85% of global primary organic aerosol 
+emissions. In a future climate, some regions are expected to be both 
+warmer and drier, causing the frequency and intensity of fires to 
+increase3. In areas like the western United States, there is evidence 
+that fire intensity and frequency are already increasing4,5. Thus, 
+biomass burning aerosol has an increasing potential to affect the 
+Earth’s climate system via both direct (light-attenuating) and indi-
+rect (cloud modification) aerosol effects.
+
+Evidence suggests that the background atmosphere may be 
+greatly influenced by biomass burning. For example, in situ obser-
+vations have shown that one-third of the background particles in 
+the North American free troposphere originate from biomass burn-
+ing6. Filter-based measurements have shown that biomass burning 
+accounts for 20–30% of the annually averaged mass concentration of 
+atmospheric particles with diameters <2.5 µm in the United States7. 
+Furthermore, it is known that smoke plumes are transported thou-
+sands of kilometres away from their sources8–10 in both the boundary 
+layer11 and upper troposphere/lower stratosphere12,13, where they are 
+eventually removed or dissipate into background air. Despite this evi-
+dence, in situ quantitative measurements of biomass burning aerosol 
+in the global remote troposphere are largely missing14.
+
+Without in situ observational constraints, global climate models 
+rely heavily on satellite remote sensing to constrain biomass burn-
+ing aerosol abundance. The most useful of these measurements 
+resolve the aerosol vertical distribution, which can affect both the 
+magnitude and sign of its radiative effects15. Unfortunately, satellite 
+remote-sensing techniques that determine aerosol vertical distribu-
+tion, such as the Cloud-Aerosol Lidar with Orthogonal Polarization 
+
+(CALIOP) or the Multiangle Imaging SpectroRadiometer (MISR), 
+are severely limited in the remote troposphere because background 
+aerosol concentrations are very often below their limits of detec-
+tion16,17. They also report over a small swathe once or twice daily and 
+cannot observe through clouds. Undetected aerosol can account for 
+>40% of the aerosol mass, causing a globally averaged bias in aero-
+sol optical depth (AOD) of −25% or greater17. Thus, in situ aircraft 
+measurements capable of sampling low concentrations of biomass 
+burning aerosol are vital to the validation of global climate models 
+and estimation of the present and future climatic impact of biomass 
+burning aerosol.
+
+Global-scale aircraft measurements of biomass burning 
+aerosol
+To provide constraints on biomass burning abundance and distribu-
+tion in remote regions of the troposphere, we performed global-scale 
+measurements of aerosol composition and size distributions during 
+four seasonal flight campaigns between 2016 and 2018, as part of 
+NASA’s Atmospheric Tomography Missions (ATom). ATom targeted 
+the remote troposphere, flying over the Pacific and Atlantic Oceans 
+from ~85° S to ~82° N and taking near-continuous altitude profiles 
+from ~0.18 to ~12 km (Supplementary Fig. 1). Biomass burning 
+particles were detected using the instrument Particle Analysis by 
+Laser Mass Spectrometry (PALMS)18–20, which detects single par-
+ticles of diameter between ~0.15 and ~5 µm. PALMS particle type 
+classification errors are typically <5% (ref. 21). For biomass burning 
+particles, this is corroborated by calculation of particle number frac-
+tions inside biomass burning plumes: >90% of particles in smoke 
+plumes, as defined by elevated acetonitrile and CO concentrations, 
+were identified as biomass burning6, but few smoke particles were 
+identified in air with low biomass burning influence22.
+
+Widespread biomass burning smoke throughout 
+the remote troposphere
+G. P. Schill   1,2 ✉, K. D. Froyd   1,2, H. Bian3,4, A. Kupc   1,2,5, C. Williamson   1,2, C. A. Brock   1, E. Ray   1,2, 
+R. S. Hornbrook6, A. J. Hills6, E. C. Apel6, M. Chin4, P. R. Colarco4 and D. M. Murphy1
+
+Biomass burning emits ~34–41 Tg yr−1 of smoke aerosol to the atmosphere. Biomass burning aerosol directly influences the 
+Earth’s climate by attenuation of solar and terrestrial radiation; however, its abundance and distribution on a global scale are 
+poorly constrained, particularly after plumes dilute into the background remote troposphere and are subject to removal by 
+clouds and precipitation. Here we report global-scale, airborne measurements of biomass burning aerosol in the remote tropo-
+sphere. Measurements were taken during four series of seasonal flights over the Pacific and Atlantic Ocean basins, each with 
+near pole-to-pole latitude coverage. We find that biomass burning particles in the remote troposphere are dilute but ubiquitous, 
+accounting for one-quarter of the accumulation-mode aerosol number and one-fifth of the aerosol mass. Comparing our obser-
+vations with a high-resolution global aerosol model, we find that the model overestimates biomass burning aerosol mass in the 
+remote troposphere with a mean bias of >400%, largely due to insufficient wet removal by in-cloud precipitation. After updat-
+ing the model’s aerosol removal scheme we find that, on a global scale, dilute smoke contributes as much as denser plumes to 
+biomass burning’s scattering and absorption effects on the Earth’s radiation field.
+
+NAtuRE GEoSCiENCE | VOL 13 | JUNE 2020 | 422–427 | www.nature.com/naturegeoscience422
+
+mailto:gregory.schill@noaa.gov
+http://orcid.org/0000-0002-4084-0317
+http://orcid.org/0000-0002-0797-6028
+http://orcid.org/0000-0002-7996-2506
+http://orcid.org/0000-0002-5188-9378
+http://orcid.org/0000-0002-4033-4668
+http://orcid.org/0000-0001-8727-9849
+http://crossmark.crossref.org/dialog/?doi=10.1038/s41561-020-0586-1&domain=pdf
+http://www.nature.com/naturegeoscience
+
+
+ArticlesNature GeoscieNce
+
+Historically, airborne single-particle mass spectrometry instru-
+ments were limited to qualitative or relative measurements of 
+particle abundance. Here, absolute number fractions and mass con-
+centrations are derived using a new method21 that pairs PALMS to 
+an independent suite of optical particle counters that size aerosols 
+quantitatively. To ensure statistically significant counts, quantitative 
+size distributions are split into four bins and particle concentration 
+data are aggregated by time (3 min). For a 3 min sampling period, 
+the estimated statistical errors due to PALMS particle sampling 
+and identification are ~30% at a mass concentration of 0.01 µg m−3, 
+decreasing to ~10% at 0.1 µg m−3 (ref. 21).
+
+From these global-scale in situ measurements, we find that bio-
+mass burning particles are ubiquitous in the remote troposphere. 
+Here, we define the remote troposphere as all of the ATom measure-
+ments excluding take-offs, final approaches and low passes over con-
+tinental land masses (Supplementary Fig. 1). Transported biomass 
+burning plumes, such as the air off the west coast of Africa (Fig. 1a), 
+were not filtered out. Biomass burning influenced (that is, biomass 
+burning number fractions were >0.1) over two-thirds of air masses 
+in ATom (Fig. 1a) and, on average, 27% of the accumulation-mode 
+(particles of diameter >100 nm) aerosol particles in the remote 
+troposphere originated in a fire. Furthermore, although <20% of all 
+fire plumes are injected above the atmospheric boundary layer23,24, 
+biomass burning influences aerosol number throughout the remote 
+tropospheric column (Fig. 1b). Between 2 and 8 km in altitude, bio-
+mass burning aerosol comprised 11–46% (interquartile range, IQR) 
+
+of the accumulation-mode aerosol number. Number fractions at 
+higher altitudes (8–12 km) were smaller but still non-trivial (4–30%), 
+indicating that these surface-emitted particles are transported ver-
+tically, consistent with observations over the North Atlantic12,13. 
+Biomass burning mass concentrations are consistent with the ubiq-
+uity observed in particle number (Supplementary Fig. 2). The range 
+of biomass burning aerosol mass during ATom was 0.05–0.22 µg m−3 
+(IQR), with a mean mass concentration of 0.30 µg m−3. Fractionally, 
+biomass burning accounts for 6–30% (IQR) of the total aerosol mass 
+in the remote troposphere, with a mean contribution of 21%.
+
+The level of biomass burning influence in the remote tropo-
+sphere ranges from negligible in pristine regions to dominant in 
+well-defined plumes directly transported from burning sources; 
+however, a majority of the influence during ATom was in an inter-
+mediate range where biomass burning aerosol comprised 10–50% 
+of the accumulation-mode number (Fig. 1c). For example, while 
+African biomass burning routinely emits widespread smoke plumes 
+into the tropical Atlantic, integrating the normalized probability 
+density function between biomass burning number fractions 0.5 
+and 1.0 shows that <13% of the air sampled in the remote tropics is 
+dominated by biomass burning. Similarly, the Northern Hemisphere 
+extra-tropics are pervasively influenced by biomass burning; how-
+ever, the air was dominated by biomass burning only 13% of the 
+time. In the clean Southern Hemisphere extra-tropics, sporadic bio-
+mass burning events can easily dominate over the low background 
+of other particle types. Yet here, biomass burning dominated the 
+
+c
+Low
+
+Biomass burning influence
+
+High
+
+12
+
+10
+
+8
+
+6
+
+4
+
+2
+
+0
+
+A
+lti
+
+tu
+d
+
+e
+ (
+
+km
+)
+
+1.0
+
+1.0
+
+0.8
+
+0.8
+
+0.6
+
+0.6
+
+Biomass burning number fraction
+
+0.4
+
+0.4
+
+0.2
+
+0.2
+
+0
+
+0
+
+Biomass burning number fraction
+
+5
+
+4
+
+3
+
+2
+
+1
+
+0
+
+N
+o
+
+rm
+a
+
+liz
+e
+
+d
+ P
+
+D
+F
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+80 °S
+
+80 °S
+
+40 °S
+
+40 °S
+
+0°
+
+0°
+
+40 °N
+
+40 °N
+
+80 °N
+
+80 °N
+
+Latitude (Atlantic)
+
+80 °S
+
+80 °S
+
+40 °S
+
+40 °S
+
+0°
+
+0°
+
+40 °N
+
+40 °N
+
+80 °N
+
+80 °N
+
+Latitude (Pacific)
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+A
+lti
+
+tu
+d
+
+e
+ (
+
+km
+)
+
+b
+
+July–Aug
+
+Jan–Feb
+
+Sept–Oct
+
+April–May
+
+a
+
+2017
+
+2018
+
+2016
+
+2017
+
+1.00.80.60.40.20
+
+PALMS biomass burning number fraction
+
+NH extra-tropics
+Tropics
+
+SH extra-tropics
+
+Jan–Feb 2017
+April–May 2018
+July–Aug 2016
+Sept–Oct 2017
+
+Fig. 1 | the influence of biomass burning on aerosol in the remote troposphere. a–c, PALMS biomass burning number fractions shown as altitude/latitude 
+curtain plots, split by season and ocean basin (a), seasonal average vertical profiles (coloured lines) and mission-wide IQRs (grey boxes)  
+(b) and mission-wide normalized probability density functions (PDFs), split into three latitude bins (c). See Supplementary Table 1 for region definitions. 
+NH, Northern Hemisphere; SH, Southern Hemisphere.
+
+NAtuRE GEoSCiENCE | VOL 13 | JUNE 2020 | 422–427 | www.nature.com/naturegeoscience 423
+
+http://www.nature.com/naturegeoscience
+
+
+Articles Nature GeoscieNce
+
+aerosol number only 25% of the time. This analysis suggests that, 
+while biomass burning is ubiquitous, it is mostly due to a pervasive, 
+dilute background rather than concentrated plumes.
+
+Generally, fresh biomass burning particles are >90% carbona-
+ceous material25; however, as biomass burning particles age, they can 
+accumulate secondary sulfate mass26 from condensation of gaseous 
+sulfuric acid that is present in the background atmosphere. To assess 
+the extent of dilution and ageing, we determined the organic and sul-
+fate mass fractions of individual biomass burning particles21 (Fig. 2).  
+In ATom, we find that biomass burning sulfate mass fractions show 
+near-monotonic increases with the decline in various smoke indica-
+tors (Fig. 2a–c). This is consistent with sulfate accumulation following 
+ageing, loss of organic species or both. Biomass burning sulfate mass 
+
+fraction also increases with the average number of days since cross-
+ing a fire plume, as indicated by back-trajectory analysis (Fig. 2d).  
+Sulfate mass fractions in biomass burning particles varied from 0.35 
+to 0.55 (IQR). Thus, most of the ubiquitous smoke in the remote 
+troposphere has indeed been diluted from plume conditions (by 
+gas-phase biomass burning tracers) and is generally ≥1 week in age.
+
+Model–observation comparisons and sensitivity tests
+To assess the climatic relevance of this persistent, aged smoke in the 
+remote troposphere, we conducted a detailed comparison of PALMS 
+ATom biomass burning abundance with a high-resolution (~50 km 
+horizontal resolution with 72 vertical layers) global atmospheric 
+model, the Goddard Earth Observing System model v.5 (GEOS).  
+
+1.0
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+0
+302520151050
+
+Days since most recent fire influence
+
+1.0
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+0
+8006004002000
+
+TOGA HCN (pptv)
+
+1.0
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+0
+
+P
+A
+
+L
+M
+
+S
+ b
+
+io
+m
+
+a
+ss
+
+ b
+u
+rn
+
+in
+g
+ s
+
+u
+lfa
+
+te
+ m
+
+a
+ss
+
+ f
+ra
+
+ct
+io
+
+n
+
+30025020015010050
+
+TOGA CH3CN (pptv)
+
+1.0
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+0
+0.01 0.1 1 10
+
+PALMS biomass burning mass (µg m–3)
+
+d
+
+c
+
+b
+
+a
+
+S = –0.92
+
+S = –0.99
+
+S = –0.99
+
+S = 0.98
+
+Fig. 2 | Sulfate mass fraction of biomass burning particles versus smoke 
+markers. a–d, Sulfate mass fraction versus PALMS biomass burning 
+mass (a), CH3CN (b), HCN (c) and recent fire influence calculated from 
+back trajectories (d). Raw data are shown as light grey dots, median 
+values as horizontal black markers and IQRs as coloured boxes. For each 
+plot, Spearman’s Rho (S), a non-parametric measure of rank correlation, 
+is provided for median values. All |S| are > 0.9, indicating monotonic 
+relationships. pptv, parts per trillion by volume. Additional data shown in  
+b and c are derived from the Studies of Emissions, Atmospheric 
+Composition, Clouds and Climate Coupling by Regional Surveys mission41, 
+and extend this analysis to include fresh smoke plumes over the continental 
+United States.
+
+0.0001
+
+0.0001
+
+0.01
+
+0.01
+
+1
+
+1
+
+Mass centration (µg m–3)
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+A
+lti
+
+tu
+d
+
+e
+ (
+
+km
+)
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+
+12 12
+
+8 8
+
+4 4
+
+0 0
+0.0001
+
+0.0001
+
+0.01
+
+0.01
+
+1
+
+1
+
+PACIFIC ATLANTIC
+
+Southern Ocean
+
+SH tropics
+
+NH tropics
+
+NH mid-latitudes
+
+SH mid-latitudes
+
+Arctic
+
+PALMS GEOS/GOCART base GEOS/GOCART r23
+
+Fig. 3 | Global-scale model–measurement comparisons of biomass 
+burning aerosol for all Atom campaigns. Lines correspond to median 
+values, and shadings to the IQR of the values. Agreement of GEOS/
+GOCART aerosol with measurements (black) was improved over the 
+base simulation case (blue) by adopting a more realistic aerosol wet 
+removal scheme (red, see Supplementary Table 2). Vertical profiles 
+are split into different latitude bins, and also by ocean basin outside of 
+polar regions. Latitude bins were chosen from changes in east–west 
+surface wind direction, temperature, water vapour and relative humidity, 
+and the distribution of biomass burning gas-phase and aerosol tracers 
+(Supplementary Table 1).
+
+NAtuRE GEoSCiENCE | VOL 13 | JUNE 2020 | 422–427 | www.nature.com/naturegeoscience424
+
+http://www.nature.com/naturegeoscience
+
+
+ArticlesNature GeoscieNce
+
+The Goddard Chemistry, Aerosol, Radiation, and Transport 
+(GOCART) aerosol module27–29 was implemented in GEOS, and the 
+Quick Fire Emissions Dataset (QFED)30 was used for biomass burning 
+emissions. Simulated biomass burning aerosol abundance was deter-
+mined using a fire emissions on–minus–off approach. A direct com-
+parison to the ATom measurements was ensured by ‘flying’ a virtual 
+aircraft through the model domain along the same spatiotemporal 
+coordinates as the ATom flights. We assume that the net flux of organic 
+mass (from condensation and evaporation) in aged biomass burning 
+particles is zero31; under this assumption, the PALMS-measured bio-
+mass burning organic-only mass provides a straightforward compari-
+son to biomass burning mass simulated by the model.
+
+The default GEOS/GOCART run (base case) overestimates 
+biomass burning abundance compared to the observations, with 
+a mean bias of +430% (Fig. 3). The largest overestimations are at 
+high altitudes and high latitudes, where the model median values 
+are often greater than the 75th percentile of the observations and 
+the mean bias increases to +510–800%. Better agreement nearer 
+to biomass burning sources is expected, since QFED is a top-down 
+emissions inventory that, when implemented in GEOS/GOCART, 
+performs well against remotely sensed and ground-based measure-
+ments of AOD32,33. Because transport to high altitudes and latitudes 
+is associated with deep convection and processing by cold-clouds, 
+precipitation-related aerosol losses (wet removal processes) are prob-
+ably underestimated in the model. Other global modelling studies 
+observed a similar disparity with primary aerosol using default wet 
+removal schemes34–36, suggesting that poor predictive capabilities of 
+biomass burning aerosol in the remote atmosphere may be common 
+to many aerosol models that are unconstrained by measurements.
+
+To assess the relative roles of the simulated biomass burn-
+ing aerosol emission and removal processes, we ran 12 sensitivity  
+
+tests using different combinations of emissions datasets, 
+hydrophobic-to-hydrophilic ageing of organic aerosol, wet removal 
+in cold-clouds (temperature T < 258 K) and removal of hydropho-
+bic particles in large-scale and convective clouds (Supplementary 
+Table 2). The best test run was chosen to minimize both mean log 
+bias and centred root mean squared log error (CRMSLE) in bio-
+mass burning aerosol mass, while also being physically consistent 
+with known atmospheric processes. As expected, both mean log 
+bias and CRMSLE were more sensitive to wet removal processes 
+than ageing time scales (r13) and emissions datasets (r15). In the 
+best model run (r23, Supplementary Fig. 4), two removal path-
+ways were added to the base case for BC and organic carbon: (1) 
+half of all hydrophobic particles were removed from both convec-
+tive and large-scale clouds following a first-order loss rate, and (2) 
+half of both hydrophobic and hydrophilic particles were removed 
+from cold-clouds following a first-order loss rate (Supplementary 
+Table 2). Updating wet removal processes per sensitivity run r23 
+reproduces both the magnitude and shape of the in situ vertical 
+profiles (Fig. 3 and Supplementary Fig. 3), suggesting that hydro-
+phobic aerosol can be removed in-cloud via impaction and that wet 
+removal parameterizations should be applied more deeply into the 
+mixed-phase cloud regime.
+
+Biomass burning AOD and direct radiative effect. Despite its 
+ubiquity, biomass burning aerosol mass in the remote troposphere is 
+typically too dilute (IQR = 0.05–0.22 µg m−3) for detection by satel-
+lite remote sensors, which provide the only continuous, near-global 
+observations of AOD. The total AOD limit of detection for satellite 
+remote sensors that can differentiate particle types, such as CALIOP 
+and MISR, is ~0.05 (refs. 16,17,37). The ATom flight tracks are primar-
+ily in remote regions of the troposphere where the biomass burning, 
+
+18
+0 
+
+°
+
+12
+0 
+
+°E
+18
+
+0 
+°
+
+12
+0 
+
+°E
+18
+
+0 
+°
+
+12
+0 
+
+°E
+18
+
+0 
+°
+
+12
+0 
+
+°E
+
+18
+0 
+
+°
+
+12
+0 
+
+°E
+18
+
+0 
+°
+
+12
+0 
+
+°E
+18
+
+0 
+°
+
+12
+0 
+
+°E
+18
+
+0 
+°
+
+12
+0 
+
+°E
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+80 °S
+
+60 °S
+
+40 °S
+
+20 °S
+
+0°
+
+20 °N
+
+40 °N
+
+60 °N
+
+80 °N
+
+80 °S
+
+60 °S
+
+40 °S
+
+20 °S
+
+0°
+
+20 °N
+
+40 °N
+
+60 °N
+
+80 °N
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+12
+0 
+
+°W
+60
+
+ °W 0
+°
+
+60
+ °E
+
+80 °S
+
+60 °S
+
+40 °S
+
+20 °S
+
+0°
+
+20 °N
+
+40 °N
+
+60 °N
+
+80 °N
+
+Feb 2017 May 2018 Aug 2016 Oct 2017
+
+–0.24 W m–2 –0.07 W m
+–2
+
+–0.11 W m–2 –0.07 W m–2
+
+0.01 0.1 1
+
+PALMS biomass burning mass (µg m–3)
+
+0.40.30.20.10
+
+GEOS/GOCART AOD
+
+–1.0 –0.5 0 0.5 1.0
+
+GEOS/GOCART IDRE (W m–2)
+
+L
+a
+titu
+
+d
+e
+
+80 °S
+
+60 °S
+
+40 °S
+
+20 °S
+
+0°
+
+20 °N
+
+40 °N
+
+60 °N
+
+80 °N
+
+L
+a
+titu
+
+d
+eL
+
+a
+tit
+
+u
+d
+e
+
+L
+a
+tit
+
+u
+d
+e
+
+Longitude Longitude Longitude Longitude
+
+Longitude Longitude Longitude Longitude
+
+Fig. 4 | GEoS/GoCARt r23 biomass burning-only, clear-sky AoD for primary Atom campaign months. The colour scale (top) emphasizes areas where 
+biomass burning-only AOD > 0.05. Overlaid on the AOD plots are the ATom flight tracks, coloured by PALMS biomass burning mass concentration. The 
+corresponding all-sky IDRE for biomass burning aerosol is also shown (bottom), with globally averaged values in the bottom left hand corner of each plot.
+
+NAtuRE GEoSCiENCE | VOL 13 | JUNE 2020 | 422–427 | www.nature.com/naturegeoscience 425
+
+http://www.nature.com/naturegeoscience
+
+
+Articles Nature GeoscieNce
+clear-sky AOD in the model is <0.05 (Fig. 4, top row). Thus, a 
+validated global aerosol model is needed to assess the climatic 
+impact of dilute smoke (biomass burning AOD < 0.05) in the remote 
+troposphere. To determine the contribution of dilute smoke to the 
+total biomass burning-only AOD, we summed model grid cells with 
+biomass burning AOD < 0.05 over the entire globe (with area nor-
+malization) and divided by the total biomass burning-only AOD. 
+AOD < 0.05 was chosen because it corresponds to the detection limit 
+of remotely sensed products. It is also conservative; biomass burn-
+ing plumes have previously been defined with remotely sensed data 
+using an AOD threshold of 0.10–0.15 (ref. 32). For the months shown 
+in Fig. 4, the average contribution of this remote, aged smoke to the 
+total biomass burning AOD ranged from 23 to 50% (mean, 40%).  
+Increasing the limit to model grid cells with AOD < 0.1 
+(Supplementary Fig. 5) raised these contributions to 32 and 67% 
+(mean 54%). Thus, dilute smoke in the remote troposphere is often 
+below satellite AOD limits of detection but can contribute up to half 
+of the total biomass burning-only AOD.
+
+To investigate the contribution of pervasive, aged smoke to the 
+atmospheric radiation balance, we also used the updated model to 
+calculate the biomass burning-only, all-sky instantaneous direct 
+radiative effect (IDRE; Fig. 4, bottom row), a measure of aerosol scat-
+tering and absorption effects on the Earth’s radiation field. Globally 
+averaged, biomass burning particles exhibit a negative IDRE (−0.24 
+to −0.07 W m−2; Fig. 4). Regionally, biomass burning aerosol can 
+warm the atmosphere over areas of high albedo, including persis-
+tent clouds, deserts and snow or ice (Fig. 4). This warming, however, 
+may be modulated by considering ‘rapid adjustments’ (not included 
+here)38, where absorbing aerosol can change atmospheric heating 
+rates, stability and near-cloud relative humidity39. Furthermore, in 
+regions like the cloudy South Atlantic Ocean, the sign of biomass 
+burning aerosol’s IDRE will depend on the model’s horizontal reso-
+lution and prescribed aerosol single-scattering albedo40. Like AOD, 
+areas of fresh fires dominate large values of the IDRE; however, the 
+remote troposphere is filled with many small, non-zero contribu-
+tions to total IDRE. Similar to AOD, these contributions amount to 
+a large fraction of the global biomass burning-only IDRE. For the 
+ATom deployment months, the monthly averaged contribution of 
+dilute smoke to the biomass burning-only, all-sky IDRE ranges from 
+35 to 57% (mean, 44%). Changing the limit to AOD <0.1, these con-
+tributions increase to 48 and 74% (mean 63%). Thus, while air in 
+the remote troposphere does not contain large biomass burning 
+mass concentrations, dilute and aged smoke is so pervasive that it, 
+globally averaged, contributes approximately half of the total AOD 
+and IDRE from all biomass burning.
+
+online content
+Any methods, additional references, Nature Research report-
+ing summaries, source data, extended data, supplementary infor-
+mation, acknowledgements, peer review information; details of 
+author contributions and competing interests; and statements of 
+data and code availability are available at https://doi.org/10.1038/
+s41561-020-0586-1.
+
+Received: 20 September 2019; Accepted: 28 April 2020;  
+Published online: 1 June 2020
+
+References
+ 1. Bond, T. C. et al. Bounding the role of black carbon in the climate system:  
+
+a scientific assessment. J. Geophys. Res. Atmos. 118, 5380–5552 (2013).
+ 2. Andreae, M. O. Emission of trace gases and aerosols from biomass 
+
+burning—an updated assessment. Atmos. Chem. Phys. 19, 8523–8546 (2019).
+ 3. Bowman, D. M. J. S. et al. Fire in the Earth System. Science 324, 481–484 
+
+(2009).
+ 4. Abatzoglou, J. T. & Williams, A. P. Impact of anthropogenic climate change 
+
+on wildfire across western US forests. Proc. Natl Acad. Sci. USA 113, 
+11770–11775 (2016).
+
+ 5. Westerling, A. L., Hidalgo, H. G., Cayan, D. R. & Swetnam, T. W. Warming 
+and earlier spring increase Western U.S. forest wildfire activity. Science 313, 
+940–943 (2006).
+
+ 6. Hudson, P. K. et al. Biomass-burning particle measurements:  
+characteristic composition and chemical processing. J. Geophys. Res. Atmos. 
+109, D23S27 (2004).
+
+ 7. Park, R. J., Jacob, D. J. & Logan, J. A. Fire and biofuel contributions to annual 
+mean aerosol mass concentrations in the United States. Atmos. Environ. 41, 
+7389–7400 (2007).
+
+ 8. Edwards, D. P. et al. Satellite-observed pollution from Southern Hemisphere 
+biomass burning. J. Geophys. Res. 111, D14312 (2006).
+
+ 9. Wotawa, G. & Trainer, M. The influence of Canadian forest fires on pollutant 
+concentrations in the United States. Science 288, 324–328 (2000).
+
+ 10. Andreae, M. O., Andreae, T. W., Ferek, R. J. & Raemdonck, H. Long-range 
+transport of soot carbon in the marine atmosphere. Sci. Total Environ. 36, 
+73–80 (1984).
+
+ 11. Zuidema, P. et al. The Ascension Island boundary layer in the remote 
+Southeast Atlantic is often smoky. Geophys. Res. Lett. 45, 4456–4465 (2018).
+
+ 12. Dahlkötter, F. et al. The Pagami Creek smoke plume after long-range 
+transport to the upper troposphere over Europe—aerosol properties and 
+black carbon mixing state. Atmos. Chem. Phys. 14, 6111–6137 (2014).
+
+ 13. Ditas, J. et al. Strong impact of wildfires on the abundance and aging of black 
+carbon in the lowermost stratosphere. Proc. Natl Acad. Sci. USA 115, 
+e11595–e11603 (2018).
+
+ 14. Reddington, C. L. et al. The Global Aerosol Synthesis and Science Project 
+(GASSP): measurements and modeling to reduce uncertainty. Bull. Am. 
+Meteorol. Soc. 98, 1857–1877 (2017).
+
+ 15. Myhre, G. et al. Radiative forcing of the direct aerosol effect from AeroCom 
+Phase II simulations. Atmos. Chem. Phys. 13, 1853–1877 (2013).
+
+ 16. Shi, Y. et al. A critical examination of spatial biases between MODIS and 
+MISR aerosol products—application for potential AERONET deployment. 
+Atmos. Meas. Techn. 4, 2823–2836 (2011).
+
+ 17. Watson-Parris, D. et al. On the Limits of CALIOP for constraining modeled 
+free tropospheric aerosol. Geophys. Res. Lett. 45, 9260–9266 (2018).
+
+ 18. Thomson, D. S., Schein, M. E. & Murphy, D. M. Particle analysis by laser 
+mass spectrometry WB-57F instrument overview. Aerosol Sci. Technol. 33, 
+153–169 (2000).
+
+ 19. Cziczo, D. J., Thomson, D. S., Thompson, T. L., DeMott, P. J. & Murphy, D. 
+M. Particle analysis by laser mass spectrometry (PALMS) studies of  
+ice nuclei and other low number density particles. Int. J. Mass Spectrom. 258, 
+21–29 (2006).
+
+ 20. Murphy, D. M. The design of single particle laser mass spectrometers. Mass 
+Spectrom. Rev. 26, 150–165 (2007).
+
+ 21. Froyd, K. D. et al. A new method to quantify mineral dust and other aerosol 
+species from aircraft platforms using single-particle mass spectrometry. 
+Atmos. Meas. Techn. 12, 6209–6239 (2019).
+
+ 22. Brock, C. A. et al. Particle characteristics following cloud-modified transport 
+from Asia to North America. J. Geophys. Res. 109, D23S26 (2004).
+
+ 23. Sofiev, M., Ermakova, T. & Vankevich, R. Evaluation of the smoke-injection 
+height from wild-land fires using remote-sensing data. Atmos. Chem. Phys. 
+12, 1995–2006 (2012).
+
+ 24. Val Martin, M., Kahn, R. & Tosca, M. A global analysis of wildfire smoke 
+injection heights derived from space-based multi-angle imaging. Remote Sens. 
+10, 1609 (2018).
+
+ 25. Reid, J. S. et al. A review of biomass burning emissions part II: intensive 
+physical properties of biomass burning particles. Atmos. Chem. Phys. 5, 
+799–825 (2005).
+
+ 26. Li, J., Pósfai, M., Hobbs, P. V. & Buseck, P. R. Individual aerosol particles 
+from biomass burning in southern Africa: 2, compositions and aging of 
+inorganic particles. J. Geophys. Res. Atmos. 108, 8484 (2003).
+
+ 27. Chin, M. et al. Tropospheric aerosol optical thickness from the GOCART 
+model and comparisons with satellite and sun photometer measurements.  
+J. Atmos. Sci. 59, 461–483 (2002).
+
+ 28. Colarco, P., da Silva, A., Chin, M. & Diehl, T. Online simulations of global 
+aerosol distributions in the NASA GEOS-4 model and comparisons to 
+satellite and ground-based aerosol optical depth. J. Geophys. Res. 115,  
+D14207 (2010).
+
+ 29. Bian, H. et al. Source attributions of pollution to the Western Arctic  
+during the NASA ARCTAS field campaign. Atmos. Chem. Phys. 13, 
+4707–4721 (2013).
+
+ 30. Darmenov, A. & da Silva, A. M. The Quick Fire Emissions Dataset (QFED) 
+– Documentation of Versions 2.1, 2.2 and 2.4 Technical Report Series on 
+Global Modeling and Data Assimilation No. 32 (NASA, 2015).
+
+ 31. Bian, Q. et al. Secondary organic aerosol formation in biomass- 
+burning plumes: theoretical analysis of lab studies and ambient plumes. 
+Atmos. Chem. Phys. 17, 5459–5475 (2017).
+
+ 32. Petrenko, M. et al. The use of satellite-measured aerosol optical depth to 
+constrain biomass burning emissions source strength in the global model 
+GOCART. J. Geophys. Res. Atmos. 117, D18212 (2012).
+
+NAtuRE GEoSCiENCE | VOL 13 | JUNE 2020 | 422–427 | www.nature.com/naturegeoscience426
+
+https://doi.org/10.1038/s41561-020-0586-1
+https://doi.org/10.1038/s41561-020-0586-1
+http://www.nature.com/naturegeoscience
+
+
+ArticlesNature GeoscieNce
+ 33. Pan, X. et al. Six global biomass burning emission datasets: intercomparison 
+
+and application in one global aerosol model. Atmos. Chem. Phys. 20,  
+969–994 (2020).
+
+ 34. Schwarz, J. P. et al. Global‐scale seasonally resolved black carbon vertical 
+profiles over the Pacific. Geophys. Res. Lett. 40, 5542–5547 (2013).
+
+ 35. Yu, P. et al. Efficient in-cloud removal of aerosols by deep convection. 
+Geophys. Res. Lett. 46, 1061–1069 (2019).
+
+ 36. Lund, M. T. et al. Short black carbon lifetime inferred from a global set of 
+aircraft observations. npj Clim. Atmos. Sci. 1, 31 (2018).
+
+ 37. Toth, T. D. et al. Minimum aerosol layer detection sensitivities and their 
+subsequent impacts on aerosol optical thickness retrievals in CALIPSO level 
+2 data products. Atmos. Meas. Tech. 11, 499–514 (2018).
+
+ 38. Samset, B. H. & Myhre, G. Climate response to externally mixed  
+black carbon as a function of altitude. J. Geophys. Res. Atmos. 120,  
+2913–2927 (2015).
+
+ 39. Tegen, I. & Heinold, B. Large-scale modeling of absorbing aerosols and their 
+semi-direct effects. Atmosphere 9, 380 (2018).
+
+ 40. Mallet, M. et al. Simulation of the transport, vertical distribution, optical 
+properties and radiative impact of smoke aerosols with the ALADIN regional 
+climate model during the ORACLES-2016 and LASIC experiments. Atmos. 
+Chem. Phys. 19, 4963–4990 (2019).
+
+ 41. Toon, O. B. et al. Planning, implementation, and scientific goals of the Studies 
+of Emissions and Atmospheric Composition, Clouds and Climate Coupling 
+by Regional Surveys (SEAC 4 RS) field mission. J. Geophys. Res. Atmos. 121, 
+4967–5009 (2016).
+
+Publisher’s note Springer Nature remains neutral with regard to jurisdictional claims in 
+published maps and institutional affiliations.
+
+© The Author(s), under exclusive licence to Springer Nature Limited 2020
+
+NAtuRE GEoSCiENCE | VOL 13 | JUNE 2020 | 422–427 | www.nature.com/naturegeoscience 427
+
+http://www.nature.com/naturegeoscience
+
+
+Articles Nature GeoscieNce
+Methods
+Aerosol sampling during ATom. The NASA ATom mission consisted of four 
+series of seasonal flights from 2016 to 2018 that spanned the region between ~86° S 
+and ~82° N over the remote Pacific and Atlantic Ocean basins. Flights consisted 
+of six to ten altitude profiles from ~0.18 to 12 km, with ~5–15 min spent at the 
+bottom and top of each profile. An extensive payload characterized both gas-phase 
+and aerosol species (https://daac.ornl.gov/ATOM/guides/ATom_merge.html, 
+accessed January 2020). The flight tracks for each seasonal series of flights, and its 
+corresponding months, are shown in Supplementary Fig. 1. One of the main goals 
+of ATom was to provide extensive constraints on both satellite measurements and 
+global models that simulate atmospheric chemistry and climate.
+
+In this work, we consider all of the ATom measurements as remote except for 
+take-off ascents from cities, final approaches, missed approaches and low passes 
+over continental landmasses. We chose not to filter out biomass burning plumes 
+transported to the remote troposphere, such as air off the west coast of Africa 
+with high biomass burning number fractions (Fig. 1a). If biomass burning plumes 
+exist in the ATom dataset, however, we consider these as being in the remote 
+troposphere for they are hundreds to thousands of kilometres from the nearest fire 
+emissions. According to back-trajectory analyses, 99.6% of the ATom sampling 
+periods had not encountered a fire in the previous 3 d.
+
+Detailed descriptions of the aerosol sampling and sizing instruments42 and 
+PALMS43 as operated during ATom have been published. The aerosol-sizing 
+instruments consisted of one or two nucleation-mode aerosol-size spectrometers 
+(NMASS)44, the Droplet Measurement Technologies Ultra High Sensitivity Aerosol 
+Spectrometer (UHSAS)45 and the TSI Laser Aerosol Spectrometer (LAS), which 
+were merged together into one size distribution42. The NMASS, UHSAS, LAS and 
+PALMS spectrometers sampled air from outside the aircraft via the University of 
+Hawaii (UH) inlet, now operated by the NASA Langley Aerosol Research  
+Group (LARGE).
+
+The UH/LARGE inlet was chosen specifically because it has been shown to 
+transmit supermicrometre particles efficiently: particles ≥3.2 µm were sampled 
+from the inlet with >50% efficiency at 12 km, and particles ≥5.0 µm were sampled 
+with ~50% efficiency at lower altitudes46. Tubing losses for the supermicrometre 
+particles were taken into consideration47, with losses <30% for 1-µm particles 
+and <80% for 5-µm particles. A virtual impactor, based on the design of Loo 
+and Cork48, was employed upstream of the PALMS instrument to enhance 
+large-particle concentrations. The enhancement of large particles for PALMS 
+improves particle statistics but does not affect concentrations, because PALMS 
+data are scaled to match independent measurements of the size distributions as 
+described below.
+
+Particles passed through Nafion dryers before entering the aerosol-sizing 
+instruments. The flow to PALMS was not actively dried, but the final 5 cm of 
+tubing upstream of the PALMS aerosol focusing inlet was heated to 35 °C. Heating 
+the line reduced the relative humidity in the aerosol inlet to <40%.
+
+We exclude in-cloud data from the results in this work. Sea-salt particles in 
+the marine boundary layer can be deposited on the walls of an aircraft inlet49. 
+When passing through a cloud, droplets and/or ice particles will dislodge salt from 
+the inlet wall or ablate off metallic particles, and these artefacts are measured by 
+PALMS and the aerosol-sizing instruments50,51.
+
+PALMS. The PALMS instrument has been described in detail previously18–21. 
+Briefly, a pressure-controlled (26-torr), six-stage aerodynamic lens focuses ambient 
+particles into a collimated aerosol beam. The beam enters the ion source region 
+(~0.2 torr), where a 405-nm, continuous-wave laser detects particles optically. 
+Particle detection triggers a pulsed, 193-nm excimer laser that both vaporizes 
+(ablates) particles and ionizes its constituents. Ions are extracted from the ion 
+source region and sent through a time-of-flight mass spectrometer. Over 90% of 
+optically detected particles produce mass spectra, largely due to the prompt firing 
+of the excimer laser (400 ns) and the proximity of the trigger beam to the excimer 
+laser pulse (100 µm). One positive- or negative-ion mass spectrum is produced per 
+particle. The lower size limit for PALMS is not a fixed number due to variations 
+in the aerosol inlet alignment, laser power and optical noise in the source region. 
+Generally, the detection efficiency decreases with decreasing particle diameter, 
+especially below ~150 nm, where PALMS can be statistically limited under low 
+aerosol loadings; however, the PALMS detection efficiency does not affect biomass 
+burning quantification under the assumptions described below.
+
+The 405-nm laser is beam-split, adding an additional laser beam to the source 
+region. The split beams are a known distance apart (33.1 mm), orthogonal to 
+the focused aerosol stream. Optical detection by both lasers allows for a precise 
+calculation of velocity from the time of flight between the two lasers. Particle 
+velocity was calibrated to vacuum aerodynamic diameters using polystyrene latex 
+spheres before and after each ATom deployment.
+
+Particles are classified into eight different composition types based on their 
+mass spectra, including sulfate-organic-nitrate, biomass burning, mineral dust/
+metallic, sea salt, elemental carbon (BC without thick organic coatings), meteoric 
+particles, oil combustion from shipping emissions, and K-rich salt particles21. 
+Particles that do not fit these particle types are placed into a ninth class, ‘Other’. 
+Spectral signatures that define particle types are often minor constituents. For 
+example, meteoric particles, classified by the meteoric metals Fe, Ni and Mg, are 
+
+mostly sulfuric acid by mass. Generally, minor or accumulated constituents will not 
+obscure the spectral signatures. For example, mineral dust coated by small amounts 
+of sulfate, organics and nitrate will still be classified as mineral dust/metallic. One 
+exception is the elemental carbon particle type—the spectral signatures of the 
+elemental carbon type are often obscured organic and sulfate signatures. During 
+ATom, the PALMS elemental carbon particle type was not detected in high number 
+fractions ð 1%Þ
+
+I
+, suggesting that most of the black carbon was coated with 
+
+organic material and/or sulfate. In addition to the empirical particle classifications, 
+a hierarchical cluster analysis52 was performed for all of the ATom mass spectra 
+combined. The cluster analysis is not used directly to classify particles, but is 
+useful in reducing hundreds of thousands of spectra down to hundreds of clusters. 
+Clusters can then be hand-checked and, if misclassified, can be manually added to, 
+or removed from, composition types.
+
+Biomass burning aerosol identification using PALMS. The PALMS biomass 
+burning index is a semi-empirical biomass burning classification originally 
+developed by Hudson et al.6 and modified here to further improve identification 
+accuracy. It operates by multiplying the relative peak areas of carbon (A12) by the 
+square of a modified potassium signal (MA39), and normalizing that product. By 
+squaring MA39, more weight is given to potassium than carbon in the biomass 
+burning index. The modified potassium area has maintained its original functional 
+form6, but the empirical coefficients change slightly from mission to mission. The 
+potassium peak area is modified to filter out other particle types that could contain 
+trace amounts of potassium, including sea salt, minerals and meteoric material, 
+industrial sources, oil combustion from shipping activity, and K-rich salt particles.6 
+The biomass burning index found >90% biomass burning particles in both fresh 
+(~2 h) and aged (~7–10 d) biomass burning plumes identified by gas-phase tracers6, 
+indicating that MA39 is a conserved biomass burning tracer over atmospherically 
+relevant aerosol lifetimes. PALMS is exquisitely sensitive to alkali metals, such 
+that potassium is reliably detected in PALMS at � 0:1%
+
+I
+ by mass53. Bulk aerosol 
+
+potassium measurements are not always selective for biomass burning aerosol due 
+to high detection limits; furthermore, potassium mass is not linearly correlated 
+with biomass burning mass because it may be more prevalent under flaming 
+conditions54. PALMS, however, checks only for the presence of non-sea salt/
+dust/industrial potassium. Thus, single-particle selectivity combined with high 
+potassium sensitivity allows for PALMS to identify biomass burning particles with 
+high accuracy.
+
+Biomass burning quantification using aerosol-sizing instruments and 
+PALMS. PALMS natively measures fractional, rather than absolute, abundances. 
+The latter is difficult for PALMS to measure per se due to substantial biases 
+in sampling efficiencies; however, quantitative information can be derived by 
+merging PALMS fractional data with independently measured quantitative size 
+distributions. The methodology and limitations have been detailed by Froyd 
+et al.21. Briefly, PALMS aerodynamic diameters are converted to geometric 
+diameters using composition-dependent densities and dynamic shape factors. 
+Geometric diameters are then matched to aerosol size distribution data. PALMS 
+has size-dependent detection biases, but PALMS ionizes all major particle 
+types with similar efficiency55. Thus, the number fraction of each composition 
+type can be multiplied by the concentration in an aerosol size distribution 
+bin, providing it is sufficiently narrow. An inherent assumption is that particle 
+composition is relatively homogeneous within a single size bin. This results in a 
+composition-resolved size distribution. The distribution can be a number, surface 
+area or volume size distribution, with PALMS providing larger data coverages for 
+the latter two. Biomass burning aerosol mass concentrations were calculated on a 
+3-min time basis using the method of Froyd et al.21. In this work, we used four size 
+bins (0.10–0.25, 0.25–0.63, 0.63–1.13 and 1.13–5.03 µm). The relative errors for 
+biomass burning number fractions and mass concentrations are primarily driven 
+by sampling statistics and are a function of total concentration and the number of 
+particles sampled in a 3-min window. The estimated statistical errors for a 3-min 
+window are ~30% at a mass concentration of 0.01 µg m−3, and decrease to ~10% at 
+0.1 µg m−3 (ref. 21).
+
+Biomass burning aerosol in the GEOS model incorporating the GOCART 
+module. GEOS is a global Earth system model that simulates atmospheric 
+circulation and composition, ocean circulation, biogeochemistry and land–surface 
+processes56. The GOCART module simulates aerosol sources, sinks, transport 
+and transformation in GEOS27–29. The major tropospheric aerosol compositions 
+are represented, including BC, organic carbon, sulfate, nitrate, dust and sea salt. 
+The module also includes gas- and liquid-phase reactions that convert sulfate 
+precursors (SO2 and dimethyl sulfide) into sulfate aerosol. Aerosols are treated as 
+externally mixed and do not interact with each other. For the ATom comparisons, 
+GEOS/GOCART was run at a global ~50-km horizontal resolution with 72 vertical 
+pressure layers from the surface up to 0.01 mbar (~85 km). The dynamical time 
+step was 450 s. The model was run in ‘replay mode’, which resets the model 
+dynamical state every 6 h to a balanced state provided by the Modern-era 
+Reanalysis for Research and Applications v.2 atmospheric reanalysis. A 2-yr 
+simulation was conducted from the beginning of 2016 to cover all of the ATom 
+missions. The first half of 2016 was used as a spin-up period.
+
+NAtuRE GEoSCiENCE | www.nature.com/naturegeoscience
+
+https://daac.ornl.gov/ATOM/guides/ATom_merge.html
+http://www.nature.com/naturegeoscience
+
+
+ArticlesNature GeoscieNce
+Biomass burning aerosol was tagged by using an emissions on–minus–off 
+
+approach. Emissions of biomass burning organic carbon, BC, ammonia and SO2 
+are derived from QFED v.2.4 (ref. 30). The QFED emissions are top-down, using 
+MODIS fire radiative power (FRP) to derive the amount of dry mass burned. 
+Emission factors relating to FRP are calibrated against the global monthly mean 
+emissions of the Global Fire Emissions Database (GFED) v.2. For aerosol species, 
+QFED emissions are further calibrated with biome-specific enhancing factors, 
+which are based on constraints of model AOD to MODIS AOD in four biomes. 
+Injection heights are considered to be homogeneously distributed throughout 
+the GEOS boundary layer; this is a reasonable estimate, as it has been shown that 
+>80% of plume heights are within the boundary layer23,24. In these runs, 80% of the 
+BC and 50% of the organic carbon was emitted as hydrophobic, with the remainder 
+being hydrophilic. BC and organic carbon ‘age’ in the model, converting from 
+hydrophobic to hydrophilic with an e-folding time of 2.5 d. Aerosol is removed by 
+dry deposition, wet removal and convective scavenging. Under normal operation, 
+only hydrophilic aerosol is subject to wet removal and convective scavenging 
+following the treatment of Liu et al.57.
+
+GEOS/GOCART AOD was calculated from dry aerosol mass, and requires 
+composition-dependent assumption of the refractive indices, size distributions and 
+hygroscopic properties of aerosols. Log-normal size distributions and hygroscopic 
+growth factors for GOCART aerosol can be found in Chin et al.27. Optical 
+properties in this study are as described in Randles et al.58. Aerosols are radiatively 
+coupled to the atmospheric general circulation model via the Chou–Suarez 
+CLDRAD radiation code59. This model accounts for absorption by O3, CO2, O2, 
+H2O and aerosols. It also accounts for scattering by clouds, aerosols and gases. The 
+solar spectrum (0.2–10 µm) is divided into eight bands in the ultraviolet and visible 
+range, and an additional three bands in the near-infrared. AOD, single-scattering 
+albedo and asymmetry factors were calculated for the radiative transfer simulation. 
+The radiative transfer solution can be recycled with various experimental 
+atmospheric conditions, such as clean air (no aerosols) and clear sky (no clouds). 
+In this work, the all-sky instantaneous direct radiative effect was calculated as the 
+net change in radiation flux at the top of the atmosphere due to all aerosols.
+
+For model–measurement comparisons, a virtual aircraft was flown through 
+the model domain along the same spatiotemporal coordinates as the observations. 
+A simple linear interpolation was applied in both space and time and thus, as the 
+model aircraft flew from one grid cell to the next, the values changed continuously.
+
+Model–measurement comparisons and sensitivity tests. To investigate the 
+discrepancies between PALMS biomass burning organic-only mass with GEOS/
+GOCART biomass burning mass, 12 sensitivity tests were run; these tests were run 
+for the summer and winter months only. The parameter-space explored included 
+different combinations of emissions datasets, hydrophobic-to-hydrophilic ageing, 
+wet removal in cold-cloud (T < 258 K) and removal of hydrophobic aerosol due to 
+impaction in large-scale and convective clouds (Supplementary Table 2). To assess 
+the capacity of GEOS/GOCART in reproducing the PALMS biomass burning 
+observations, we calculated both the mean log bias of the model and centred root 
+mean squared error (CRMSE). The mean log bias was calculated as follows:
+
+Mean log bias ¼
+1
+N
+
+XN
+
+i
+
+½logðMiÞ � logðOiÞ ð1Þ
+
+where N is the number of observations, Mi is the model value for point i and Oi is 
+the observed value for point i. The mean log bias is useful for measurements with 
+a high dynamic range, because it gives equal weight to low and high values. Zero 
+values, while rare, are possible in either dataset. These values are ignored in the 
+comparison. The mean log bias is easy to interpret without having to normalize 
+the values: a mean log bias of ±0.3 means that the model is biased, on average, by 
+a factor of two (~100.3 = 2). Similarly, a model with mean log bias of ±1 means that 
+the model is biased by an order of magnitude. CRMSE is calculated as the square 
+root of the mean squared difference in model–observation pairings. By centring 
+the RMSE, we remove any contribution from the mean bias. Since large errors are 
+weighted heavily in CRMSE, we determined CRMSLE instead:
+
+CRMSLE ¼
+
+ffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffiffi
+1
+N
+
+XN
+
+i
+
+½ðlogðMiÞ � logð �MÞÞ � ðlogðOiÞ � logð�OÞÞ
+2
+
+vuut : ð2Þ
+
+If the differences in the model–observation pairings are normally distributed 
+for N data points, then CRMSE is analogous to the s.d. of the errors. Thus, while 
+the mean log bias indicates whether data are skewed on average, CRMSLE indicates 
+the width of the errors around that skewed average. Together, the two values 
+provide a complete description of the errors analogous to the means and s.d. of a 
+normally distributed dataset. Mean log bias and CRMSLE were calculated for each 
+ocean basin separately, to minimize potential biases from emission and transport.
+
+Compared to all other regions, the model underestimates biomass burning 
+abundance in the Pacific Northern Hemisphere mid-latitudes (Fig. 3), which may 
+be due to either excessive wet removal, low emissions or transport errors. This 
+was taken into account when scoring model runs, giving credence to mean log 
+bias scores that were slightly negative in the Pacific as opposed to values that were 
+closer to zero.
+
+Trace organic gas analyser (TOGA). Acetonitrile (CH3CN) and hydrogen cyanide 
+(HCN) were measured by TOGA. TOGA is a fast online gas chromatography/
+mass spectrometry technique that analysed 35-s integrated samples every 2 min 
+during ATom. It has been described in detail previously60,61. Briefly, TOGA was 
+developed specifically for aircraft use to provide a wide range of volatile organic 
+compound (VOC) measurements in one instrument, including the identification 
+and quantification of non-methane hydrocarbons, oxygenated VOCs (including 
+formaldehyde, other aldehydes, ketones and alcohols), nitriles (HCN and CH3CN) 
+and halogenated VOCs. Limits of detection range from 20 ppt (formaldehyde and 
+methanol) to <1 ppt (for example, toluene).
+
+TOGA uses a pre-concentration system consisting of a water trap, an 
+enrichment trap and a cryofocusion trap in series. Trap temperatures are cycled 
+rapidly, using cryogenically cooled N2 gas for cooling and resistive wires for 
+heating. The trap cooling system is efficient, with cryogenic cooling attained in 
+~30 s to a precision of ±0.5 °C over the range 100 to −135 °C.
+
+The TOGA GC is a custom-made, low thermal mass unit that attains rapid 
+heating and cooling, as well as high precision, for good run-to-run reproducibility. 
+When combined with a 200-ft3 min–1 fan (below the oven), the GC exhibits rates of 
+10 °C s−1 heating and –5 °C s−1 cooling. A Restek MXT-624, 6-m, 0.18-mm identity 
+column is used for chromatography. Helium is used as a carrier gas.
+
+TOGA uses a shock-mounted Agilent Technologies 5973N quadrupole 
+mass spectrometer system. A custom oil-free, three-stage vacuum system has 
+been implemented, to both increase sensitivity and eliminate the possibility of 
+contamination through oil back-diffusion. Selected ion monitoring is used to 
+quantify individual compounds. High-speed electronics allows the simultaneous 
+measurement of peaks with <1-s peak width. Calibration and blanks are achieved 
+during flight using an onboard zero air/dynamic dilution calibration system 
+coupled with onboard calibration gas mixtures.
+
+Fire influence. Back trajectories were used to estimate the probability of, and time 
+since, fire influence for each of the ATom flights. A cluster of 245 back trajectories 
+was initialized every minute along the flight tracks using the Traj3d model62,63 
+with National Centers for Environmental Prediction meteorology (0.5° × 0.5° 
+resolution). Back trajectories were run for 30 d. Fire influence was estimated based 
+on the coincidence in time and location of the back trajectories with active fires 
+based on MODIS FRP (Collection 6), Visible Infrared Imaging Radiometer Suite 
+(VIIRS) 375-m FRP64 and GFED v2. Fire plume heights for MODIS and VIIRS 
+were calculated based on FRP23, and for GFED were assumed to be confined to 
+the boundary layer. A trajectory was considered to be influenced by a fire if it 
+coincided with a MODIS, VIIRS or GFED fire location and time and was below 
+the altitude of the fire plume height. The number of days since most recent fire 
+influence for each flight minute were calculated by averaging the time since the 
+most recent fire influence of all trajectories in each cluster.
+
+Data availability
+Data are publically available at https://daac.ornl.gov/ATOM/guides/ATom_merge.
+html and https://esrl.noaa.gov/csd/projects/atom/data.php.
+
+Code availability
+GEOS is an open-source model, and the code is available at https://gmao.gsfc.nasa.
+gov/GEOS_systems/.
+
+References
+ 42. Brock, C. A. et al. Aerosol size distributions during the Atmospheric 
+
+Tomography Mission (ATom): methods, uncertainties, and data products. 
+Atmos. Meas. Tech. 12, 3081–3099 (2019).
+
+ 43. Murphy, D. M. et al. The distribution of sea-salt aerosol in the global 
+troposphere. Atmos. Chem. Phys. 19, 4093–4104 (2019).
+
+ 44. Williamson, C. et al. Fast time response measurements of particle size 
+distributions in the 3–60 nm size range with the nucleation mode aerosol size 
+spectrometer. Atmos. Meas. Tech. 11, 3491–3509 (2018).
+
+ 45. Kupc, A., Williamson, C., Wagner, N. L., Richardson, M. & Brock, C. A. 
+Modification, calibration, and performance of the Ultra-High Sensitivity 
+Aerosol Spectrometer for particle size distribution and volatility 
+measurements during the Atmospheric Tomography Mission (ATom) 
+airborne campaign. Atmos. Meas. Tech. 11, 369–383 (2018).
+
+ 46. McNaughton, C. S. et al. Results from the DC-8 Inlet Characterization 
+Experiment (DICE): airborne versus surface sampling of mineral dust and sea 
+salt aerosols. Aerosol Sci. Technol. 41, 136–159 (2007).
+
+ 47. Brockmann, J. E. in Aerosol Measurement (eds Kulkarni, P. et al.) Ch. 6 (John 
+Wiley & Sons, 2011).
+
+ 48. Loo, B. W. & Cork, C. P. Development of high efficiency virtual impactors. 
+Aerosol Sci. Technol. 9, 167–176 (1988).
+
+ 49. Huebert, B. J., Lee, G. & Warren, W. L. Airborne aerosol inlet passing 
+efficiency measurement. J. Geophys. Res. 95, 16369–16381 (1990).
+
+ 50. Weber, R. J. et al. Spurious aerosol measurements when sampling  
+from aircraft in the vicinity of clouds. J. Geophys. Res. Atmos. 103, 
+28337–28346 (1998).
+
+NAtuRE GEoSCiENCE | www.nature.com/naturegeoscience
+
+https://daac.ornl.gov/ATOM/guides/ATom_merge.html
+https://daac.ornl.gov/ATOM/guides/ATom_merge.html
+https://esrl.noaa.gov/csd/projects/atom/data.php
+https://gmao.gsfc.nasa.gov/GEOS_systems/
+https://gmao.gsfc.nasa.gov/GEOS_systems/
+http://www.nature.com/naturegeoscience
+
+
+Articles Nature GeoscieNce
+ 51. Murphy, D. M. et al. Particle generation and resuspension in aircraft inlets 
+
+when flying in clouds. Aerosol Sci. Technol. 38, 401–409 (2004).
+ 52. Murphy, D. M., Middlebrook, A. M. & Warshawsky, M. Cluster analysis of 
+
+data from the Particle Analysis by Laser Mass Spectrometry (PALMS) 
+instrument. Aerosol Sci. Technol. 37, 382–391 (2003).
+
+ 53. Cziczo, D. J., Thomson, D. S. & Murphy, D. M. Ablation, flux, and 
+atmospheric implications of meteors inferred from stratospheric aerosol. 
+Science 291, 1772–1775 (2001).
+
+ 54. Sullivan, A. P. et al. Biomass burning markers and residential burning in the 
+WINTER aircraft campaign. J. Geophys. Res. Atmos. 124, 1846–1861 (2019).
+
+ 55. Cziczo, D. J. et al. Observations of organic species and atmospheric ice 
+formation. Geophys. Res. Lett. 31, L12116 (2004).
+
+ 56. Rienecker, M. M. et al. The GEOS-5 Data Assimilation System: Documentation 
+of Versions 5.0. 1, 5.1. 0, and 5.2. 0 Technical Report Series on Global 
+Modeling and Data Assimilation No. 27 (NASA, 2008).
+
+ 57. Liu, H., Jacob, D. J., Bey, I. & Yantosca, R. M. Constraints from 210Pb and 7Be 
+on wet deposition and transport in a global three-dimensional chemical 
+tracer model driven by assimilated meteorological fields. J. Geophys. Res. 
+Atmos. 106, 12109–12128 (2001).
+
+ 58. Randles, C. A. et al. The MERRA-2 aerosol reanalysis, 1980 Onward.  
+Part I: system description and data assimilation evaluation. J. Clim. 30, 
+6823–6850 (2017).
+
+ 59. Chou, M. & Suarez, M. J. A Solar Radiation Parameterization for Atmospheric 
+Studies Technical Report Series on Global Modeling and Data Assimilation 
+No. 15 (NASA, 1999).
+
+ 60. Apel, E. C. et al. Upper tropospheric ozone production from lightning 
+NOx-impacted convection: smoke ingestion case study from the DC3 
+campaign. J. Geophys. Res. Atmos. 120, 2505–2523 (2015).
+
+ 61. Wang, S. et al. Atmospheric acetaldehyde: importance of air–sea exchange 
+and a missing source in the remote troposphere. Geophys. Res. Lett. 46, 
+5601–5613 (2019).
+
+ 62. Bowman, K. P. Large-scale isentropic mixing properties of the Antarctic polar 
+vortex from analyzed winds. J. Geophys. Res. 98, 23013 (1993).
+
+ 63. Bowman, K. P. & Carrie, G. D. The mean-meridional transport circulation of 
+the troposphere in an idealized GCM. J. Atmos. Sci. 59, 1502–1514 (2002).
+
+ 64. Schroeder, W., Oliva, P., Giglio, L. & Csiszar, I. A. The new VIIRS 375 m 
+active fire detection data product: algorithm description and initial 
+assessment. Remote Sens. Environ. 143, 85–96 (2014).
+
+Acknowledgements
+The mission as a whole was supported by NASA’s Earth System Science Pathfinder 
+Program EVS-2 funding. Participation in ATom Mission flights by G.P.S., K.D.F., C.W., 
+C.A.B. and D.M.M. was supported by NOAA climate funding (no. NNH15AB12I). 
+A.K. was supported by the Austrian Science Fund’s Erwin Schrodinger Fellowship 
+(no. J-3613). R.S.H., A.J.H. and E.C.A. received support from the National Center 
+for Atmospheric Research, which is a major facility sponsored by the NSF under 
+Cooperative Agreement no. 1852977.
+
+Author contributions
+G.P.S., K.D.F. and D.M.M. provided PALMS data. H.B., M.C. and P.R.C. provided GEOS/
+GOCART results. A.K., C.W. and C.A.B. provided size distribution data. E.R. provided 
+back-trajectory results. R.S.H., A.J.H. and E.C.A. provided TOGA data. G.P.S. wrote the 
+paper with assistance from all authors.
+
+Competing interests
+The authors declare no competing interests.
+
+Additional information
+Supplementary information is available for this paper at https://doi.org/10.1038/
+s41561-020-0586-1.
+
+Correspondence and requests for materials should be addressed to G.P.S.
+
+Peer review information Primary Handling Editors: Clare Davis; Xujia Jiang.
+
+Reprints and permissions information is available at www.nature.com/reprints.
+
+NAtuRE GEoSCiENCE | www.nature.com/naturegeoscience
+
+https://doi.org/10.1038/s41561-020-0586-1
+https://doi.org/10.1038/s41561-020-0586-1
+http://www.nature.com/reprints
+http://www.nature.com/naturegeoscience
+
+	Widespread biomass burning smoke throughout the remote troposphere
+	Global-scale aircraft measurements of biomass burning aerosol
+	Model–observation comparisons and sensitivity tests
+	Biomass burning AOD and direct radiative effect. 
+
+	Online content
+	Fig. 1 The influence of biomass burning on aerosol in the remote troposphere.
+	Fig. 2 Sulfate mass fraction of biomass burning particles versus smoke markers.
+	Fig. 3 Global-scale model–measurement comparisons of biomass burning aerosol for all ATom campaigns.
+	Fig. 4 GEOS/GOCART r23 biomass burning-only, clear-sky AOD for primary ATom campaign months.
+
+
+
+
