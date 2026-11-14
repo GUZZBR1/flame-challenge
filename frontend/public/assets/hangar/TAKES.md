@@ -2,6 +2,7 @@
 
 Assets preparados para uso como fundos de takes no protótipo PixiJS (`HangarScene`).
 
+- `hangar_take_01_arrival.png` — aproximação e entrada da nave pelo portal de vácuo.
 - `hangar_take_02_maintenance.png` — inspeção e manutenção da nave no pad.
 - `hangar_take_04_departure.png` — nave deixando o hangar.
 
