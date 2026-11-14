@@ -12,6 +12,8 @@ import PsiGrid from './ui/PsiGrid'
 import RiskBoard from './ui/RiskBoard'
 import SimulateBar from './ui/SimulateBar'
 import TopBar from './ui/TopBar'
+import HangarScene from './ui/HangarScene'
+import ShipyardSpaceScene from './ui/ShipyardSpaceScene'
 import WorldView, { type Selection } from './renderer/WorldView'
 import { engine, useGameVersion } from './state/store'
 import { injectTarget } from './game/masterSheet'
@@ -19,6 +21,7 @@ import type { RoomType } from './game/types'
 import type { DashConditions, MasterRow } from './types'
 
 export default function App() {
+  const [sceneView, setSceneView] = useState<'foundry' | 'hangar' | 'shipyard'>('foundry')
   const [started, setStarted] = useState(false)
   const [mode, setMode] = useState<'inspect' | RoomType>('inspect')
   const [selection, setSelection] = useState<Selection | null>(null)
@@ -51,8 +54,16 @@ export default function App() {
   const injectRow = useCallback((row: MasterRow) => {
     const t = injectTarget(row)
     if (!t) return
-    if (t.kind === 'scenario') engine.triggerScenario(t.id)
-    else engine.injectExperiment(t.invId, t.o2, t.flow)
+    const started = t.kind === 'scenario'
+      ? engine.triggerScenario(t.id)
+      : engine.injectExperiment(t.invId, t.o2, t.flow)
+    if (started) setSceneView('foundry')
+  }, [])
+
+  const triggerMissionScenario = useCallback((id: string) => {
+    const started = engine.triggerScenario(id)
+    if (started) setSceneView('foundry')
+    return started
   }, [])
 
   const exitBuild = useCallback(() => setMode('inspect'), [])
@@ -67,6 +78,7 @@ export default function App() {
       else if (e.key === '2') engine.setSpeed(2)
       else if (e.key === '3') engine.setSpeed(4)
       else if (e.key === 'Escape') {
+        setSceneView('foundry')
         setMode('inspect')
         setExpRoom(null)
         setMissionOpen(false)
@@ -86,6 +98,17 @@ export default function App() {
         onOpenData={() => setSheetOpen(true)}
         onOpenInsights={() => setInsightsOpen(true)}
       />
+      <nav aria-label="Scene views" className="z-20 flex shrink-0 items-center gap-2 border-b border-edge bg-panel px-4 py-2">
+        <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'foundry' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('foundry')}>Foundry</button>
+        <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'hangar' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('hangar')}>Hangar</button>
+        <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'shipyard' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('shipyard')}>Orbital Shipyard</button>
+      </nav>
+      {sceneView === 'hangar' ? (
+        <div className="min-h-0 flex-1 overflow-auto p-3"><HangarScene /></div>
+      ) : sceneView === 'shipyard' ? (
+        <div className="relative min-h-0 flex-1"><ShipyardSpaceScene /></div>
+      ) : (
+        <>
       <SimulateBar cond={cond} onCond={patchCond} onApply={applyPreset} />
       <div className="relative min-h-0 flex-1">
         <WorldView
@@ -116,14 +139,22 @@ export default function App() {
         {expRoom !== null && (
           <ExperimentModal engine={engine} roomId={expRoom} onClose={() => setExpRoom(null)} />
         )}
-        {missionOpen && <MissionModal engine={engine} onClose={() => setMissionOpen(false)} />}
-        {sheetOpen && <MasterSheet onClose={() => setSheetOpen(false)} onInject={injectRow} />}
-        {insightsOpen && (
-          <InsightsPanel cond={cond} onClose={() => setInsightsOpen(false)} onInject={injectRow} />
-        )}
         {!started && <IntroOverlay onStart={() => setStarted(true)} />}
         <GameOverOverlay engine={engine} />
       </div>
+        </>
+      )}
+      {missionOpen && (
+        <MissionModal
+          engine={engine}
+          onClose={() => setMissionOpen(false)}
+          onTriggerScenario={triggerMissionScenario}
+        />
+      )}
+      {sheetOpen && <MasterSheet onClose={() => setSheetOpen(false)} onInject={injectRow} />}
+      {insightsOpen && (
+        <InsightsPanel cond={cond} onClose={() => setInsightsOpen(false)} onInject={injectRow} />
+      )}
     </div>
   )
 }
