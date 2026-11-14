@@ -115,11 +115,51 @@
         "exploration-atmosphere"
       ],
       "data": {
-        "availability": "partial",
-        "psiUrl": "https://psi.nasa.gov/physci/repo"
+        "availability": "full",
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26"
       },
       "publications": 31,
-      "verified": false
+      "verified": true,
+      "psiRuns": 122,
+      "psiAccessions": [
+        "PSI-26"
+      ],
+      "psiFuels": [
+        "1 cm sphere",
+        "1 cm sphere   wake",
+        "1 cm wake sphere",
+        "2 cm pmma sphere",
+        "2 cm sphere",
+        "2 cm sphere   wake ign",
+        "Japan Wax Candle   wake",
+        "Nomex III Natural",
+        "Nomex blend 2 cm",
+        "PMMA 1 cm",
+        "PMMA 2 cm",
+        "PMMA slab",
+        "PMMA sphere 1 cm",
+        "PMMA sphere 2 cm",
+        "SIBAL 1 cm",
+        "SIBAL 2 cm",
+        "SIBAL 2 cm   opposed flow",
+        "SOOT Cleaning",
+        "candle",
+        "candle    paraffin   wake",
+        "candle   Japan wax",
+        "flat wax slab",
+        "nomex natural III",
+        "paraffin wax candle",
+        "paraffin wax slab",
+        "parrafin wax candle",
+        "parrafin wax slab",
+        "pmma 1 cm",
+        "pmma 2 cm",
+        "pmma slab",
+        "pmma slab   oppsed",
+        "pmma slab opposed",
+        "pmma sphere",
+        "ultem sheet"
+      ]
     },
     {
       "id": "flex-2",
@@ -174,19 +214,29 @@
       ],
       "data": {
         "availability": "full",
-        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-39"
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-142"
       },
       "publications": 45,
-      "verified": false,
-      "psiRuns": 291,
+      "verified": true,
+      "psiRuns": 307,
       "psiAccessions": [
+        "PSI-142",
         "PSI-39",
+        "PSI-68",
         "PSI-69"
       ],
       "psiFuels": [
+        "Decane (pure)",
         "Dodecane",
+        "Ethanol (pure)",
         "Heptane",
-        "Methanol"
+        "Heptane (50%) IsoOctane (50%) (mixture)",
+        "Heptane (pure)",
+        "IsoOctane (pure)",
+        "Methanol",
+        "Propanol (80%) Glycerol (20%) (mixture)",
+        "Propanol (95%) Glycerol (5%) (mixture)",
+        "n-Octane (pure)"
       ],
       "psiO2RangePct": [
         12.0,
@@ -251,17 +301,68 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-10"
       },
       "publications": 60,
-      "verified": false,
-      "psiRuns": 540,
+      "verified": true,
+      "psiRuns": 640,
       "psiAccessions": [
         "PSI-10",
-        "PSI-159"
+        "PSI-159",
+        "PSI-20",
+        "PSI-21",
+        "PSI-22",
+        "PSI-23"
       ],
       "psiFuels": [
+        "100% C2H10",
+        "100% C2H11",
+        "100% C2H4",
+        "100% C2H5",
+        "100% C2H6",
+        "100% C2H7",
+        "100% C2H8",
+        "100% C2H9",
+        "100% CH4",
+        "100% CH5",
+        "100% CH6",
+        "100% H2",
+        "100%C2H4",
+        "20% C2H4 with He",
+        "20% H2, 25% CH4, with He",
+        "25% C2H4 with He",
+        "25% H2, 20% CH4, with He",
+        "30% C2H4",
+        "30% C2H4 with He",
+        "30% C2H5",
+        "30% H2, 15% CH4, with He",
         "30% butane",
         "30% ethane",
         "30% propane",
+        "35% H2 with He",
+        "40% CH10",
+        "40% CH11",
+        "40% CH12",
+        "40% CH13",
+        "40% CH14",
+        "40% CH4",
+        "40% CH5",
+        "40% CH6",
+        "40% CH7",
+        "40% CH8",
+        "40% CH9",
+        "44.4% H2 with CH4",
+        "45% CH4 with He",
+        "45% CH4 with N2",
+        "45% CH4 with N3",
+        "45% H2 with He",
+        "50% C2H4",
+        "50% C2H4 with N2",
+        "50% C2H4 with N3",
+        "50% C2H5",
+        "50% C2H6",
+        "50% C2H7",
+        "50% C2H8",
+        "50% C2H9",
         "50% butane",
+        "66.7% H2 with CH4",
         "C2H4",
         "C3H8",
         "butane",
@@ -333,11 +434,32 @@
         "smolder-risk"
       ],
       "data": {
-        "availability": "partial",
-        "psiUrl": "https://psi.nasa.gov/physci/repo"
+        "availability": "full",
+        "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-100"
       },
       "publications": 22,
-      "verified": false
+      "verified": true,
+      "psiRuns": 21,
+      "psiAccessions": [
+        "PSI-100",
+        "PSI-98",
+        "PSI-99"
+      ],
+      "psiFuels": [
+        "Cotton-Fiberglass (SIBAL)",
+        "PMMA",
+        "PMMA & Nomex",
+        "Pre-test flow visulation data for sample 1",
+        "Pre-test flow visulation data for sample 2",
+        "Pre-test flow visulation data for sample 2-1",
+        "Pre-test flow visulation data for sample 2-2",
+        "SIBAL Fabric",
+        "Silicone"
+      ],
+      "psiO2RangePct": [
+        21.5,
+        22.1
+      ]
     },
     {
       "id": "same",

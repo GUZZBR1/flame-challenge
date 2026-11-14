@@ -403,6 +403,157 @@ def sniff_csv_rows(path: Path, acc: str, inv: str) -> list[dict]:
     return out
 
 
+# ---------------------------------------------------------------------------
+# Legacy corpus — data/psi/processed/*.csv (pre-normalized download from an
+# earlier pipeline iteration, committed CSVs). These rows fill accessions the
+# raw-file parsers never reached: BASS (PSI-26), SAFFIRE I-III (PSI-98/99/100),
+# FLEX test points (PSI-69) and the remaining ACME studies. Accessions that
+# already produced rows from raw files are skipped, so ingestion is purely
+# additive and never rewrites an existing parsed run.
+# ---------------------------------------------------------------------------
+
+LEGACY_DIR = ROOT / "psi" / "processed"
+
+
+def _num1(text: str | None) -> float | None:
+    """First number in a possibly multi-value raw cell ("0.99; 1.01")."""
+    if not text:
+        return None
+    m = re.search(NUM_RE, str(text))
+    return float(m.group(0)) if m else None
+
+
+def _mid(a: str | None, b: str | None) -> float | None:
+    lo, hi = _num1(a), _num1(b)
+    if lo is None:
+        return hi
+    if hi is None:
+        return lo
+    return (lo + hi) / 2
+
+
+def _legacy_outcome(r: dict) -> tuple[str, str]:
+    mode = (r.get("extinction_mode") or "").strip().lower()
+    ign = (r.get("ignition_flag") or "").strip().lower()
+    if ign in ("no", "false", "0", "failed"):
+        return "no-ignition", "none"
+    if mode:
+        for key, et in (("rad", "radiative"), ("quiesc", "quiescent"),
+                        ("oxy", "oxygen-limit"), ("o2", "oxygen-limit"),
+                        ("blow", "blow-off"), ("cool", "cool-flame"),
+                        ("suppress", "suppressant")):
+            if key in mode:
+                return "extinction", et
+        return "extinction", re.sub(r"[^a-z0-9]+", "-", mode).strip("-")[:24]
+    if _num1(r.get("burn_time_s")) or _num1(r.get("spread_length_raw")):
+        return "burnout", "none"
+    return "unknown", "none"
+
+
+def parse_legacy_runs(covered: set[str]) -> list[dict]:
+    path = LEGACY_DIR / "experimental_runs.csv"
+    if not path.exists():
+        return []
+    out: list[dict] = []
+    for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
+        acc = (r.get("accession") or "").strip()
+        if not acc or acc in covered or acc not in ACCESSIONS:
+            continue
+        inv = ACCESSIONS[acc][0]
+        fuel = (r.get("fuel_or_material") or r.get("fuel_bottle") or "").strip() or None
+        comments = (r.get("comments") or r.get("notes") or "").strip()
+        extras = []
+        if (r.get("flow_direction") or "").strip():
+            extras.append(f"flow {r['flow_direction'].strip().lower()}")
+        if _num1(r.get("spread_rate_raw")) is not None:
+            extras.append(f"spread {r['spread_rate_raw'].strip()}")
+        if extras:
+            comments = f"{comments} | {'; '.join(extras)}" if comments \
+                else "; ".join(extras)
+        outcome, etype = _legacy_outcome(r)
+        cool_flag = (r.get("cool_flame_flag") or "").strip().lower()
+        cool = cool_flag in ("yes", "true", "1") or cool_flame_observed(comments)
+        o2 = _mid(r.get("o2_pct_min"), r.get("o2_pct_max"))
+        if o2 is None:
+            o2mf = _mid(r.get("o2_mf_min"), r.get("o2_mf_max"))
+            o2 = o2mf * 100 if o2mf is not None else None
+        atm = _mid(r.get("pressure_atm_min"), r.get("pressure_atm_max"))
+        out.append({
+            "run_id": (r.get("data_id") or "").strip()
+                      or f"{acc}-row{r.get('row_idx', '?')}",
+            "accession": acc,
+            "investigation_id": inv,
+            "fuel": fuel,
+            "material_id": fuel_id(fuel),
+            "o2_pct": round(o2, 3) if o2 is not None else None,
+            "n2_pct": _num1(r.get("n2_mf_raw")) and round(_num1(r["n2_mf_raw"]) * 100, 2),
+            "co2_pct": _num1(r.get("co2_mf_raw")) and round(_num1(r["co2_mf_raw"]) * 100, 2),
+            "he_pct": _num1(r.get("he_mf_raw")) and round(_num1(r["he_mf_raw"]) * 100, 2),
+            "pressure_kpa": round(atm * 101.325, 2) if atm is not None else None,
+            "temp_k": _num1(r.get("temperature_k_raw")),
+            "flow_cms": _mid(r.get("airflow_cm_s_min"), r.get("airflow_cm_s_max")),
+            "droplet_d0_mm": _mid(r.get("d0_mm_min"), r.get("d0_mm_max")),
+            "burn_rate_mm2_s": None,
+            "burn_time_s": _num1(r.get("burn_time_s")),
+            "extinction_d_mm": _mid(r.get("dext_mm_min"), r.get("dext_mm_max")),
+            "outcome": outcome,
+            "extinction_type": etype,
+            "cool_flame": cool,
+            "fiber_support": None,
+            "comments": comments[:500] or None,
+            "source_file": r.get("source_table") or "experimental_runs.csv",
+            "source_url": f"https://psi.nasa.gov/physci/repo/data/investigation/{acc}",
+            "verified": True,
+        })
+    return out
+
+
+def parse_legacy_flex(covered: set[str]) -> list[dict]:
+    """FLEX per-test table (kavg/Dext/d0) — richer than experimental_runs
+    for droplet physics; feeds the d²-law calibration."""
+    path = LEGACY_DIR / "flex_test_points.csv"
+    if not path.exists():
+        return []
+    out: list[dict] = []
+    for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
+        acc = (r.get("accession") or "").strip()
+        if not acc or acc in covered or acc not in ACCESSIONS:
+            continue
+        inv = ACCESSIONS[acc][0]
+        fuel = (r.get("fuel_or_material") or "").strip() or None
+        comments = (r.get("comments") or "").strip()
+        dext = _num1(r.get("dext_mm"))
+        outcome, etype, cool = classify_outcome(comments, dext)
+        atm = _num1(r.get("pressure_atm"))
+        out.append({
+            "run_id": (r.get("test_id") or "").strip() or f"{acc}-tp",
+            "accession": acc,
+            "investigation_id": inv,
+            "fuel": fuel,
+            "material_id": fuel_id(fuel),
+            "o2_pct": round(_num1(r["o2_mf"]) * 100, 3) if _num1(r.get("o2_mf")) else None,
+            "n2_pct": round(_num1(r["n2_mf"]) * 100, 2) if _num1(r.get("n2_mf")) else None,
+            "co2_pct": round(_num1(r["co2_mf"]) * 100, 2) if _num1(r.get("co2_mf")) else None,
+            "he_pct": round(_num1(r["he_mf"]) * 100, 2) if _num1(r.get("he_mf")) else None,
+            "pressure_kpa": round(atm * 101.325, 2) if atm is not None else None,
+            "temp_k": _num1(r.get("temperature_k")),
+            "flow_cms": None,
+            "droplet_d0_mm": _num1(r.get("d0_mm")),
+            "burn_rate_mm2_s": _num1(r.get("kavg_mm2_s")),
+            "burn_time_s": None,
+            "extinction_d_mm": dext if dext and dext > 0 else None,
+            "outcome": outcome,
+            "extinction_type": etype,
+            "cool_flame": cool,
+            "fiber_support": (r.get("fiber") or "").strip() or None,
+            "comments": comments[:500] or None,
+            "source_file": r.get("source_file") or "flex_test_points.csv",
+            "source_url": f"https://psi.nasa.gov/physci/repo/data/investigation/{acc}",
+            "verified": True,
+        })
+    return out
+
+
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     rows: list[dict] = []
@@ -431,6 +582,17 @@ def main() -> int:
         stats[acc] = len(rows) - n0
         if stats[acc]:
             print(f"[OK] {acc} ({inv}): +{stats[acc]} rows")
+
+    # legacy corpus fills the accessions raw files never produced
+    covered = {acc for acc, n in stats.items() if n > 0}
+    legacy = parse_legacy_runs(covered) + parse_legacy_flex(covered)
+    for r in legacy:
+        stats[r["accession"]] = stats.get(r["accession"], 0) + 1
+    if legacy:
+        by_acc = {acc for r in legacy for acc in [r["accession"]]}
+        print(f"[OK] legacy corpus: +{len(legacy)} rows across "
+              f"{len(by_acc)} new accessions")
+    rows.extend(legacy)
 
     # de-dupe identical runs (same accession+run_id+fuel) keeping the richest
     best: dict[tuple, dict] = {}

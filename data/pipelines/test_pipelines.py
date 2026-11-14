@@ -213,3 +213,43 @@ def test_fit_risk_fails_without_calibration(monkeypatch, tmp_path, capsys):
     assert fit_risk_model.main() == 1
     assert not (tmp_path / "risk_model.json").exists()
     assert "calibration" in capsys.readouterr().err.lower()
+
+
+# ---- legacy corpus ingestion (data/psi/processed/*.csv) ----
+
+def test_legacy_outcome_maps_modes():
+    assert norm._legacy_outcome({"extinction_mode": "Radiative"}) == \
+        ("extinction", "radiative")
+    assert norm._legacy_outcome({"extinction_mode": "",
+                                 "ignition_flag": "no"}) == \
+        ("no-ignition", "none")
+    out, et = norm._legacy_outcome({"extinction_mode": "Blow-off"})
+    assert (out, et) == ("extinction", "blow-off")
+
+
+def test_legacy_runs_skip_covered_accessions():
+    # PSI-26 (BASS) is in the committed legacy corpus — mark it covered and
+    # confirm those rows are excluded while uncovered accessions remain
+    rows = norm.parse_legacy_runs({"PSI-26"})
+    if not (norm.LEGACY_DIR / "experimental_runs.csv").exists():
+        pytest.skip("legacy corpus not present")
+    assert all(r["accession"] != "PSI-26" for r in rows)
+    assert {r["investigation_id"] for r in rows} <= {
+        inv for inv, _ in norm.ACCESSIONS.values()}
+
+
+def test_legacy_rows_follow_fields_schema():
+    rows = norm.parse_legacy_runs(set()) + norm.parse_legacy_flex(set())
+    if not rows:
+        pytest.skip("legacy corpus not present")
+    for r in rows:
+        assert set(r) == set(norm.FIELDS)
+        assert r["verified"] is True
+
+
+def test_legacy_flex_emits_burn_rate():
+    rows = norm.parse_legacy_flex(set())
+    if not rows:
+        pytest.skip("flex_test_points.csv not present")
+    assert any(r["burn_rate_mm2_s"] for r in rows)
+    assert all(r["investigation_id"] == "flex-2" for r in rows)
