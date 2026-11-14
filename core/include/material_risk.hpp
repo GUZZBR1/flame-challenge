@@ -74,6 +74,20 @@ struct CoflowFit {
 /** coflow replay verdict — mirrors normalize outcomes */
 enum class CoflowOutcome { Burn = 0, Extinction = 1, NoIgnition = 2 };
 
+/**
+ * Full composite risk decomposition — the same
+ * risk = clamp01(P_ign·F_flow·H·G) contract as
+ * backend/services/risk.py and site/src/lib/risk.ts, evaluated natively
+ * so physics + predictive inference share the .so / .wasm.
+ */
+struct RiskBreakdown {
+    double ignitionPressure = 0.0;
+    double flowFactor = 0.0;
+    double hiddenFactor = 1.0;
+    double gravityFactor = 1.0;
+    double riskIndex = 0.0;
+};
+
 class MaterialRisk {
   public:
     MaterialRisk();
@@ -102,6 +116,30 @@ class MaterialRisk {
     static double midSpread(const Material& m) {
         return 0.5 * (m.spreadMinCms + m.spreadMaxCms);
     }
+
+    /**
+     * Hidden-hazard multiplier — cool-flame, smoldering and soot
+     * propensity composite; identical to the hiddenFactor the
+     * risk model computes in fit_risk_model.py.
+     */
+    static double hiddenFactor(const Material& m);
+
+    /**
+     * Gravity-regime multiplier — microgravity is the reference worst
+     * case (1.0); partial-g and Earth are protective discounts.
+     * Same table as services/risk.py GRAVITY_FACTOR.
+     */
+    static double gravityFactor(const std::string& gravity);
+
+    /**
+     * Native composite inference — the full risk index plus its four
+     * factors, in microseconds, inside the same module as the physics.
+     */
+    static RiskBreakdown riskBreakdown(const Material& m, double o2Pct,
+                                       double flowCms,
+                                       const std::string& gravity);
+    static double riskIndex(const Material& m, double o2Pct,
+                            double flowCms, const std::string& gravity);
 
     /**
      * Reduced-order coflow outcome for an ACME-style burner run:

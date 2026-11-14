@@ -85,6 +85,7 @@ export default function Insights() {
               label: o.label,
               score: o.score,
               why: o.why,
+              uncertainty: o.uncertainty,
             })),
           })),
         )
@@ -360,21 +361,79 @@ export default function Insights() {
                   <span className="hidden text-right font-mono text-[11px] text-[var(--ink)] opacity-70 sm:inline">
                     {r.margin > 0 ? `+${r.margin}` : r.margin} pt
                   </span>
-                  <span className="hidden text-right font-mono text-[11px] text-[var(--ink)] opacity-70 sm:inline">
-                    {(r.riskIndex * 100).toFixed(1)}%
+                  <span
+                    className="hidden text-right font-mono text-[11px] text-[var(--ink)] opacity-70 sm:inline"
+                    title={
+                      r.uncertainty
+                        ? `90% conformal band ${(r.uncertainty.lower * 100).toFixed(0)}–${(r.uncertainty.upper * 100).toFixed(0)}% · ${r.uncertainty.scope} n=${r.uncertainty.calibrationN}`
+                        : undefined
+                    }
+                  >
+                    {(r.riskIndex * 100).toFixed(1)}
+                    {r.uncertainty && (
+                      <span className="opacity-60">±{(r.uncertainty.effectiveHalfwidth * 100).toFixed(0)}</span>
+                    )}
+                    %
                   </span>
                   <span className={`text-right font-mono text-[11px] lowercase ${levelClass(r.level)}`}>
+                    {r.uncertainty?.regime === 'extrapolation' && (
+                      <span
+                        title="outside the calibrated psi envelope — conformal band widened (extrapolation regime)"
+                        aria-label="extrapolation regime"
+                        className="mr-1 inline-block h-1.5 w-1.5 translate-y-[-1px] rounded-full bg-[var(--accent)]"
+                      />
+                    )}
                     {r.level}
                   </span>
                 </li>
               ))}
             </ul>
             <p className="m-0 mt-2 font-mono text-[10px] lowercase tracking-[0.12em] text-[var(--ink)] opacity-50">
-              margin = o₂ − loc (limiting oxygen index) · flags:{' '}
+              margin = o₂ − loc (limiting oxygen index) · ± = 90% conformal
+              band on labeled psi runs ·{' '}
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />{' '}
+              extrapolation beyond the calibrated envelope · flags:{' '}
               {ranked[0]?.flags.coolFlameCapable ? 'cool-flame capable · ' : ''}
               {ranked[0]?.flags.smoldering ? 'smoldering · ' : ''}
               top hazard: {topMaterial}
             </p>
+
+            {/* shapley attribution — what physically drives the top risk */}
+            {ranked[0]?.explanation && (
+              <div className="mt-6 rounded-md border border-[var(--edge)] bg-[var(--panel)] p-4">
+                <div className="font-mono text-[9.5px] lowercase tracking-[0.22em] text-[var(--accent)]">
+                  what drives the top risk — exact shapley attribution
+                </div>
+                <ul className="m-0 mt-3 list-none space-y-2 p-0">
+                  {ranked[0].explanation.contributions.map((c) => (
+                    <li
+                      key={c.factor}
+                      className="grid grid-cols-[9rem_1fr_4.5rem] items-center gap-x-3 font-mono text-[10.5px] lowercase text-[var(--ink)]"
+                    >
+                      <span className="opacity-60">{c.label}</span>
+                      <span className="relative h-[3px] overflow-hidden rounded bg-[color-mix(in_srgb,var(--ink)_12%,transparent)]">
+                        <span
+                          className={`absolute inset-y-0 left-0 ${
+                            c.phi >= 0 ? 'bg-[var(--accent)]' : 'bg-[var(--link)]'
+                          }`}
+                          style={{ width: `${Math.min(100, Math.abs(c.share) * 100)}%` }}
+                        />
+                      </span>
+                      <span className="text-right tabular-nums opacity-80">
+                        {c.share >= 0 ? '+' : ''}
+                        {(c.share * 100).toFixed(0)}%
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="m-0 mt-3 font-mono text-[9.5px] lowercase tracking-[0.08em] text-[var(--ink)] opacity-45">
+                  signed share of the deviation from the baseline module
+                  (at-loc · neutral flow · hazard-free · µg) — closed-form
+                  shapley on the multiplicative model, cross-checked against
+                  the shap library in validation
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -412,7 +471,22 @@ export default function Insights() {
                     <li key={o.id}>
                       <div className="flex items-baseline justify-between gap-2 font-mono text-[11px] lowercase text-[var(--ink)]">
                         <span>{o.label}</span>
-                        <span className="shrink-0 text-[var(--accent)]">{o.score}%</span>
+                        <span
+                          className="shrink-0 text-[var(--accent)]"
+                          title={
+                            o.uncertainty
+                              ? `90% conformal band on this counterfactual · ${o.uncertainty.scope} n=${o.uncertainty.calibrationN}`
+                              : undefined
+                          }
+                        >
+                          {o.score}
+                          {o.uncertainty && (
+                            <span className="opacity-60">
+                              ±{Math.round(o.uncertainty.effectiveHalfwidth * 100)}
+                            </span>
+                          )}
+                          %
+                        </span>
                       </div>
                       <div className="mt-1 h-[3px] overflow-hidden rounded bg-[color-mix(in_srgb,var(--ink)_12%,transparent)]">
                         <div

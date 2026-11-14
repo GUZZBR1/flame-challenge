@@ -90,3 +90,70 @@ runs (same investigation, one variable isolated) into `cards[]`:
 `runA`/`runB` snapshots, `changed[{field,label,a,b}]`,
 `held[{field,label,value}]`, plus a human `insight`. Served live by
 `GET /api/diffs`; arbitrary pairs by `GET /api/diff?a=<runId>&b=<runId>`.
+
+## Conformal uncertainty — `shared/calibrated-data/risk_model.json`
+
+`data/pipelines/fit_uncertainty.py` (optional deps:
+`data/pipelines/requirements-sci.txt`) wraps the analytical risk model
+in an sklearn adapter and runs MAPIE split-conformal calibration over the
+labeled PSI runs. It appends an `uncertainty` block to the canonical
+artifact — consumed identically by the backend and the site's offline
+mirror, never recomputed at request time:
+
+```jsonc
+{
+  "uncertainty": {
+    "levels": [0.8, 0.9, 0.95],
+    "defaultLevel": 0.9,
+    "global": { "0.8": 0.473, "0.9": 0.717, "0.95": 0.827 },  // halfwidths
+    "scopes": { "material:heptane": { /* same shape + n */ } },
+    "empiricalCoverage": { "0.9": 0.9101 },
+    "envelope": {                              // labeled-run feature hull
+      "o2Margin": [min, max],
+      "flowCms": [min, max],
+      "gravityFactor": [min, max]
+    },
+    "labeledRuns": 378
+  }
+}
+```
+
+`GET /api/risk` then answers with a runtime `uncertainty` object:
+`{lower, upper, halfwidth, effectiveHalfwidth, scaled, regime,
+extrapolationScore, scope, calibrationN, empiricalCoverage}`. Inputs
+inside `envelope` → `regime:"interpolation"`; outside →
+`regime:"extrapolation"` with the halfwidth widened by the score
+(conformal coverage is only guaranteed in-envelope — flagged, not
+hidden). `/api/risk/curve` points carry `lower`/`upper` band bounds.
+
+## Exact Shapley explanation — `explanation` block on `/api/risk`
+
+`risk = P·F·H·G` is multilinear, so the interventional Shapley values of
+the deviation from a fixed benign baseline `(0.04, 1.0, 1.0, 1.0)` have a
+closed form (`backend/services/explain.py`; the TypeScript mirror in
+`site/src/lib/risk.ts` computes the same numbers offline). The validator
+re-derives every value with `shap.ExactExplainer` — agreement ~2e-16.
+
+```jsonc
+{
+  "explanation": {
+    "method": "exact-shapley-multiplicative",
+    "baselineRisk": 0.04,
+    "deviation": 0.245,          // Σ phi — additive efficiency holds
+    "contributions": [           // sorted by |share| desc
+      {"factor": "o2Margin", "label": "o₂ margin vs loc",
+       "value": 0.209, "baseline": 0.04, "phi": 0.200, "share": 0.74}
+    ]
+  }
+}
+```
+
+## Scientific bounds — `data/processed/scientific_bounds_report.json`
+
+`data/pipelines/validate_scientific_bounds.py` certifies the model
+against Cantera GRI-Mech 3.0 equilibrium: `tadAtLocK` per calibrated fuel
+inside the flame-limit window, the O₂ where T_ad crosses 1500 K vs the
+fitted `locPct`, and the CO₂>N₂>He diluent-suppression ordering (He
+evaluated via Ar — identical molar heat capacity). C10+ fuels are
+reported as outside the mechanism scope. Also ships the SHAP audit and
+the conformal coverage summary.

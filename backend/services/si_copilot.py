@@ -193,6 +193,12 @@ Rules:
 - ui_command: emit only when it physically helps the situation
   (e.g. CUT_VENTILATION -> set_airflow_cm_s 0; REDUCE_O2 ->
   set_o2_percent at/below the target). Otherwise null.
+- `resolved_material.uncertainty` is a 90% conformal interval fitted
+  on labeled PSI runs — quote it as the empirical margin. When its
+  `regime` is "extrapolation" the operating point is outside the PSI
+  envelope: say so explicitly instead of hiding it.
+- `risk_explain` lists which physical factor drives the index — use it
+  to justify the recommended action in physical terms.
 - If the operator just asks a question, still pick the best standing
   action for the current chamber state."""
 
@@ -218,6 +224,8 @@ def factual_packet(state: ChamberState) -> dict:
         "material": r,
         "engine": eb.ENGINE,
         "ignitionPressure": round(ign, 4),
+        "engineRiskIndex": round(
+            eb.risk_index(r["materialId"], o2, flow, grav), 4),
         "neighbors": nb,
         "decisionOptions": options,
         "briefing": cards["briefing"],
@@ -255,6 +263,14 @@ def _offline_response(state: ChamberState, packet: dict) -> CopilotResponse:
     briefing = packet["briefing"]
     if cites:
         briefing += f" Evidence: {cites}."
+    u = r.get("uncertainty")
+    if u:
+        briefing += (f" Empirical band {u['lower'] * 100:.0f}–"
+                     f"{u['upper'] * 100:.0f}% (90% conformal, "
+                     f"n={u['calibrationN']} psi runs).")
+        if u["regime"] == "extrapolation":
+            briefing += (" Operating point is outside the calibrated "
+                         "PSI envelope — extrapolation regime.")
     return CopilotResponse(briefing=briefing, recommended_action=action,
                            ui_command=ui)
 
@@ -279,13 +295,18 @@ def _llm_client() -> AsyncOpenAI | None:
 
 
 def _messages(message: str, state: ChamberState, packet: dict) -> list[dict]:
+    exp = (packet["material"].get("explanation") or {}).get(
+        "contributions") or []
     user = {
         "operator_message": message,
         "chamber_state": state.model_dump(exclude_none=True),
         "resolved_material": packet["material"],
         "engine_ignition_pressure": packet["ignitionPressure"],
+        "engine_risk_index": packet["engineRiskIndex"],
         "nearest_psi_runs": packet["neighbors"],
         "decision_options": packet["decisionOptions"],
+        "risk_explain": [{"factor": c["label"], "share": c["share"]}
+                         for c in exp[:4]],
     }
     return [
         {"role": "system", "content": _SYSTEM},
@@ -355,6 +376,7 @@ async def answer(message: str, state: ChamberState) -> dict:
             "gravity": state.gravity,
             "riskIndex": packet["material"]["riskIndex"],
             "level": packet["material"]["level"],
+            "uncertainty": packet["material"].get("uncertainty"),
         },
         "evidence": [
             {

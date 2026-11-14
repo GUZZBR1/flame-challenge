@@ -6,7 +6,7 @@ is multilinear in its four physical factors, so the interventional
 Shapley values of the deviation from a baseline operating point have a
 closed form — no sampling, no approximation, O(n·2^(n-1)) with n=4.
 data/pipelines/validate_scientific_bounds.py re-checks every element
-of this decomposition against shap.PermutationExplainer and ships the
+of this decomposition against shap.ExactExplainer and ships the
 agreement in the validation report.
 
 Baseline — the "benign reference module" (documented, fixed so bars
@@ -47,7 +47,8 @@ def _w(s: int, n: int) -> float:
 
 
 def shapley_product(values: dict[str, float],
-                    baseline: dict[str, float] | None = None) -> dict:
+                    baseline: dict[str, float] | None = None,
+                    order: list[str] | None = None) -> dict:
     """Exact interventional Shapley decomposition of prod(x) - prod(b).
 
     For a multilinear f(x) = prod(x_i):
@@ -56,11 +57,14 @@ def shapley_product(values: dict[str, float],
                                               · prod(b_j for j in rest)
     returns {phi, deviation, share} — share is phi normalized by the
     total |phi| so UI bars can show signed percentages.
+
+    `order` overrides the factor list — the validation script uses it to
+    run the same closed form on a 3-feature physical sub-game.
     """
-    base = dict(BASELINE)
+    keys = list(order or [k for k, _ in FACTORS])
+    base = {k: BASELINE.get(k, 1.0) for k in keys}
     if baseline:
         base.update(baseline)
-    keys = [k for k, _ in FACTORS]
     n = len(keys)
     x = [float(values[k]) for k in keys]
     b = [float(base[k]) for k in keys]

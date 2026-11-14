@@ -3,7 +3,7 @@
  * Online:  /api/risk, /api/risk/curve hit the C++-calibrated FastAPI.
  * Offline: the bundled mirror in lib/risk.ts (same formula, same JSON).
  */
-import { riskCurveLocal, riskIndexLocal, type RiskResult } from './risk'
+import { riskCurveLocal, riskIndexLocal, type RiskResult, type RiskUncertainty } from './risk'
 import snapshot from '../data/psi_snapshot.json'
 
 const TIMEOUT_MS = 1200
@@ -133,8 +133,15 @@ function siLocalFallback(state: SiChamberState): SiResponse {
     : state.flowCms >= 8
       ? 'forced flow is in the saffire propagation regime — ventilation is the lever.'
       : 'ignition-pressure limited regime — the o₂ margin is the lever.'
+  const u = r.uncertainty
+  const band = u
+    ? ` Empirical band ${Math.round(u.lower * 100)}–${Math.round(u.upper * 100)}% (90% conformal, n=${u.calibrationN} psi runs).` +
+      (u.regime === 'extrapolation'
+        ? ' Operating point is outside the calibrated psi envelope — extrapolation regime.'
+        : '')
+    : ''
   return {
-    briefing: `${r.materialName} at ${r.o2Pct}% o₂ / ${r.flowCms} cm/s (${r.gravity}): risk index ${Math.round(r.riskIndex * 100)}% (${r.level}) — margin ${r.margin} pt vs loc ${r.locPct}%. ${regime} [local model — api offline, psi evidence unavailable]`,
+    briefing: `${r.materialName} at ${r.o2Pct}% o₂ / ${r.flowCms} cm/s (${r.gravity}): risk index ${Math.round(r.riskIndex * 100)}% (${r.level}) — margin ${r.margin} pt vs loc ${r.locPct}%. ${regime}${band} [local model — api offline, psi evidence unavailable]`,
     recommended_action: action,
     ui_command: ui,
     mode: 'local-fallback',
@@ -238,6 +245,8 @@ export interface DecisionOption {
   why: string
   score: number
   action: string
+  /** conformal band on the counterfactual point (MAPIE-fitted) */
+  uncertainty?: RiskUncertainty | null
   /** counterfactual chamber point the score was evaluated at */
   model?: { materialId: string; o2Pct: number; flowCms: number; gravity: string }
 }

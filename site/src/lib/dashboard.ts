@@ -8,7 +8,7 @@
  */
 import bundle from '../../../data/bundle/investigations.json'
 import diffsJson from '../../../data/bundle/investigation_diffs.json'
-import { MATERIALS, riskIndexLocal, type RiskResult } from './risk'
+import { MATERIALS, riskIndexLocal, type RiskResult, type RiskUncertainty } from './risk'
 
 /* ---------------- summarize: the investigation matrix ---------------- */
 
@@ -143,6 +143,8 @@ export interface TacticOption {
   label: string
   score: number
   why: string
+  /** conformal band on the counterfactual point (mirror of the api field) */
+  uncertainty?: RiskUncertainty | null
 }
 
 export interface TacticCard {
@@ -162,8 +164,9 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
   const mat = MATERIALS.find((m) => m.id === r.materialId) ?? MATERIALS[0]
   const hidden = r.breakdown.hiddenFactor
   const pct = (x: number) => Math.max(0, Math.min(100, Math.round(x)))
-  const eff = (o2: number, flow: number) =>
-    pct((1 - riskIndexLocal(r.materialId, o2, flow, s.gravity).riskIndex) * 100)
+  const at = (o2: number, flow: number) => riskIndexLocal(r.materialId, o2, flow, s.gravity)
+  const eff = (o2: number, flow: number) => pct((1 - at(o2, flow).riskIndex) * 100)
+  const un = (o2: number, flow: number) => at(o2, flow).uncertainty
 
   const cool = r.flags.coolFlameCapable
   const smolder = r.flags.smoldering
@@ -193,18 +196,21 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           label: 'cut ventilation to 0 cm/s',
           score: eff(s.o2Pct, 0),
           why: 'starves oxidizer diffusion — the SAFFIRE forced-flow regime collapses',
+          uncertainty: un(s.o2Pct, 0),
         },
         {
           id: 'halve-flow',
           label: `halve the flow (${Math.round(s.flowCms / 2)} cm/s)`,
           score: eff(s.o2Pct, s.flowCms / 2),
           why: 'slow-propagation regime — smoke clearing retained',
+          uncertainty: un(s.o2Pct, s.flowCms / 2),
         },
         {
           id: 'keep-flow',
           label: `keep forced flow (${Math.round(s.flowCms)} cm/s)`,
           score: eff(s.o2Pct, s.flowCms),
           why: 'current operating point — highest spread exposure',
+          uncertainty: un(s.o2Pct, s.flowCms),
         },
       ],
     },
@@ -218,18 +224,21 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           label: `hold ${s.o2Pct}% O₂`,
           score: eff(s.o2Pct, s.flowCms),
           why: 'current margin — no action',
+          uncertainty: un(s.o2Pct, s.flowCms),
         },
         {
           id: 'reduce-o2',
           label: `reduce toward LOC (${r.locPct + 1}% O₂)`,
           score: eff(Math.min(r.locPct + 1, s.o2Pct - 1), s.flowCms),
           why: 'exploration-atmosphere target — margin shrinks to ~1 pt',
+          uncertainty: un(Math.min(r.locPct + 1, s.o2Pct - 1), s.flowCms),
         },
         {
           id: 'below-loc',
           label: `drop below LOC (${Math.round(belowTarget * 10) / 10}% O₂)`,
           score: eff(belowTarget, s.flowCms),
           why: 'ignition pressure collapses — the Apollo-1 lesson in reverse',
+          uncertainty: un(belowTarget, s.flowCms),
         },
       ],
     },
@@ -245,6 +254,7 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           why: smolder
             ? 'smolder-capable material — knock-down risks re-ignition'
             : 'displaces oxidizer at the seat — the FLEX suppressant result',
+          uncertainty: un(s.o2Pct, s.flowCms),
         },
         {
           id: 'water-mist',
@@ -253,6 +263,7 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           why: smolder
             ? 'penetrates the polymer — best against smolder pockets'
             : 'cools below re-ignition temperature',
+          uncertainty: un(s.o2Pct, s.flowCms),
         },
         {
           id: 'monitor',
@@ -261,6 +272,7 @@ export function localTactics(materialId: string, s: Scenario): TacticCard[] {
           why: cool
             ? 'cool-flame fuels defeat optical clear — documented FLEX hazard'
             : 'accept the burn and watch it',
+          uncertainty: un(s.o2Pct, s.flowCms),
         },
       ],
     },

@@ -11,13 +11,18 @@ backend only — no client. See `docs/`.
 
 - `core/` — C++20 physics: `combustion_solver` (FLEX droplet d²-law +
   cool-flame regime), `airflow_propagator` (SAFFIRE-type spread with two
-  extinction regimes), `material_risk` (ACME flammability matrix),
+  extinction regimes), `material_risk` (ACME flammability matrix +
+  `riskIndex`/`riskBreakdown` — the native composite inference head),
   `chamber.hpp` aggregate API. `src/bindings.cpp` → pybind11 module;
   `src/bindings_wasm.cpp` → Emscripten-ready embind.
 - `data/` — Python ETL (`pipelines/`): `psi_search.py` (PSI catalog via
   `geode-py/ws`), `psi_files.py` (per-test data files), `ntrs_search.py`
   (citations + fulltext), `normalize_experiments.py` (unified CSV),
   `build_index.py` (retrieval corpus), `fit_risk_model.py` (risk surface),
+  `fit_uncertainty.py` (MAPIE conformal → `uncertainty` block),
+  `validate_scientific_bounds.py` (Cantera GRI-Mech + `shap`
+  cross-check → `scientific_bounds_report.json`; both optional, see
+  `pipelines/requirements-sci.txt`),
   `build_dataset.py`, `calibrate_constants.py` → `data/processed/` +
   `shared/calibrated-data/*.json` (canonical) + `data/bundle/` (merged
   dataset + generated JSON artifacts)
@@ -26,7 +31,8 @@ backend only — no client. See `docs/`.
   for the C++ core)
 - `backend/` — `api/` FastAPI routes + `services/` (`engine_bridge.py`
   pybind, `engine_fallback.py` pure-Python mirror, `rag.py`
-  retrieval/SQL-RAG, `risk.py` cabin simulator, `investigations.py`
+  retrieval/SQL-RAG, `risk.py` cabin simulator + conformal intervals,
+  `explain.py` exact closed-form Shapley attribution, `investigations.py`
   scored leaderboard + detail + insights, `diff.py` run-pair differ,
   `si_copilot.py` conversational/voice SI):
   `/health`, `/api/chamber/preview`,
@@ -75,6 +81,13 @@ backend only — no client. See `docs/`.
   → `build_investigation_diffs.py` (`data/bundle/investigation_diffs.json`)
   → `build_site_snapshot.py` (`site/src/data/psi_snapshot.json` — baked
   leaderboard/details/insights for the site's offline fallback)
+- Scientific layer (optional —
+  `./.venv/bin/pip install -r data/pipelines/requirements-sci.txt`):
+  `./.venv/bin/python data/pipelines/fit_uncertainty.py` → writes
+  `uncertainty` into `shared/calibrated-data/risk_model.json`;
+  `./.venv/bin/python data/pipelines/validate_scientific_bounds.py` →
+  `data/processed/scientific_bounds_report.json` (Cantera T_ad/LOC +
+  diluent ordering + SHAP audit — exits non-zero on FAIL)
 - Validate physics changes: `./.venv/bin/python data/pipelines/validate_engine.py`
   → `data/processed/validation_report.json` (74.1% peak on K/Dext fits; 64.4% on the
   re-normalized labels — ACME 18.6% → 61% via the fitted coflow

@@ -402,6 +402,42 @@ int main() {
         CHECK(p15 < p21 && p21 < p30, "ignition pressure must grow with O2");
     }
 
+    // --- native composite riskIndex = clamp01(P·F·H·G), the same
+    //     contract as backend/services/risk.py + site/src/lib/risk.ts ---
+    {
+        const Material* hep = risks.get("heptane");
+        CHECK(hep != nullptr, "heptane material must exist");
+        const RiskBreakdown bd =
+            MaterialRisk::riskBreakdown(*hep, 16.0, 20.0, "lunar");
+        CHECK(bd.ignitionPressure > 0.0 && bd.ignitionPressure <= 1.0,
+              "breakdown must carry the fitted ignition pressure");
+        CHECK(bd.flowFactor > 0.0 && bd.hiddenFactor >= 1.0,
+              "breakdown must carry flow + hazard factors");
+        CHECK(std::fabs(bd.gravityFactor - 0.92) < 1e-9,
+              "lunar gravity factor is 0.92");
+        const double product =
+            bd.ignitionPressure * bd.flowFactor * bd.hiddenFactor *
+            bd.gravityFactor;
+        CHECK(std::fabs(bd.riskIndex - std::min(1.0, product)) < 1e-9,
+              "riskIndex must equal clamp01 of the factor product");
+        CHECK(std::fabs(MaterialRisk::riskIndex(*hep, 16.0, 20.0, "lunar")
+                        - bd.riskIndex) < 1e-9,
+              "riskIndex helper must match the breakdown value");
+        // dead band still wins: deep below LOC the index is exactly 0
+        CHECK(MaterialRisk::riskIndex(*hep, 5.0, 20.0, "lunar") == 0.0,
+              "dead band must zero the composite index");
+        // earth gravity discounts the index vs microgravity
+        CHECK(MaterialRisk::riskIndex(*hep, 16.0, 20.0, "earth")
+              < MaterialRisk::riskIndex(*hep, 16.0, 20.0, "microgravity"),
+              "earth gravity must reduce the index");
+        // unknown material / unknown gravity degrade safely, not crash
+        Material ghost;
+        ghost.locPct = 15.0;
+        CHECK(MaterialRisk::riskIndex(ghost, 20.0, 0.0, "deep-space")
+              >= 0.0,
+              "unknown gravity key must fall back to a valid factor");
+    }
+
     if (failures == 0) std::printf("all physics checks passed\n");
     return failures ? 1 : 0;
 }
