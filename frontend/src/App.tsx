@@ -127,13 +127,13 @@ export default function App() {
         {expRoom !== null && (
           <ExperimentModal engine={engine} roomId={expRoom} onClose={() => setExpRoom(null)} />
         )}
-        {missionOpen && <MissionModal engine={engine} onClose={() => setMissionOpen(false)} />}
-        {sheetOpen && <MasterSheet onClose={() => setSheetOpen(false)} onInject={injectRow} />}
         {!started && <IntroOverlay onStart={() => setStarted(true)} />}
         <GameOverOverlay engine={engine} />
       </div>
         </>
       )}
+      {missionOpen && <MissionModal engine={engine} onClose={() => setMissionOpen(false)} />}
+      {sheetOpen && <MasterSheet onClose={() => setSheetOpen(false)} onInject={injectRow} />}
     </div>
   )
 }

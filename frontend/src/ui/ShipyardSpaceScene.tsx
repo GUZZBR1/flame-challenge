@@ -101,8 +101,8 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
       const stationFgLayer = new Container()  // STATION FOREGROUND OCCLUDES SHIPS!
 
       pixiApp.stage.addChild(starLayer)
-      pixiApp.stage.addChild(cometLayer)
       pixiApp.stage.addChild(bgLayer)
+      pixiApp.stage.addChild(cometLayer)
       pixiApp.stage.addChild(shipLayer)
       pixiApp.stage.addChild(effectLayer)
       pixiApp.stage.addChild(stationFgLayer)
@@ -190,7 +190,10 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
             const rad = t % 1
             const px = -120 + rad * (w + 240)
             const py = h * 0.18 + Math.sin(rad * Math.PI * 2) * (h * 0.06)
-            const rot = Math.atan2(Math.cos(rad * Math.PI * 2) * (h * 0.06), 1)
+            const rot = Math.atan2(
+              Math.PI * 2 * Math.cos(rad * Math.PI * 2) * (h * 0.06),
+              w + 240,
+            )
             return { x: px, y: py, rot, speedMod: 1.0 }
           },
         })
