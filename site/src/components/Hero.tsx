@@ -22,8 +22,10 @@ export default function Hero() {
     cursor.setAttribute('aria-hidden', 'true')
     el.append(cursor)
     let i = 0
+    let stopped = false
     let timer: ReturnType<typeof setTimeout>
     const typeNext = () => {
+      if (stopped) return
       if (i < TITLE.length) {
         const span = document.createElement('span')
         span.className =
@@ -36,7 +38,10 @@ export default function Hero() {
       }
     }
     timer = setTimeout(typeNext, 700)
-    return () => clearTimeout(timer)
+    return () => {
+      stopped = true
+      clearTimeout(timer)
+    }
   }, [])
 
   // scroll choreography
@@ -82,8 +87,8 @@ export default function Hero() {
         scrollTrigger: {
           trigger: hero,
           start: 'top top',
-          // viewport-relative: '58% top' would measure 58% of the 190svh
-          // trigger (~1.1 viewport scrolls) and never be reached
+          // viewport-relative: '58% top' would measure 58% of the hero
+          // trigger (~0.8 viewport scrolls) and never be reached
           end: () => window.innerHeight * 0.58,
           scrub: true,
           onRefresh: measure,
@@ -105,7 +110,7 @@ export default function Hero() {
       id="top"
       ref={heroRef}
       aria-labelledby="ignis-title"
-      className="relative isolate h-[190svh] cursor-crosshair"
+      className="relative isolate h-[130svh] cursor-crosshair"
     >
       <div className="sticky top-0 h-[100svh] min-h-[680px] overflow-hidden">
         <HeroCanvas />
