@@ -51,6 +51,13 @@ ch.configure({
   dropletD0Mm: 0.3,
   partialGravity: false,
   seed: 3,
+  // embind value objects require every registered field — open
+  // atmosphere: volumeLiters 0 keeps the historical behavior
+  volumeLiters: 0,
+  ambientO2Pct: 21,
+  ventPerSec: 0,
+  co2Pct: 0,
+  hePct: 0,
 });
 
 let sawCool = false;
