@@ -13,6 +13,7 @@ import {
   Rocket,
   Ship,
   Siren,
+  TrendingUp,
   UserPlus,
   Users,
 } from 'lucide-react'
@@ -39,10 +40,12 @@ export default function TopBar({
   engine,
   onOpenMission,
   onOpenData,
+  onOpenInsights,
 }: {
   engine: Engine
   onOpenMission: () => void
   onOpenData: () => void
+  onOpenInsights: () => void
 }) {
   useGameVersion()
   const st = engine.state
@@ -102,6 +105,15 @@ export default function TopBar({
       >
         <Database className="h-3 w-3" />
         Data
+      </button>
+
+      <button
+        onClick={onOpenInsights}
+        title="PSI Insights — ranked investigations, risk curves and interpreted findings"
+        className="flex items-center gap-1 rounded border border-flame/50 bg-panel2 px-2 py-1 text-[10px] font-semibold text-flame hover:bg-flame/20"
+      >
+        <TrendingUp className="h-3 w-3" />
+        Insights
       </button>
 
       <button

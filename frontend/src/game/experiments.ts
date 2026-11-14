@@ -1,5 +1,6 @@
 import type { Investigation } from '../types'
 import { BALANCE } from './config'
+import { INV_LOC } from './masterSheet'
 import profiles from '../data/risk_profiles.json'
 import type { ExperimentSpec, RiskAxis, RiskFactors } from './types'
 
@@ -29,7 +30,10 @@ export function flowRange(inv: Investigation): [number, number] {
 }
 
 export function limitingO2(inv: Investigation): number {
-  return inv.metrics.limitingOxygenPct ?? o2Range(inv)[0]
+  // canonical engine LOC first (calibration.json effectiveLoc — what the
+  // C++ chamber burns with), then the dataset's own limit, then the
+  // tested envelope edge as a last resort
+  return INV_LOC[inv.id] ?? inv.metrics.limitingOxygenPct ?? o2Range(inv)[0]
 }
 
 /** mirror of MaterialRisk::ignitionPressure for offline parity */

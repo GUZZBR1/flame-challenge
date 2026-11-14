@@ -50,6 +50,12 @@ export interface Investigation {
   publications: number
   /** false = curated starter value pending verification against PSI files */
   verified: boolean
+  /** injected by data/pipelines/build_dataset.py when PSI runs were merged */
+  psiRuns?: number
+  psiAccessions?: string[]
+  psiFuels?: string[]
+  psiO2RangePct?: [number, number]
+  psiExtinctionLimitPct?: { min: number; max: number }
 }
 
 export interface Dataset {

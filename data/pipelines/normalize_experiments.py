@@ -167,6 +167,16 @@ _EXTINCTION_WORDS = (
     r"\b(?:extinct|extinction|extinguished|extinguishes|extinguishing|"
     r"extinguishment)\b")
 
+# suppression-agent evidence: an explicit "suppress…" mention, or a gas
+# (co2 / carbon dioxide) acting within ~1 word of an extinguishing verb —
+# never a bare ambient-mixture mention like "0.12/0.49/0.40 O2/N2/CO2"
+_SUPPRESSANT_EVIDENCE = re.compile(
+    r"suppress|"
+    r"(?:co2|carbon dioxide)\W{0,4}\w{0,12}\W{0,4}"
+    r"(?:flood|discharge|agent|extin)|"
+    r"(?:flood|discharge|agent|extin)\w*\W{0,4}\w{0,12}\W{0,4}"
+    r"(?:co2|carbon dioxide)")
+
 
 def cool_flame_observed(text: str) -> bool:
     """Affirmative cool-flame evidence in free text."""
@@ -180,19 +190,31 @@ def classify_outcome(comments: str, dext: float | str | None) -> tuple[str, str,
     if re.search(r"did not ignite|failed to ignite|no ignition|would not ignite|"
                  r"not ignite|non-?ignition", c):
         return "no-ignition", "none", cool
-    if re.search(r"radiative extinction|radiative extinction", c):
-        return "extinction", "radiative", cool
-    if re.search(r"blow.?off|blows? out", c):
-        return "extinction", "blow-off", cool
-    # affirmative extinction language only — "no extinction observed",
-    # "fire extinguisher present" and negated mentions must not count;
+    # affirmative extinction evidence gates EVERY extinction typing —
+    # "no extinction observed", equipment nouns, negated mentions and
+    # radiative-loss remarks inside completed burns must not count;
     # a positive measured Dext is direct evidence on its own
-    if _affirmative_mention(c, _EXTINCTION_WORDS) or \
-            (isinstance(dext, float) and dext > 0):
+    extinct = _affirmative_mention(c, _EXTINCTION_WORDS) or \
+        (isinstance(dext, float) and dext > 0)
+    if _affirmative_mention(c, r"blow.?off|blows? out"):
+        return "extinction", "blow-off", cool
+    if extinct:
         if cool:
             return "extinction", "cool-flame", True
-        return "extinction", "oxygen-limit" if "oxygen" in c else "suppressant" \
-            if ("co2" in c or "suppress" in c) else "oxygen-limit", cool
+        # radiative regime in all corpus wordings — "radiatively
+        # extinguishing", "extinguishes due to radiative loss" — types an
+        # affirmed extinction; a bare 'radiative loss' mention without
+        # extinction evidence (e.g. inside a completed burn) is not one
+        if _affirmative_mention(
+                c, r"radiativ\w*(?:\s+\w+){0,2}\s+extin\w*|"
+                   r"extin\w*(?:\s+\w+){0,2}\s+radiativ\w*|"
+                   r"radiativ\w*\s+loss"):
+            return "extinction", "radiative", cool
+        # suppressant needs suppression EVIDENCE — ambient "O2/N2/CO2"
+        # composition text is not an extinguishing agent observation
+        if _affirmative_mention(c, _SUPPRESSANT_EVIDENCE.pattern):
+            return "extinction", "suppressant", cool
+        return "extinction", "oxygen-limit", cool
     if "disruption" in c or "burns? to disruption" in c:
         return "disruption", "none", cool
     if re.search(r"burn(ed|s|t)? (to completion|completely|out)|complete burn", c):
@@ -420,6 +442,339 @@ def sniff_csv_rows(path: Path, acc: str, inv: str) -> list[dict]:
     return out
 
 
+# ---------------------------------------------------------------------------
+# Legacy corpus — data/psi/processed/*.csv (pre-normalized download from an
+# earlier pipeline iteration, committed CSVs). These rows fill accessions the
+# raw-file parsers never reached: BASS (PSI-26), SAFFIRE I-III (PSI-98/99/100),
+# FLEX test points (PSI-69) and the remaining ACME studies. Accessions that
+# already produced rows from raw files are skipped, so ingestion is purely
+# additive and never rewrites an existing parsed run.
+# ---------------------------------------------------------------------------
+
+LEGACY_DIR = ROOT / "psi" / "processed"
+
+
+def _num1(text: str | None) -> float | None:
+    """First number in a possibly multi-value raw cell ("0.99; 1.01")."""
+    if not text:
+        return None
+    m = re.search(NUM_RE, str(text))
+    return float(m.group(0)) if m else None
+
+
+def _mid(a: str | None, b: str | None) -> float | None:
+    lo, hi = _num1(a), _num1(b)
+    if lo is None:
+        return hi
+    if hi is None:
+        return lo
+    return (lo + hi) / 2
+
+
+def _flag(text: str | None) -> bool | None:
+    """Structured yes/no cell — leading token decides, qualifiers are
+    ignored: 'yes, PCI-G' → True, 'no, PCI-hot' → False. 'n/a' means
+    unrecorded, NOT a recorded 'no' — returns None like an empty cell."""
+    v = (text or "").strip().lower()
+    if not v or v in ("n/a", "na", "none", "-", "?", "unknown"):
+        return None
+    if re.match(r"yes|true|y\b|1\b", v):
+        return True
+    if re.match(r"no\b|false|n\b|0\b|fail", v):
+        return False
+    return None
+
+
+def _legacy_outcome(r: dict) -> tuple[str, str]:
+    mode = (r.get("extinction_mode") or "").strip().lower()
+    if _flag(r.get("ignition_flag")) is False:
+        return "no-ignition", "none"
+    # CFI summary-table codes — same mapping sniff_csv_rows applies to
+    # raw files: FT = flow terminated mid-burn, SE = self-extinguished
+    if mode in ("ft", "flow termination"):
+        return "burnout", "none"
+    if mode in ("se", "self-extinguishment", "self extinguishment"):
+        return "extinction", "oxygen-limit"
+    if mode in ("-", "n/a", "na", "none"):
+        mode = ""
+    if mode:
+        # specific regimes before the generic "o2" token — "co2 suppression"
+        # contains "o2" as a substring and must reach the suppressant branch
+        for key, et in (("rad", "radiative"), ("quiesc", "quiescent"),
+                        ("blow", "blow-off"), ("cool", "cool-flame"),
+                        ("suppress", "suppressant"), ("oxy", "oxygen-limit"),
+                        ("o2", "oxygen-limit")):
+            if key in mode:
+                return "extinction", et
+        return "extinction", re.sub(r"[^a-z0-9]+", "-", mode).strip("-")[:24]
+    if _num1(r.get("burn_time_s")) or _num1(r.get("spread_length_raw")):
+        return "burnout", "none"
+    return "unknown", "none"
+
+
+def _flex_end_outcome(r: dict, comments: str = "") -> tuple[str, str]:
+    """PSI-69 records the true test ending in extra_json['Test end']
+    (Extinction / Disruption / Completion) — not in extinction_mode."""
+    if _flag(r.get("ignition_flag")) is False:
+        return "no-ignition", "none"
+    try:
+        end = str(json.loads(r.get("extra_json") or "{}")
+                  .get("Test end") or "").strip().lower()
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        end = ""
+    if end == "extinction":
+        # regime evidence lives in the caller-provided text (the
+        # test-point comments); the summary row's comments are blank
+        text = (comments
+                or f"{r.get('comments') or ''} {r.get('notes') or ''}") \
+            .lower()
+        _, et, _c = classify_outcome(text, None)
+        # FLEX droplet flames die by radiative loss — the recorded regime
+        # unless comments say otherwise
+        return "extinction", et if et not in ("", "none") else "radiative"
+    if end == "disruption":
+        return "disruption", "none"
+    if end == "completion":
+        return "burnout", "none"
+    return _legacy_outcome(r)
+
+
+def _flex_test_num(test_id: str | None) -> int | None:
+    """Sequence number inside one id — 'FLEX-070' → 70,
+    '70; 193F001' → 70. Only corroborates a shared-CIR tie: the two
+    tables number tests differently, so it must never be the join key."""
+    m = re.search(r"(\d+)", (test_id or "").split(";")[0])
+    return int(m.group(1)) if m else None
+
+
+def _run_gmt(r: dict) -> str:
+    """Summary-row test time from extra_json — 'Test GMT'."""
+    try:
+        return str(json.loads(r.get("extra_json") or "{}")
+                   .get("Test GMT") or "").strip()
+    except (json.JSONDecodeError, TypeError, AttributeError):
+        return ""
+
+
+def _point_gmt(p: dict) -> str:
+    """Test-point time '19:12:27 (GMT)' → '19:12:27'."""
+    return re.sub(r"\s*\([^)]*\)\s*", " ", p.get("test_time") or "").strip()
+
+
+def _fuel_key(s: str | None) -> str:
+    return re.sub(r"[^a-z0-9]+", "", (s or "").lower())
+
+
+def _flex_pairing() -> dict[str, dict]:
+    """Resolved flex_test_points test_id → experimental_runs summary row.
+
+    The join key is the CIR test number — the experiment identifier both
+    tables share. Sequence numbers are NOT usable: the tables number
+    tests differently (FLEX-157 is summary '156; C03H401', not '157;').
+    Shared-CIR collisions (FLEX-070/073 under 193F001) are corroborated
+    by test time, then fuel, then sequence; points without a CIR join on
+    a unique test GMT. Unresolvable points get no summary metadata
+    rather than another experiment's.
+    """
+    ppath = LEGACY_DIR / "flex_test_points.csv"
+    rpath = LEGACY_DIR / "experimental_runs.csv"
+    if not ppath.exists():
+        return {}
+    runs: list[dict] = []
+    if rpath.exists():
+        for r in csv.DictReader(rpath.open(encoding="utf-8", errors="replace")):
+            if (r.get("accession") or "").strip() == "PSI-69":
+                runs.append(r)
+    by_cir: dict[str, list[dict]] = {}
+    by_gmt: dict[str, list[dict]] = {}
+    for r in runs:
+        parts = (r.get("data_id") or "").split(";")
+        if len(parts) > 1 and parts[1].strip():
+            by_cir.setdefault(parts[1].strip(), []).append(r)
+        g = _run_gmt(r)
+        if g:
+            by_gmt.setdefault(g, []).append(r)
+
+    pairs: dict[str, dict] = {}
+    for p in csv.DictReader(ppath.open(encoding="utf-8", errors="replace")):
+        cir = (p.get("cir_test_number") or "").strip()
+        cands = by_cir.get(cir, []) if cir else []
+        m = cands[0] if len(cands) == 1 else None
+        if m is None and len(cands) > 1:
+            # shared CIR — corroborate: test GMT, then fuel, then seq num
+            g = _point_gmt(p)
+            hit = [r for r in cands if g and _run_gmt(r) == g]
+            if len(hit) == 1:
+                m = hit[0]
+            else:
+                cands = hit or cands
+                f = _fuel_key(p.get("fuel_or_material"))
+                hit = [r for r in cands if f and _fuel_key(
+                    r.get("fuel_or_material") or r.get("fuel_bottle")) == f]
+                if len(hit) == 1:
+                    m = hit[0]
+                else:
+                    n = _flex_test_num(p.get("test_id"))
+                    hit = [r for r in (hit or cands)
+                           if _flex_test_num(r.get("data_id")) == n]
+                    if len(hit) == 1:
+                        m = hit[0]
+        if m is None and not cands:
+            # no CIR candidate — a shared test GMT is still a unique join
+            hit = by_gmt.get(_point_gmt(p), [])
+            if len(hit) == 1:
+                m = hit[0]
+        if m is not None:
+            pairs[(p.get("test_id") or "").strip()] = m
+    return pairs
+
+
+def parse_legacy_runs(covered: set[str]) -> list[dict]:
+    path = LEGACY_DIR / "experimental_runs.csv"
+    if not path.exists():
+        return []
+    # summary rows consumed by the resolved point→summary pairing —
+    # skipping by anything else (sequence numbers, raw CIR overlap)
+    # either keeps a consumed duplicate or drops a runs-only test
+    flex_consumed = {(m.get("data_id") or "").strip()
+                     for m in _flex_pairing().values()}
+    out: list[dict] = []
+    for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
+        acc = (r.get("accession") or "").strip()
+        if not acc or acc in covered or acc not in ACCESSIONS:
+            continue
+        if acc == "PSI-69" and (r.get("data_id") or "").strip() in flex_consumed:
+            continue  # emitted by parse_legacy_flex with richer fields
+        inv = ACCESSIONS[acc][0]
+        fuel = (r.get("fuel_or_material") or r.get("fuel_bottle") or "").strip() or None
+        comments = (r.get("comments") or r.get("notes") or "").strip()
+        extras = []
+        if (r.get("flow_direction") or "").strip():
+            extras.append(f"flow {r['flow_direction'].strip().lower()}")
+        if _num1(r.get("spread_rate_raw")) is not None:
+            extras.append(f"spread {r['spread_rate_raw'].strip()}")
+        if extras:
+            comments = f"{comments} | {'; '.join(extras)}" if comments \
+                else "; ".join(extras)
+        outcome, etype = _flex_end_outcome(r) if acc == "PSI-69" \
+            else _legacy_outcome(r)
+        # structured flag wins over comment text in BOTH directions — an
+        # explicit "no" is a recorded non-observation, comments can't flip
+        # it; qualifiers after the token ('yes, PCI-G') are ignored
+        cool = _flag(r.get("cool_flame_flag"))
+        if cool is None:
+            cool = cool_flame_observed(comments)
+        o2 = _mid(r.get("o2_pct_min"), r.get("o2_pct_max"))
+        if o2 is None:
+            o2mf = _mid(r.get("o2_mf_min"), r.get("o2_mf_max"))
+            o2 = o2mf * 100 if o2mf is not None else None
+        atm = _mid(r.get("pressure_atm_min"), r.get("pressure_atm_max"))
+        flow = _mid(r.get("airflow_cm_s_min"), r.get("airflow_cm_s_max"))
+        dext = _mid(r.get("dext_mm_min"), r.get("dext_mm_max"))
+        btime = _num1(r.get("burn_time_s"))
+        # non-test rows: figure captions carry no specimen and no measured
+        # conditions; pre-test flow-visualization records are ops metadata
+        fuel_txt = (r.get("fuel_or_material") or "").strip()
+        if (fuel is None and o2 is None and flow is None and dext is None
+                and btime is None):
+            continue
+        if re.match(r"pre[- ]?test|flow visu", fuel_txt, re.I):
+            continue
+        out.append({
+            "run_id": (r.get("data_id") or "").strip()
+                      or f"{acc}-row{r.get('row_idx', '?')}",
+            "accession": acc,
+            "investigation_id": inv,
+            "fuel": fuel,
+            "material_id": fuel_id(fuel),
+            "o2_pct": round(o2, 3) if o2 is not None else None,
+            "n2_pct": _num1(r.get("n2_mf_raw")) and round(_num1(r["n2_mf_raw"]) * 100, 2),
+            "co2_pct": _num1(r.get("co2_mf_raw")) and round(_num1(r["co2_mf_raw"]) * 100, 2),
+            "he_pct": _num1(r.get("he_mf_raw")) and round(_num1(r["he_mf_raw"]) * 100, 2),
+            "pressure_kpa": round(atm * 101.325, 2) if atm is not None else None,
+            "temp_k": _num1(r.get("temperature_k_raw")),
+            "flow_cms": flow,
+            "droplet_d0_mm": _mid(r.get("d0_mm_min"), r.get("d0_mm_max")),
+            "burn_rate_mm2_s": None,
+            "burn_time_s": btime,
+            "extinction_d_mm": dext,
+            "outcome": outcome,
+            "extinction_type": etype,
+            "cool_flame": cool,
+            "fiber_support": None,
+            "comments": comments[:500] or None,
+            "source_file": r.get("source_table") or "experimental_runs.csv",
+            "source_url": f"https://psi.nasa.gov/physci/repo/data/investigation/{acc}",
+            "verified": True,
+        })
+    return out
+
+
+def parse_legacy_flex(covered: set[str]) -> list[dict]:
+    """FLEX per-test table (kavg/Dext/d0) — richer than experimental_runs
+    for droplet physics; feeds the d²-law calibration."""
+    path = LEGACY_DIR / "flex_test_points.csv"
+    if not path.exists():
+        return []
+    pairs = _flex_pairing()
+    out: list[dict] = []
+    for r in csv.DictReader(path.open(encoding="utf-8", errors="replace")):
+        acc = (r.get("accession") or "").strip()
+        if not acc or acc in covered or acc not in ACCESSIONS:
+            continue
+        inv = ACCESSIONS[acc][0]
+        comments = (r.get("comments") or "").strip()
+        dext = _num1(r.get("dext_mm"))
+        # resolved CIR-first pairing — never a bare sequence-number join
+        m = pairs.get((r.get("test_id") or "").strip())
+        burn_time = None
+        if m is not None:
+            # the summary row carries the authoritative end state — its
+            # comments are blank, so regime typing reads the point's own
+            outcome, etype = _flex_end_outcome(m, comments)
+            cool = _flag(m.get("cool_flame_flag"))
+            if cool is None:
+                cool = cool_flame_observed(comments)
+            burn_time = _num1(m.get("burn_time_s"))
+        else:
+            outcome, etype, cool = classify_outcome(comments, dext)
+        # test-point placeholders: some rows ship blank fuel / o2_mf=0.00
+        # while the summary row records the real values — backfill
+        fuel = (r.get("fuel_or_material") or "").strip() \
+            or (m or {}).get("fuel_or_material", "").strip() or None
+        o2mf = _num1(r.get("o2_mf"))
+        if (o2mf is None or o2mf == 0.0) and m is not None:
+            o2mf = _mid(m.get("o2_mf_min"), m.get("o2_mf_max"))
+        atm = _num1(r.get("pressure_atm"))
+        out.append({
+            "run_id": (r.get("test_id") or "").strip() or f"{acc}-tp",
+            "accession": acc,
+            "investigation_id": inv,
+            "fuel": fuel,
+            "material_id": fuel_id(fuel),
+            "o2_pct": round(o2mf * 100, 3) if o2mf is not None else None,
+            "n2_pct": round(_num1(r["n2_mf"]) * 100, 2) if _num1(r.get("n2_mf")) else None,
+            "co2_pct": round(_num1(r["co2_mf"]) * 100, 2) if _num1(r.get("co2_mf")) else None,
+            "he_pct": round(_num1(r["he_mf"]) * 100, 2) if _num1(r.get("he_mf")) else None,
+            "pressure_kpa": round(atm * 101.325, 2) if atm is not None else None,
+            "temp_k": _num1(r.get("temperature_k")),
+            "flow_cms": None,
+            "droplet_d0_mm": _num1(r.get("d0_mm")),
+            "burn_rate_mm2_s": _num1(r.get("kavg_mm2_s")),
+            "burn_time_s": burn_time,
+            "extinction_d_mm": dext if dext and dext > 0 else None,
+            "outcome": outcome,
+            "extinction_type": etype,
+            "cool_flame": cool,
+            "fiber_support": (r.get("fiber") or "").strip() or None,
+            "comments": comments[:500] or None,
+            "source_file": r.get("source_file") or "flex_test_points.csv",
+            "source_url": f"https://psi.nasa.gov/physci/repo/data/investigation/{acc}",
+            "verified": True,
+        })
+    return out
+
+
 def main() -> int:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     rows: list[dict] = []
@@ -448,6 +803,17 @@ def main() -> int:
         stats[acc] = len(rows) - n0
         if stats[acc]:
             print(f"[OK] {acc} ({inv}): +{stats[acc]} rows")
+
+    # legacy corpus fills the accessions raw files never produced
+    covered = {acc for acc, n in stats.items() if n > 0}
+    legacy = parse_legacy_runs(covered) + parse_legacy_flex(covered)
+    for r in legacy:
+        stats[r["accession"]] = stats.get(r["accession"], 0) + 1
+    if legacy:
+        by_acc = {acc for r in legacy for acc in [r["accession"]]}
+        print(f"[OK] legacy corpus: +{len(legacy)} rows across "
+              f"{len(by_acc)} new accessions")
+    rows.extend(legacy)
 
     # de-dupe identical runs (same accession+run_id+fuel) keeping the richest
     best: dict[tuple, dict] = {}

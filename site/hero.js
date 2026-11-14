@@ -136,19 +136,28 @@
   updateScrollTitle();
   window.addEventListener('scroll', updateScrollTitle, { passive: true });
   window.addEventListener('resize', updateScrollTitle);
-  const savedTheme = localStorage.getItem('ignis-theme');
+  let savedTheme = null;
+  try {
+    savedTheme = window.localStorage.getItem('ignis-theme');
+  } catch {
+    // Theme selection remains available when browser storage is blocked.
+  }
   if (savedTheme === 'dark') document.documentElement.dataset.theme = 'dark';
   function updateThemeButton() {
     const isDark = document.documentElement.dataset.theme === 'dark';
     themeToggle.setAttribute('aria-pressed', String(isDark));
-    themeToggle.setAttribute('aria-label', isDark ? 'Ativar modo claro' : 'Ativar modo escuro');
-    themeToggle.title = isDark ? 'Modo claro' : 'Modo escuro';
+    themeToggle.setAttribute('aria-label', isDark ? 'Enable light mode' : 'Enable dark mode');
+    themeToggle.title = isDark ? 'Light mode' : 'Dark mode';
   }
   updateThemeButton();
   themeToggle.addEventListener('click', () => {
     const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = nextTheme;
-    localStorage.setItem('ignis-theme', nextTheme);
+    try {
+      window.localStorage.setItem('ignis-theme', nextTheme);
+    } catch {
+      // Keep the in-memory theme change even when browser storage is blocked.
+    }
     updateThemeButton();
   });
   prefersReducedMotion.addEventListener('change', startWave);
