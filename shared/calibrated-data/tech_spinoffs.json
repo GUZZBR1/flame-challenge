@@ -1,0 +1,29 @@
+{
+  "generated": "hand-authored from NASA Spinoff / SBIR records — see docs/NASA_PSI_REFERENCES.md",
+  "tech": [
+    {
+      "id": "fire-detector",
+      "name": "Multi-Parameter Fire Detector",
+      "source": "NASA Spinoff — spacecraft fire detection",
+      "cost": 40,
+      "effects": { "hiddenRevealMult": 0.5 },
+      "blurb": "Discriminates real combustion aerosols from floating dust. Hidden cool flames breach your alert threshold at half the intensity."
+    },
+    {
+      "id": "firemans-air-tanks",
+      "name": "Fireman's High-Pressure Air Tanks",
+      "source": "NASA Spinoff — breathing apparatus",
+      "cost": 60,
+      "effects": { "extinguishRateMult": 1.5 },
+      "blurb": "Lighter, longer-duration breathing gear lets engineers work a fire line 50% faster before retreating."
+    },
+    {
+      "id": "fire-attire",
+      "name": "Advanced Thermal Fire Attire",
+      "source": "NASA Spinoff — fire protection fabrics",
+      "cost": 80,
+      "effects": { "crewBurnMult": 0.45 },
+      "blurb": "Thermal-protective fabrics derived from re-entry materials cut crew burn damage by more than half."
+    }
+  ]
+}
