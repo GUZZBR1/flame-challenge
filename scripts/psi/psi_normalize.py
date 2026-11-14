@@ -274,8 +274,23 @@ FLEX_COLS = ["accession", "acronym", "test_id", "cir_test_number", "test_date",
 NUMERIC_TS = {"pressure_atm", "o2_mf", "n2_mf", "co2_mf", "he_mf",
               "temperature_k", "d0_mm", "kavg_mm2_s", "dext_mm"}
 MEASURE_RE = re.compile(
-    r"~?\s*[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?"
-    r"(?:\s*(?:mm|mm2/s|k|atm|kpa|pa|%|w|s))?\s*", re.I)
+    r"~?\s*([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)"
+    r"(?:\s*(mm2/s|kpa|mmhg|atm|pa|mm|k|%|w|s))?\s*", re.I)
+
+# unit suffix -> conversion factor, per numeric field. A suffix the column
+# doesn't expect (e.g. "cm/s" under pressure_atm) sends the value to comments.
+TS_UNITS = {
+    "pressure_atm": {"": 1.0, "atm": 1.0, "kpa": 1 / 101.325,
+                     "pa": 1 / 101325.0, "mmhg": 1 / 760.0},
+    "o2_mf": {"": 1.0, "%": 0.01},
+    "n2_mf": {"": 1.0, "%": 0.01},
+    "co2_mf": {"": 1.0, "%": 0.01},
+    "he_mf": {"": 1.0, "%": 0.01},
+    "temperature_k": {"": 1.0, "k": 1.0},
+    "d0_mm": {"": 1.0, "mm": 1.0},
+    "dext_mm": {"": 1.0, "mm": 1.0},
+    "kavg_mm2_s": {"": 1.0, "mm2/s": 1.0},
+}
 
 
 def parse_testsheet(path, accession):
@@ -305,10 +320,15 @@ def parse_testsheet(path, accession):
                     field = TS_FIELDS[key]
                     val = kv.group(2).strip()
                     if field in NUMERIC_TS and val:
-                        if MEASURE_RE.fullmatch(val):
-                            out[field] = f"{first_num(val):g}"
-                        else:
+                        m = MEASURE_RE.fullmatch(val)
+                        unit = (m.group(2) or "").lower() if m else None
+                        factor = TS_UNITS[field].get(unit) if unit is not None else None
+                        if factor is None:
                             comments.append(f"{key}: {val}")
+                        elif factor == 1.0:
+                            out[field] = m.group(1)  # keep recorded digits
+                        else:
+                            out[field] = f"{float(m.group(1)) * factor:.10g}"
                     else:
                         out[field] = val
             elif s.strip() and not out["test_id"] and re.match(r"FLEX-?\d+", s.strip()):
@@ -376,11 +396,13 @@ def sniff_csv(path, max_bytes=65536):
         delim = "\t" if header.count("\t") > header.count(",") else ","
         cols = [c.strip().strip('"') for c in header.split(delim)][:40]
         # the header comes from the first chunk, but the row count must
-        # cover the whole file, not just the sampled prefix
+        # cover the whole file: count non-empty lines (skips blank lines
+        # and works whether or not the file ends with a newline)
         n = 0
         with open(path, "rb") as fh:
-            for buf in iter(lambda: fh.read(1 << 20), b""):
-                n += buf.count(b"\n")
+            for line in fh:
+                if line.strip():
+                    n += 1
         return max(n - 1, 0), delim.join(cols)
     except OSError:
         return None, ""
