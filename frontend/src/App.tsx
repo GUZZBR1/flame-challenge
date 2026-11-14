@@ -14,6 +14,7 @@ import SimulateBar from './ui/SimulateBar'
 import TopBar from './ui/TopBar'
 import HangarScene from './ui/HangarScene'
 import ShipyardSpaceScene from './ui/ShipyardSpaceScene'
+import ResearchLabScene from './ui/ResearchLabScene'
 import WorldView, { type Selection } from './renderer/WorldView'
 import { engine, useGameVersion } from './state/store'
 import { injectTarget } from './game/masterSheet'
@@ -21,7 +22,7 @@ import type { RoomType } from './game/types'
 import type { DashConditions, MasterRow } from './types'
 
 export default function App() {
-  const [sceneView, setSceneView] = useState<'foundry' | 'hangar' | 'shipyard'>('foundry')
+  const [sceneView, setSceneView] = useState<'foundry' | 'hangar' | 'shipyard' | 'lab'>('foundry')
   const [started, setStarted] = useState(false)
   const [mode, setMode] = useState<'inspect' | RoomType>('inspect')
   const [selection, setSelection] = useState<Selection | null>(null)
@@ -102,11 +103,20 @@ export default function App() {
         <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'foundry' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('foundry')}>Foundry</button>
         <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'hangar' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('hangar')}>Hangar</button>
         <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'shipyard' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('shipyard')}>Orbital Shipyard</button>
+        <button className={`rounded px-3 py-1.5 text-xs ${sceneView === 'lab' ? 'bg-ice/20 text-ice' : 'text-mist hover:text-white'}`} onClick={() => setSceneView('lab')}>Experiment Lab</button>
       </nav>
       {sceneView === 'hangar' ? (
         <div className="min-h-0 flex-1 overflow-auto p-3"><HangarScene /></div>
       ) : sceneView === 'shipyard' ? (
         <div className="relative min-h-0 flex-1"><ShipyardSpaceScene /></div>
+      ) : sceneView === 'lab' ? (
+        <div className="min-h-0 flex-1 overflow-auto p-3">
+          <ResearchLabScene
+            onOpenData={() => setSheetOpen(true)}
+            onOpenInsights={() => setInsightsOpen(true)}
+            onReturnToShipyard={() => setSceneView('shipyard')}
+          />
+        </div>
       ) : (
         <>
       <SimulateBar cond={cond} onCond={patchCond} onApply={applyPreset} />
