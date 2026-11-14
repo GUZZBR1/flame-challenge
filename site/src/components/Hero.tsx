@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { gsap } from '../lib/scroll'
+import { gsap, ScrollTrigger } from '../lib/scroll'
 import HeroCanvas from './HeroCanvas'
 
 const TITLE = 'IGNIS'
@@ -44,10 +44,34 @@ export default function Hero() {
     const hero = heroRef.current
     const identity = identityRef.current
     if (!hero || !identity) return
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // no motion — just hide the fixed title once the hero scrolls away
+      const st = ScrollTrigger.create({
+        trigger: hero,
+        start: 'top top',
+        end: '58% top',
+        onEnter: () => gsap.set(identity, { autoAlpha: 0 }),
+        onLeaveBack: () => gsap.set(identity, { autoAlpha: 1 }),
+      })
+      return () => st.kill()
+    }
     // capture once — reading offsetHeight inside onUpdate forces layout per frame
     const heroHeight = hero.offsetHeight
     const ctx = gsap.context(() => {
+      const brand = document.querySelector<HTMLElement>('[data-ignis-brand]')
+      const title = titleRef.current
+      // dock: the title flies to the brand slot in the header, not just up
+      const dims = { dx: 0, lift: heroHeight * 0.43 - 45, scale: 0.15 }
+      const measure = () => {
+        if (!brand || !title) return
+        const br = brand.getBoundingClientRect()
+        dims.dx = br.left + br.width / 2 - window.innerWidth / 2
+        dims.lift = heroHeight * 0.43 - (br.top + br.height / 2)
+        dims.scale =
+          parseFloat(getComputedStyle(brand).fontSize) /
+          parseFloat(getComputedStyle(title).fontSize)
+      }
+      measure()
       const tween = { p: 0 }
       gsap.to(tween, {
         p: 1,
@@ -57,12 +81,14 @@ export default function Hero() {
           start: 'top top',
           end: '58% top',
           scrub: true,
+          onRefresh: measure,
         },
         onUpdate: () => {
-          const lift = (heroHeight * 0.43 - 45) * tween.p
-          const scale = 1 - tween.p * 0.72
-          identity.style.transform = `translate(-50%, calc(-50% - ${lift}px)) scale(${scale})`
-          identity.style.opacity = String(1 - Math.max(0, (tween.p - 0.76) / 0.24))
+          const dx = dims.dx * tween.p
+          const lift = dims.lift * tween.p
+          const scale = 1 + (dims.scale - 1) * tween.p
+          identity.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% - ${lift}px)) scale(${scale})`
+          identity.style.opacity = String(1 - Math.max(0, (tween.p - 0.88) / 0.12))
         },
       })
     })

@@ -89,7 +89,7 @@ def merge_structured() -> None:
                 "(data/bundle/investigations.json missing)",
                 file=sys.stderr,
             )
-            return
+            sys.exit(1)
         shutil.copy(STARTER_PATH, DATASET_PATH)
     dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
     merged = {inv["id"]: inv for inv in dataset.get("investigations", [])}

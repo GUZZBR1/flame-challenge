@@ -22,8 +22,8 @@ async function probe<T>(url: string): Promise<T | null> {
 export type EngineStatus = 'checking' | 'cpp' | 'local'
 
 export async function engineStatus(): Promise<EngineStatus> {
-  const ok = await probe<{ status?: string }>('/health')
-  return ok ? 'cpp' : 'local'
+  const health = await probe<{ engine?: string }>('/health')
+  return health?.engine === 'c++' ? 'cpp' : 'local'
 }
 
 export async function riskIndex(
