@@ -46,7 +46,11 @@
       "burnRateK0Mm2s": 0.0613,
       "burnRateKO2Mm2sPct": 0.01542,
       "burnRateFitR2": 0.055,
-      "extinctionDHotMm": 3.89
+      "extinctionDHotMm": 3.89,
+      "ignitionLogitA": -6.9,
+      "ignitionLogitB": 0.0,
+      "ignitionFitN": 20,
+      "ignitionFitScope": "material-null"
     },
     {
       "id": "ethylene",
@@ -60,7 +64,12 @@
       "sourceInvestigations": [
         "acme"
       ],
-      "locBaseline": 11.0
+      "locBaseline": 11.0,
+      "ignitionLogitA": -2.0345,
+      "ignitionLogitB": 0.01854,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     {
       "id": "heptane",
@@ -81,7 +90,12 @@
       "burnRateKO2Mm2sPct": 0.01522,
       "burnRateFitR2": 0.17,
       "extinctionDHotMm": 2.86,
-      "extinctionDMinMm": 0.77
+      "extinctionDMinMm": 0.77,
+      "ignitionLogitA": -2.5789,
+      "ignitionLogitB": 0.14804,
+      "ignitionFitN": 103,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.069
     },
     {
       "id": "iso-octane",
@@ -95,7 +109,12 @@
       "sourceInvestigations": [
         "flex-2"
       ],
-      "locBaseline": 12.0
+      "locBaseline": 12.0,
+      "ignitionLogitA": -3.0435,
+      "ignitionLogitB": 0.02871,
+      "ignitionFitN": 274,
+      "ignitionFitScope": "family:droplet-fuels",
+      "ignitionFitMcFadden": 0.002
     },
     {
       "id": "jp8",
@@ -137,7 +156,12 @@
       "sourceInvestigations": [
         "acme"
       ],
-      "locBaseline": 12.0
+      "locBaseline": 12.0,
+      "ignitionLogitA": -2.0345,
+      "ignitionLogitB": 0.01854,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     {
       "id": "methanol",
@@ -158,7 +182,11 @@
       "burnRateKO2Mm2sPct": 0.01516,
       "burnRateFitR2": 0.247,
       "extinctionDHotMm": 3.08,
-      "extinctionDMinMm": 1.53
+      "extinctionDMinMm": 1.53,
+      "ignitionLogitA": -6.9,
+      "ignitionLogitB": 0.0,
+      "ignitionFitN": 151,
+      "ignitionFitScope": "material-null"
     },
     {
       "id": "nomex",
@@ -246,7 +274,12 @@
       "sourceInvestigations": [
         "acme"
       ],
-      "locBaseline": 11.5
+      "locBaseline": 11.5,
+      "ignitionLogitA": -2.0345,
+      "ignitionLogitB": 0.01854,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.036
     },
     {
       "id": "pyrell",
@@ -472,5 +505,35 @@
         "low-oxygen-persistence"
       ]
     }
-  }
+  },
+  "flowAnchors": [
+    [
+      0.0,
+      0.8
+    ],
+    [
+      2.0,
+      0.9
+    ],
+    [
+      8.0,
+      1.05
+    ],
+    [
+      18.0,
+      1.15
+    ],
+    [
+      40.0,
+      1.0
+    ],
+    [
+      80.0,
+      0.7
+    ],
+    [
+      150.0,
+      0.45
+    ]
+  ]
 }

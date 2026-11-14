@@ -7,11 +7,13 @@ namespace ff {
 /**
  * SAFFIRE/SoFIE-type flame spread over a solid fuel slab (reduced order).
  *
- * Two extinction regimes from the SoFIE campaign are reproduced:
+ * Three extinction regimes from the SoFIE campaign are reproduced:
  *  - oxygen-limit extinction at higher forced flow,
- *  - radiative/blow-off extinction in the quiescent/low-flow regime.
- * Spread rate scales with the margin above the material LOC and the
- * applied opposed-flow velocity.
+ *  - radiative extinction in the quiescent/low-flow regime,
+ *  - blow-off/stretch extinction when opposed flow is strong enough that
+ *    the shared ventilation curve drops under 0.5.
+ * Spread rate scales with the margin above the material LOC, the shared
+ * flowAnchors ventilation curve and pressure (~sqrt(p)).
  */
 class SolidSpread {
   public:
@@ -54,6 +56,7 @@ class SolidSpread {
     double nominalRate() const;
     bool quiescentExtinct() const;
     bool oxygenLimitExtinct() const;
+    bool blowOffExtinct() const;
 };
 
 } // namespace ff

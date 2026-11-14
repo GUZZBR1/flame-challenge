@@ -16,6 +16,10 @@ export interface RiskMaterial {
   smoldering?: boolean
   hiddenFactor?: number
   psiRuns?: number
+  ignitionLogitA?: number
+  ignitionLogitB?: number
+  ignitionFitN?: number
+  ignitionFitScope?: string
 }
 
 export interface RiskResult {
@@ -72,9 +76,17 @@ export function flowFactor(flowCms: number): number {
   return anchors[anchors.length - 1][1]
 }
 
-export function ignitionPressure(margin: number): number {
+export function ignitionPressure(margin: number, material?: RiskMaterial): number {
+  // PSI logistic fit when the material carries one — mirrors
+  // MaterialRisk::ignitionPressure (C++) and risk.py. The hard dead band
+  // ~3pp below LOC holds regardless of the fitted curve.
+  if (margin <= -3) return 0
+  if (material && (material.ignitionFitN ?? 0) > 0) {
+    const z = (material.ignitionLogitA ?? 0) + (material.ignitionLogitB ?? 0) * margin
+    return 1 / (1 + Math.exp(-Math.min(30, Math.max(-30, z))))
+  }
   const p = model.formula
-  if (margin <= 0) return margin > -p.residualBand ? p.ignitionBase : 0
+  if (margin <= 0) return p.ignitionBase
   return Math.min(1, p.ignitionBase + p.ignitionK * Math.pow(margin, p.ignitionExp))
 }
 
@@ -95,7 +107,7 @@ export function riskIndexLocal(
   const m = model.materials[materialId] ?? model.materials.pmma ?? MATERIALS[0]
   const loc = m.locPct ?? 17
   const margin = o2Pct - loc
-  const p = ignitionPressure(margin)
+  const p = ignitionPressure(margin, m)
   const f = flowFactor(flowCms)
   const h =
     m.hiddenFactor ??

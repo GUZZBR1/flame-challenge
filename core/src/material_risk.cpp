@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <cstdlib>
 
 namespace ff {
 
@@ -36,12 +37,41 @@ std::vector<Material> MaterialRisk::all() const {
 
 double MaterialRisk::ignitionPressure(const Material& m, double o2Pct) {
     const double margin = o2Pct - m.locPct;
+    // flames are never observed sustaining burn more than ~3pp below LOC
+    // — a hard dead band regardless of the fitted curve
+    if (margin <= -3.0) return 0.0;
+    if (m.ignitionFitN > 0.0) {
+        // PSI logistic fit: measured P(sustained burn | margin), fitted
+        // per material or pooled over its fuel family (fit_risk_model.py)
+        const double z = std::clamp(
+            m.ignitionLogitA + m.ignitionLogitB * margin, -30.0, 30.0);
+        return 1.0 / (1.0 + std::exp(-z));
+    }
     if (margin <= 0) {
         // µg caveat: flames can persist slightly below Earth LOC (SoFIE) —
         // retain a small residual pressure instead of a hard zero.
-        return margin > -3.0 ? 0.04 : 0.0;
+        return 0.04;
     }
     return std::min(1.0, 0.04 + 0.055 * std::pow(margin, 1.35));
+}
+
+// ventilation anchors (cm/s -> factor) — mirrors FLOW_ANCHORS in
+// calibrate_constants.py; loadJson("flowAnchors") overrides so the
+// pipeline owns the canonical table
+static std::vector<std::pair<double, double>> g_flowAnchors = {
+    {0.0, 0.80}, {2.0, 0.90}, {8.0, 1.05}, {18.0, 1.15},
+    {40.0, 1.00}, {80.0, 0.70}, {150.0, 0.45},
+};
+
+double MaterialRisk::flowFactor(double flowCms) {
+    const double f = std::max(0.0, flowCms);
+    if (f <= g_flowAnchors.front().first) return g_flowAnchors.front().second;
+    for (size_t i = 0; i + 1 < g_flowAnchors.size(); ++i) {
+        const auto& [x0, y0] = g_flowAnchors[i];
+        const auto& [x1, y1] = g_flowAnchors[i + 1];
+        if (f <= x1) return y0 + (y1 - y0) * (f - x0) / (x1 - x0);
+    }
+    return g_flowAnchors.back().second;
 }
 
 // ---- minimal JSON reader (no external deps) ----
@@ -93,7 +123,36 @@ static bool extractBool(const std::string& obj, const std::string& key, bool& ou
     return true;
 }
 
+// parse "flowAnchors":[[x,y],...] — a top-level array of number pairs.
+// Tolerant like the rest of this reader: malformed entries are skipped.
+static void parseFlowAnchors(const std::string& json) {
+    auto pos = json.find("\"flowAnchors\"");
+    if (pos == std::string::npos) return;
+    pos = json.find('[', pos);
+    if (pos == std::string::npos) return;
+    std::vector<std::pair<double, double>> anchors;
+    int depth = 0;
+    for (size_t i = pos + 1; i < json.size(); ++i) {
+        const char c = json[i];
+        if (c == '[') {
+            ++depth;
+            char* end = nullptr;
+            const double x = std::strtod(json.c_str() + i + 1, &end);
+            if (end == json.c_str() + i + 1) continue;
+            while (*end == ' ' || *end == ',') ++end;
+            char* e2 = nullptr;
+            const double y = std::strtod(end, &e2);
+            if (e2 == end) continue;
+            anchors.emplace_back(x, y);
+        } else if (c == ']') {
+            if (--depth < 0) break;   // closing bracket of the outer array
+        }
+    }
+    if (anchors.size() >= 2) g_flowAnchors = std::move(anchors);
+}
+
 void MaterialRisk::loadJson(const std::string& json) {
+    parseFlowAnchors(json);
     // split on top-level object boundaries inside "materials" array
     auto pos = json.find("\"materials\"");
     if (pos == std::string::npos) return;
@@ -125,6 +184,9 @@ void MaterialRisk::loadJson(const std::string& json) {
                 extractNumber(obj, "burnRateKO2Mm2sPct", m.burnRateKO2Mm2sPct);
                 extractNumber(obj, "extinctionDHotMm", m.extinctionDHotMm);
                 extractNumber(obj, "extinctionDMinMm", m.extinctionDMinMm);
+                extractNumber(obj, "ignitionLogitA", m.ignitionLogitA);
+                extractNumber(obj, "ignitionLogitB", m.ignitionLogitB);
+                extractNumber(obj, "ignitionFitN", m.ignitionFitN);
                 table_[id] = m;
                 objStart = std::string::npos;
             }

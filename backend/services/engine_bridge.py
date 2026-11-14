@@ -96,6 +96,11 @@ def make_chamber(
     flow_cms: float | None = None,
     seed: int = 1,
     pressure_kpa: float | None = None,
+    volume_liters: float | None = None,
+    ambient_o2_pct: float | None = None,
+    vent_per_sec: float | None = None,
+    co2_pct: float | None = None,
+    he_pct: float | None = None,
 ) -> fe.Chamber:
     spec = _spec(investigation_id)
     cfg = fe.ChamberConfig()
@@ -114,6 +119,18 @@ def make_chamber(
                             else spec.get("pressureKpa", 101))
     cfg.partialGravity = bool(spec.get("partialGravity", False))
     cfg.seed = seed
+    # closed-chamber gas balance — all optional; volumeLiters=0 keeps
+    # the historical open-atmosphere behavior
+    if volume_liters is not None:
+        cfg.volumeLiters = float(volume_liters)
+    if ambient_o2_pct is not None:
+        cfg.ambientO2Pct = float(ambient_o2_pct)
+    if vent_per_sec is not None:
+        cfg.ventPerSec = float(vent_per_sec)
+    if co2_pct is not None:
+        cfg.co2Pct = float(co2_pct)
+    if he_pct is not None:
+        cfg.hePct = float(he_pct)
     ch = fe.Chamber(_risks)
     ch.configure(cfg)
     return ch

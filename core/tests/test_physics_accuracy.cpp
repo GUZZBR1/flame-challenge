@@ -290,6 +290,108 @@ int main() {
               "terminal extinction must leave measurable fuel");
     }
 
+    // --- closed chamber: O2 depletion must be emergent — a sealed cabin
+    //     loses O2 to combustion and the flame dies below LOC with slab
+    //     fuel still unburned (a droplet's ~mg fuel load cannot deplete
+    //     a cabin; the spread front's ~g-scale load can) ---
+    {
+        Chamber ch(risks);
+        Chamber::Config c;
+        c.materialId = "pmma";
+        c.model = "spread";
+        c.o2Pct = 21.0;
+        c.flowCms = 5.0;
+        c.slabLengthCm = 30.0;
+        c.volumeLiters = 50.0;   // small sealed cabin
+        c.ventPerSec = 0.0;      // no make-up air
+        ch.configure(c);
+
+        const double dt = 0.02;
+        bool sawSpreading = false;
+        for (int i = 0; i < 200000 && !ch.finished(); ++i) {
+            ch.step(dt);
+            sawSpreading = sawSpreading || ch.hotBurning();
+        }
+        CHECK(sawSpreading, "flame must establish before depleting O2");
+        CHECK(ch.chamberO2Pct() >= 0.0,
+              "chamber O2 must stay inside [0, initial]");
+        CHECK(ch.chamberO2Pct() < 15.0,
+              "sealed cabin must deplete O2 below the PMMA LOC");
+        const auto events = ch.drainEvents();
+        CHECK(hasEvent(events, "o2-below-loc"),
+              "crossing LOC in a sealed cabin must emit o2-below-loc");
+    }
+
+    // --- ventilation: make-up air must hold chamber O2 near ambient ---
+    {
+        Chamber ch(risks);
+        Chamber::Config c;
+        c.materialId = "pmma";
+        c.model = "spread";
+        c.o2Pct = 21.0;
+        c.flowCms = 5.0;
+        c.slabLengthCm = 30.0;
+        c.volumeLiters = 50.0;
+        c.ventPerSec = 0.5;      // half a cabin exchange per second
+        c.ambientO2Pct = 21.0;
+        ch.configure(c);
+        for (int i = 0; i < 200000 && !ch.finished(); ++i) ch.step(0.02);
+        CHECK(ch.chamberO2Pct() > 16.0,
+              "ventilated cabin must hold O2 near ambient");
+        CHECK(ch.finished(), "ventilated cabin must still burn to completion");
+    }
+
+    // --- suppressants: CO2 dilutes the effective O2 the flame sees ---
+    {
+        Chamber ch(risks);
+        Chamber::Config c;
+        c.materialId = "pmma";
+        c.model = "spread";
+        c.o2Pct = 21.0;
+        c.flowCms = 5.0;
+        c.slabLengthCm = 30.0;
+        ch.configure(c);
+        ch.step(0.02);
+        const double eff0 = ch.effectiveO2Pct();
+        CHECK(std::fabs(eff0 - 21.0) < 1e-9,
+              "no suppressants → effective O2 equals measured");
+        ch.setSuppressants(6.0, 0.0);  // 6% CO2 → -9.6 pp effective
+        CHECK(ch.effectiveO2Pct() < 12.0,
+              "CO2 flood must drag effective O2 below PMMA LOC");
+        for (int i = 0; i < 2000 && !ch.finished(); ++i) ch.step(0.02);
+        CHECK(!ch.hotBurning(),
+              "PMMA flame must die under a CO2 suppressant flood");
+    }
+
+    // --- fitted logistic ignition: a material carrying ignitionLogitA/B
+    //     + ignitionFitN>0 scores P = sigmoid(A + B·margin) instead of the
+    //     hand-set curve; the −3pp dead band still applies on top ---
+    {
+        Material m = *risks.get("heptane");
+        m.locPct = 16.0;
+        m.ignitionLogitA = -2.579;
+        m.ignitionLogitB = 0.148;
+        m.ignitionFitN = 103;
+        const double z = -2.579 + 0.148 * (21.0 - 16.0);
+        const double expect = 1.0 / (1.0 + std::exp(-z));
+        CHECK(std::fabs(MaterialRisk::ignitionPressure(m, 21.0) - expect) < 1e-9,
+              "fitted material must score sigmoid(A + B*margin)");
+        CHECK(MaterialRisk::ignitionPressure(m, 12.9) == 0.0,
+              "dead band: no ignition pressure >3pp below LOC even when fitted");
+        CHECK(MaterialRisk::ignitionPressure(m, 40.0) <= 1.0,
+              "logistic output must stay inside [0,1]");
+        // a null-fit material (all-extinct record) sits near zero
+        Material null_m = m;
+        null_m.ignitionLogitA = -6.9;
+        null_m.ignitionLogitB = 0.0;
+        CHECK(MaterialRisk::ignitionPressure(null_m, 30.0) < 0.01,
+              "material-null fit must yield a near-zero pressure");
+        // and monotonic in O2 like the hand curve
+        CHECK(MaterialRisk::ignitionPressure(m, 18.0)
+              < MaterialRisk::ignitionPressure(m, 25.0),
+              "fitted logistic must be monotonic in O2");
+    }
+
     // --- ignition pressure monotonic in O2 ---
     {
         const Material* pmma = risks.get("pmma");

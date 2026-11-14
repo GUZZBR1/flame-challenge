@@ -84,6 +84,12 @@ class ChamberReq(BaseModel):
     flowCms: float | None = Field(default=None, **_FLOW)
     pressureKpa: float | None = Field(default=None, **_PRESSURE)
     seed: int = Field(default=1, **_SEED)
+    # closed-chamber gas balance — all optional
+    volumeLiters: float | None = Field(default=None, ge=0.0, le=1e6)
+    ambientO2Pct: float | None = Field(default=None, **_O2)
+    ventPerSec: float | None = Field(default=None, ge=0.0, le=10.0)
+    co2Pct: float | None = Field(default=None, ge=0.0, le=100.0)
+    hePct: float | None = Field(default=None, ge=0.0, le=100.0)
 
 
 @app.get("/health")
@@ -225,7 +231,9 @@ async def chamber_ws(ws: WebSocket) -> None:
             await ws.close(code=1008)
             return
         ch = eb.make_chamber(req.investigationId, req.o2Pct, req.flowCms,
-                             req.seed, req.pressureKpa)
+                             req.seed, req.pressureKpa, req.volumeLiters,
+                             req.ambientO2Pct, req.ventPerSec, req.co2Pct,
+                             req.hePct)
         dt = 1.0 / 30.0
         deadline = time.monotonic() + 60
         while not ch.finished() and time.monotonic() < deadline:

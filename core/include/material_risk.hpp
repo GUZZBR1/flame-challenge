@@ -43,6 +43,15 @@ struct Material {
      *  extinction diameter: below it no combustion regime survives, hot
      *  or cool (droplets die with fuel left). 0 = burn to fuel-out */
     double extinctionDMinMm = 0.0;
+
+    // ---- fitted ignition-pressure logistic (fit_risk_model.py) ----
+    // P(sustained burn | margin) = sigmoid(A + B·margin). Scope of the
+    // fit (material / material-null / family:<name>) is metadata in
+    // calibration.json — the engine only needs the coefficients.
+    // ignitionFitN <= 0 means "no fit — use the hand-set curve".
+    double ignitionLogitA = 0.0;
+    double ignitionLogitB = 0.0;
+    double ignitionFitN = 0.0;
 };
 
 class MaterialRisk {
@@ -60,6 +69,14 @@ class MaterialRisk {
      * 0 at/below LOC, rising ~quadratically above it.
      */
     static double ignitionPressure(const Material& m, double o2Pct);
+
+    /**
+     * Ventilation factor F_flow(flow), shared with the risk model:
+     * piecewise anchors — quiescent radiative dip, mid-flow O2-supply
+     * boost, high-flow blow-off quench. loadJson() reads "flowAnchors"
+     * from calibration.json (canonical); a built-in table mirrors it.
+     */
+    static double flowFactor(double flowCms);
 
     /** midpoint spread rate, cm/s */
     static double midSpread(const Material& m) {

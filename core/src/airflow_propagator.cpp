@@ -24,8 +24,12 @@ double SolidSpread::nominalRate() const {
     const double span = std::max(0.01, m.spreadMaxCms - m.spreadMinCms);
     const double o2Frac = std::clamp(margin / 25.0, 0.0, 1.0);
     double v = m.spreadMinCms + span * std::pow(o2Frac, 0.8);
-    // opposed forced flow aids spread; concurrent flow can also blow off
-    v *= 1.0 + std::clamp(c_.flowCms / 20.0, 0.0, 1.5);
+    // ventilation: shared anchor curve with the risk model — quiescent
+    // radiative dip, mid-flow O2-supply boost, high-flow blow-off quench
+    v *= MaterialRisk::flowFactor(c_.flowCms);
+    // pressure: gas-kinetic scaling ~sqrt(p) — SAFFIRE ran at 70 kPa,
+    // confined-combustion at 57 kPa (was previously ignored)
+    v *= std::sqrt(std::max(0.0, c_.pressureKpa) / 101.0);
     // partial gravity (Moon/Mars) reduces buoyancy-driven transport
     if (c_.partialGravity) v *= 0.7;
     return v;
@@ -40,13 +44,20 @@ bool SolidSpread::quiescentExtinct() const {
     return c_.flowCms < 1.0 && c_.o2Pct < c_.material.locPct + 3.0;
 }
 
+bool SolidSpread::blowOffExtinct() const {
+    // the anchor curve is the quench metric: factor < 0.5 means opposed
+    // flow dominates (stretch/blow-off) — corresponds to flow > ~140 cm/s
+    return MaterialRisk::flowFactor(c_.flowCms) < 0.5;
+}
+
 void SolidSpread::step(double dtSec) {
     s_.tSec += dtSec;
 
     switch (s_.regime) {
     case Regime::Preheat:
         if (s_.tSec > 1.5) {
-            if (oxygenLimitExtinct() || quiescentExtinct()) {
+            if (oxygenLimitExtinct() || quiescentExtinct() ||
+                blowOffExtinct()) {
                 s_.regime = Regime::Out;
             } else {
                 // enter Spreading with a consistent first-frame state —
@@ -64,7 +75,7 @@ void SolidSpread::step(double dtSec) {
 
     case Regime::Spreading: {
         double v = nominalRate();
-        if (oxygenLimitExtinct()) v = 0;
+        if (oxygenLimitExtinct() || blowOffExtinct()) v = 0;
         s_.spreadRateCms = v;
         s_.frontPosCm += v * dtSec;
         s_.burnLengthCm = std::min(s_.frontPosCm, c_.slabLengthCm);

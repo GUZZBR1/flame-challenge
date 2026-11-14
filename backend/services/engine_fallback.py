@@ -44,16 +44,50 @@ class Material:
     burnRateKO2Mm2sPct: float = 0.0
     extinctionDHotMm: float = 0.0
     extinctionDMinMm: float = 0.0
+    # fitted ignition-pressure logistic P(sustained burn | margin);
+    # ignitionFitN <= 0 = no fit — use the hand-set curve
+    ignitionLogitA: float = 0.0
+    ignitionLogitB: float = 0.0
+    ignitionFitN: float = 0.0
 
 
 def _ignition_pressure(m: Material, o2_pct: float) -> float:
-    """MaterialRisk::ignitionPressure — 0 at/below LOC, ~margin^1.35 above."""
+    """MaterialRisk::ignitionPressure — logistic PSI fit when present,
+    else 0 at/below LOC and ~margin^1.35 above."""
     margin = o2_pct - m.locPct
+    # flames never sustain burn more than ~3pp below LOC — hard dead band
+    if margin <= -3.0:
+        return 0.0
+    if m.ignitionFitN > 0:
+        z = m.ignitionLogitA + m.ignitionLogitB * margin
+        return 1.0 / (1.0 + math.exp(-min(30.0, max(-30.0, z))))
     if margin <= 0:
         # µg caveat: flames can persist slightly below Earth LOC (SoFIE) —
         # retain a small residual pressure instead of a hard zero.
-        return 0.04 if margin > -3.0 else 0.0
+        return 0.04
     return min(1.0, 0.04 + 0.055 * margin ** 1.35)
+
+
+# ventilation anchors — mirrors the C++ built-in table; load_json reads
+# "flowAnchors" from calibration.json (canonical owner)
+_FLOW_ANCHORS: list[list[float]] = [
+    [0.0, 0.80], [2.0, 0.90], [8.0, 1.05], [18.0, 1.15],
+    [40.0, 1.00], [80.0, 0.70], [150.0, 0.45],
+]
+
+
+def flow_factor(flow_cms: float,
+                anchors: list[list[float]] | None = None) -> float:
+    """MaterialRisk::flowFactor — piecewise ventilation curve shared with
+    the risk model: quiescent radiative dip, mid-flow boost, blow-off."""
+    a = anchors if anchors is not None else _FLOW_ANCHORS
+    f = max(0.0, float(flow_cms))
+    if f <= a[0][0]:
+        return a[0][1]
+    for (x0, y0), (x1, y1) in zip(a, a[1:]):
+        if f <= x1:
+            return y0 + (y1 - y0) * (f - x0) / (x1 - x0)
+    return a[-1][1]
 
 
 class MaterialRisk:
@@ -62,7 +96,8 @@ class MaterialRisk:
     _FIELDS = ("name", "locPct", "spreadMinCms", "spreadMaxCms",
                "sootIndex", "coolFlameCapable", "smoldering",
                "burnRateK0Mm2s", "burnRateKO2Mm2sPct",
-               "extinctionDHotMm", "extinctionDMinMm")
+               "extinctionDHotMm", "extinctionDMinMm",
+               "ignitionLogitA", "ignitionLogitB", "ignitionFitN")
 
     def __init__(self) -> None:
         # starter table — same values compiled into the C++ ctor
@@ -83,9 +118,16 @@ class MaterialRisk:
         """Merge {"materials": [{...}]} — fields absent from JSON keep the
         existing/default values, like MaterialRisk::loadJson."""
         try:
-            mats = json.loads(doc).get("materials", [])
+            payload = json.loads(doc)
         except json.JSONDecodeError:
             return
+        global _FLOW_ANCHORS
+        anchors = payload.get("flowAnchors")
+        if (isinstance(anchors, list) and len(anchors) >= 2
+                and all(isinstance(p, list) and len(p) == 2
+                        for p in anchors)):
+            _FLOW_ANCHORS = [[float(p[0]), float(p[1])] for p in anchors]
+        mats = payload.get("materials", [])
         if not isinstance(mats, list):
             return
         for j in mats:
@@ -297,8 +339,12 @@ class _SolidSpread:
         span = max(0.01, m.spreadMaxCms - m.spreadMinCms)
         o2_frac = min(max(margin / 25.0, 0.0), 1.0)
         v = m.spreadMinCms + span * o2_frac ** 0.8
-        # opposed forced flow aids spread; concurrent flow can blow off
-        v *= 1.0 + min(max(self.c_flow / 20.0, 0.0), 1.5)
+        # ventilation: shared anchor curve with the risk model — quiescent
+        # radiative dip, mid-flow boost, high-flow blow-off quench
+        v *= flow_factor(self.c_flow)
+        # pressure: gas-kinetic scaling ~sqrt(p) — SAFFIRE 70 kPa,
+        # confined-combustion 57 kPa (was previously ignored)
+        v *= math.sqrt(max(0.0, self.c_pressure) / 101.0)
         # partial gravity (Moon/Mars) reduces buoyancy-driven transport
         if self.c_partial_g:
             v *= 0.7
@@ -310,6 +356,11 @@ class _SolidSpread:
     def _quiescent_extinct(self) -> bool:
         # SoFIE: at very low flow, radiative loss beats heat feedback → out
         return self.c_flow < 1.0 and self.c_o2 < self.c_mat.locPct + 3.0
+
+    def _blow_off_extinct(self) -> bool:
+        # anchor curve as quench metric: factor < 0.5 → opposed flow
+        # dominates (stretch/blow-off), i.e. flow > ~140 cm/s
+        return flow_factor(self.c_flow) < 0.5
 
     def _intensity(self, v: float) -> float:
         # C++ divides by spreadMaxCms directly: a zero-cap material yields
@@ -324,7 +375,9 @@ class _SolidSpread:
 
         if self.regime == SPREAD_PREHEAT:
             if self.t_sec > 1.5:
-                if self._oxygen_limit_extinct() or self._quiescent_extinct():
+                if (self._oxygen_limit_extinct()
+                        or self._quiescent_extinct()
+                        or self._blow_off_extinct()):
                     self.regime = SPREAD_OUT
                 else:
                     # enter Spreading with a consistent first-frame state
@@ -337,7 +390,7 @@ class _SolidSpread:
 
         elif self.regime == SPREAD_SPREADING:
             v = self._nominal_rate()
-            if self._oxygen_limit_extinct():
+            if self._oxygen_limit_extinct() or self._blow_off_extinct():
                 v = 0.0
             self.rate_cms = v
             self.front_cm += v * dt
@@ -353,6 +406,15 @@ class _SolidSpread:
                 self.regime = SPREAD_OUT
 
 
+# closed-chamber gas balance — mirrors chamber.cpp
+AIR_DENSITY_KG_M3 = 1.204
+FUEL_DENSITY_KG_M3 = 700.0
+STOICH_O2_PER_FUEL = 3.0
+SPREAD_MASS_KG_PER_CM = 1e-4
+CO2_SUPPRESS = 1.6
+HE_SUPPRESS = 0.8
+
+
 @dataclass
 class ChamberConfig:
     investigationId: str = ""
@@ -365,6 +427,12 @@ class ChamberConfig:
     dropletD0Mm: float = 1.0
     partialGravity: bool = False
     seed: int = 1
+    # closed-chamber gas balance (0/disabled = open atmosphere)
+    volumeLiters: float = 0.0
+    ambientO2Pct: float = -1.0
+    ventPerSec: float = 0.0
+    co2Pct: float = 0.0
+    hePct: float = 0.0
 
 
 class Chamber:
@@ -386,6 +454,8 @@ class Chamber:
         self._ignited = False
         self._last_regime = -1
         self._events: list[str] = []
+        self._chamber_o2 = 21.0
+        self._o2_below_loc = False
 
     def configure(self, cfg: ChamberConfig) -> None:
         # C++ copies the Config by value — two chambers must not share the
@@ -404,18 +474,77 @@ class Chamber:
         self._ignited = False
         self._last_regime = -1
         self._events.clear()
+        self._chamber_o2 = cfg.o2Pct
+        self._o2_below_loc = False
+        self._push_atmosphere()
 
     def update_atmosphere(self, o2_pct: float, flow_cms: float,
                           pressure_kpa: float) -> None:
-        self._cfg.o2Pct = o2_pct
-        self._cfg.flowCms = flow_cms
-        self._cfg.pressureKpa = pressure_kpa
-        self._droplet.update_atmosphere(o2_pct, pressure_kpa)
-        self._spread.update_atmosphere(o2_pct, flow_cms, pressure_kpa)
+        self._cfg.o2Pct = min(max(o2_pct, 0.0), 100.0)
+        self._cfg.flowCms = max(0.0, flow_cms)
+        self._cfg.pressureKpa = max(0.0, pressure_kpa)
+        # a manual update is a gas flush — measured chamber O₂ snaps to it
+        self._chamber_o2 = self._cfg.o2Pct
+        self._o2_below_loc = False
+        self._push_atmosphere()
+
+    def set_suppressants(self, co2_pct: float, he_pct: float) -> None:
+        self._cfg.co2Pct = min(max(co2_pct, 0.0), 100.0)
+        self._cfg.hePct = min(max(he_pct, 0.0), 100.0)
+        self._push_atmosphere()
+
+    def effective_o2_pct(self) -> float:
+        return min(max(self._chamber_o2 - CO2_SUPPRESS * self._cfg.co2Pct
+                       - HE_SUPPRESS * self._cfg.hePct, 0.0), 100.0)
+
+    def chamber_o2_pct(self) -> float:
+        return self._chamber_o2
+
+    def _push_atmosphere(self) -> None:
+        o2_eff = self.effective_o2_pct()
+        self._droplet.update_atmosphere(o2_eff, self._cfg.pressureKpa)
+        self._spread.update_atmosphere(o2_eff, self._cfg.flowCms,
+                                       self._cfg.pressureKpa)
+
+    def _fuel_rate_kg_s(self) -> float:
+        if self._use_droplet:
+            d = self._droplet
+            k = d.burn_rate_k()  # mm²/s
+            kgm = (FUEL_DENSITY_KG_M3 * math.pi * k * d.droplet_d_mm
+                   / 4.0e9)
+            if d.regime == DROPLET_COOL:
+                kgm *= 0.05
+            if d.regime not in (DROPLET_HOT, DROPLET_COOL):
+                return 0.0
+            return kgm
+        s = self._spread
+        if s.regime != SPREAD_SPREADING:
+            return 0.0
+        return s.rate_cms * SPREAD_MASS_KG_PER_CM
+
+    def _step_atmosphere(self, dt: float) -> None:
+        if self._cfg.volumeLiters <= 0.0:
+            return
+        air_mass = (self._cfg.volumeLiters / 1000.0 * AIR_DENSITY_KG_M3
+                    * max(0.0, self._cfg.pressureKpa) / 101.0)
+        if air_mass <= 0.0:
+            return
+        ambient = (self._cfg.ambientO2Pct if self._cfg.ambientO2Pct >= 0.0
+                   else self._cfg.o2Pct)
+        frac = self._chamber_o2 / 100.0
+        frac -= STOICH_O2_PER_FUEL * self._fuel_rate_kg_s() * dt / air_mass
+        frac += self._cfg.ventPerSec * (ambient / 100.0 - frac) * dt
+        self._chamber_o2 = min(max(frac * 100.0, 0.0), 100.0)
+        self._push_atmosphere()
+        m = self._risks.table.get(self._cfg.materialId)
+        if (not self._o2_below_loc and m
+                and self.effective_o2_pct() < m.locPct):
+            self._o2_below_loc = True
+            self._events.append("o2-below-loc")
 
     def ignition_pressure(self) -> float:
         m = self._risks.table.get(self._cfg.materialId)
-        return _ignition_pressure(m, self._cfg.o2Pct) if m else 0.5
+        return _ignition_pressure(m, self.effective_o2_pct()) if m else 0.5
 
     def step(self, dt_sec: float) -> None:
         if self._use_droplet:
@@ -440,6 +569,7 @@ class Chamber:
             if r == SPREAD_OUT and self._last_regime != r:
                 self._events.append("extinguished")
             self._last_regime = r
+        self._step_atmosphere(dt_sec)
 
     def regime(self) -> int:
         return (self._droplet.regime if self._use_droplet
@@ -472,6 +602,9 @@ class Chamber:
                 f'"flameTempK":{s.temp_k:.1f},'
                 f'"heatReleaseW":{s.heat_w:.2f},'
                 f'"burnFraction":{s.burn_fraction:.3f},'
+                f'"o2Pct":{self._chamber_o2:.2f},'
+                f'"o2EffPct":{self.effective_o2_pct():.2f},'
+                f'"volumeLiters":{self._cfg.volumeLiters:.1f},'
                 f'"ignited":{_b(self._ignited)},'
                 f'"coolFlame":{_b(self.cool_flame())},'
                 f'"finished":{_b(self.finished())}}}')
@@ -482,6 +615,9 @@ class Chamber:
             f'"spreadRateCms":{s.rate_cms:.3f},'
             f'"burnLengthCm":{s.burn_len_cm:.3f},'
             f'"intensity":{s.intensity:.3f},'
+            f'"o2Pct":{self._chamber_o2:.2f},'
+            f'"o2EffPct":{self.effective_o2_pct():.2f},'
+            f'"volumeLiters":{self._cfg.volumeLiters:.1f},'
             f'"ignited":{_b(self._ignited)},'
             f'"coolFlame":false,'
             f'"finished":{_b(self.finished())}}}')

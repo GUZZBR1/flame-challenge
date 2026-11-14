@@ -61,6 +61,21 @@ CATEGORY_MODEL = {
     "partial-gravity": "spread",
 }
 
+# ventilation factor anchors (cm/s -> multiplier) — the canonical table
+# for BOTH the engine (MaterialRisk::flowFactor, read from this file)
+# and the risk model (fit_risk_model.py re-exports it into
+# risk_model.json). Quiescent radiative window, mid-flow O2 supply,
+# high-flow blow-off — same physics SoFIE/BASS-II mapped.
+FLOW_ANCHORS = [
+    [0.0, 0.80],   # quiescent: radiative extinction regime (SoFIE-GEL)
+    [2.0, 0.90],
+    [8.0, 1.05],
+    [18.0, 1.15],  # worst-case opposed flow (BASS-II envelope)
+    [40.0, 1.00],
+    [80.0, 0.70],  # stretch/blow-off dominated
+    [150.0, 0.45],
+]
+
 # rough sooting index by fuel family (ACME burner rankings)
 SOOT = {
     "heptane": 0.55, "methanol": 0.10, "iso-octane": 0.6, "decanol": 0.5,
@@ -163,6 +178,7 @@ def main() -> int:
         "generated": "calibrate_constants.py",
         "materials": sorted(materials.values(), key=lambda m: m["id"]),
         "investigations": inv_map,
+        "flowAnchors": FLOW_ANCHORS,
     }
     OUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
 

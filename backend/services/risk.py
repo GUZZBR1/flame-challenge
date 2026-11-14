@@ -65,10 +65,20 @@ def flow_factor(flow_cms: float) -> float:
     return anchors[-1][1]
 
 
-def ignition_pressure(margin: float) -> float:
+def ignition_pressure(margin: float, material: dict | None = None) -> float:
+    """P_ign — PSI logistic fit when the material carries one
+    (ignitionLogitA/B + ignitionFitN > 0), else the hand-set curve.
+    Mirrors MaterialRisk::ignitionPressure (C++)."""
+    # flames never sustain burn more than ~3pp below LOC — hard dead band
+    if margin <= -3.0:
+        return 0.0
+    if material and float(material.get("ignitionFitN") or 0) > 0:
+        z = (float(material["ignitionLogitA"])
+             + float(material["ignitionLogitB"]) * margin)
+        return 1.0 / (1.0 + math.exp(-min(30.0, max(-30.0, z))))
     p = _load()["formula"]
     if margin <= 0:
-        return p["ignitionBase"] if margin > -p.get("residualBand", 3.0) else 0.0
+        return p["ignitionBase"]
     return min(1.0, p["ignitionBase"] + p["ignitionK"] * margin ** p["ignitionExp"])
 
 
@@ -86,7 +96,7 @@ def risk_index(material_id: str, o2_pct: float, flow_cms: float = 0.0,
     m = mats.get(material_id) or mats.get("pmma") or FALLBACK_MATERIAL
     loc = float(m.get("locPct", 17.0))
     margin = float(o2_pct) - loc
-    p = ignition_pressure(margin)
+    p = ignition_pressure(margin, m)
     f = flow_factor(float(flow_cms))
     h = float(m.get("hiddenFactor") or
               (1.0 + 0.25 * m.get("coolFlameCapable", False)
@@ -102,6 +112,7 @@ def risk_index(material_id: str, o2_pct: float, flow_cms: float = 0.0,
         "gravity": gravity,
         "locPct": loc,
         "locSource": m.get("locSource", "calibration"),
+        "ignitionFitScope": m.get("ignitionFitScope"),
         "margin": round(margin, 2),
         "riskIndex": round(risk, 4),
         "level": level(risk),

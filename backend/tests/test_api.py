@@ -178,8 +178,14 @@ def test_fallback_matches_cpp_engine_when_built():
         cpp = eb.make_chamber(inv_id, o2, flow, seed=7)
         risks_py = fb.MaterialRisk()
         risks_py.load_json(mats)
+        # mirror the same chamber atmosphere make_chamber pulls from the
+        # investigation spec (SAFFIRE runs at 70 kPa — pressure now scales
+        # the spread rate)
+        p_kpa = float(eb.investigation_map().get(inv_id, {})
+                      .get("pressureKpa", 101))
         cfg = fb.ChamberConfig(investigationId=inv_id, materialId=material,
-                               model=model, o2Pct=o2, flowCms=flow, seed=7)
+                               model=model, o2Pct=o2, flowCms=flow, seed=7,
+                               pressureKpa=p_kpa)
         py = fb.Chamber(risks_py)
         py.configure(cfg)
         for _ in range(120):

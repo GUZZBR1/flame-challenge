@@ -17,6 +17,11 @@
     "burnRateKO2Mm2sPct": { "type": "number", "description": "d2-law rate slope per %O2" },
     "extinctionDHotMm": { "type": "number", "description": "hot-flame radiative extinction diameter, mm — droplets at/above this size lose the hot flame" },
     "extinctionDMinMm": { "type": "number", "description": "minimum sustainable droplet diameter, mm — measured terminal extinction diameter for all regimes" },
+    "ignitionLogitA": { "type": "number", "description": "logistic intercept of P(sustained burn | o2-loc) — PSI outcome fit" },
+    "ignitionLogitB": { "type": "number", "description": "logistic slope per pp O2 margin" },
+    "ignitionFitN": { "type": "number", "description": "labeled PSI runs behind the fit (>0 enables the logistic curve)" },
+    "ignitionFitScope": { "type": "string", "description": "material | material-null | family:<droplet-fuels|gaseous-fuels|solid-materials>" },
+    "ignitionFitMcFadden": { "type": "number", "description": "McFadden pseudo-R2 of the fit (absent for null curves)" },
     "sourceInvestigations": { "type": "array", "items": { "type": "string" } }
   }
 }

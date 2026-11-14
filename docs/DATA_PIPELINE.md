@@ -64,7 +64,9 @@ Rows parsed from real PSI files carry `verified=true` and keep their
 
 ```
 margin = o2_pct - locPct(material)
-P_ign  = 0  (margin ≤ -3) | 0.04 (-3 < margin ≤ 0, µg low-O2 persistence)
+P_ign  = 0  (margin ≤ -3, hard dead band)
+       | sigmoid(A + B·margin)        (PSI logistic fit, when fitted)
+       | 0.04 (-3 < margin ≤ 0)       (unfitted fallback)
        | min(1, 0.04 + 0.055·margin^1.35)
 F_flow = piecewise on flow anchors (radiative window ~0 cm/s → O2-supply
          peak ~18 cm/s → blow-off quench >80 cm/s)
@@ -72,6 +74,13 @@ H      = 1 + 0.25·coolFlame + 0.15·smolder + 0.10·sootIndex
 G      = gravity factor (µg 1.0, lunar 0.92, martian 0.95, earth 0.85)
 risk   = clamp01(P_ign · F_flow · H · G)
 ```
+
+`P_ign` is fitted by logistic regression on outcome-labeled PSI runs
+(y=1 for burnout/disruption). `ignitionFitScope` labels the evidence:
+`material` (per-material fit, n≥25 with both classes), `material-null`
+(≥15 labeled runs, all extinct — an explicit near-zero curve), or
+`family:<droplet-fuels|gaseous-fuels|solid-materials>` (pooled fit for
+sparse members). Unfitted materials keep the hand-set curve.
 
 `locSource = psi-data` means the LOC was re-estimated from parsed test
 sheets; `calibration` means literature-seeded.

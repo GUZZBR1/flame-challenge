@@ -91,7 +91,11 @@
       "burnRateMedianMm2s": 0.37,
       "burnRateK0Mm2s": 0.0613,
       "burnRateKO2Mm2sPct": 0.01542,
-      "burnRateFitR2": 0.055
+      "burnRateFitR2": 0.055,
+      "ignitionLogitA": -6.9,
+      "ignitionLogitB": 0.0,
+      "ignitionFitN": 20,
+      "ignitionFitScope": "material-null"
     },
     "ethylene": {
       "id": "ethylene",
@@ -107,7 +111,12 @@
       "psiRuns": 222,
       "psiBurned": 0,
       "psiExtinguished": 0,
-      "psiCoolFlameRuns": 0
+      "psiCoolFlameRuns": 0,
+      "ignitionLogitA": -2.0345,
+      "ignitionLogitB": 0.01854,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     "heptane": {
       "id": "heptane",
@@ -133,7 +142,12 @@
       "burnRateK0Mm2s": 0.2317,
       "burnRateKO2Mm2sPct": 0.01522,
       "burnRateFitR2": 0.17,
-      "locMethod": "extinction-floor"
+      "locMethod": "extinction-floor",
+      "ignitionLogitA": -2.5789,
+      "ignitionLogitB": 0.14804,
+      "ignitionFitN": 103,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.069
     },
     "iso-octane": {
       "id": "iso-octane",
@@ -149,7 +163,12 @@
       "psiRuns": 1,
       "psiBurned": 0,
       "psiExtinguished": 0,
-      "psiCoolFlameRuns": 0
+      "psiCoolFlameRuns": 0,
+      "ignitionLogitA": -3.0435,
+      "ignitionLogitB": 0.02871,
+      "ignitionFitN": 274,
+      "ignitionFitScope": "family:droplet-fuels",
+      "ignitionFitMcFadden": 0.002
     },
     "jp8": {
       "id": "jp8",
@@ -189,7 +208,12 @@
       "psiRuns": 24,
       "psiBurned": 0,
       "psiExtinguished": 0,
-      "psiCoolFlameRuns": 0
+      "psiCoolFlameRuns": 0,
+      "ignitionLogitA": -2.0345,
+      "ignitionLogitB": 0.01854,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     "methanol": {
       "id": "methanol",
@@ -215,7 +239,11 @@
       "burnRateK0Mm2s": 0.1781,
       "burnRateKO2Mm2sPct": 0.01516,
       "burnRateFitR2": 0.247,
-      "locMethod": "extinction-floor"
+      "locMethod": "extinction-floor",
+      "ignitionLogitA": -6.9,
+      "ignitionLogitB": 0.0,
+      "ignitionFitN": 151,
+      "ignitionFitScope": "material-null"
     },
     "nomex": {
       "id": "nomex",
@@ -301,7 +329,12 @@
       "psiExtinguished": 80,
       "psiCoolFlameRuns": 0,
       "extinctionLimitMinPct": 18.0,
-      "extinctionLimitMaxPct": 85.0
+      "extinctionLimitMaxPct": 85.0,
+      "ignitionLogitA": -2.0345,
+      "ignitionLogitB": 0.01854,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.036
     },
     "pyrell": {
       "id": "pyrell",
@@ -359,6 +392,6 @@
   "provenance": {
     "psiRunsParsed": 1063,
     "materialsFittedFromPsi": 2,
-    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit). burnRateK0/KO2Mm2sPct = least-squares K(o2) over measured kavg (engine d\u00b2-law rate). extinctionDHotMm = median Dext over radiative+cool-flame extinctions (large-droplet hot-flame death); extinctionDMinMm = median Dext over oxygen-limit extinctions (terminal diameter all combustion dies at)."
+    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit). burnRateK0/KO2Mm2sPct = least-squares K(o2) over measured kavg (engine d\u00b2-law rate). extinctionDHotMm = median Dext over radiative+cool-flame extinctions (large-droplet hot-flame death); extinctionDMinMm = median Dext over oxygen-limit extinctions (terminal diameter all combustion dies at). ignitionLogitA/B = logistic P(sustained burn | o2-loc): scope=material (per-material MLE), material-null (all labeled runs extinct \u2014 no MLE exists, ~0 curve written explicitly), or family:<name> (pooled droplet-fuels/gaseous-fuels/solid-materials fit). ignitionFitMcFadden = pseudo-R2 of the fit."
   }
 }
