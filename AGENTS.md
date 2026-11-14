@@ -25,12 +25,16 @@ backend only — no client. See `docs/`.
   (`calibration.json`, `risk_profiles.json` — the single source of truth
   for the C++ core)
 - `backend/` — `api/` FastAPI routes + `services/` (`engine_bridge.py`
-  pybind, `rag.py` retrieval/SQL-RAG, `risk.py` cabin simulator,
-  `diff.py` run-pair differ, `si_copilot.py` conversational/voice SI):
+  pybind, `engine_fallback.py` pure-Python mirror, `rag.py`
+  retrieval/SQL-RAG, `risk.py` cabin simulator, `investigations.py`
+  scored leaderboard + detail + insights, `diff.py` run-pair differ,
+  `si_copilot.py` conversational/voice SI):
   `/health`, `/api/chamber/preview`,
   `/api/materials`, `WS /ws/chamber` (30 Hz), `/api/search`, `/api/ask`,
   `/api/risk`, `/api/risk/curve`, `/api/risk/rank`, `/api/rag/stats`,
-  `/api/investigations`, `/api/runs`, `/api/diff`, `/api/diffs`,
+  `/api/investigations` (leaderboard), `/api/investigations/{id}`,
+  `/api/investigations/matrix` (dashboard attribute feed),
+  `/api/insights`, `/api/runs`, `/api/diff`, `/api/diffs`,
   `/api/decision-cards`, `/api/neighbors`, `POST /api/si/chat`,
   `POST /api/si/voice` (multipart `audio` + `state`)
 - SI copilot: every answer first builds a factual packet (risk model +
@@ -69,6 +73,13 @@ backend only — no client. See `docs/`.
   `fit_risk_model.py` → `build_master_sheet.py` (auditable
   `data/processed/nasa_combustion_master.csv` + `data/bundle/master_sheet.json`)
   → `build_investigation_diffs.py` (`data/bundle/investigation_diffs.json`)
+  → `build_site_snapshot.py` (`site/src/data/psi_snapshot.json` — baked
+  leaderboard/details/insights for the site's offline fallback)
+- Validate physics changes: `./.venv/bin/python data/pipelines/validate_engine.py`
+  → `data/processed/validation_report.json` (74.1% peak on K/Dext fits; 64.4% on the
+  re-normalized labels — ACME 18.6% → 61% via the fitted coflow
+  criterion: ignition gates + fuel-ramp strain + oxidizer-depletion
+  extinction, fitted per fuel into calibration.json["coflow"])
 
 ## Conventions
 

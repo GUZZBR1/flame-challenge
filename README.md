@@ -30,6 +30,8 @@ python3 -m venv .venv && .venv/bin/pip install -r backend/requirements.txt
 cd core && cmake -S . -B build -DPython3_EXECUTABLE=/usr/bin/python3 \
   && cmake --build build -j && cd ..
 .venv/bin/python data/pipelines/calibrate_constants.py
+.venv/bin/python data/pipelines/fit_risk_model.py   # restores the fitted
+                                                    # engine constants
 .venv/bin/uvicorn backend.api.main:app --port 8000
 # → http://localhost:8000/docs for the interactive API
 ```

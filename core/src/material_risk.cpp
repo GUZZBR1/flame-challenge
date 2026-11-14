@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cmath>
+#include <cstdlib>
 
 namespace ff {
 
@@ -36,12 +37,41 @@ std::vector<Material> MaterialRisk::all() const {
 
 double MaterialRisk::ignitionPressure(const Material& m, double o2Pct) {
     const double margin = o2Pct - m.locPct;
+    // flames are never observed sustaining burn more than ~3pp below LOC
+    // — a hard dead band regardless of the fitted curve
+    if (margin <= -3.0) return 0.0;
+    if (m.ignitionFitN > 0.0) {
+        // PSI logistic fit: measured P(sustained burn | margin), fitted
+        // per material or pooled over its fuel family (fit_risk_model.py)
+        const double z = std::clamp(
+            m.ignitionLogitA + m.ignitionLogitB * margin, -30.0, 30.0);
+        return 1.0 / (1.0 + std::exp(-z));
+    }
     if (margin <= 0) {
         // µg caveat: flames can persist slightly below Earth LOC (SoFIE) —
         // retain a small residual pressure instead of a hard zero.
-        return margin > -3.0 ? 0.04 : 0.0;
+        return 0.04;
     }
     return std::min(1.0, 0.04 + 0.055 * std::pow(margin, 1.35));
+}
+
+// ventilation anchors (cm/s -> factor) — mirrors FLOW_ANCHORS in
+// calibrate_constants.py; loadJson("flowAnchors") overrides so the
+// pipeline owns the canonical table
+static std::vector<std::pair<double, double>> g_flowAnchors = {
+    {0.0, 0.80}, {2.0, 0.90}, {8.0, 1.05}, {18.0, 1.15},
+    {40.0, 1.00}, {80.0, 0.70}, {150.0, 0.45},
+};
+
+double MaterialRisk::flowFactor(double flowCms) {
+    const double f = std::max(0.0, flowCms);
+    if (f <= g_flowAnchors.front().first) return g_flowAnchors.front().second;
+    for (size_t i = 0; i + 1 < g_flowAnchors.size(); ++i) {
+        const auto& [x0, y0] = g_flowAnchors[i];
+        const auto& [x1, y1] = g_flowAnchors[i + 1];
+        if (f <= x1) return y0 + (y1 - y0) * (f - x0) / (x1 - x0);
+    }
+    return g_flowAnchors.back().second;
 }
 
 // ---- minimal JSON reader (no external deps) ----
@@ -93,7 +123,126 @@ static bool extractBool(const std::string& obj, const std::string& key, bool& ou
     return true;
 }
 
+// parse "flowAnchors":[[x,y],...] — a top-level array of number pairs.
+// Tolerant like the rest of this reader: malformed entries are skipped.
+static void parseFlowAnchors(const std::string& json) {
+    auto pos = json.find("\"flowAnchors\"");
+    if (pos == std::string::npos) return;
+    pos = json.find('[', pos);
+    if (pos == std::string::npos) return;
+    std::vector<std::pair<double, double>> anchors;
+    int depth = 0;
+    for (size_t i = pos + 1; i < json.size(); ++i) {
+        const char c = json[i];
+        if (c == '[') {
+            ++depth;
+            char* end = nullptr;
+            const double x = std::strtod(json.c_str() + i + 1, &end);
+            if (end == json.c_str() + i + 1) continue;
+            while (*end == ' ' || *end == ',') ++end;
+            char* e2 = nullptr;
+            const double y = std::strtod(end, &e2);
+            if (e2 == end) continue;
+            anchors.emplace_back(x, y);
+        } else if (c == ']') {
+            if (--depth < 0) break;   // closing bracket of the outer array
+        }
+    }
+    if (anchors.size() >= 2) g_flowAnchors = std::move(anchors);
+}
+
+// parse "coflow":{ "<fuel>": {ignO2Pct, minFlowMgs, extO2Pct, rateCrit,
+// fitN, fitAccuracy}, ... } — fitted ACME extinction constants,
+// fit_risk_model.py is the only writer; rateCrit null/absent disables
+// the fuel-ramp branch
+static void parseCoflow(const std::string& json,
+                        std::unordered_map<std::string, CoflowFit>& out) {
+    // the literal "coflow" also appears as a *value* ("model": "coflow")
+    // inside investigation specs — only accept the key followed by ':' '{'
+    size_t pos = 0;
+    while (true) {
+        pos = json.find("\"coflow\"", pos);
+        if (pos == std::string::npos) return;
+        size_t p = json.find_first_not_of(" \t\r\n", pos + 8);
+        if (p != std::string::npos && json[p] == ':') {
+            p = json.find_first_not_of(" \t\r\n", p + 1);
+            if (p != std::string::npos && json[p] == '{') {
+                pos = p;
+                break;
+            }
+        }
+        pos += 8;
+    }
+    size_t end = pos + 1, depth = 1;
+    while (end < json.size() && depth) {
+        if (json[end] == '{') ++depth;
+        else if (json[end] == '}') --depth;
+        ++end;
+    }
+    const std::string body = json.substr(pos + 1, end - pos - 2);
+    size_t i = 0;
+    while (true) {
+        auto k1 = body.find('"', i);
+        if (k1 == std::string::npos) break;
+        auto k2 = body.find('"', k1 + 1);
+        if (k2 == std::string::npos) break;
+        auto colon = body.find(':', k2);
+        auto brace = body.find('{', k2);
+        if (colon == std::string::npos || brace == std::string::npos
+                || colon > brace) {
+            i = k2 + 1;
+            continue;
+        }
+        size_t d = 1, e = brace + 1;
+        while (e < body.size() && d) {
+            if (body[e] == '{') ++d;
+            else if (body[e] == '}') --d;
+            ++e;
+        }
+        const std::string fuel = body.substr(k1 + 1, k2 - k1 - 1);
+        const std::string obj = body.substr(brace, e - brace);
+        CoflowFit f;
+        extractNumber(obj, "ignO2Pct", f.ignO2Pct);
+        extractNumber(obj, "minFlowMgs", f.minFlowMgs);
+        extractNumber(obj, "extO2Pct", f.extO2Pct);
+        extractNumber(obj, "rateCrit", f.rateCrit);
+        double n = 0.0, acc = 0.0;
+        extractNumber(obj, "fitN", n);
+        extractNumber(obj, "fitAccuracy", acc);
+        f.fitN = static_cast<int>(n);
+        f.fitAccuracy = acc;
+        out[fuel] = f;
+        i = e;
+    }
+}
+
+const CoflowFit* MaterialRisk::coflow(const std::string& fuel) const {
+    auto it = coflow_.find(fuel);
+    if (it != coflow_.end()) return &it->second;
+    it = coflow_.find("_default");
+    return it != coflow_.end() ? &it->second : nullptr;
+}
+
+CoflowOutcome MaterialRisk::coflowOutcome(const std::string& fuel,
+                                          double o2Pct, double o2EndPct,
+                                          double mfLo, double mfHi,
+                                          double burnTimeS) const {
+    const CoflowFit* p = coflow(fuel);
+    if (!p) return CoflowOutcome::NoIgnition;
+    // negative = field absent in the source row; skip that gate
+    if (o2Pct >= 0 && o2Pct < p->ignO2Pct) return CoflowOutcome::NoIgnition;
+    if (mfHi >= 0 && mfHi < p->minFlowMgs) return CoflowOutcome::NoIgnition;
+    if (o2EndPct >= 0 && o2EndPct < p->extO2Pct)
+        return CoflowOutcome::Extinction;
+    if (p->rateCrit > 0 && mfLo >= 0 && mfHi >= 0 && burnTimeS > 0
+            && mfHi > mfLo && (mfHi - mfLo) / burnTimeS > p->rateCrit)
+        return CoflowOutcome::Extinction;
+    return CoflowOutcome::Burn;
+}
+
 void MaterialRisk::loadJson(const std::string& json) {
+    parseFlowAnchors(json);
+    parseCoflow(json, coflow_);
     // split on top-level object boundaries inside "materials" array
     auto pos = json.find("\"materials\"");
     if (pos == std::string::npos) return;
@@ -121,6 +270,13 @@ void MaterialRisk::loadJson(const std::string& json) {
                 extractNumber(obj, "sootIndex", m.sootIndex);
                 extractBool(obj, "coolFlameCapable", m.coolFlameCapable);
                 extractBool(obj, "smoldering", m.smoldering);
+                extractNumber(obj, "burnRateK0Mm2s", m.burnRateK0Mm2s);
+                extractNumber(obj, "burnRateKO2Mm2sPct", m.burnRateKO2Mm2sPct);
+                extractNumber(obj, "extinctionDHotMm", m.extinctionDHotMm);
+                extractNumber(obj, "extinctionDMinMm", m.extinctionDMinMm);
+                extractNumber(obj, "ignitionLogitA", m.ignitionLogitA);
+                extractNumber(obj, "ignitionLogitB", m.ignitionLogitB);
+                extractNumber(obj, "ignitionFitN", m.ignitionFitN);
                 table_[id] = m;
                 objStart = std::string::npos;
             }

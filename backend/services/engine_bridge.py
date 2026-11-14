@@ -41,7 +41,9 @@ if CALIBRATION.exists():
         raw = {}
     if isinstance(raw, dict):
         _cal = raw
-        _risks.load_json(json.dumps({"materials": raw.get("materials", [])}))
+        # full document — the engine picks the keys it knows
+        # (materials, flowAnchors, coflow) and ignores the rest
+        _risks.load_json(json.dumps(raw))
 
 
 def materials() -> list[dict]:
@@ -55,6 +57,16 @@ def investigation_map() -> dict:
 def ignition_pressure(material_id: str, o2_pct: float) -> float:
     """Direct MaterialRisk::ignitionPressure — pure, no chamber state."""
     return max(0.0, _risks.ignition_pressure(material_id, float(o2_pct)))
+
+
+def coflow_outcome(fuel: str, o2_pct: float = -1.0,
+                   o2_end_pct: float = -1.0, mf_lo: float = -1.0,
+                   mf_hi: float = -1.0, burn_time_s: float = -1.0) -> int:
+    """MaterialRisk::coflowOutcome — 0 burn / 1 extinction / 2 no-ignition.
+    Negative arguments mean "field absent in the source row"."""
+    return int(_risks.coflow_outcome(
+        fuel, float(o2_pct), float(o2_end_pct), float(mf_lo),
+        float(mf_hi), float(burn_time_s)))
 
 
 def _spec(investigation_id: str) -> dict:
@@ -96,12 +108,25 @@ def make_chamber(
     flow_cms: float | None = None,
     seed: int = 1,
     pressure_kpa: float | None = None,
+    volume_liters: float | None = None,
+    ambient_o2_pct: float | None = None,
+    vent_per_sec: float | None = None,
+    co2_pct: float | None = None,
+    he_pct: float | None = None,
 ) -> fe.Chamber:
     spec = _spec(investigation_id)
     cfg = fe.ChamberConfig()
     cfg.investigationId = investigation_id
     cfg.materialId = spec.get("materialId", "pmma")
-    cfg.model = spec.get("model", "spread")
+    model = spec.get("model", "spread")
+    # coflow is an outcome criterion, not a transient regime — the
+    # chamber has no coflow solver; spread is the closest visual proxy
+    # for the live/WS surface. Replay scoring uses coflowOutcome
+    # directly, which also evaluates the ramp fields a ChamberReq
+    # doesn't carry — perfect agreement is impossible by design.
+    if model == "coflow":
+        model = "spread"
+    cfg.model = model
     cfg.o2Pct = float(o2_pct)
     fr = spec.get("flowRangeCms") or [0, 10]
     if len(fr) < 2:
@@ -114,6 +139,18 @@ def make_chamber(
                             else spec.get("pressureKpa", 101))
     cfg.partialGravity = bool(spec.get("partialGravity", False))
     cfg.seed = seed
+    # closed-chamber gas balance — all optional; volumeLiters=0 keeps
+    # the historical open-atmosphere behavior
+    if volume_liters is not None:
+        cfg.volumeLiters = float(volume_liters)
+    if ambient_o2_pct is not None:
+        cfg.ambientO2Pct = float(ambient_o2_pct)
+    if vent_per_sec is not None:
+        cfg.ventPerSec = float(vent_per_sec)
+    if co2_pct is not None:
+        cfg.co2Pct = float(co2_pct)
+    if he_pct is not None:
+        cfg.hePct = float(he_pct)
     ch = fe.Chamber(_risks)
     ch.configure(cfg)
     return ch

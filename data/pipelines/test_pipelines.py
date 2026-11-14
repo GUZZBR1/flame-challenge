@@ -321,16 +321,11 @@ def test_fit_propagates_fitted_loc_to_calibration(monkeypatch, tmp_path):
     cal_path.write_text(json.dumps(cal))
     header = ",".join(norm.FIELDS) + "\n"
     def _row(i: int) -> str:
-        r = ["run_id", "accession", "investigation_id", "fuel",
-             "material_id", "o2_pct", "n2_pct", "co2_pct", "he_pct",
-             "pressure_kpa", "temp_k", "flow_cms", "droplet_d0_mm",
-             "burn_rate_mm2_s", "burn_time_s", "extinction_d_mm",
-             "outcome", "extinction_type", "cool_flame", "fiber_support",
-             "comments", "source_file", "source_url", "verified"]
+        r = list(norm.FIELDS)
         vals = [f"r{i}", "PSI-69", "flex-2", "heptane", "heptane",
                 str(round(14 + i * 0.1, 1)), "", "", "", "", "", "", "",
-                "", "", "", "extinction", "oxygen-limit", "False", "",
-                "", "f.txt", "u", "True"]
+                "", "", "", "", "", "", "", "extinction", "oxygen-limit",
+                "False", "", "", "f.txt", "u", "True"]
         assert len(vals) == len(r)
         return ",".join(vals)
     body = "".join(_row(i) + "\n" for i in range(12))

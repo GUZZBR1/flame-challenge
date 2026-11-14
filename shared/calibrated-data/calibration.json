@@ -42,7 +42,12 @@
       "sourceInvestigations": [
         "flex-2"
       ],
-      "locBaseline": 12.5
+      "locBaseline": 12.5,
+      "ignitionLogitA": -3.7526,
+      "ignitionLogitB": 0.34686,
+      "ignitionFitN": 274,
+      "ignitionFitScope": "family:droplet-fuels",
+      "ignitionFitMcFadden": 0.266
     },
     {
       "id": "ethylene",
@@ -56,12 +61,17 @@
       "sourceInvestigations": [
         "acme"
       ],
-      "locBaseline": 11.0
+      "locBaseline": 11.0,
+      "ignitionLogitA": -2.0287,
+      "ignitionLogitB": 0.0184,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     {
       "id": "heptane",
       "name": "n-heptane",
-      "locPct": 16.0,
+      "locPct": 12.0,
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.55,
@@ -71,8 +81,16 @@
         "flex-2"
       ],
       "locBaseline": 12.0,
-      "locSource": "psi-data",
-      "locMethod": "extinction-floor"
+      "burnRateK0Mm2s": 0.2254,
+      "burnRateKO2Mm2sPct": 0.01538,
+      "burnRateFitR2": 0.173,
+      "extinctionDHotMm": 2.86,
+      "extinctionDMinMm": 0.78,
+      "ignitionLogitA": -2.4741,
+      "ignitionLogitB": 0.28564,
+      "ignitionFitN": 117,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.173
     },
     {
       "id": "iso-octane",
@@ -86,7 +104,12 @@
       "sourceInvestigations": [
         "flex-2"
       ],
-      "locBaseline": 12.0
+      "locBaseline": 12.0,
+      "ignitionLogitA": -3.7526,
+      "ignitionLogitB": 0.34686,
+      "ignitionFitN": 274,
+      "ignitionFitScope": "family:droplet-fuels",
+      "ignitionFitMcFadden": 0.266
     },
     {
       "id": "jp8",
@@ -128,7 +151,12 @@
       "sourceInvestigations": [
         "acme"
       ],
-      "locBaseline": 12.0
+      "locBaseline": 12.0,
+      "ignitionLogitA": -2.0287,
+      "ignitionLogitB": 0.0184,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     {
       "id": "methanol",
@@ -144,7 +172,17 @@
       ],
       "locBaseline": 12.5,
       "locSource": "psi-data",
-      "locMethod": "extinction-floor"
+      "locMethod": "extinction-floor",
+      "burnRateK0Mm2s": 0.1781,
+      "burnRateKO2Mm2sPct": 0.01514,
+      "burnRateFitR2": 0.246,
+      "extinctionDHotMm": 2.28,
+      "extinctionDMinMm": 1.51,
+      "ignitionLogitA": -5.7622,
+      "ignitionLogitB": 0.4685,
+      "ignitionFitN": 157,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.42
     },
     {
       "id": "nomex",
@@ -232,7 +270,12 @@
       "sourceInvestigations": [
         "acme"
       ],
-      "locBaseline": 11.5
+      "locBaseline": 11.5,
+      "ignitionLogitA": -2.0287,
+      "ignitionLogitB": 0.0184,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.036
     },
     {
       "id": "pyrell",
@@ -348,7 +391,7 @@
       "pressureKpa": 101,
       "partialGravity": false,
       "loc": null,
-      "effectiveLoc": 16.0,
+      "effectiveLoc": 12.0,
       "hazards": [
         "cool-flames",
         "detection-gap",
@@ -356,7 +399,7 @@
       ]
     },
     "acme": {
-      "model": "spread",
+      "model": "coflow",
       "materialId": "ethylene",
       "o2Range": [
         12.0,
@@ -457,6 +500,102 @@
         "exploration-atmosphere",
         "low-oxygen-persistence"
       ]
+    }
+  },
+  "flowAnchors": [
+    [
+      0.0,
+      0.8
+    ],
+    [
+      2.0,
+      0.9
+    ],
+    [
+      8.0,
+      1.05
+    ],
+    [
+      18.0,
+      1.15
+    ],
+    [
+      40.0,
+      1.0
+    ],
+    [
+      80.0,
+      0.7
+    ],
+    [
+      150.0,
+      0.45
+    ]
+  ],
+  "coflow": {
+    "_default": {
+      "ignO2Pct": 23.3,
+      "minFlowMgs": 0.5,
+      "extO2Pct": 40.0,
+      "rateCrit": 0.1,
+      "fitN": 333,
+      "fitAccuracy": 0.561
+    },
+    "30% butane": {
+      "ignO2Pct": 21.1,
+      "minFlowMgs": 0.75,
+      "extO2Pct": 40.0,
+      "rateCrit": 0.02,
+      "fitN": 52,
+      "fitAccuracy": 0.647
+    },
+    "30% ethane": {
+      "ignO2Pct": 20.7,
+      "minFlowMgs": 0.5,
+      "extO2Pct": 40.0,
+      "rateCrit": 0.02,
+      "fitN": 27,
+      "fitAccuracy": 0.769
+    },
+    "30% propane": {
+      "ignO2Pct": 21.7,
+      "minFlowMgs": 0.125,
+      "extO2Pct": 40.0,
+      "rateCrit": 0.02,
+      "fitN": 36,
+      "fitAccuracy": 0.259
+    },
+    "50% butane": {
+      "ignO2Pct": 23.3,
+      "minFlowMgs": 1.2,
+      "extO2Pct": 40.0,
+      "rateCrit": 0.02,
+      "fitN": 30,
+      "fitAccuracy": 0.5
+    },
+    "butane": {
+      "ignO2Pct": 21.0,
+      "minFlowMgs": 1.342,
+      "extO2Pct": 0.0,
+      "rateCrit": 0.1,
+      "fitN": 58,
+      "fitAccuracy": 0.868
+    },
+    "ethane": {
+      "ignO2Pct": 21.0,
+      "minFlowMgs": 0.5,
+      "extO2Pct": 0.0,
+      "rateCrit": 0.12,
+      "fitN": 67,
+      "fitAccuracy": 0.619
+    },
+    "propane": {
+      "ignO2Pct": 21.2,
+      "minFlowMgs": 0.6,
+      "extO2Pct": 40.0,
+      "rateCrit": 0.1,
+      "fitN": 63,
+      "fitAccuracy": 0.6
     }
   }
 }

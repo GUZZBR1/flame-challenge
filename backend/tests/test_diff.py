@@ -11,7 +11,7 @@ client = TestClient(app)
 
 
 def test_investigations_feed_covers_named_experiments():
-    j = client.get("/api/investigations").json()
+    j = client.get("/api/investigations/matrix").json()
     invs = {i["id"]: i for i in j["investigations"]}
     # the names the challenge text calls out must all be present
     for iid in ("bass", "bass-ii", "flex-2", "same", "same-r", "spice",

@@ -43,9 +43,11 @@ but search metadata + file trees + per-file downloads are public.
 | `ntrs_search.py --all --fulltext N` | NTRS citations + fulltext dumps → `raw/ntrs_citations.json`, `raw/ntrs_txt/` |
 | `normalize_experiments.py` | parse test sheets/CSVs → `processed/experiments.csv|json` |
 | `build_index.py` | merge all corpora → `processed/search_index.json`, `citations.json` |
-| `fit_risk_model.py` | empirical LOC + risk surface → `shared/calibrated-data/risk_model.json` |
+| `fit_risk_model.py` | empirical LOC + risk surface + engine constants (K(o2) fits, extinction diameters) → `shared/calibrated-data/risk_model.json`, patches `calibration.json` |
 | `build_dataset.py` | merge curated/structured records → `data/bundle/investigations.json` |
 | `calibrate_constants.py` | dataset → `shared/calibrated-data/calibration.json` + `risk_profiles.json` |
+| `validate_engine.py` | replays scored runs through the engine → `processed/validation_report.json` (confusion matrix + burn-rate error; the gate for physics changes) |
+| `build_site_snapshot.py` | bakes `/api/investigations` + `/api/insights` output → `site/src/data/psi_snapshot.json` (offline fallback for the dashboard section) |
 
 ## Normalized experiment schema (`experiments.csv`)
 
@@ -63,7 +65,9 @@ Rows parsed from real PSI files carry `verified=true` and keep their
 
 ```
 margin = o2_pct - locPct(material)
-P_ign  = 0  (margin ≤ -3) | 0.04 (-3 < margin ≤ 0, µg low-O2 persistence)
+P_ign  = 0  (margin ≤ -3, hard dead band)
+       | sigmoid(A + B·margin)        (PSI logistic fit, when fitted)
+       | 0.04 (-3 < margin ≤ 0)       (unfitted fallback)
        | min(1, 0.04 + 0.055·margin^1.35)
 F_flow = piecewise on flow anchors (radiative window ~0 cm/s → O2-supply
          peak ~18 cm/s → blow-off quench >80 cm/s)
@@ -71,6 +75,13 @@ H      = 1 + 0.25·coolFlame + 0.15·smolder + 0.10·sootIndex
 G      = gravity factor (µg 1.0, lunar 0.92, martian 0.95, earth 0.85)
 risk   = clamp01(P_ign · F_flow · H · G)
 ```
+
+`P_ign` is fitted by logistic regression on outcome-labeled PSI runs
+(y=1 for burnout/disruption). `ignitionFitScope` labels the evidence:
+`material` (per-material fit, n≥25 with both classes), `material-null`
+(≥15 labeled runs, all extinct — an explicit near-zero curve), or
+`family:<droplet-fuels|gaseous-fuels|solid-materials>` (pooled fit for
+sparse members). Unfitted materials keep the hand-set curve.
 
 `locSource = psi-data` means the LOC was re-estimated from parsed test
 sheets; `calibration` means literature-seeded.
@@ -85,3 +96,11 @@ sheets; `calibration` means literature-seeded.
 - `GET /api/risk/curve?materialId=&flowCms=` — O₂ sweep for charts
 - `GET /api/risk/materials` — material table (LOC, hidden factors, provenance)
 - `GET /api/rag/stats` — corpus statistics
+- `GET /api/investigations` — ranked investigation cards: composite score
+  (0.35·flammability + 0.25·hiddenHazard + 0.25·explorationRelevance +
+  0.15·dataRichness) with per-component breakdown, run stats and
+  per-investigation engine-replay fidelity — `services/investigations.py`
+- `GET /api/investigations/{id}` — detail card: summary, material fit
+  provenance, sample real runs
+- `GET /api/insights` — interpreted corpus findings, each citing its run
+  counts and source investigations

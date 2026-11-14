@@ -30,7 +30,14 @@ EMSCRIPTEN_BINDINGS(freefall_engine) {
         .field("spreadMaxCms", &Material::spreadMaxCms)
         .field("sootIndex", &Material::sootIndex)
         .field("coolFlameCapable", &Material::coolFlameCapable)
-        .field("smoldering", &Material::smoldering);
+        .field("smoldering", &Material::smoldering)
+        .field("burnRateK0Mm2s", &Material::burnRateK0Mm2s)
+        .field("burnRateKO2Mm2sPct", &Material::burnRateKO2Mm2sPct)
+        .field("extinctionDHotMm", &Material::extinctionDHotMm)
+        .field("extinctionDMinMm", &Material::extinctionDMinMm)
+        .field("ignitionLogitA", &Material::ignitionLogitA)
+        .field("ignitionLogitB", &Material::ignitionLogitB)
+        .field("ignitionFitN", &Material::ignitionFitN);
 
     register_vector<Material>("MaterialVector");
     register_vector<std::string>("StringVector");
@@ -51,7 +58,12 @@ EMSCRIPTEN_BINDINGS(freefall_engine) {
         .field("slabLengthCm", &Chamber::Config::slabLengthCm)
         .field("dropletD0Mm", &Chamber::Config::dropletD0Mm)
         .field("partialGravity", &Chamber::Config::partialGravity)
-        .field("seed", &Chamber::Config::seed);
+        .field("seed", &Chamber::Config::seed)
+        .field("volumeLiters", &Chamber::Config::volumeLiters)
+        .field("ambientO2Pct", &Chamber::Config::ambientO2Pct)
+        .field("ventPerSec", &Chamber::Config::ventPerSec)
+        .field("co2Pct", &Chamber::Config::co2Pct)
+        .field("hePct", &Chamber::Config::hePct);
 
     class_<Chamber>("Chamber")
         .constructor<>()
@@ -59,6 +71,9 @@ EMSCRIPTEN_BINDINGS(freefall_engine) {
         .function("configure", &Chamber::configure)
         .function("step", &Chamber::step)
         .function("updateAtmosphere", &Chamber::updateAtmosphere)
+        .function("setSuppressants", &Chamber::setSuppressants)
+        .function("chamberO2Pct", &Chamber::chamberO2Pct)
+        .function("effectiveO2Pct", &Chamber::effectiveO2Pct)
         .function("ignitionPressure", &Chamber::ignitionPressure)
         .function("regime", &Chamber::regime)
         .function("hotBurning", &Chamber::hotBurning)

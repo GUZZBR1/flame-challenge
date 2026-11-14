@@ -1,0 +1,72 @@
+{
+  "generated": "validate_engine.py",
+  "tag": "current",
+  "engine": "c++",
+  "engineModule": "freefall_engine",
+  "runsTotal": 1155,
+  "runsScored": 612,
+  "accuracy": 0.6732,
+  "confusion": {
+    "burn->burn": 53,
+    "burn->extinction": 112,
+    "burn->no-ignition": 16,
+    "extinction->burn": 15,
+    "extinction->extinction": 313,
+    "extinction->no-ignition": 41,
+    "no-ignition->burn": 8,
+    "no-ignition->extinction": 8,
+    "no-ignition->no-ignition": 46
+  },
+  "perInvestigation": {
+    "acme": {
+      "n": 333,
+      "accuracy": 0.664
+    },
+    "flex-2": {
+      "n": 274,
+      "accuracy": 0.679
+    },
+    "saffire": {
+      "n": 5,
+      "accuracy": 1.0
+    }
+  },
+  "perMaterial": {
+    "butane": {
+      "n": 140,
+      "accuracy": 0.729
+    },
+    "cotton": {
+      "n": 3,
+      "accuracy": 1.0
+    },
+    "ethane": {
+      "n": 94,
+      "accuracy": 0.638
+    },
+    "heptane": {
+      "n": 117,
+      "accuracy": 0.513
+    },
+    "methanol": {
+      "n": 157,
+      "accuracy": 0.803
+    },
+    "pmma": {
+      "n": 2,
+      "accuracy": 1.0
+    },
+    "propane": {
+      "n": 99,
+      "accuracy": 0.596
+    }
+  },
+  "burnRateRelErrMedian": {
+    "heptane": 0.181,
+    "methanol": 0.162
+  },
+  "skipped": {
+    "outcome:unknown": 541,
+    "material-not-calibrated": 2
+  }
+}
