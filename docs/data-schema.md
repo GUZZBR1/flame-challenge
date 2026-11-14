@@ -1,6 +1,6 @@
-# Dataset schema — `src/data/investigations.json`
+# Dataset schema — `frontend/src/data/investigations.json`
 
-The app consumes a single JSON file typed as `Dataset` in `src/types.ts`.
+The app consumes a single JSON file typed as `Dataset` in `frontend/src/types.ts`.
 
 ```jsonc
 {
@@ -42,13 +42,36 @@ The app consumes a single JSON file typed as `Dataset` in `src/types.ts`.
 | `publications` | number | rough count of related papers |
 | `verified` | boolean | `false` = starter value pending PSI verification |
 
+## Pipeline-emitted provenance fields
+
+`data/pipelines/normalize_experiments.py` emits partial records under
+`data/raw/structured/psi_experiments.json` for investigations whose PSI
+test files were parsed. `build_dataset.py` deep-merges them (nested
+`metrics`/`conditions`/`data` merge key-wise) and sets `verified: true`.
+
+| Field | Type | Notes |
+|---|---|---|
+| `psiRuns` | number | parsed test runs for this investigation |
+| `psiAccessions` | string[] | PSI accession ids the runs came from |
+| `psiFuels` | string[] | fuels observed in the parsed files |
+| `psiO2RangePct` | `[min,max]` | O₂ envelope across parsed runs |
+| `psiExtinctionLimitPct` | `{min,max}` | measured extinction envelope (not LOC) |
+| `metrics.coolFlameObserved` | boolean | set only when ≥5% of runs show cool flames |
+
 ## Pipeline
 
 ```bash
-python scripts/psi_search.py --all          # raw PSI searches -> data/raw/
-python scripts/ntrs_search.py "<query>"     # NTRS papers -> data/raw/
-# normalize into structured records:
-#   data/raw/structured/<name>.json  (array or single record, same schema)
-python scripts/build_dataset.py              # merges into src/data/investigations.json
-python scripts/build_dataset.py --sample     # restore starter dataset
+./.venv/bin/python data/pipelines/psi_search.py --all       # PSI catalog -> data/raw/
+./.venv/bin/python data/pipelines/psi_files.py --all        # per-test files -> data/raw/files/
+./.venv/bin/python data/pipelines/ntrs_search.py --all --fulltext 3
+./.venv/bin/python data/pipelines/normalize_experiments.py  # -> processed/experiments.csv
+                                                            # + raw/structured/psi_experiments.json
+./.venv/bin/python data/pipelines/build_index.py            # -> processed/search_index.json
+./.venv/bin/python data/pipelines/fit_risk_model.py         # -> shared/calibrated-data/risk_model.json
+./.venv/bin/python data/pipelines/build_dataset.py          # merges structured records
+./.venv/bin/python data/pipelines/build_dataset.py --sample # restore starter dataset
+./.venv/bin/python data/pipelines/calibrate_constants.py    # dataset -> calibration.json
 ```
+
+Normalized per-run schema (`data/processed/experiments.csv`) is documented
+in `docs/DATA_PIPELINE.md`.
