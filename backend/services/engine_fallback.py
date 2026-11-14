@@ -39,6 +39,11 @@ class Material:
     sootIndex: float = 0.3
     coolFlameCapable: bool = False
     smoldering: bool = False
+    # measured droplet constants (fit_risk_model.py); 0 = no PSI fit
+    burnRateK0Mm2s: float = 0.0
+    burnRateKO2Mm2sPct: float = 0.0
+    extinctionDHotMm: float = 0.0
+    extinctionDMinMm: float = 0.0
 
 
 def _ignition_pressure(m: Material, o2_pct: float) -> float:
@@ -55,7 +60,9 @@ class MaterialRisk:
     """ACME-style flammability matrix (material_risk.cpp)."""
 
     _FIELDS = ("name", "locPct", "spreadMinCms", "spreadMaxCms",
-               "sootIndex", "coolFlameCapable", "smoldering")
+               "sootIndex", "coolFlameCapable", "smoldering",
+               "burnRateK0Mm2s", "burnRateKO2Mm2sPct",
+               "extinctionDHotMm", "extinctionDMinMm")
 
     def __init__(self) -> None:
         # starter table — same values compiled into the C++ ctor
@@ -156,9 +163,15 @@ class _DropletFlame:
         return 1.0 - r * r * r
 
     def burn_rate_k(self) -> float:
+        pscale = min(self.c_pressure / 101.0, 1.5)
+        # PSI-fitted rate wins: K(o2) = k0 + slope·o2 from measured kavg
+        if self.c_mat.burnRateK0Mm2s > 0 or self.c_mat.burnRateKO2Mm2sPct > 0:
+            k = self.c_mat.burnRateK0Mm2s \
+                + self.c_mat.burnRateKO2Mm2sPct * self.c_o2
+            return max(0.05, k) * pscale
         # K grows with O₂ above LOC; ~0.5–0.8 mm²/s for heptane at 1 atm
         press = _ignition_pressure(self.c_mat, self.c_o2)
-        return (0.45 + 0.55 * press) * min(self.c_pressure / 101.0, 1.5)
+        return (0.45 + 0.55 * press) * pscale
 
     def step(self, dt: float) -> None:
         self.t_sec += dt
@@ -187,9 +200,16 @@ class _DropletFlame:
 
             low_o2 = self.c_o2 < self.c_mat.locPct - 0.5
             fuel_out = self.droplet_d_mm <= 0.02
-            if low_o2 or fuel_out:
+            # FLEX extinction is bounded on both sides of the diameter
+            # axis: large droplets lose the hot flame to radiative loss,
+            # and the flame dies at the measured terminal diameter
+            radiative = (self.c_mat.extinctionDHotMm > 0
+                         and self.droplet_d_mm >= self.c_mat.extinctionDHotMm)
+            terminal = (self.droplet_d_mm
+                        <= max(0.02, self.c_mat.extinctionDMinMm))
+            if low_o2 or fuel_out or radiative or terminal:
                 if (self.c_mat.coolFlameCapable and not fuel_out
-                        and self._next_random() < 0.8):
+                        and not terminal and self._next_random() < 0.8):
                     # FLEX: hot flame out → cool-flame chemistry continues
                     self.cool_phase_t = 0.0
                     self.regime = DROPLET_COOL
@@ -206,9 +226,12 @@ class _DropletFlame:
                   - 0.05 * self.burn_rate_k() * dt)
             self.droplet_d_mm = math.sqrt(d2) if d2 > 0 else 0.0
             self.burn_fraction = self._burned_fraction()
-            # a cool flame cannot outlive its droplet; otherwise it fades on
-            # a timer or flashes back to hot combustion if O₂ is restored
-            if self.droplet_d_mm <= 0.02:
+            # a cool flame cannot outlive its droplet; extinctionDMinMm is
+            # the measured terminal diameter (cool flames die with fuel
+            # left); otherwise it fades on a timer or flashes back to hot
+            # combustion if O₂ is restored above the LOC
+            cool_floor = max(0.02, self.c_mat.extinctionDMinMm)
+            if self.droplet_d_mm <= cool_floor:
                 self.flame_r_mm = 0.0
                 self.heat_w = 0.0
                 self.regime = DROPLET_OUT

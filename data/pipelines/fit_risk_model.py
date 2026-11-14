@@ -64,6 +64,18 @@ DROPLET_INVESTIGATIONS = {"flex-2"}
 # literature range for condensable/gaseous fuels is ~10.5-16.5%)
 LOC_FIT_MIN, LOC_FIT_MAX = 10.0, 17.0
 
+# burn-rate fit: K(o2) = k0 + slope*o2_pct, least squares over runs with
+# both fields; needs this many points to be written into the engine table
+KFIT_MIN_POINTS = 8
+# hot-flame extinction diameter = median Dext over radiative + cool-flame
+# typed extinctions (the regimes that kill the hot flame while the droplet
+# is still large — FLEX); minimum sustainable diameter = median Dext
+# over oxygen-limit extinctions (the terminal burn-out size every
+# combustion regime dies at, hot or cool)
+DEXT_HOT_TYPES = {"radiative", "cool-flame"}
+DEXT_HOT_MIN_POINTS = 3
+DEXT_MIN_MIN_POINTS = 5
+
 # ventilation factor anchor points (cm/s -> multiplier); linear between
 # anchors: quiescent radiative window, mid-flow O2 supply, high-flow blow-off
 FLOW_ANCHORS = [
@@ -92,6 +104,25 @@ def ignition_pressure(margin: float) -> float:
     if margin <= 0:
         return 0.04 if margin > -3.0 else 0.0
     return min(1.0, 0.04 + 0.055 * margin ** 1.35)
+
+
+def linfit(pts: list[tuple[float, float]]) -> tuple[float, float, float] | None:
+    """Least-squares y = a + b*x over (x, y) points.
+    Returns (a, b, r2) or None for degenerate inputs."""
+    n = len(pts)
+    if n < 2:
+        return None
+    mx = sum(p[0] for p in pts) / n
+    my = sum(p[1] for p in pts) / n
+    sxx = sum((p[0] - mx) ** 2 for p in pts)
+    if sxx <= 0:
+        return None
+    b = sum((p[0] - mx) * (p[1] - my) for p in pts) / sxx
+    a = my - b * mx
+    sst = sum((p[1] - my) ** 2 for p in pts)
+    ss_res = sum((p[1] - a - b * p[0]) ** 2 for p in pts)
+    r2 = 1.0 - ss_res / sst if sst > 0 else 0.0
+    return a, b, r2
 
 
 def empirical_loc(burned: list[float], extinct: list[float]) -> float | None:
@@ -131,8 +162,10 @@ def main() -> int:
         if not mid:
             continue
         s = stats.setdefault(mid, {"burned": [], "extinct": [], "cool": 0,
-                                   "n": 0, "kavg": [], "dext": [],
-                                   "ext_limit": [], "droplet": False})
+                                   "n": 0, "kavg": [], "kpts": [],
+                                   "dext": [], "dext_hot": [],
+                                   "dext_min": [], "ext_limit": [],
+                                   "droplet": False})
         s["n"] += 1
         if r.get("investigation_id") in DROPLET_INVESTIGATIONS:
             s["droplet"] = True
@@ -153,6 +186,11 @@ def main() -> int:
             d = float(r["extinction_d_mm"]) if r.get("extinction_d_mm") else None
             if d:
                 s["dext"].append(d)
+                etype = r.get("extinction_type")
+                if etype in DEXT_HOT_TYPES:
+                    s["dext_hot"].append(d)
+                elif etype == "oxygen-limit":
+                    s["dext_min"].append(d)
         except ValueError:
             pass
         if r.get("cool_flame") in ("True", "true", True):
@@ -161,6 +199,8 @@ def main() -> int:
             k = float(r["burn_rate_mm2_s"]) if r.get("burn_rate_mm2_s") else None
             if k:
                 s["kavg"].append(k)
+                if o2 is not None:
+                    s["kpts"].append((o2, k))
         except ValueError:
             pass
 
@@ -193,8 +233,29 @@ def main() -> int:
             if s["dext"]:
                 entry["extinctionDiameterMedianMm"] = round(
                     statistics.median(s["dext"]), 2)
+            # FLEX extinction diameters feed the engine directly:
+            # extinctionDHotMm — droplets at/above this size lose the hot
+            # flame to radiative loss (or transition to cool-flame
+            # chemistry); extinctionDMinMm — minimum sustainable droplet
+            # diameter: the terminal burn-out size every combustion
+            # regime dies at. Both are measured medians, not tuned.
+            if len(s["dext_hot"]) >= DEXT_HOT_MIN_POINTS:
+                entry["extinctionDHotMm"] = round(
+                    statistics.median(s["dext_hot"]), 2)
+            if len(s["dext_min"]) >= DEXT_MIN_MIN_POINTS:
+                entry["extinctionDMinMm"] = round(
+                    statistics.median(s["dext_min"]), 2)
             if s["kavg"]:
                 entry["burnRateMedianMm2s"] = round(statistics.median(s["kavg"]), 3)
+            # K(o2) linear fit — the engine burns with measured droplet
+            # rates instead of deriving K from the ignition-pressure curve
+            if len(s["kpts"]) >= KFIT_MIN_POINTS:
+                fit = linfit(s["kpts"])
+                if fit is not None:
+                    a, b, r2 = fit
+                    entry["burnRateK0Mm2s"] = round(a, 4)
+                    entry["burnRateKO2Mm2sPct"] = round(b, 5)
+                    entry["burnRateFitR2"] = round(r2, 3)
             # LOC refit — two estimators, both labelled in locMethod:
             #  1. boundary-midpoint: clean burn/extinct separation (rare —
             #     radiative extinctions at high O2 usually overlap)
@@ -231,6 +292,11 @@ def main() -> int:
     # runs every time, not only when something fitted: a material whose
     # evidence dropped below the fitting bar reverts to locBaseline
     # instead of silently keeping a stale psi-data number.
+    FIT_FIELDS = ("burnRateK0Mm2s", "burnRateKO2Mm2sPct", "burnRateFitR2",
+                  "extinctionDHotMm", "extinctionDMinMm")
+    # renamed/dropped engine fields — always popped so a stale key from
+    # an older fit can't shadow the current semantics
+    DEAD_FIELDS = ("extinctionDCoolMm",)
     for m in cal.get("materials", []):
         fitted_mat = materials.get(m["id"])
         if fitted_mat and fitted_mat.get("locSource") == "psi-data":
@@ -242,6 +308,16 @@ def main() -> int:
             m["locPct"] = m.get("locBaseline", m["locPct"])
             m["locSource"] = "calibration"
             m.pop("locMethod", None)
+        # measured engine fields follow the same contract as locPct —
+        # written when the data supports a fit, removed when it doesn't,
+        # so a shrinking dataset can't leave stale physics behind
+        for f in FIT_FIELDS:
+            if fitted_mat and f in fitted_mat:
+                m[f] = fitted_mat[f]
+            else:
+                m.pop(f, None)
+        for f in DEAD_FIELDS:
+            m.pop(f, None)
     mat_loc = {m["id"]: m.get("locPct") for m in cal.get("materials", [])}
     for spec in cal.get("investigations", {}).values():
         spec["effectiveLoc"] = spec.get("loc") \
@@ -273,7 +349,13 @@ def main() -> int:
                     "locSource=calibration -> literature-seeded. "
                     "extinctionLimitMin/MaxPct = measured extinction "
                     "envelope (includes radiative extinctions — not a "
-                    "flammability limit).",
+                    "flammability limit). burnRateK0/KO2Mm2sPct = "
+                    "least-squares K(o2) over measured kavg (engine "
+                    "d²-law rate). extinctionDHotMm = median Dext over "
+                    "radiative+cool-flame extinctions (large-droplet "
+                    "hot-flame death); extinctionDMinMm = median Dext "
+                    "over oxygen-limit extinctions (terminal "
+                    "diameter all combustion dies at).",
         },
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)

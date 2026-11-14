@@ -42,7 +42,11 @@
       "sourceInvestigations": [
         "flex-2"
       ],
-      "locBaseline": 12.5
+      "locBaseline": 12.5,
+      "burnRateK0Mm2s": 0.0613,
+      "burnRateKO2Mm2sPct": 0.01542,
+      "burnRateFitR2": 0.055,
+      "extinctionDHotMm": 3.89
     },
     {
       "id": "ethylene",
@@ -72,7 +76,12 @@
       ],
       "locBaseline": 12.0,
       "locSource": "psi-data",
-      "locMethod": "extinction-floor"
+      "locMethod": "extinction-floor",
+      "burnRateK0Mm2s": 0.2317,
+      "burnRateKO2Mm2sPct": 0.01522,
+      "burnRateFitR2": 0.17,
+      "extinctionDHotMm": 2.86,
+      "extinctionDMinMm": 0.77
     },
     {
       "id": "iso-octane",
@@ -144,7 +153,12 @@
       ],
       "locBaseline": 12.5,
       "locSource": "psi-data",
-      "locMethod": "extinction-floor"
+      "locMethod": "extinction-floor",
+      "burnRateK0Mm2s": 0.1781,
+      "burnRateKO2Mm2sPct": 0.01516,
+      "burnRateFitR2": 0.247,
+      "extinctionDHotMm": 3.08,
+      "extinctionDMinMm": 1.53
     },
     {
       "id": "nomex",

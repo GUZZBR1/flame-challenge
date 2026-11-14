@@ -218,6 +218,78 @@ int main() {
               "flame must traverse the slab and burn out");
     }
 
+    // --- PSI-fitted K: a material with burnRateK0/KO2 burns at the
+    //     measured rate K = k0 + slope·o2, not the pressure-derived one ---
+    {
+        DropletFlame flame;
+        DropletFlame::Config c;
+        c.material = *risks.get("heptane");
+        c.material.burnRateK0Mm2s = 0.2317;
+        c.material.burnRateKO2Mm2sPct = 0.01522;
+        c.o2Pct = 21.0;
+        c.dropletD0Mm = 1.0;
+        c.seed = 7;
+        flame.configure(c);
+        const double expect = 0.2317 + 0.01522 * 21.0; // pScale = 1
+        CHECK(std::fabs(flame.burnRateK() - expect) < 1e-9,
+              "fitted material must burn at K = k0 + slope*o2");
+    }
+
+    // --- radiative extinction: a droplet at/above extinctionDHotMm loses
+    //     the hot flame with nearly all fuel left (FLEX large-droplet
+    //     regime); cool-flame chemistry may continue below it ---
+    {
+        DropletFlame flame;
+        DropletFlame::Config c;
+        c.material = *risks.get("heptane"); // coolFlameCapable
+        c.material.extinctionDHotMm = 2.86;
+        c.material.extinctionDMinMm = 0.77;
+        c.o2Pct = 21.0;
+        c.dropletD0Mm = 4.0; // above the radiative bound
+        c.seed = 3;
+        flame.configure(c);
+
+        double lastHotD = 0;
+        for (int i = 0; i < 4000 &&
+             flame.state().regime != DropletFlame::Regime::Extinguished; ++i) {
+            flame.step(0.01);
+            if (flame.state().regime == DropletFlame::Regime::HotFlame)
+                lastHotD = flame.state().dropletDMm;
+        }
+        CHECK(flame.state().regime == DropletFlame::Regime::Extinguished,
+              "large droplet must extinguish");
+        CHECK(flame.state().dropletDMm >= 0.5,
+              "radiative/terminal extinction must leave fuel — not fuel-out");
+        // the hot flame may only die at/above the radiative bound or at
+        // the terminal diameter — it must never hot-burn to fuel-out
+        CHECK(lastHotD <= 0.0 || lastHotD >= 0.77,
+              "hot flame must die at a measured extinction boundary");
+    }
+
+    // --- terminal diameter: a droplet burning down through
+    //     extinctionDMinMm dies with fuel left (recorded Dext) ---
+    {
+        DropletFlame flame;
+        DropletFlame::Config c;
+        c.material = *risks.get("heptane");
+        c.material.coolFlameCapable = false; // isolate hot-flame death
+        c.material.extinctionDMinMm = 0.8;
+        c.o2Pct = 21.0;
+        c.dropletD0Mm = 1.5;
+        c.seed = 5;
+        flame.configure(c);
+        for (int i = 0; i < 4000 &&
+             flame.state().regime != DropletFlame::Regime::Extinguished; ++i)
+            flame.step(0.01);
+        CHECK(flame.state().regime == DropletFlame::Regime::Extinguished,
+              "droplet must reach the terminal diameter and die");
+        CHECK(flame.state().dropletDMm > 0.7 &&
+              flame.state().dropletDMm <= 0.8,
+              "droplet must die at extinctionDMinMm, not fuel-out");
+        CHECK(flame.state().burnFraction < 0.95,
+              "terminal extinction must leave measurable fuel");
+    }
+
     // --- ignition pressure monotonic in O2 ---
     {
         const Material* pmma = risks.get("pmma");

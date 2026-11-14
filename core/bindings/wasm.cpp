@@ -30,7 +30,11 @@ EMSCRIPTEN_BINDINGS(freefall_engine) {
         .field("spreadMaxCms", &Material::spreadMaxCms)
         .field("sootIndex", &Material::sootIndex)
         .field("coolFlameCapable", &Material::coolFlameCapable)
-        .field("smoldering", &Material::smoldering);
+        .field("smoldering", &Material::smoldering)
+        .field("burnRateK0Mm2s", &Material::burnRateK0Mm2s)
+        .field("burnRateKO2Mm2sPct", &Material::burnRateKO2Mm2sPct)
+        .field("extinctionDHotMm", &Material::extinctionDHotMm)
+        .field("extinctionDMinMm", &Material::extinctionDMinMm);
 
     register_vector<Material>("MaterialVector");
     register_vector<std::string>("StringVector");

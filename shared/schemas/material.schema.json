@@ -13,6 +13,10 @@
     "sootIndex": { "type": "number", "minimum": 0, "maximum": 1 },
     "coolFlameCapable": { "type": "boolean", "description": "FLEX-type two-stage combustion" },
     "smoldering": { "type": "boolean", "description": "supports smolder/re-ignition" },
+    "burnRateK0Mm2s": { "type": "number", "description": "d2-law rate intercept, K = k0 + kSlope*o2 — PSI kavg fit" },
+    "burnRateKO2Mm2sPct": { "type": "number", "description": "d2-law rate slope per %O2" },
+    "extinctionDHotMm": { "type": "number", "description": "hot-flame radiative extinction diameter, mm — droplets at/above this size lose the hot flame" },
+    "extinctionDMinMm": { "type": "number", "description": "minimum sustainable droplet diameter, mm — measured terminal extinction diameter for all regimes" },
     "sourceInvestigations": { "type": "array", "items": { "type": "string" } }
   }
 }

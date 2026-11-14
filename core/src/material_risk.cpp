@@ -121,6 +121,10 @@ void MaterialRisk::loadJson(const std::string& json) {
                 extractNumber(obj, "sootIndex", m.sootIndex);
                 extractBool(obj, "coolFlameCapable", m.coolFlameCapable);
                 extractBool(obj, "smoldering", m.smoldering);
+                extractNumber(obj, "burnRateK0Mm2s", m.burnRateK0Mm2s);
+                extractNumber(obj, "burnRateKO2Mm2sPct", m.burnRateKO2Mm2sPct);
+                extractNumber(obj, "extinctionDHotMm", m.extinctionDHotMm);
+                extractNumber(obj, "extinctionDMinMm", m.extinctionDMinMm);
                 table_[id] = m;
                 objStart = std::string::npos;
             }

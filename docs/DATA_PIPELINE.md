@@ -43,9 +43,10 @@ but search metadata + file trees + per-file downloads are public.
 | `ntrs_search.py --all --fulltext N` | NTRS citations + fulltext dumps → `raw/ntrs_citations.json`, `raw/ntrs_txt/` |
 | `normalize_experiments.py` | parse test sheets/CSVs → `processed/experiments.csv|json` |
 | `build_index.py` | merge all corpora → `processed/search_index.json`, `citations.json` |
-| `fit_risk_model.py` | empirical LOC + risk surface → `shared/calibrated-data/risk_model.json` |
+| `fit_risk_model.py` | empirical LOC + risk surface + engine constants (K(o2) fits, extinction diameters) → `shared/calibrated-data/risk_model.json`, patches `calibration.json` |
 | `build_dataset.py` | merge curated/structured records → `data/bundle/investigations.json` |
 | `calibrate_constants.py` | dataset → `shared/calibrated-data/calibration.json` + `risk_profiles.json` |
+| `validate_engine.py` | replays scored runs through the engine → `processed/validation_report.json` (confusion matrix + burn-rate error; the gate for physics changes) |
 
 ## Normalized experiment schema (`experiments.csv`)
 

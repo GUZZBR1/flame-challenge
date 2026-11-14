@@ -87,7 +87,11 @@
       "extinctionLimitMinPct": 17.0,
       "extinctionLimitMaxPct": 21.0,
       "extinctionDiameterMedianMm": 3.87,
-      "burnRateMedianMm2s": 0.37
+      "extinctionDHotMm": 3.89,
+      "burnRateMedianMm2s": 0.37,
+      "burnRateK0Mm2s": 0.0613,
+      "burnRateKO2Mm2sPct": 0.01542,
+      "burnRateFitR2": 0.055
     },
     "ethylene": {
       "id": "ethylene",
@@ -123,7 +127,12 @@
       "extinctionLimitMinPct": 13.0,
       "extinctionLimitMaxPct": 34.0,
       "extinctionDiameterMedianMm": 2.31,
+      "extinctionDHotMm": 2.86,
+      "extinctionDMinMm": 0.77,
       "burnRateMedianMm2s": 0.54,
+      "burnRateK0Mm2s": 0.2317,
+      "burnRateKO2Mm2sPct": 0.01522,
+      "burnRateFitR2": 0.17,
       "locMethod": "extinction-floor"
     },
     "iso-octane": {
@@ -200,7 +209,12 @@
       "extinctionLimitMinPct": 12.0,
       "extinctionLimitMaxPct": 34.0,
       "extinctionDiameterMedianMm": 1.61,
+      "extinctionDHotMm": 3.08,
+      "extinctionDMinMm": 1.53,
       "burnRateMedianMm2s": 0.46,
+      "burnRateK0Mm2s": 0.1781,
+      "burnRateKO2Mm2sPct": 0.01516,
+      "burnRateFitR2": 0.247,
       "locMethod": "extinction-floor"
     },
     "nomex": {
@@ -345,6 +359,6 @@
   "provenance": {
     "psiRunsParsed": 1063,
     "materialsFittedFromPsi": 2,
-    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit)."
+    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit). burnRateK0/KO2Mm2sPct = least-squares K(o2) over measured kavg (engine d\u00b2-law rate). extinctionDHotMm = median Dext over radiative+cool-flame extinctions (large-droplet hot-flame death); extinctionDMinMm = median Dext over oxygen-limit extinctions (terminal diameter all combustion dies at)."
   }
 }

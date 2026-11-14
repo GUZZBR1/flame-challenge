@@ -1,0 +1,66 @@
+{
+  "generated": "validate_engine.py",
+  "tag": "final",
+  "engine": "python-fallback",
+  "engineModule": "backend.services.engine_fallback",
+  "runsTotal": 1063,
+  "runsScored": 378,
+  "accuracy": 0.7407,
+  "confusion": {
+    "burn->burn": 24,
+    "burn->extinction": 15,
+    "extinction->burn": 59,
+    "extinction->extinction": 256,
+    "extinction->no-ignition": 2,
+    "no-ignition->burn": 22
+  },
+  "perInvestigation": {
+    "acme": {
+      "n": 99,
+      "accuracy": 0.192
+    },
+    "flex-2": {
+      "n": 274,
+      "accuracy": 0.934
+    },
+    "saffire": {
+      "n": 5,
+      "accuracy": 1.0
+    }
+  },
+  "perMaterial": {
+    "cotton": {
+      "n": 3,
+      "accuracy": 1.0
+    },
+    "decanol": {
+      "n": 20,
+      "accuracy": 0.95
+    },
+    "heptane": {
+      "n": 103,
+      "accuracy": 0.835
+    },
+    "methanol": {
+      "n": 151,
+      "accuracy": 1.0
+    },
+    "pmma": {
+      "n": 2,
+      "accuracy": 1.0
+    },
+    "propane": {
+      "n": 99,
+      "accuracy": 0.192
+    }
+  },
+  "burnRateRelErrMedian": {
+    "decanol": 0.147,
+    "heptane": 0.176,
+    "methanol": 0.155
+  },
+  "skipped": {
+    "outcome:unknown": 446,
+    "material-not-calibrated": 239
+  }
+}

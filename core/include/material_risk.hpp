@@ -25,6 +25,24 @@ struct Material {
     bool coolFlameCapable = false;
     /** supports smoldering re-ignition — cotton/Nomex-type solids */
     bool smoldering = false;
+
+    // ---- measured droplet constants (fit_risk_model.py, PSI data) ----
+    // All zero means "no PSI fit" — the solver falls back to the
+    // ignition-pressure-derived rate.
+
+    /** d²-law rate intercept: K(o2) = k0 + kSlope·o2, mm²/s — fitted on
+     *  measured kavg, not derived from the ignition curve */
+    double burnRateK0Mm2s = 0.0;
+    /** d²-law rate slope per %O2, mm²/s per pct */
+    double burnRateKO2Mm2sPct = 0.0;
+    /** hot-flame extinction diameter, mm — droplets at/above this size
+     *  lose the hot flame to radiative loss (FLEX radiative regime);
+     *  cool-flame chemistry may continue below it. 0 = disabled */
+    double extinctionDHotMm = 0.0;
+    /** minimum sustainable droplet diameter, mm — the measured terminal
+     *  extinction diameter: below it no combustion regime survives, hot
+     *  or cool (droplets die with fuel left). 0 = burn to fuel-out */
+    double extinctionDMinMm = 0.0;
 };
 
 class MaterialRisk {

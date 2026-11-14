@@ -19,7 +19,11 @@ PYBIND11_MODULE(freefall_engine, m) {
         .def_readonly("spreadMaxCms", &Material::spreadMaxCms)
         .def_readonly("sootIndex", &Material::sootIndex)
         .def_readonly("coolFlameCapable", &Material::coolFlameCapable)
-        .def_readonly("smoldering", &Material::smoldering);
+        .def_readonly("smoldering", &Material::smoldering)
+        .def_readonly("burnRateK0Mm2s", &Material::burnRateK0Mm2s)
+        .def_readonly("burnRateKO2Mm2sPct", &Material::burnRateKO2Mm2sPct)
+        .def_readonly("extinctionDHotMm", &Material::extinctionDHotMm)
+        .def_readonly("extinctionDMinMm", &Material::extinctionDMinMm);
 
     py::class_<MaterialRisk>(m, "MaterialRisk")
         .def(py::init<>())

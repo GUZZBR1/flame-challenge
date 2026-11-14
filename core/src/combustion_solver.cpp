@@ -50,10 +50,18 @@ double DropletFlame::burnedFraction() const {
 }
 
 double DropletFlame::burnRateK() const {
+    const double pScale = std::min(c_.pressureKpa / 101.0, 1.5);
+    // PSI-fitted rate wins: K(o2) = k0 + slope·o2 from measured kavg
+    // (fit_risk_model.py). The pressure envelope applies on top.
+    if (c_.material.burnRateK0Mm2s > 0.0 ||
+        c_.material.burnRateKO2Mm2sPct > 0.0) {
+        const double k = c_.material.burnRateK0Mm2s +
+                         c_.material.burnRateKO2Mm2sPct * c_.o2Pct;
+        return std::max(0.05, k) * pScale;
+    }
     // K grows with O₂ above LOC; reference ~0.5–0.8 mm²/s for heptane at 1 atm
     const double press = MaterialRisk::ignitionPressure(c_.material, c_.o2Pct);
-    const double pScale = c_.pressureKpa / 101.0;
-    return (0.45 + 0.55 * press) * std::min(pScale, 1.5);
+    return (0.45 + 0.55 * press) * pScale;
 }
 
 void DropletFlame::transition(Regime r) {
@@ -91,8 +99,19 @@ void DropletFlame::step(double dtSec) {
         // extinction checks
         const bool lowO2 = c_.o2Pct < c_.material.locPct - 0.5;
         const bool fuelOut = s_.dropletDMm <= 0.02;
-        if (lowO2 || fuelOut) {
-            if (c_.material.coolFlameCapable && !fuelOut &&
+        // FLEX extinction is bounded on BOTH sides of the diameter axis:
+        //  - radiative regime: a large droplet feeds a large flame whose
+        //    radiative loss outruns heat feedback — the hot flame dies
+        //    while most fuel remains (extinctionDHotMm);
+        //  - terminal diameter: the hot flame dies when the droplet
+        //    shrinks to the measured extinction size (extinctionDMinMm).
+        // Cool-flame chemistry may take over from either boundary.
+        const bool radiative = c_.material.extinctionDHotMm > 0.0 &&
+                               s_.dropletDMm >= c_.material.extinctionDHotMm;
+        const bool terminal = s_.dropletDMm <=
+                              std::max(0.02, c_.material.extinctionDMinMm);
+        if (lowO2 || fuelOut || radiative || terminal) {
+            if (c_.material.coolFlameCapable && !fuelOut && !terminal &&
                 nextRandom() < 0.8) {
                 // FLEX: hot flame out → cool-flame chemistry continues
                 transition(Regime::CoolFlame);
@@ -113,9 +132,12 @@ void DropletFlame::step(double dtSec) {
         s_.dropletDMm = d2 > 0 ? std::sqrt(d2) : 0;
         s_.burnFraction = burnedFraction();
         // fuel exhaustion ends cool burning just like hot burning — a cool
-        // flame cannot outlive its droplet; otherwise it fades on a timer or
-        // flashes back to hot combustion if O₂ is restored above the LOC
-        if (s_.dropletDMm <= 0.02) {
+        // flame cannot outlive its droplet; extinctionDMinMm is the
+        // measured terminal diameter (cool flames die with fuel left);
+        // otherwise it fades on a timer or flashes back to hot combustion
+        // if O₂ is restored above the LOC
+        const double coolFloor = std::max(0.02, c_.material.extinctionDMinMm);
+        if (s_.dropletDMm <= coolFloor) {
             s_.flameRMm = 0;
             s_.heatReleaseW = 0;
             transition(Regime::Extinguished);

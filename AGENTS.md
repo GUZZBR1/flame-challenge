@@ -45,6 +45,9 @@ backend only — no client. See `docs/`.
   `build_index.py` → `build_dataset.py` → `calibrate_constants.py` →
   `fit_risk_model.py` → `build_master_sheet.py` (auditable
   `data/processed/nasa_combustion_master.csv` + `data/bundle/master_sheet.json`)
+- Validate physics changes: `./.venv/bin/python data/pipelines/validate_engine.py`
+  → `data/processed/validation_report.json` (baseline: 10.8% → 74.1%
+  after K/Dext fits; ACME coflow capped ~19% until a strain-limit model exists)
 
 ## Conventions
 
