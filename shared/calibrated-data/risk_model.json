@@ -397,17 +397,23 @@
     "defaultLevel": 0.9,
     "residual": "|y - riskIndex| over labeled burn/extinct PSI runs",
     "gravityNote": "all calibration runs are microgravity \u2014 any partial-gravity query is out-of-distribution",
+    "calibrationSplit": {
+      "scheme": "sha1(run_id) % 10 < 7 \u2192 train, else calibration",
+      "trainRows": 267,
+      "calibrationRows": 111,
+      "note": "ignition logits refit on train rows only; bands calibrated on held-out residuals \u2014 split-conformal requires calibration data excluded from fitting"
+    },
     "global": {
-      "n": 378,
+      "n": 111,
       "qhat": {
-        "0.80": 0.4728,
-        "0.90": 0.7168,
-        "0.95": 0.8271
+        "0.80": 0.4752,
+        "0.90": 0.5796,
+        "0.95": 0.6926
       },
       "empiricalCoverage": {
-        "0.80": 0.8042,
-        "0.90": 0.9101,
-        "0.95": 0.9577
+        "0.80": 0.8018,
+        "0.90": 0.9099,
+        "0.95": 0.964
       },
       "envelope": {
         "marginMin": 0.0,
@@ -418,16 +424,16 @@
     },
     "families": {
       "droplet-fuels": {
-        "n": 274,
+        "n": 87,
         "qhat": {
-          "0.80": 0.5272,
-          "0.90": 0.6674,
-          "0.95": 0.8229
+          "0.80": 0.5248,
+          "0.90": 0.6321,
+          "0.95": 0.6926
         },
         "empiricalCoverage": {
-          "0.80": 0.8175,
-          "0.90": 0.9124,
-          "0.95": 0.9745
+          "0.80": 0.8276,
+          "0.90": 0.908,
+          "0.95": 0.9655
         },
         "envelope": {
           "marginMin": 0.0,
@@ -437,19 +443,19 @@
         }
       },
       "gaseous-fuels": {
-        "n": 99,
+        "n": 21,
         "qhat": {
-          "0.80": 0.2832,
-          "0.90": 0.8511,
-          "0.95": 0.869
+          "0.80": 0.3421,
+          "0.90": 0.6579,
+          "0.95": 0.8324
         },
         "empiricalCoverage": {
-          "0.80": 0.8081,
-          "0.90": 0.9091,
-          "0.95": 0.9596
+          "0.80": 0.6667,
+          "0.90": 0.9524,
+          "0.95": 1.0
         },
         "envelope": {
-          "marginMin": 6.5,
+          "marginMin": 9.38,
           "marginMax": 73.5,
           "flowMin": 0.0,
           "flowMax": 0.0
@@ -458,57 +464,57 @@
     },
     "materials": {
       "propane": {
-        "n": 99,
+        "n": 21,
         "qhat": {
-          "0.80": 0.2832,
-          "0.90": 0.8511,
-          "0.95": 0.869
+          "0.80": 0.3421,
+          "0.90": 0.6579,
+          "0.95": 0.8324
         },
         "empiricalCoverage": {
-          "0.80": 0.8081,
-          "0.90": 0.9091,
-          "0.95": 0.9596
+          "0.80": 0.6667,
+          "0.90": 0.9524,
+          "0.95": 1.0
         },
         "envelope": {
-          "marginMin": 6.5,
+          "marginMin": 9.38,
           "marginMax": 73.5,
           "flowMin": 0.0,
           "flowMax": 0.0
         }
       },
       "methanol": {
-        "n": 157,
+        "n": 46,
         "qhat": {
-          "0.80": 0.3552,
-          "0.90": 0.5313,
-          "0.95": 0.8229
+          "0.80": 0.1754,
+          "0.90": 0.6522,
+          "0.95": 0.8246
         },
         "empiricalCoverage": {
-          "0.80": 0.8408,
-          "0.90": 0.9108,
-          "0.95": 0.9745
+          "0.80": 0.6304,
+          "0.90": 0.8913,
+          "0.95": 0.9783
         },
         "envelope": {
           "marginMin": 0.0,
-          "marginMax": 22.0,
+          "marginMax": 18.0,
           "flowMin": 0.0,
           "flowMax": 0.0
         }
       },
       "heptane": {
-        "n": 117,
+        "n": 41,
         "qhat": {
-          "0.80": 0.5472,
-          "0.90": 0.6901,
-          "0.95": 0.7536
+          "0.80": 0.5311,
+          "0.90": 0.5796,
+          "0.95": 0.6815
         },
         "empiricalCoverage": {
-          "0.80": 0.8291,
-          "0.90": 0.9145,
-          "0.95": 0.9744
+          "0.80": 0.7805,
+          "0.90": 0.9268,
+          "0.95": 0.9756
         },
         "envelope": {
-          "marginMin": 1.0,
+          "marginMin": 2.0,
           "marginMax": 22.0,
           "flowMin": 0.0,
           "flowMax": 0.0
@@ -516,11 +522,26 @@
       }
     },
     "materialFamily": {
-      "propane": "gaseous-fuels",
-      "methanol": "droplet-fuels",
-      "heptane": "droplet-fuels",
+      "cellulose": "solid-materials",
       "cotton": "solid-materials",
-      "pmma": "solid-materials"
+      "decanol": "droplet-fuels",
+      "ethylene": "gaseous-fuels",
+      "heptane": "droplet-fuels",
+      "iso-octane": "droplet-fuels",
+      "jp8": "solid-materials",
+      "kapton": "solid-materials",
+      "methane": "gaseous-fuels",
+      "methanol": "droplet-fuels",
+      "nomex": "solid-materials",
+      "panels": "solid-materials",
+      "pmma": "solid-materials",
+      "pmma-sphere": "solid-materials",
+      "polycarbonate": "solid-materials",
+      "propane": "gaseous-fuels",
+      "pyrell": "solid-materials",
+      "silicone": "solid-materials",
+      "teflon": "solid-materials",
+      "thin-sheet": "solid-materials"
     },
     "labeledRows": 378,
     "droppedUnknownMaterial": 236

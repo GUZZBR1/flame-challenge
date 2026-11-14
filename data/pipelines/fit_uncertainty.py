@@ -42,7 +42,9 @@ Usage:
 
 from __future__ import annotations
 
+import copy
 import csv
+import hashlib
 import json
 import math
 import sys
@@ -53,10 +55,15 @@ ROOT = Path(__file__).resolve().parent.parent          # data/
 REPO = ROOT.parent
 EXP_CSV = ROOT / "processed" / "experiments.csv"
 MODEL = REPO / "shared" / "calibrated-data" / "risk_model.json"
+CALIBRATION = REPO / "shared" / "calibrated-data" / "calibration.json"
 BUNDLE = REPO / "data" / "bundle" / "risk_model.json"
 
 sys.path.insert(0, str(REPO))
+sys.path.insert(0, str(ROOT / "pipelines"))
 from backend.services import risk                       # noqa: E402
+from fit_risk_model import (FAMILY_MIN_LABELED,          # noqa: E402
+                            LOGIT_MIN_CLASS, LOGIT_MIN_LABELED,
+                            NULL_FIT_MIN, logit_fit)
 
 BURNED = {"burnout", "disruption"}
 EXTINCT = {"extinction", "no-ignition"}
@@ -88,16 +95,19 @@ def _conformal_qhat(residuals: list[float], level: float) -> float:
     return sorted(residuals)[k - 1]
 
 
-def _mapie_predict(material_ids: list[str], X_cal, y_cal):
+def _mapie_predict(material_ids: list[str], model: dict, X_cal, y_cal):
     """Run MAPIE split-conformal on (X_cal, y_cal); returns the
-    per-level halfwidths MAPIE produces for the absolute score."""
+    per-level halfwidths MAPIE produces for the absolute score.
+    `model` is the train-fold refit — scoring calibration rows with the
+    shipped model would leak in-sample residuals."""
     import numpy as np
     from mapie.regression import SplitConformalRegressor
     from sklearn.base import BaseEstimator, RegressorMixin
 
     class RiskRegressor(RegressorMixin, BaseEstimator):
-        """Prefit adapter — predict() delegates to the production risk
-        formula so MAPIE calibrates the shipped model, not a proxy.
+        """Prefit adapter — predict() delegates to the train-fold refit
+        via risk.predict_risk so MAPIE calibrates out-of-sample
+        residuals, not the model that saw these rows at fit time.
         X rows are [material_index, o2_pct, flow_cms]."""
 
         # prefit marker — MAPIE inspects this instead of calling fit()
@@ -109,8 +119,8 @@ def _mapie_predict(material_ids: list[str], X_cal, y_cal):
         def predict(self, X):  # noqa: N803 - sklearn signature
             X = np.asarray(X, dtype=float).reshape(-1, 3)
             return np.array([
-                risk.risk_index(material_ids[int(mi)], float(o2),
-                                float(fl), "microgravity")["riskIndex"]
+                risk.predict_risk(model, material_ids[int(mi)],
+                                  float(o2), float(fl), "microgravity")
                 for mi, o2, fl in X
             ])
 
@@ -152,6 +162,72 @@ def _coverage(group_rows: list[tuple], qhat: dict) -> dict:
     return out
 
 
+def _split(rows: list[dict]) -> tuple[list[dict], list[dict]]:
+    """Deterministic 70/30 train/calibration split keyed on run_id —
+    every rerun assigns the same runs to the same side, and no labeled
+    row may both fit the ignition curve and calibrate its interval."""
+    train, cal = [], []
+    for i, r in enumerate(rows):
+        key = r.get("run_id") or f"{r.get('accession')}#{i}"
+        fold = int(hashlib.sha1(str(key).encode()).hexdigest()[:8],
+                   16) % 10
+        (train if fold < 7 else cal).append(r)
+    return train, cal
+
+
+def _refit_ignition(model: dict, train_rows: list[dict],
+                    loc_of: dict, fam_of_mat: dict) -> dict:
+    """Refit the parameters estimated from labeled run outcomes on the
+    train fold only. locPct (a location estimate, not the curve) is held;
+    the ignition logistic — the piece that interpolates the very margins
+    residuals are measured on — is refit following the same scope
+    cascade as fit_risk_model: material MLE → material-null → pooled
+    family fit. Materials that lose their fit keep the shipped params
+    (conservative)."""
+    tm = copy.deepcopy(model)
+    mats = tm.get("materials", {})
+    mat_pts: dict[str, list] = defaultdict(list)
+    fam_pts: dict[str, list] = defaultdict(list)
+    for r in train_rows:
+        mid = r["material_id"]
+        y = 1.0 if r["outcome"] in BURNED else 0.0
+        pt = (float(r["o2_pct"]) - loc_of[mid], y)
+        mat_pts[mid].append(pt)
+        fam = fam_of_mat.get(mid)
+        if fam:
+            fam_pts[fam].append(pt)
+    family_fits = {}
+    for fam, pts in fam_pts.items():
+        n_burn = sum(y for _, y in pts)
+        if (len(pts) >= FAMILY_MIN_LABELED
+                and LOGIT_MIN_CLASS <= n_burn
+                <= len(pts) - LOGIT_MIN_CLASS):
+            f = logit_fit(pts)
+            if f is not None:
+                family_fits[fam] = (f, len(pts))
+    for mid, entry in mats.items():
+        pts = mat_pts.get(mid, [])
+        n_burn = sum(y for _, y in pts)
+        fit = logit_fit(pts) if len(pts) >= LOGIT_MIN_LABELED else None
+        scope, pool_n = "material" if fit else None, len(pts)
+        if fit is None and pts and n_burn == 0 and len(pts) >= NULL_FIT_MIN:
+            fit, scope = (-6.9, 0.0, None), "material-null"
+        if fit is None:
+            fam = fam_of_mat.get(mid)
+            if fam in family_fits:
+                fit, pool_n = family_fits[fam]
+                scope = f"family:{fam}"
+        if fit is None:
+            continue
+        entry["ignitionLogitA"] = round(fit[0], 4)
+        entry["ignitionLogitB"] = round(fit[1], 5)
+        entry["ignitionFitN"] = pool_n
+        entry["ignitionFitScope"] = scope
+        if fit[2] is not None:
+            entry["ignitionFitMcFadden"] = round(fit[2], 3)
+    return tm
+
+
 def main() -> int:
     if not EXP_CSV.exists() or not MODEL.exists():
         print("[FAIL] inputs missing — run normalize_experiments.py then "
@@ -161,38 +237,75 @@ def main() -> int:
     mats = model.get("materials", {})
     loc_of = {mid: float(m.get("locPct", 17.0)) for mid, m in mats.items()}
 
-    # row tuple: (mat_idx, o2, flow, margin, y, yhat) — material_index
-    # indexes material_ids (the sklearn adapter can't carry strings)
-    kept: list[tuple] = []
-    material_ids: list[str] = []
-    mat_idx: dict[str, int] = {}
-    mat_family: dict[str, str] = {}
+    # family membership independent of outcome labels: labeled rows give
+    # the observed family, the material's own pooled ignitionFitScope
+    # covers unlabeled ones (ethylene/methane/iso-octane), and the
+    # investigation spec's materialId is the remaining fallback —
+    # solid-materials last. Without this, unlabeled materials silently
+    # degrade to the global band.
+    spec_fam: dict[str, str] = {}
+    if CALIBRATION.exists():
+        cal_specs = json.loads(
+            CALIBRATION.read_text()).get("investigations", {})
+        for inv_id, spec in cal_specs.items():
+            mid = spec.get("materialId")
+            if mid:
+                spec_fam.setdefault(
+                    mid, INVESTIGATION_FAMILY.get(inv_id,
+                                                  "solid-materials"))
+
+    rows: list[dict] = []
     dropped = 0
+    row_fam: dict[str, str] = {}
     with EXP_CSV.open(newline="", encoding="utf-8") as fh:
         for r in csv.DictReader(fh):
             outcome = r.get("outcome")
             if outcome not in BURNED | EXTINCT:
                 continue
             mid = r.get("material_id") or ""
-            if mid not in mats:
+            if mid not in mats or _fnum(r.get("o2_pct")) is None:
                 dropped += 1
                 continue          # coflow fuels without a material entry
-            o2 = _fnum(r.get("o2_pct"))
-            if o2 is None:
-                dropped += 1
-                continue
-            flow = _fnum(r.get("flow_cms")) or 0.0
-            if mid not in mat_idx:
-                mat_idx[mid] = len(material_ids)
-                material_ids.append(mid)
-            fam = INVESTIGATION_FAMILY.get(r.get("investigation_id") or "",
-                                           "solid-materials")
-            mat_family[mid] = fam
-            y = 1.0 if outcome in BURNED else 0.0
-            yhat = risk.risk_index(mid, o2, flow, "microgravity")["riskIndex"]
-            kept.append((mat_idx[mid], o2, flow, o2 - loc_of[mid], y, yhat))
-    if not kept:
+            row_fam[mid] = INVESTIGATION_FAMILY.get(
+                r.get("investigation_id") or "", "solid-materials")
+            rows.append(r)
+    if not rows:
         print("[FAIL] no labeled rows over calibrated materials",
+              file=sys.stderr)
+        return 1
+
+    def family_of(mid: str) -> str:
+        if mid in row_fam:
+            return row_fam[mid]
+        scope = str(mats[mid].get("ignitionFitScope") or "")
+        if scope.startswith("family:"):
+            return scope.split(":", 1)[1]
+        return spec_fam.get(mid, "solid-materials")
+
+    mat_family = {mid: family_of(mid) for mid in mats}
+
+    # --- the split: fit on 70%, conformalize on the held-out 30% ------
+    train_rows, cal_rows = _split(rows)
+    train_model = _refit_ignition(model, train_rows, loc_of, mat_family)
+
+    # calibration row tuple: (mat_idx, o2, flow, margin, y, yhat) —
+    # yhat from the train-fold refit so residuals are out-of-sample
+    kept: list[tuple] = []
+    material_ids: list[str] = []
+    mat_idx: dict[str, int] = {}
+    for r in cal_rows:
+        mid = r["material_id"]
+        if mid not in mat_idx:
+            mat_idx[mid] = len(material_ids)
+            material_ids.append(mid)
+        o2 = float(r["o2_pct"])
+        flow = _fnum(r.get("flow_cms")) or 0.0
+        y = 1.0 if r["outcome"] in BURNED else 0.0
+        yhat = risk.predict_risk(train_model, mid, o2, flow,
+                                 "microgravity")
+        kept.append((mat_idx[mid], o2, flow, o2 - loc_of[mid], y, yhat))
+    if not kept:
+        print("[FAIL] calibration fold empty — check the run-id split",
               file=sys.stderr)
         return 1
 
@@ -200,7 +313,8 @@ def main() -> int:
         import numpy as np
         by_scope = {"global": kept}
         for fam in FAMILIES:
-            idx = {mat_idx[m] for m, f in mat_family.items() if f == fam}
+            idx = {mat_idx[m] for m, f in mat_family.items()
+                   if f == fam and m in mat_idx}
             by_scope[fam] = [r for r in kept if r[0] in idx]
         for mid, i in mat_idx.items():
             by_scope[f"material:{mid}"] = [r for r in kept if r[0] == i]
@@ -215,7 +329,7 @@ def main() -> int:
                 continue
             X = [[r[0], r[1], r[2]] for r in rows_sc]
             y = [r[4] for r in rows_sc]
-            qh = _mapie_predict(material_ids, X, y)
+            qh = _mapie_predict(material_ids, train_model, X, y)
             # cross-check against the closed-form quantile — identical
             # math, so a divergence means the MAPIE call path drifted
             for lvl in LEVELS:
@@ -233,7 +347,8 @@ def main() -> int:
         qhats = {}
         residuals = {"global": [abs(r[4] - r[5]) for r in kept]}
         for fam in FAMILIES:
-            idx = {mat_idx[m] for m, f in mat_family.items() if f == fam}
+            idx = {mat_idx[m] for m, f in mat_family.items()
+                   if f == fam and m in mat_idx}
             residuals[fam] = [abs(r[4] - r[5]) for r in kept if r[0] in idx]
         for mid, i in mat_idx.items():
             residuals[f"material:{mid}"] = \
@@ -255,7 +370,8 @@ def main() -> int:
 
     families = {}
     for fam in FAMILIES:
-        idx = {mat_idx[m] for m, f in mat_family.items() if f == fam}
+        idx = {mat_idx[m] for m, f in mat_family.items()
+               if f == fam and m in mat_idx}
         e = scope_entry(fam, [r for r in kept if r[0] in idx])
         if e:
             families[fam] = e
@@ -273,11 +389,19 @@ def main() -> int:
         "residual": "|y - riskIndex| over labeled burn/extinct PSI runs",
         "gravityNote": "all calibration runs are microgravity — any "
                        "partial-gravity query is out-of-distribution",
+        "calibrationSplit": {
+            "scheme": "sha1(run_id) % 10 < 7 → train, else calibration",
+            "trainRows": len(train_rows),
+            "calibrationRows": len(cal_rows),
+            "note": "ignition logits refit on train rows only; bands "
+                    "calibrated on held-out residuals — split-conformal "
+                    "requires calibration data excluded from fitting",
+        },
         "global": scope_entry("global", kept),
         "families": families,
         "materials": mat_entries,
         "materialFamily": mat_family,
-        "labeledRows": len(kept),
+        "labeledRows": len(rows),
         "droppedUnknownMaterial": dropped,
     }
     MODEL.write_text(json.dumps(model, indent=2))

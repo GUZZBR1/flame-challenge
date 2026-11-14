@@ -172,8 +172,14 @@ export default function SiConsole() {
         setFocusModule(cmd.focus_module)
         did.push(`focus → ${cmd.focus_module}`)
       }
+      // carry the console's experiment so subscribers retune the SAME
+      // investigation this answer was computed for, not whichever
+      // preset they happen to hold — oxygen-only commands otherwise
+      // restart the wrong run
       window.dispatchEvent(
-        new CustomEvent('ignis:ui-command', { detail: cmd }),
+        new CustomEvent('ignis:ui-command', {
+          detail: { ...cmd, __investigation: cmd.load_preset ?? inv },
+        }),
       )
       if (did.length) {
         setApplied(`applied · ${did.join(' · ')}`)
@@ -181,7 +187,7 @@ export default function SiConsole() {
         appliedTimer.current = window.setTimeout(() => setApplied(null), 5200)
       }
     },
-    [specs],
+    [specs, inv],
   )
 
   const handleResponse = useCallback(

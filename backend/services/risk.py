@@ -84,6 +84,30 @@ def ignition_pressure(margin: float, material: dict | None = None) -> float:
     return min(1.0, p["ignitionBase"] + p["ignitionK"] * margin ** p["ignitionExp"])
 
 
+def predict_risk(model: dict, material_id: str, o2_pct: float,
+                 flow_cms: float = 0.0,
+                 gravity: str = "microgravity") -> float:
+    """Score the risk formula against an explicit model dict.
+
+    Pipeline use — fit_uncertainty.py scores held-out calibration rows
+    with the train-fold refit; scoring them with the shipped model would
+    reuse in-sample parameters and void the conformal guarantee. The
+    formula constants (formula/flowAnchors/hidden factor) are identical
+    across model dicts, so reusing the helpers is exact.
+    """
+    mats = model.get("materials", {})
+    m = mats.get(material_id) or mats.get("pmma") or FALLBACK_MATERIAL
+    margin = float(o2_pct) - float(m.get("locPct", 17.0))
+    p = ignition_pressure(margin, m)
+    f = flow_factor(float(flow_cms))
+    h = float(m.get("hiddenFactor") or
+              (1.0 + 0.25 * m.get("coolFlameCapable", False)
+               + 0.15 * m.get("smoldering", False)
+               + 0.10 * float(m.get("sootIndex", 0.3))))
+    g = GRAVITY_FACTOR.get(str(gravity).lower(), 1.0)
+    return max(0.0, min(1.0, p * f * h * g))
+
+
 def level(risk: float) -> str:
     for hi, name in ((0.05, "minimal"), (0.25, "low"), (0.5, "moderate"),
                      (0.75, "high"), (1.01, "critical")):

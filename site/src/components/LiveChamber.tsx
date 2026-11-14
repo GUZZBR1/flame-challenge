@@ -69,15 +69,22 @@ export default function LiveChamber() {
   useEffect(() => stop, [stop])
 
   // copilot commands retune the live chamber — SiConsole broadcasts
-  // 'ignis:ui-command' after each SI answer (set_o2_percent, load_preset)
+  // 'ignis:ui-command' after each SI answer, carrying __investigation =
+  // the console's experiment. Auto-restart only when we can actually
+  // synchronize that investigation; a SAME-scoped O₂ answer must not
+  // respawn a FLEX heptane run under new numbers.
   const retune = useRef(false)
   useEffect(() => {
     const onCmd = (e: Event) => {
-      const cmd = (e as CustomEvent<SiUiCommand>).detail ?? {}
+      const cmd = (e as CustomEvent<SiUiCommand & {
+        __investigation?: string | null
+      }>).detail ?? {}
       let touched = false
-      if (cmd.load_preset
-          && INVESTIGATIONS.some((i) => i.id === cmd.load_preset)) {
-        setInv(cmd.load_preset)
+      const srcInv = cmd.__investigation ?? cmd.load_preset
+      const runnable = srcInv != null
+        && INVESTIGATIONS.some((i) => i.id === srcInv)
+      if (runnable) {
+        setInv(srcInv)
         touched = true
       }
       if (typeof cmd.set_o2_percent === 'number') {
@@ -85,7 +92,10 @@ export default function LiveChamber() {
           Math.min(Math.max(cmd.set_o2_percent, 0), 40) * 10) / 10)
         touched = true
       }
-      if (touched) retune.current = true
+      // restart only when the chamber runs the investigation the answer
+      // was scoped to — otherwise the state lands for the next manual
+      // run without spawning a misleading experiment
+      if (touched && runnable) retune.current = true
     }
     window.addEventListener('ignis:ui-command', onCmd)
     return () => window.removeEventListener('ignis:ui-command', onCmd)
