@@ -54,6 +54,26 @@ struct Material {
     double ignitionFitN = 0.0;
 };
 
+/**
+ * Fitted coflow extinction constants for one gaseous fuel (ACME CFI-G).
+ * The CFI tables ran two extinction protocols, so the criterion has two
+ * branches: a fuel mass-flow ramp rate above rateCrit blows the flame
+ * off (strain extinction), and an oxidizer ramp ending below extO2Pct
+ * starves it (oxygen-depletion extinction). ignO2Pct / minFlowMgs gate
+ * ignition. rateCrit <= 0 disables the fuel-ramp branch.
+ */
+struct CoflowFit {
+    double ignO2Pct = 0.0;
+    double minFlowMgs = 0.0;
+    double extO2Pct = 0.0;
+    double rateCrit = 0.0;  // mg/s per second; <=0 = disabled
+    int fitN = 0;
+    double fitAccuracy = 0.0;
+};
+
+/** coflow replay verdict — mirrors normalize outcomes */
+enum class CoflowOutcome { Burn = 0, Extinction = 1, NoIgnition = 2 };
+
 class MaterialRisk {
   public:
     MaterialRisk();
@@ -83,8 +103,23 @@ class MaterialRisk {
         return 0.5 * (m.spreadMinCms + m.spreadMaxCms);
     }
 
+    /**
+     * Reduced-order coflow outcome for an ACME-style burner run:
+     * ignition gates first (low O2, end-of-ramp fuel flow under the
+     * minimum sustainable coflow rate), then the two measured
+     * extinction branches. Falls back to the pooled "_default" fit
+     * for fuels without enough labeled runs; returns NoIgnition when
+     * no coflow data exists at all.
+     */
+    CoflowOutcome coflowOutcome(const std::string& fuel, double o2Pct,
+                                double o2EndPct, double mfLo,
+                                double mfHi, double burnTimeS) const;
+
+    const CoflowFit* coflow(const std::string& fuel) const;
+
   private:
     std::unordered_map<std::string, Material> table_;
+    std::unordered_map<std::string, CoflowFit> coflow_;
 };
 
 } // namespace ff

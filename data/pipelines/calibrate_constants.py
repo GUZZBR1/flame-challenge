@@ -56,8 +56,10 @@ CATEGORY_MODEL = {
     "confined": "spread",
     "smoke-aerosol": "spread",
     # ACME coflow gas burners are diffusion flames, not liquid droplets —
-    # the SAFFIRE-type spread model is the closest engine regime
-    "gaseous-diffusion": "spread",
+    # ACME-style coflow diffusion flames have their own regime —
+    # ignition/min-flow gates plus strain (fuel-ramp) and oxygen-depletion
+    # (oxidizer-ramp) extinction criteria fitted in fit_risk_model.py
+    "gaseous-diffusion": "coflow",
     "partial-gravity": "spread",
 }
 

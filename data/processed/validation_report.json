@@ -3,25 +3,28 @@
   "tag": "current",
   "engine": "c++",
   "engineModule": "freefall_engine",
-  "runsTotal": 1063,
-  "runsScored": 378,
-  "accuracy": 0.7407,
+  "runsTotal": 1155,
+  "runsScored": 612,
+  "accuracy": 0.6438,
   "confusion": {
-    "burn->burn": 24,
-    "burn->extinction": 15,
-    "extinction->burn": 59,
-    "extinction->extinction": 256,
-    "extinction->no-ignition": 2,
-    "no-ignition->burn": 22
+    "burn->burn": 57,
+    "burn->extinction": 115,
+    "burn->no-ignition": 9,
+    "extinction->burn": 21,
+    "extinction->extinction": 311,
+    "extinction->no-ignition": 37,
+    "no-ignition->burn": 14,
+    "no-ignition->extinction": 22,
+    "no-ignition->no-ignition": 26
   },
   "perInvestigation": {
     "acme": {
-      "n": 99,
-      "accuracy": 0.192
+      "n": 333,
+      "accuracy": 0.61
     },
     "flex-2": {
       "n": 274,
-      "accuracy": 0.934
+      "accuracy": 0.679
     },
     "saffire": {
       "n": 5,
@@ -29,21 +32,25 @@
     }
   },
   "perMaterial": {
+    "butane": {
+      "n": 140,
+      "accuracy": 0.643
+    },
     "cotton": {
       "n": 3,
       "accuracy": 1.0
     },
-    "decanol": {
-      "n": 20,
-      "accuracy": 0.95
+    "ethane": {
+      "n": 94,
+      "accuracy": 0.638
     },
     "heptane": {
-      "n": 103,
-      "accuracy": 0.835
+      "n": 117,
+      "accuracy": 0.513
     },
     "methanol": {
-      "n": 151,
-      "accuracy": 1.0
+      "n": 157,
+      "accuracy": 0.803
     },
     "pmma": {
       "n": 2,
@@ -51,16 +58,15 @@
     },
     "propane": {
       "n": 99,
-      "accuracy": 0.192
+      "accuracy": 0.535
     }
   },
   "burnRateRelErrMedian": {
-    "decanol": 0.147,
-    "heptane": 0.176,
-    "methanol": 0.155
+    "heptane": 0.181,
+    "methanol": 0.162
   },
   "skipped": {
-    "outcome:unknown": 446,
-    "material-not-calibrated": 239
+    "outcome:unknown": 541,
+    "material-not-calibrated": 2
   }
 }

@@ -36,6 +36,13 @@ PYBIND11_MODULE(freefall_engine, m) {
                                      const std::string& id, double o2) {
             const Material* m = self.get(id);
             return m ? MaterialRisk::ignitionPressure(*m, o2) : -1.0;
+        })
+        .def("coflow_outcome", [](const MaterialRisk& self,
+                                  const std::string& fuel, double o2Pct,
+                                  double o2EndPct, double mfLo, double mfHi,
+                                  double burnTimeS) {
+            return static_cast<int>(self.coflowOutcome(
+                fuel, o2Pct, o2EndPct, mfLo, mfHi, burnTimeS));
         });
 
     py::class_<Chamber::Config>(m, "ChamberConfig")

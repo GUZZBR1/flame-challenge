@@ -102,6 +102,7 @@ class MaterialRisk:
     def __init__(self) -> None:
         # starter table — same values compiled into the C++ ctor
         self.table: dict[str, Material] = {}
+        self.coflow_table: dict[str, dict] = {}
         for m in (
             Material("heptane", "n-Heptane droplet", 12.0, 0.0, 0.0, 0.55, True, False),
             Material("methanol", "Methanol droplet", 12.5, 0.0, 0.0, 0.10, True, False),
@@ -127,6 +128,10 @@ class MaterialRisk:
                 and all(isinstance(p, list) and len(p) == 2
                         for p in anchors)):
             _FLOW_ANCHORS = [[float(p[0]), float(p[1])] for p in anchors]
+        coflow = payload.get("coflow")
+        if isinstance(coflow, dict):
+            self.coflow_table = {str(k): v for k, v in coflow.items()
+                                 if isinstance(v, dict)}
         mats = payload.get("materials", [])
         if not isinstance(mats, list):
             return
@@ -146,6 +151,28 @@ class MaterialRisk:
     def ignition_pressure(self, material_id: str, o2_pct: float) -> float:
         m = self.table.get(material_id)
         return _ignition_pressure(m, float(o2_pct)) if m else -1.0
+
+    def coflow_outcome(self, fuel: str, o2_pct: float, o2_end_pct: float,
+                       mf_lo: float, mf_hi: float,
+                       burn_time_s: float) -> int:
+        """MaterialRisk::coflowOutcome mirror — 0 burn / 1 extinction /
+        2 no-ignition; negative args mean "field absent in the row"."""
+        p = self.coflow_table.get(fuel) \
+            or self.coflow_table.get("_default")
+        if p is None:
+            return 2
+        if 0 <= o2_pct < float(p.get("ignO2Pct", 0)):
+            return 2
+        if 0 <= mf_hi < float(p.get("minFlowMgs", 0)):
+            return 2
+        if 0 <= o2_end_pct < float(p.get("extO2Pct", 0)):
+            return 1
+        rc = p.get("rateCrit")
+        if rc and mf_lo >= 0 and mf_hi >= 0 and burn_time_s > 0 \
+                and mf_hi > mf_lo \
+                and (mf_hi - mf_lo) / burn_time_s > float(rc):
+            return 1
+        return 0
 
 
 class _DropletFlame:

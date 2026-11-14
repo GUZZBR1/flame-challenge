@@ -427,6 +427,111 @@ def main() -> int:
             entry["ignitionFitMcFadden"] = round(fit[2], 3)
         logit_fitted += 1
 
+    # ---- coflow regime fit (ACME CFI-G) -------------------------------
+    # The CFI tables ran two extinction protocols, so the criterion has
+    # two branches, each fitted separately on the labeled rows:
+    #   fuel-ramp SE     — the fuel mass-flow ramp rate (mg/s per s)
+    #                      exceeds a critical strain rate -> blow-off
+    #   oxidizer-ramp SE — the O2 ramp ends below the coflow extinction
+    #                      limit -> oxygen-depletion death
+    # preceded by two ignition gates (end-of-ramp fuel flow under the
+    # minimum sustainable coflow rate; O2 under the gate O2). Thresholds
+    # are grid fits maximizing outcome agreement on labeled runs — a
+    # discriminant, auditable; every constant ships in calibration.json.
+    def _fnum(x):
+        try:
+            return float(x) if x not in (None, "") else None
+        except (TypeError, ValueError):
+            return None
+
+    def coflow_predict(r: dict, p: dict) -> str:
+        """Mirror of MaterialRisk::coflowOutcome — keep in sync with
+        core/src/material_risk.cpp and engine_fallback.coflow_outcome."""
+        o2 = _fnum(r.get("o2_pct"))
+        mf_hi = _fnum(r.get("mass_flow_hi_mgs"))
+        if (o2 is not None and o2 < p["ignO2Pct"]) or \
+                (mf_hi is not None and mf_hi < p["minFlowMgs"]):
+            return "no-ignition"
+        o2e = _fnum(r.get("o2_end_pct"))
+        if o2e is not None and o2e < p["extO2Pct"]:
+            return "extinction"
+        mf_lo = _fnum(r.get("mass_flow_lo_mgs"))
+        bt = _fnum(r.get("burn_time_s"))
+        rc = p.get("rateCrit")
+        if rc is None:
+            rc = 1e9  # disabled branch — fuel-ramp extinction never fires
+        if mf_lo is not None and mf_hi is not None and bt \
+                and mf_hi > mf_lo and (mf_hi - mf_lo) / bt > rc:
+            return "extinction"
+        return "burn"
+
+    def coflow_fit(sub: list[dict]) -> dict | None:
+        labeled = [r for r in sub if r.get("outcome")
+                   in BURNED | EXTINCT]
+        if len(labeled) < 20:
+            return None
+        noign = [_fnum(r.get("mass_flow_hi_mgs")) for r in labeled
+                 if r["outcome"] == "no-ignition"]
+        noign = [x for x in noign if x is not None]
+        others = [_fnum(r.get("mass_flow_hi_mgs")) for r in labeled
+                  if r["outcome"] != "no-ignition"]
+        others = [x for x in others if x is not None]
+        # min-flow gate: threshold between no-ignition flows and the rest,
+        # only when it actually separates (all-extinct-at-any-flow fuels
+        # keep the gate at 0 rather than misfiring on real extinctions)
+        min_flow, best = 0.0, -1
+        for t in sorted(set(noign + others)):
+            ok = sum(x <= t for x in noign) + sum(x > t for x in others)
+            if ok > best:
+                best, min_flow = ok, t
+        # O2 gate: highest O2 that still produced a recorded no-ignition
+        noign_o2 = [_fnum(r.get("o2_pct")) for r in labeled
+                    if r["outcome"] == "no-ignition"]
+        ign_o2 = max((x for x in noign_o2 if x is not None and x <= 25.0),
+                     default=0.0)
+        # extinction thresholds: 2-D grid over oxidizer-ramp floor and
+        # fuel-ramp rate, scored on outcome agreement for ignited rows
+        live = [r for r in labeled if r["outcome"] != "no-ignition"]
+        best_p, best_ok = None, -1
+        for ext_o2 in range(0, 46, 2):
+            for rate in (0.0, 0.02, 0.05, 0.08, 0.1, 0.12, 0.15, 0.2,
+                         0.3, 0.5, 1e9):
+                p = {"ignO2Pct": ign_o2, "minFlowMgs": min_flow,
+                     "extO2Pct": ext_o2, "rateCrit": rate}
+                ok = sum(
+                    coflow_predict(r, p)
+                    == ("burn" if r["outcome"] in BURNED else "extinction")
+                    for r in live)
+                if ok > best_ok:
+                    best_ok, best_p = ok, p
+        acc = best_ok / len(live) if live else None
+        return {"ignO2Pct": round(best_p["ignO2Pct"], 1),
+                "minFlowMgs": round(best_p["minFlowMgs"], 3),
+                "extO2Pct": float(best_p["extO2Pct"]),
+                "rateCrit": (round(best_p["rateCrit"], 4)
+                             if best_p["rateCrit"] < 1e8 else None),
+                "fitN": len(labeled), "fitAccuracy": round(acc, 3)
+                if acc is not None else None}
+
+    coflow_rows: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        if family_of(r.get("investigation_id")) != "gaseous-fuels":
+            continue
+        fuel = (r.get("fuel") or r.get("material_id") or "") \
+            .strip().lower()
+        if fuel:
+            coflow_rows[fuel].append(r)
+    coflow: dict[str, dict] = {}
+    pooled = [r for sub in coflow_rows.values() for r in sub]
+    default_fit = coflow_fit(pooled)
+    if default_fit:
+        coflow["_default"] = default_fit
+    for fuel, sub in sorted(coflow_rows.items()):
+        fit = coflow_fit(sub)
+        if fit:
+            coflow[fuel] = fit
+    cal["coflow"] = coflow
+
     # propagate the canonical LOC back into calibration.json — the C++
     # chamber (materials[].locPct), the backend bridge and the TS fallback
     # must all burn with ONE value; investigations[].effectiveLoc follows

@@ -41,7 +41,9 @@ if CALIBRATION.exists():
         raw = {}
     if isinstance(raw, dict):
         _cal = raw
-        _risks.load_json(json.dumps({"materials": raw.get("materials", [])}))
+        # full document — the engine picks the keys it knows
+        # (materials, flowAnchors, coflow) and ignores the rest
+        _risks.load_json(json.dumps(raw))
 
 
 def materials() -> list[dict]:
@@ -55,6 +57,16 @@ def investigation_map() -> dict:
 def ignition_pressure(material_id: str, o2_pct: float) -> float:
     """Direct MaterialRisk::ignitionPressure — pure, no chamber state."""
     return max(0.0, _risks.ignition_pressure(material_id, float(o2_pct)))
+
+
+def coflow_outcome(fuel: str, o2_pct: float = -1.0,
+                   o2_end_pct: float = -1.0, mf_lo: float = -1.0,
+                   mf_hi: float = -1.0, burn_time_s: float = -1.0) -> int:
+    """MaterialRisk::coflowOutcome — 0 burn / 1 extinction / 2 no-ignition.
+    Negative arguments mean "field absent in the source row"."""
+    return int(_risks.coflow_outcome(
+        fuel, float(o2_pct), float(o2_end_pct), float(mf_lo),
+        float(mf_hi), float(burn_time_s)))
 
 
 def _spec(investigation_id: str) -> dict:

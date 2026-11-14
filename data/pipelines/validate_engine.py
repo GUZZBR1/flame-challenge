@@ -81,6 +81,33 @@ def predicted_burn_rate(mat: dict, o2: float, pressure_kpa: float) -> float:
 def run_chamber(row: dict, spec: dict | None, mat_ids: set[str]):
     """Replay one PSI run. Returns (pred_outcome, detail) or None."""
     mid = row.get("material_id") or ""
+    spec = spec or {}
+    model = spec.get("model")
+    if not model:
+        model = "droplet" if (row.get("droplet_d0_mm")
+                              or mid in DROPLET_MATERIALS) else "spread"
+
+    if model == "coflow":
+        # ACME CFI burner runs: reduced-order criterion on the fitted
+        # ramp constants (fuel is the lookup key — coflow fuels are not
+        # material-table entries)
+        fuel = (row.get("fuel") or mid).strip().lower()
+        if not fuel:
+            return None, "no-fuel"
+
+        def _v(k: str) -> float:
+            x = row.get(k)
+            try:
+                return float(x) if x not in (None, "") else -1.0
+            except ValueError:
+                return -1.0
+
+        pred = eb.coflow_outcome(
+            fuel, _v("o2_pct"), _v("o2_end_pct"),
+            _v("mass_flow_lo_mgs"), _v("mass_flow_hi_mgs"),
+            _v("burn_time_s"))
+        return {0: "burn", 1: "extinction", 2: "no-ignition"}[pred], None
+
     if mid not in mat_ids:
         return None, "material-not-calibrated"
     o2 = row.get("o2_pct")
@@ -92,11 +119,6 @@ def run_chamber(row: dict, spec: dict | None, mat_ids: set[str]):
     cfg.investigationId = row.get("investigation_id") or ""
     cfg.materialId = mid
     cfg.o2Pct = o2
-    spec = spec or {}
-    model = spec.get("model")
-    if not model:
-        model = "droplet" if (row.get("droplet_d0_mm")
-                              or mid in DROPLET_MATERIALS) else "spread"
     cfg.model = model
     fr = spec.get("flowRangeCms") or [0, 10]
     cfg.flowCms = float(row["flow_cms"]) if row.get("flow_cms") \
