@@ -1,0 +1,87 @@
+{
+  "name": "ignis_centro_dados_pesquisa",
+  "version": "1.0.0",
+  "assets": {
+    "bancada_pesquisa": {
+      "file": "bancada_pesquisa.png",
+      "width": 545,
+      "height": 478,
+      "mode": "RGBA"
+    },
+    "centro_dados_pesquisa_assets_v1": {
+      "file": "centro_dados_pesquisa_assets_v1.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA"
+    },
+    "console_pesquisa": {
+      "file": "console_pesquisa.png",
+      "width": 495,
+      "height": 475,
+      "mode": "RGBA"
+    },
+    "motor_ciclo_frames_v1": {
+      "file": "motor_ciclo_frames_v1.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA"
+    },
+    "motor_prototipo": {
+      "file": "motor_prototipo.png",
+      "width": 460,
+      "height": 478,
+      "mode": "RGBA"
+    },
+    "planta_jardineira_a": {
+      "file": "planta_jardineira_a.png",
+      "width": 305,
+      "height": 433,
+      "mode": "RGBA"
+    },
+    "planta_jardineira_b": {
+      "file": "planta_jardineira_b.png",
+      "width": 250,
+      "height": 433,
+      "mode": "RGBA"
+    },
+    "rack_servidor": {
+      "file": "rack_servidor.png",
+      "width": 410,
+      "height": 550,
+      "mode": "RGBA"
+    },
+    "rack_servidor_compacto": {
+      "file": "rack_servidor_compacto.png",
+      "width": 270,
+      "height": 460,
+      "mode": "RGBA"
+    },
+    "terminal": {
+      "file": "terminal.png",
+      "width": 320,
+      "height": 475,
+      "mode": "RGBA"
+    },
+    "mapa_centro_dados_pesquisa_v4": {
+      "file": "mapa_centro_dados_pesquisa_v4.png",
+      "width": 1376,
+      "height": 768,
+      "mode": "RGB",
+      "status": "approved_v4"
+    },
+    "personagens_atlas_v1": {
+      "file": "personagens_atlas_v1.png",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA"
+    },
+    "engine_test_sequence_v4": {
+      "file": "animacoes/engine_test_sequence_v4.png",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGB",
+      "format": "12-frame 3x4 storyboard based on approved V4 map"
+    }
+  },
+  "notes": "Mapa oficial V4 preservado. Prancha de sequência de animação baseada diretamente no mapa V4: animacoes/engine_test_sequence_v4.png."
+}

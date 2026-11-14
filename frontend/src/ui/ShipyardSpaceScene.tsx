@@ -35,6 +35,30 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
   }, [take, isPlaying, showThrusters, cometFrequency, activeSpeed])
 
   useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      if (event.repeat || target?.closest('button, a, input, textarea, select, [role="button"]')) return
+      if (event.code === 'Space') {
+        event.preventDefault()
+        setIsPlaying((value) => !value)
+      } else if (event.key.toLowerCase() === 't') {
+        setShowThrusters((value) => !value)
+      } else if (event.key.toLowerCase() === 'c') {
+        setCometFrequency((value) => value === 'normal' ? 'high' : 'normal')
+      } else if (event.key === '+' || event.key === '=') {
+        setActiveSpeed((value) => Math.min(2, value + 0.5))
+      } else if (event.key === '-') {
+        setActiveSpeed((value) => Math.max(0.5, value - 0.5))
+      } else if (/^[1-7]$/.test(event.key)) {
+        const modes: TakeMode[] = ['macro', 'patrol', 'toroidal', 'thrusters', 'thrusters-close', 'thrusters-burn', 'comets']
+        setTake(modes[Number(event.key) - 1])
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+
+  useEffect(() => {
     const parent = containerRef.current
     if (!parent) return
 
@@ -78,6 +102,7 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
         fxCometCyan: '/assets/space/cometas/fx_comet_cyan.png',
         fxCometGold: '/assets/space/cometas/fx_comet_gold.png',
         fxCometGreen: '/assets/space/cometas/fx_comet_green.png',
+        fxAsteroid: '/assets/space/asteroides/fx_asteroid_small.png',
         fxFlare: '/assets/space/motores/fx_thruster_flare.png',
       }
 
@@ -311,18 +336,21 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
       const cometTextures = [textures.fxCometCyan, textures.fxCometGold, textures.fxCometGreen].filter(Boolean)
 
       function spawnComet() {
-        if (!cometTextures.length) return
-        const tex = cometTextures[Math.floor(Math.random() * cometTextures.length)]
+        if (!cometTextures.length && !textures.fxAsteroid) return
+        const isAsteroid = Boolean(textures.fxAsteroid) && Math.random() < 0.22
+        const tex = isAsteroid
+          ? textures.fxAsteroid
+          : cometTextures[Math.floor(Math.random() * cometTextures.length)]
         const cs = new Sprite(tex)
-        cs.anchor.set(0.2, 0.5)
-        cs.blendMode = 'add'
-        const startX = Math.random() * w * 1.2
-        const startY = -60
-        const angle = (Math.PI / 4) + (Math.random() - 0.5) * 0.35
-        const speed = 7 + Math.random() * 8
+        cs.anchor.set(isAsteroid ? 0.5 : 0.2, 0.5)
+        if (!isAsteroid) cs.blendMode = 'add'
+        const startX = isAsteroid ? -80 : Math.random() * w * 1.2
+        const startY = isAsteroid ? h * (0.12 + Math.random() * 0.18) : -60
+        const angle = isAsteroid ? (Math.random() - 0.5) * 0.16 : (Math.PI / 4) + (Math.random() - 0.5) * 0.35
+        const speed = isAsteroid ? 1.2 + Math.random() * 0.8 : 7 + Math.random() * 8
         const vx = Math.cos(angle) * speed
         const vy = Math.sin(angle) * speed
-        const scale = 0.35 + Math.random() * 0.4
+        const scale = isAsteroid ? 0.035 + Math.random() * 0.02 : 0.35 + Math.random() * 0.4
         cs.scale.set(scale)
         cs.rotation = angle
         cs.x = startX
@@ -335,7 +363,7 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
           vx,
           vy,
           life: 0,
-          maxLife: 140 + Math.random() * 80,
+          maxLife: isAsteroid ? (w + 180) / Math.max(vx, 0.1) : 140 + Math.random() * 80,
         })
       }
 
@@ -344,6 +372,7 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
 
       // Main Animation Loop
       let frame = 0
+      let engineCycleMs = 0
       pixiApp.ticker.add((time) => {
         frame++
         const dt = time.deltaTime
@@ -352,6 +381,7 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
         const showThr = stateRef.current.showThrusters
         const freq = stateRef.current.cometFrequency
         const currentTake = stateRef.current.take
+        const elapsedMs = time.deltaMS * currentSpeed
 
         stars.forEach((st) => {
           st.g.alpha = st.baseA + Math.sin(frame * st.speed) * 0.25
@@ -364,6 +394,7 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
         }
 
         if (playing) {
+          engineCycleMs = (engineCycleMs + elapsedMs) % 8000
           // Comets update
           const spawnChance = freq === 'high' ? 0.03 : 0.009
           if (Math.random() < spawnChance * currentSpeed) {
@@ -388,10 +419,16 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
           }
 
           // Ships update (STRICTLY BEHIND STATION)
-          if (currentTake.startsWith('thrusters') && ships[0]?.thrusters[0] && showThr) {
+          if (currentTake.startsWith('thrusters') && ships[0]?.thrusters[0]) {
+            const engine = ships[0].thrusters[0]
+            const burstStartMs = 7200
+            const burstDurationMs = 800
+            const inBurst = engineCycleMs >= burstStartMs
+            const burstProgress = inBurst ? (engineCycleMs - burstStartMs) / burstDurationMs : 0
             const engineFrames = [textures.fxIdle, textures.fxCruising, textures.fxFullBurn, textures.fxBoost].filter(Boolean)
-            const frameIndex = Math.floor(frame / 9) % engineFrames.length
-            if (engineFrames.length) ships[0].thrusters[0].texture = engineFrames[frameIndex]
+            const frameIndex = !inBurst ? 0 : burstProgress < 0.2 ? 1 : burstProgress < 0.75 ? 2 : 3
+            engine.visible = showThr && inBurst
+            if (engineFrames.length && inBurst) engine.texture = engineFrames[Math.min(frameIndex, engineFrames.length - 1)]
           }
 
           ships.forEach((ship) => {
@@ -404,7 +441,7 @@ export default function ShipyardSpaceScene({ className = '' }: ShipyardSpaceScen
 
             // Thruster fire animations
             ship.thrusters.forEach((th) => {
-              th.visible = showThr
+              th.visible = showThr && (!currentTake.startsWith('thrusters') || th !== ships[0]?.thrusters[0] || engineCycleMs >= 7200)
               if (showThr) {
                 const pulse = 1 + Math.sin(frame * 0.35 + Math.random() * 0.2) * 0.2 * pos.speedMod
                 th.scale.x = (th.scale.y || 0.6) * pulse
