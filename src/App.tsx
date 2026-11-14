@@ -6,6 +6,8 @@ import Header from './components/Header'
 import InsightFeed from './components/InsightFeed'
 import RankingTable from './components/RankingTable'
 import StatCards from './components/StatCards'
+import ShipyardSpaceScene from './components/ShipyardSpaceScene'
+import { Rocket, BarChart2 } from 'lucide-react'
 import { getInvestigations } from './lib/data'
 import {
   buildInsights,
@@ -14,6 +16,8 @@ import {
   rankInvestigations,
 } from './lib/insights'
 import type { Category, HazardTag } from './types'
+import HangarScene from './components/HangarScene'
+import { Warehouse } from 'lucide-react'
 
 const EMPTY_FILTERS: Filters = {
   q: '',
@@ -25,6 +29,7 @@ const EMPTY_FILTERS: Filters = {
 function App() {
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
+  const [activeView, setActiveView] = useState<'dashboard' | 'shipyard' | 'hangar'>('hangar')
 
   const allRanked = useMemo(() => rankInvestigations(getInvestigations()), [])
 
@@ -91,32 +96,77 @@ function App() {
     <div className="min-h-screen font-sans text-slate-200 antialiased">
       <Header />
       <main className="mx-auto max-w-[1400px] space-y-6 px-6 py-6">
-        <StatCards
-          total={stats.total}
-          minLoc={stats.minLoc}
-          hiddenHazards={stats.hiddenHazards}
-          explorationRelevant={stats.explorationRelevant}
-        />
-
-        <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
-          <div className="space-y-4">
-            <FilterBar
-              filters={filters}
-              onChange={setFilters}
-              categories={Object.keys(CATEGORY_LABELS) as Category[]}
-              hazards={Object.keys(HAZARD_LABELS) as HazardTag[]}
-            />
-            <RankingTable
-              ranked={filtered}
-              selectedId={selected?.inv.id}
-              onSelect={setSelectedId}
-            />
-          </div>
-          <DetailPanel entry={selected} />
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-3 border-b border-edge/60 pb-3">
+          <button
+            onClick={() => setActiveView('hangar')}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+              activeView === 'hangar'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-lg shadow-cyan-500/10'
+                : 'text-mist hover:text-white border border-transparent'
+            }`}
+          >
+            <Warehouse size={16} />
+            Hangar 2.5D & Animações (PixiJS)
+          </button>
+          <button
+            onClick={() => setActiveView('shipyard')}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+              activeView === 'shipyard'
+                ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-lg shadow-sky-500/10'
+                : 'text-mist hover:text-white border border-transparent'
+            }`}
+          >
+            <Rocket size={16} />
+            Estaleiro Macro (PixiJS)
+          </button>
+          <button
+            onClick={() => setActiveView('dashboard')}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition ${
+              activeView === 'dashboard'
+                ? 'bg-flame/20 text-flame border border-flame/40 shadow-lg shadow-flame/10'
+                : 'text-mist hover:text-white border border-transparent'
+            }`}
+          >
+            <BarChart2 size={16} />
+            Dashboard Científico PSI
+          </button>
         </div>
 
-        <ChartsPanel ranked={allRanked} />
-        <InsightFeed insights={insights} />
+        {activeView === 'hangar' ? (
+          <HangarScene />
+        ) : activeView === 'shipyard' ? (
+          <ShipyardSpaceScene />
+        ) : (
+          <>
+            <StatCards
+              total={stats.total}
+              minLoc={stats.minLoc}
+              hiddenHazards={stats.hiddenHazards}
+              explorationRelevant={stats.explorationRelevant}
+            />
+
+            <div className="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
+              <div className="space-y-4">
+                <FilterBar
+                  filters={filters}
+                  onChange={setFilters}
+                  categories={Object.keys(CATEGORY_LABELS) as Category[]}
+                  hazards={Object.keys(HAZARD_LABELS) as HazardTag[]}
+                />
+                <RankingTable
+                  ranked={filtered}
+                  selectedId={selected?.inv.id}
+                  onSelect={setSelectedId}
+                />
+              </div>
+              <DetailPanel entry={selected} />
+            </div>
+
+            <ChartsPanel ranked={allRanked} />
+            <InsightFeed insights={insights} />
+          </>
+        )}
 
         <footer className="border-t border-edge pt-4 text-xs text-mist">
           <p>

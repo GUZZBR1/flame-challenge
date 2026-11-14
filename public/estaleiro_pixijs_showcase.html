@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IGNIS — Estaleiro Orbital & Naves em Órbita Traseira (PixiJS)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.2/pixi.min.js"></script>
+<style>
+  :root {
+    --bg: #030712;
+    --card: #0f172a;
+    --border: #1e293b;
+    --primary: #38bdf8;
+    --accent: #f59e0b;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .app-container {
+    width: 100%;
+    max-width: 1200px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  }
+  .header-bar {
+    padding: 14px 20px;
+    background: #090e1a;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .title-group h1 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+  }
+  .title-group p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .takes-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    background: #030712;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+  .take-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .take-btn:hover { color: #fff; background: rgba(56, 189, 248, 0.1); }
+  .take-btn.active {
+    background: var(--primary);
+    color: #030712;
+  }
+  .controls-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toggle-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: var(--text);
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .toggle-btn.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .viewport {
+    position: relative;
+    width: 100%;
+    height: 600px;
+    background: #020617;
+    overflow: hidden;
+  }
+  #pixi-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .overlay-legend {
+    position: absolute;
+    bottom: 14px;
+    left: 16px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: none;
+  }
+  .overlay-legend strong { color: var(--text); }
+  .status-tag {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    background: #10b981;
+  }
+  .footer-specs {
+    padding: 10px 20px;
+    background: #090e1a;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header-bar">
+    <div class="title-group">
+      <h1>IGNIS // ESTALEIRO ORBITAL & NAVES EM ÓRBITA TRASEIRA</h1>
+      <p>Naves passando estritamente atrás do estaleiro com oclusão 2.5D, fogo de motor e cometas</p>
+    </div>
+
+    <div class="takes-bar">
+      <button class="take-btn active" onclick="setTake('macro')">Take 1: Visão Geral</button>
+      <button class="take-btn" onclick="setTake('patrol')">Take 2: Patrulha Traseira</button>
+      <button class="take-btn" onclick="setTake('toroidal')">Take 3: Vão Central Toroidal</button>
+      <button class="take-btn" onclick="setTake('thrusters')">Take 4: Fogo do Motor</button>
+      <button class="take-btn" onclick="setTake('comets')">Take 5: Cometas de Fundo</button>
+    </div>
+
+    <div class="controls-group">
+      <button id="btn-thrusters" class="toggle-btn active" onclick="toggleThrusters()">
+        <span>🔥</span> Fogo Motor
+      </button>
+      <button id="btn-comets" class="toggle-btn active" onclick="toggleComets()">
+        <span>☄️</span> Cometas
+      </button>
+      <button id="btn-speed" class="toggle-btn" onclick="cycleSpeed()">
+        <span id="speed-text">1.0x Vel</span>
+      </button>
+      <button id="btn-play" class="toggle-btn" onclick="togglePlay()">
+        <span id="play-text">⏸ Pausar</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="viewport" id="viewport">
+    <div class="overlay-legend">
+      <div><span class="status-tag"></span><strong>Estaleiro IGNIS:</strong> Primeiro Plano (Oclusão Total)</div>
+      <div id="legend-take"><strong>Take Ativo:</strong> Visão Geral Macro (Naves passando estritamente atrás)</div>
+      <div id="legend-ships"><strong>Profundidade:</strong> Naves em órbita de fundo, visíveis no vão toroidal</div>
+    </div>
+  </div>
+
+  <div class="footer-specs">
+    <span>Camadas: Fundo Espacial → Cometas → Naves & Fogo → Estaleiro Frontal (Oclusivo)</span>
+    <span>Render: WebGL / PixiJS Canvas · Estilo NASA Space Apps 2026</span>
+  </div>
+</div>
+
+<script>
+  let currentTake = 'macro';
+  let showThrusters = true;
+  let showComets = true;
+  let cometRate = 0.012;
+  let simSpeed = 1.0;
+  let isPlaying = true;
+
+  const vp = document.getElementById('viewport');
+  const app = new PIXI.Application({
+    width: vp.clientWidth || 1160,
+    height: 600,
+    backgroundColor: 0x030612,
+    resolution: window.devicePixelRatio || 1,
+    autoDensity: true,
+    antialias: true
+  });
+  vp.appendChild(app.view);
+  app.view.id = 'pixi-canvas';
+
+  // Strict Layer Order: SHIPS AND EFFECTS BEHIND THE STATION!
+  const starLayer = new PIXI.Container();
+  const cometLayer = new PIXI.Container();
+  const bgLayer = new PIXI.Container();
+  const shipLayer = new PIXI.Container();      // SHIPS BEHIND STATION!
+  const fxLayer = new PIXI.Container();        // THRUST PARTICLES BEHIND STATION!
+  const stationFgLayer = new PIXI.Container(); // STATION FOREGROUND OCCLUDES SHIPS!
+
+  app.stage.addChild(starLayer);
+  app.stage.addChild(cometLayer);
+  app.stage.addChild(bgLayer);
+  app.stage.addChild(shipLayer);
+  app.stage.addChild(fxLayer);
+  app.stage.addChild(stationFgLayer);
+
+  const w = app.screen.width;
+  const h = app.screen.height;
+
+  // 1. Starfield
+  const stars = [];
+  for (let i = 0; i < 220; i++) {
+    const star = new PIXI.Graphics();
+    const size = Math.random() < 0.85 ? 1 : Math.random() < 0.96 ? 2 : 2.5;
+    const col = Math.random() < 0.6 ? 0xffffff : Math.random() < 0.85 ? 0x7dd3fc : 0xfde047;
+    star.beginFill(col);
+    star.drawCircle(0, 0, size);
+    star.endFill();
+    star.x = Math.random() * w;
+    star.y = Math.random() * h;
+    star.baseAlpha = 0.35 + Math.random() * 0.65;
+    star.alpha = star.baseAlpha;
+    star.speed = 0.02 + Math.random() * 0.05;
+    starLayer.addChild(star);
+    stars.push(star);
+  }
+
+  // Assets
+  const ASSETS = {
+    bg: '/assets/space/estaleiro/estaleiro_bg.jpg',
+    fg: '/assets/space/estaleiro/station_foreground.png',
+    patrol: '/assets/space/naves/ship_science_patrol.png',
+    scout: '/assets/space/naves/ship_scout_interceptor.png',
+    cargo: '/assets/space/naves/ship_heavy_cargo.png',
+    recon: '/assets/space/naves/ship_recon_corvette.png',
+    fullBurn: '/assets/space/motores/fx_thruster_full_burn.png',
+    boost: '/assets/space/motores/fx_thruster_boost.png',
+    amber: '/assets/space/motores/fx_thruster_ion_amber.png',
+    cruising: '/assets/space/motores/fx_thruster_cruising.png',
+    cometCyan: '/assets/space/cometas/fx_comet_cyan.png',
+    cometGold: '/assets/space/cometas/fx_comet_gold.png',
+    cometGreen: '/assets/space/cometas/fx_comet_green.png'
+  };
+
+  // Station background & foreground
+  const stationTex = PIXI.Texture.from(ASSETS.bg);
+  const stationSprite = new PIXI.Sprite(stationTex);
+  stationSprite.anchor.set(0.5);
+  stationSprite.x = w * 0.52;
+  stationSprite.y = h * 0.5;
+  const scale = Math.min(w / 1376, h / 768) * 1.05;
+  stationSprite.scale.set(scale);
+  bgLayer.addChild(stationSprite);
+
+  const stationFgTex = PIXI.Texture.from(ASSETS.fg);
+  const stationFgSprite = new PIXI.Sprite(stationFgTex);
+  stationFgSprite.anchor.set(0.5);
+  stationFgSprite.x = w * 0.52;
+  stationFgSprite.y = h * 0.5;
+  stationFgSprite.scale.set(scale);
+  stationFgLayer.addChild(stationFgSprite);
+
+  // Ships setup — All flight paths are in upper space / behind the station!
+  const ships = [];
+
+  function createShip(id, texUrl, thrusterUrl, shipScale, speed, pathFn, isAmber = false) {
+    const s = new PIXI.Sprite(PIXI.Texture.from(texUrl));
+    s.anchor.set(0.5);
+    s.scale.set(shipScale);
+
+    const th = new PIXI.Sprite(PIXI.Texture.from(thrusterUrl));
+    th.anchor.set(0.1, 0.5);
+    th.blendMode = PIXI.BLEND_MODES.ADD;
+    th.scale.set(0.75);
+    s.addChild(th);
+
+    shipLayer.addChild(s);
+    const shipObj = {
+      id,
+      sprite: s,
+      thruster: th,
+      t: Math.random(),
+      speed,
+      baseScale: shipScale,
+      path: pathFn,
+      isAmber,
+      particles: []
+    };
+    ships.push(shipObj);
+    return shipObj;
+  }
+
+  // 1) Science Patrol Cruiser (Sweeping upper orbit behind station rim)
+  createShip('patrol', ASSETS.patrol, ASSETS.fullBurn, 0.22, 0.0003, (t) => {
+    const rad = t % 1;
+    const px = -120 + rad * (w + 240);
+    const py = h * 0.18 + Math.sin(rad * Math.PI * 2) * (h * 0.06);
+    return { x: px, y: py, rot: 0.35 };
+  });
+
+  // 2) Scout Interceptor (Passing through the central toroidal void!)
+  createShip('scout', ASSETS.scout, ASSETS.boost, 0.18, 0.00055, (t) => {
+    const rad = t % 1;
+    const sx = w * 0.35, sy = h * 0.25;
+    const ex = w * 0.85, ey = h * 0.48;
+    return {
+      x: sx + (ex - sx) * rad,
+      y: sy + (ey - sy) * rad,
+      rot: Math.atan2(ey - sy, ex - sx) + 0.4
+    };
+  });
+
+  // 3) Heavy Cargo (Distant upper background crawl)
+  createShip('cargo', ASSETS.cargo, ASSETS.amber, 0.20, 0.00018, (t) => {
+    const rad = t % 1;
+    const px = w + 100 - rad * (w + 200);
+    const py = h * 0.12 + Math.sin(rad * Math.PI) * (h * 0.04);
+    return { x: px, y: py, rot: Math.PI - 0.2, isAmber: true };
+  }, true);
+
+  // 4) Recon Corvette (Behind northern antennas)
+  createShip('recon', ASSETS.recon, ASSETS.cruising, 0.18, 0.00045, (t) => {
+    const rad = t % 1;
+    const px = w * 0.8 + Math.cos(rad * Math.PI * 2) * (w * 0.25);
+    const py = h * 0.25 + Math.sin(rad * Math.PI * 2) * (h * 0.12);
+    const dx = -Math.sin(rad * Math.PI * 2) * (w * 0.25);
+    const dy = Math.cos(rad * Math.PI * 2) * (h * 0.12);
+    return { x: px, y: py, rot: Math.atan2(dy, dx) + 0.4 };
+  });
+
+  // Comets System
+  const comets = [];
+  const cometTexList = [ASSETS.cometCyan, ASSETS.cometGold, ASSETS.cometGreen];
+
+  function spawnComet() {
+    if (!showComets) return;
+    const texUrl = cometTexList[Math.floor(Math.random() * cometTexList.length)];
+    const cs = new PIXI.Sprite(PIXI.Texture.from(texUrl));
+    cs.anchor.set(0.2, 0.5);
+    cs.blendMode = PIXI.BLEND_MODES.ADD;
+    const sx = Math.random() * w * 1.2;
+    const sy = -50;
+    const angle = (Math.PI / 4) + (Math.random() - 0.5) * 0.35;
+    const spd = 6 + Math.random() * 7;
+    cs.rotation = angle;
+    cs.scale.set(0.35 + Math.random() * 0.35);
+    cs.x = sx;
+    cs.y = sy;
+    cometLayer.addChild(cs);
+    comets.push({
+      sprite: cs,
+      x: sx,
+      y: sy,
+      vx: Math.cos(angle) * spd,
+      vy: Math.sin(angle) * spd,
+      life: 0,
+      maxLife: 150 + Math.random() * 80
+    });
+  }
+
+  // Ticker loop
+  let frame = 0;
+  app.ticker.add((delta) => {
+    frame++;
+
+    stars.forEach(st => {
+      st.alpha = st.baseAlpha + Math.sin(frame * st.speed) * 0.25;
+    });
+
+    if (stationSprite && stationFgSprite) {
+      const osc = Math.sin(frame * 0.015) * 3;
+      stationSprite.y = h * 0.5 + osc;
+      stationFgSprite.y = h * 0.5 + osc;
+    }
+
+    if (!isPlaying) return;
+
+    if (Math.random() < cometRate * simSpeed) {
+      spawnComet();
+    }
+
+    for (let i = comets.length - 1; i >= 0; i--) {
+      const c = comets[i];
+      c.life += delta * simSpeed;
+      c.x += c.vx * delta * simSpeed;
+      c.y += c.vy * delta * simSpeed;
+      c.sprite.x = c.x;
+      c.sprite.y = c.y;
+      const prog = c.life / c.maxLife;
+      c.sprite.alpha = prog < 0.2 ? prog / 0.2 : 1 - (prog - 0.2) / 0.8;
+      if (c.life >= c.maxLife || c.x > w + 200 || c.y > h + 200) {
+        cometLayer.removeChild(c.sprite);
+        c.sprite.destroy();
+        comets.splice(i, 1);
+      }
+    }
+
+    ships.forEach(ship => {
+      ship.t = (ship.t + ship.speed * simSpeed * delta) % 1;
+      const p = ship.path(ship.t);
+      ship.sprite.x = p.x;
+      ship.sprite.y = p.y;
+      ship.sprite.rotation = p.rot;
+
+      ship.thruster.visible = showThrusters;
+      if (showThrusters) {
+        const pulse = 1 + Math.sin(frame * 0.35 + Math.random() * 0.2) * 0.22;
+        ship.thruster.scale.x = 0.75 * pulse;
+        ship.thruster.alpha = 0.85 + Math.random() * 0.15;
+        ship.thruster.x = -ship.sprite.texture.width * 0.38;
+      }
+
+      if (showThrusters && Math.random() < 0.35 * simSpeed) {
+        const part = new PIXI.Graphics();
+        const col = ship.isAmber ? 0xf59e0b : 0x38bdf8;
+        part.beginFill(col, 0.85);
+        part.drawCircle(0, 0, 1.2 + Math.random() * 1.5);
+        part.endFill();
+        part.x = p.x - Math.cos(p.rot) * 20;
+        part.y = p.y - Math.sin(p.rot) * 20;
+        fxLayer.addChild(part);
+        ship.particles.push({ g: part, life: 0, maxLife: 25 + Math.random() * 15 });
+      }
+
+      for (let j = ship.particles.length - 1; j >= 0; j--) {
+        const pt = ship.particles[j];
+        pt.life += delta;
+        pt.g.alpha = 1 - (pt.life / pt.maxLife);
+        pt.g.scale.set(1 + (pt.life / pt.maxLife) * 0.7);
+        if (pt.life >= pt.maxLife) {
+          fxLayer.removeChild(pt.g);
+          pt.g.destroy();
+          ship.particles.splice(j, 1);
+        }
+      }
+    });
+
+    let targetScale = 1;
+    let targetX = 0;
+    let targetY = 0;
+
+    if (currentTake === 'patrol' && ships[0]) {
+      targetScale = 1.3;
+      targetX = w * 0.5 - ships[0].sprite.x * 1.3;
+      targetY = h * 0.35 - ships[0].sprite.y * 1.3;
+    } else if (currentTake === 'toroidal' && ships[1]) {
+      targetScale = 1.45;
+      targetX = w * 0.5 - ships[1].sprite.x * 1.45;
+      targetY = h * 0.45 - ships[1].sprite.y * 1.45;
+    } else if (currentTake === 'thrusters' && ships[0]) {
+      targetScale = 1.5;
+      targetX = w * 0.5 - ships[0].sprite.x * 1.5;
+      targetY = h * 0.3 - ships[0].sprite.y * 1.5;
+    } else if (currentTake === 'comets') {
+      targetScale = 0.95;
+    }
+
+    app.stage.scale.x += (targetScale - app.stage.scale.x) * 0.05;
+    app.stage.scale.y += (targetScale - app.stage.scale.y) * 0.05;
+    app.stage.x += (targetX - app.stage.x) * 0.05;
+    app.stage.y += (targetY - app.stage.y) * 0.05;
+  });
+
+  function setTake(take) {
+    currentTake = take;
+    document.querySelectorAll('.take-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const descriptions = {
+      macro: 'Visão Geral Macro (Naves passando estritamente atrás do estaleiro)',
+      patrol: 'Câmera Tracking no Science Cruiser em órbita superior traseira',
+      toroidal: 'Cruzamento pelo vão central toroidal (visível através do anel)',
+      thrusters: 'Foco nos propulsores a plasma e feixes de escape em queima total',
+      comets: 'Chuva Cósmica de Cometas rasgando o fundo estrelado'
+    };
+    document.getElementById('legend-take').innerHTML = `<strong>Take Ativo:</strong> ${descriptions[take]}`;
+    if (take === 'comets') {
+      cometRate = 0.04;
+      spawnComet();
+      spawnComet();
+    } else {
+      cometRate = 0.012;
+    }
+  }
+
+  function toggleThrusters() {
+    showThrusters = !showThrusters;
+    document.getElementById('btn-thrusters').classList.toggle('active', showThrusters);
+  }
+
+  function toggleComets() {
+    showComets = !showComets;
+    document.getElementById('btn-comets').classList.toggle('active', showComets);
+  }
+
+  function cycleSpeed() {
+    if (simSpeed === 1.0) simSpeed = 2.0;
+    else if (simSpeed === 2.0) simSpeed = 0.5;
+    else simSpeed = 1.0;
+    document.getElementById('speed-text').innerText = `${simSpeed.toFixed(1)}x Vel`;
+  }
+
+  function togglePlay() {
+    isPlaying = !isPlaying;
+    document.getElementById('play-text').innerText = isPlaying ? '⏸ Pausar' : '▶ Iniciar';
+  }
+
+  window.addEventListener('resize', () => {
+    app.renderer.resize(vp.clientWidth || 1160, 600);
+  });
+</script>
+</body>
+</html>
