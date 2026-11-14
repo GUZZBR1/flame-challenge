@@ -329,7 +329,7 @@
       ]
     },
     "acme": {
-      "model": "droplet",
+      "model": "spread",
       "materialId": "ethylene",
       "o2Range": [
         16,
