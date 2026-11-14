@@ -182,6 +182,19 @@ def api_investigations() -> dict:
     return investigations.leaderboard()
 
 
+_BUNDLE = Path(__file__).resolve().parents[2] / "data" / "bundle"
+
+
+@app.get("/api/investigations/matrix")
+def api_investigation_matrix() -> dict:
+    """Summarize feed — the full investigation matrix served to the
+    dashboard (objectives, fuels, conditions, variation, sensors)."""
+    path = _BUNDLE / "investigations.json"
+    if not path.exists():
+        return {"investigations": []}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 @app.get("/api/investigations/{inv_id}")
 def api_investigation_detail(inv_id: str) -> dict:
     card = investigations.detail(inv_id)
@@ -202,19 +215,6 @@ def api_insights() -> dict:
 
 
 # ---------- SI layer: summarize feed + run diff ----------
-
-_BUNDLE = Path(__file__).resolve().parents[2] / "data" / "bundle"
-
-
-@app.get("/api/investigations/matrix")
-def api_investigation_matrix() -> dict:
-    """Summarize feed — the full investigation matrix served to the
-    dashboard (objectives, fuels, conditions, variation, sensors)."""
-    path = _BUNDLE / "investigations.json"
-    if not path.exists():
-        return {"investigations": []}
-    return json.loads(path.read_text(encoding="utf-8"))
-
 
 @app.get("/api/risk/rank")
 def api_risk_rank(o2Pct: float = Query(21.0, ge=0.0, le=100.0,
