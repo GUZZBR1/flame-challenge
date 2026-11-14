@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { SiUiCommand } from '../lib/api'
 import {
   streamChamber,
   type ChamberState,
@@ -66,6 +67,37 @@ export default function LiveChamber() {
   }, [inv, o2, sealed, stop])
 
   useEffect(() => stop, [stop])
+
+  // copilot commands retune the live chamber — SiConsole broadcasts
+  // 'ignis:ui-command' after each SI answer (set_o2_percent, load_preset)
+  const retune = useRef(false)
+  useEffect(() => {
+    const onCmd = (e: Event) => {
+      const cmd = (e as CustomEvent<SiUiCommand>).detail ?? {}
+      let touched = false
+      if (cmd.load_preset
+          && INVESTIGATIONS.some((i) => i.id === cmd.load_preset)) {
+        setInv(cmd.load_preset)
+        touched = true
+      }
+      if (typeof cmd.set_o2_percent === 'number') {
+        setO2(Math.round(
+          Math.min(Math.max(cmd.set_o2_percent, 0), 40) * 10) / 10)
+        touched = true
+      }
+      if (touched) retune.current = true
+    }
+    window.addEventListener('ignis:ui-command', onCmd)
+    return () => window.removeEventListener('ignis:ui-command', onCmd)
+  }, [])
+
+  // re-stream once the new parameters have landed in state
+  useEffect(() => {
+    if (retune.current) {
+      retune.current = false
+      run()
+    }
+  }, [run, inv, o2])
 
   // ---------- canvas ----------
   useEffect(() => {

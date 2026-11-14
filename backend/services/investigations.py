@@ -46,6 +46,22 @@ DISPLAY_NAME = {
     "acme": "ACME", "saffire": "SAFFIRE", "same": "SAME",
     "confined-combustion": "Confined Combustion", "flare": "FLARE",
 }
+
+# Matrix children the brief names but which share a parent's calibrated
+# spec — detail() resolves them through this map so all 14 matrix ids
+# answer, marked with specId/aliasedFrom for provenance.
+CHILD_TO_PARENT = {
+    "bass": "bass-ii",
+    "same-r": "same",
+    "acme-efield": "acme",
+    "spice": "acme",
+    "slice": "acme",
+    "cfi": "acme",
+}
+CHILD_NAME = {
+    "bass": "BASS", "same-r": "SAME-R", "acme-efield": "ACME E-FIELD",
+    "spice": "SPICE", "slice": "SLICE", "cfi": "CFI",
+}
 PSI_URL = "https://psi.nasa.gov/physci/repo"
 
 WEIGHTS = {"flammability": 0.35, "hiddenHazard": 0.25,
@@ -258,10 +274,20 @@ def leaderboard() -> dict:
 
 def detail(inv_id: str) -> dict | None:
     ctx = _ctx()
-    spec = ctx["cal"].get("investigations", {}).get(inv_id)
+    specs = ctx["cal"].get("investigations", {})
+    spec = specs.get(inv_id)
+    parent = None
+    if spec is None:
+        parent = CHILD_TO_PARENT.get(inv_id)
+        spec = specs.get(parent) if parent else None
     if spec is None:
         return None
-    card = _card(inv_id, spec, ctx)
+    card = _card(parent or inv_id, spec, ctx)
+    if parent:
+        card["id"] = inv_id
+        card["name"] = CHILD_NAME.get(inv_id, inv_id)
+        card["specId"] = parent
+        card["specName"] = DISPLAY_NAME.get(parent, parent)
     mat = ctx["model"].get("materials", {}).get(spec.get("materialId"))
     if mat:
         card["material"] = {
@@ -270,8 +296,9 @@ def detail(inv_id: str) -> dict | None:
             "ignitionFitScope": mat.get("ignitionFitScope"),
             "psiRuns": mat.get("psiRuns"),
         }
-    # a handful of representative real runs for the detail drawer
-    rows = ctx["runs"].get(inv_id, [])
+    # a handful of representative real runs for the detail drawer —
+    # children inherit the parent umbrella's normalized rows
+    rows = ctx["runs"].get(parent or inv_id, [])
     card["sampleRuns"] = [{
         "runId": r.get("run_id"), "accession": r.get("accession"),
         "fuel": r.get("fuel"), "o2Pct": _num(r.get("o2_pct")),

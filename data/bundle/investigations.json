@@ -82,7 +82,8 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo"
       },
       "publications": 24,
-      "verified": false
+      "verified": false,
+      "psiRuns": 0
     },
     {
       "id": "bass-ii",
@@ -301,7 +302,7 @@
       },
       "publications": 45,
       "verified": true,
-      "psiRuns": 299,
+      "psiRuns": 282,
       "psiAccessions": [
         "PSI-39",
         "PSI-68",
@@ -415,7 +416,7 @@
       },
       "publications": 60,
       "verified": true,
-      "psiRuns": 629,
+      "psiRuns": 738,
       "psiAccessions": [
         "PSI-10",
         "PSI-159",
@@ -679,7 +680,8 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo"
       },
       "publications": 12,
-      "verified": false
+      "verified": false,
+      "psiRuns": 0
     },
     {
       "id": "confined-combustion",
@@ -762,7 +764,8 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo"
       },
       "publications": 15,
-      "verified": false
+      "verified": false,
+      "psiRuns": 0
     },
     {
       "id": "flare",
@@ -844,7 +847,8 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo"
       },
       "publications": 8,
-      "verified": false
+      "verified": false,
+      "psiRuns": 0
     },
     {
       "id": "bass",
@@ -923,7 +927,7 @@
         "availability": "full",
         "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-26"
       },
-      "psiRuns": 122,
+      "psiRuns": 0,
       "psiAccessions": [
         "PSI-26"
       ],
@@ -1008,7 +1012,8 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-101"
       },
       "publications": 6,
-      "verified": false
+      "verified": false,
+      "psiRuns": 0
     },
     {
       "id": "spice",
@@ -1081,7 +1086,8 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo"
       },
       "publications": 10,
-      "verified": false
+      "verified": false,
+      "psiRuns": 0
     },
     {
       "id": "slice",
@@ -1156,7 +1162,8 @@
         "psiUrl": "https://psi.nasa.gov/physci/repo"
       },
       "publications": 10,
-      "verified": false
+      "verified": false,
+      "psiRuns": 0
     },
     {
       "id": "acme-efield",
@@ -1229,7 +1236,7 @@
         "availability": "full",
         "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-22"
       },
-      "psiRuns": 21,
+      "psiRuns": 0,
       "psiAccessions": [
         "PSI-22"
       ],
@@ -1313,12 +1320,15 @@
         "availability": "full",
         "psiUrl": "https://psi.nasa.gov/physci/repo/data/investigation/PSI-159"
       },
-      "psiRuns": 333,
+      "psiRuns": 0,
       "psiAccessions": [
         "PSI-159"
       ],
       "publications": 10,
       "verified": false
     }
-  ]
+  ],
+  "meta": {
+    "uniquePsiRuns": 1155
+  }
 }

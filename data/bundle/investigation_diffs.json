@@ -6,7 +6,7 @@
    "id": "flex-co2-vs-he",
    "title": "FLEX — suppressant swap at fixed O₂",
    "hook": "co₂ vs he, 15% each",
-   "insight": "Same fuel (heptane), same 18% O₂, same 15% diluent fraction — CO₂ leaves a cool flame burning after the visible flame dies; He does not. Suppressant chemistry, not just O₂ displacement, decides whether a fire is really out.",
+   "insight": "Same fuel (heptane), same 18% O₂, same 15% diluent fraction — CO₂ leaves a cool flame burning after the visible flame dies; He does not. Suppressant chemistry, not just O₂ displacement, decides whether a fire is really out. Caveat: the record also couples droplet size (3.7 vs 2.3 mm) — the changed list shows it.",
    "runA": {
     "runId": "FLEX-154",
     "accession": "PSI-69",
@@ -166,7 +166,7 @@
    "id": "flex-n2-vs-co2",
    "title": "FLEX — diluent switch on methanol",
    "hook": "n₂ vs co₂ at 15% O₂",
-   "insight": "Methanol at 15% O₂: swapping N₂ for CO₂ moved the extinction boundary from oxygen-limit to radiative — CO₂ kills the flame by heat capacity, not only by dilution.",
+   "insight": "Methanol at 15% O₂: swapping 85% N₂ for 50% CO₂ did not change the terminal mode — both runs still ended in radiative extinction. Pressure also moved (102 → 71 kPa), so this pair shows the regime's robustness, not a boundary crossing.",
    "runA": {
     "runId": "FLEX-065",
     "accession": "PSI-69",
@@ -317,7 +317,7 @@
    "id": "flex-o2-window",
    "title": "FLEX — the O₂ window on heptane",
    "hook": "21% vs 18% O₂ in N₂",
-   "insight": "Same fuel and N₂-dominated atmosphere — dropping O₂ from 21% to 18% pushed the run across the extinction boundary. FLEX maps these edges fuel by fuel, diluent by diluent.",
+   "insight": "Dropping O₂ from 21% to 18% moved heptane from disruption (flame torn off the droplet) to clean burnout — different terminal events, neither quiescent extinction. Droplet size co-varied (2.95 → 2.15 mm); treat the window as approximate.",
    "runA": {
     "runId": "FLEX-008",
     "accession": "PSI-69",
@@ -455,7 +455,7 @@
    "id": "cfi-fuel-dilution",
    "title": "CFI-G — fuel dilution flips the outcome",
    "hook": "propane vs 30% propane",
-   "insight": "Same spherical burner, ~21% O₂ — cutting the fuel feed from propane to 30% propane turned an ignited, extinguished run into a no-ignition one. Fuel fraction is as sharp a lever as O₂ control.",
+   "insight": "Cutting the fuel feed from propane to 30% propane flipped oxygen-limit extinction into no-ignition — but chamber pressure doubled (101 → 203 kPa) between the runs. The diff surfaces the coupling; the outcome flip can't be credited to fuel fraction alone.",
    "runA": {
     "runId": "21112 F2",
     "accession": "PSI-159",
@@ -564,7 +564,7 @@
    "id": "bass-sphere-size",
    "title": "BASS — the sample was the variable",
    "hook": "1 cm vs 2 cm pmma sphere",
-   "insight": "Same MSG duct, same polymer — BASS swept form factor (1 cm → 2 cm spheres, slabs, sheets, candles) to show geometry alone shifts µg flammability boundaries.",
+   "insight": "Same MSG duct, same polymer — BASS swept form factor (1 cm → 2 cm spheres, slabs, sheets, candles). These two rows carry no outcome labels, so the card demonstrates the held/varied sweep itself rather than an outcome shift.",
    "runA": {
     "runId": "20; 30",
     "accession": "PSI-26",
@@ -639,7 +639,7 @@
    "id": "saffire-cross-vehicle",
    "title": "SAFFIRE — same fabric, different vehicle",
    "hook": "sibal in two cargo ships",
-   "insight": "Independent burns of SIBAL fabric in two Cygnus vehicles at ~21% O₂ / 20 cm/s — both ran to burnout. At vehicle scale, material identity beat vehicle identity.",
+   "insight": "Independent burns of SIBAL fabric in two Cygnus vehicles at ~21–22% O₂ / 20 cm/s — both ran to burnout. At vehicle scale, material identity beat vehicle identity.",
    "runA": {
     "runId": "PSI-98-row0",
     "accession": "PSI-98",
@@ -738,7 +738,7 @@
    "id": "efield-fuel-matrix",
    "title": "ACME E-FIELD — fuel matrix under the field",
    "hook": "100% vs 40% ch₄",
-   "insight": "E-FIELD held burner and electrode rig constant while sweeping fuel composition (100% → 40% CH₄, also C₂H₄) — the ion-wind 'gravity knob' couples differently per fuel, which is what makes it a partial-gravity analog.",
+   "insight": "E-FIELD held burner and electrode rig constant while sweeping fuel composition (100% → 40% CH₄, also C₂H₄) — the runs here carry no outcome labels, so the card documents the matrix itself: one rig, many fuels, one 'gravity knob'.",
    "runA": {
     "runId": "PSI-22-row0",
     "accession": "PSI-22",

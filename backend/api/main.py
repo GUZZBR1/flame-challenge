@@ -199,8 +199,9 @@ def api_investigation_matrix() -> dict:
 def api_investigation_detail(inv_id: str) -> dict:
     card = investigations.detail(inv_id)
     if card is None:
-        known = ", ".join(
-            sorted(investigations.DISPLAY_NAME)) or "<none>"
+        known = ", ".join(sorted(
+            set(investigations.DISPLAY_NAME)
+            | set(investigations.CHILD_TO_PARENT))) or "<none>"
         raise HTTPException(
             status_code=404,
             detail=f"unknown investigationId {inv_id!r} (known: {known})")

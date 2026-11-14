@@ -386,5 +386,143 @@
     "psiRunsParsed": 1155,
     "materialsFittedFromPsi": 1,
     "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit). burnRateK0/KO2Mm2sPct = least-squares K(o2) over measured kavg (engine d\u00b2-law rate). extinctionDHotMm = median Dext over radiative+cool-flame extinctions (large-droplet hot-flame death); extinctionDMinMm = median Dext over oxygen-limit extinctions (terminal diameter all combustion dies at). ignitionLogitA/B = logistic P(sustained burn | o2-loc): scope=material (per-material MLE), material-null (all labeled runs extinct \u2014 no MLE exists, ~0 curve written explicitly), or family:<name> (pooled droplet-fuels/gaseous-fuels/solid-materials fit). ignitionFitMcFadden = pseudo-R2 of the fit."
+  },
+  "uncertainty": {
+    "method": "mapie SplitConformalRegressor (prefit adapter over backend.services.risk.risk_index), absolute conformity score; per-level halfwidths verified against the closed-form finite-sample quantile",
+    "levels": [
+      0.8,
+      0.9,
+      0.95
+    ],
+    "defaultLevel": 0.9,
+    "residual": "|y - riskIndex| over labeled burn/extinct PSI runs",
+    "gravityNote": "all calibration runs are microgravity \u2014 any partial-gravity query is out-of-distribution",
+    "global": {
+      "n": 378,
+      "qhat": {
+        "0.80": 0.4728,
+        "0.90": 0.7168,
+        "0.95": 0.8271
+      },
+      "empiricalCoverage": {
+        "0.80": 0.8042,
+        "0.90": 0.9101,
+        "0.95": 0.9577
+      },
+      "envelope": {
+        "marginMin": 0.0,
+        "marginMax": 73.5,
+        "flowMin": 0.0,
+        "flowMax": 20.0
+      }
+    },
+    "families": {
+      "droplet-fuels": {
+        "n": 274,
+        "qhat": {
+          "0.80": 0.5272,
+          "0.90": 0.6674,
+          "0.95": 0.8229
+        },
+        "empiricalCoverage": {
+          "0.80": 0.8175,
+          "0.90": 0.9124,
+          "0.95": 0.9745
+        },
+        "envelope": {
+          "marginMin": 0.0,
+          "marginMax": 22.0,
+          "flowMin": 0.0,
+          "flowMax": 0.0
+        }
+      },
+      "gaseous-fuels": {
+        "n": 99,
+        "qhat": {
+          "0.80": 0.2832,
+          "0.90": 0.8511,
+          "0.95": 0.869
+        },
+        "empiricalCoverage": {
+          "0.80": 0.8081,
+          "0.90": 0.9091,
+          "0.95": 0.9596
+        },
+        "envelope": {
+          "marginMin": 6.5,
+          "marginMax": 73.5,
+          "flowMin": 0.0,
+          "flowMax": 0.0
+        }
+      }
+    },
+    "materials": {
+      "propane": {
+        "n": 99,
+        "qhat": {
+          "0.80": 0.2832,
+          "0.90": 0.8511,
+          "0.95": 0.869
+        },
+        "empiricalCoverage": {
+          "0.80": 0.8081,
+          "0.90": 0.9091,
+          "0.95": 0.9596
+        },
+        "envelope": {
+          "marginMin": 6.5,
+          "marginMax": 73.5,
+          "flowMin": 0.0,
+          "flowMax": 0.0
+        }
+      },
+      "methanol": {
+        "n": 157,
+        "qhat": {
+          "0.80": 0.3552,
+          "0.90": 0.5313,
+          "0.95": 0.8229
+        },
+        "empiricalCoverage": {
+          "0.80": 0.8408,
+          "0.90": 0.9108,
+          "0.95": 0.9745
+        },
+        "envelope": {
+          "marginMin": 0.0,
+          "marginMax": 22.0,
+          "flowMin": 0.0,
+          "flowMax": 0.0
+        }
+      },
+      "heptane": {
+        "n": 117,
+        "qhat": {
+          "0.80": 0.5472,
+          "0.90": 0.6901,
+          "0.95": 0.7536
+        },
+        "empiricalCoverage": {
+          "0.80": 0.8291,
+          "0.90": 0.9145,
+          "0.95": 0.9744
+        },
+        "envelope": {
+          "marginMin": 1.0,
+          "marginMax": 22.0,
+          "flowMin": 0.0,
+          "flowMax": 0.0
+        }
+      }
+    },
+    "materialFamily": {
+      "propane": "gaseous-fuels",
+      "methanol": "droplet-fuels",
+      "heptane": "droplet-fuels",
+      "cotton": "solid-materials",
+      "pmma": "solid-materials"
+    },
+    "labeledRows": 378,
+    "droppedUnknownMaterial": 236
   }
 }

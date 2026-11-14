@@ -213,16 +213,24 @@ export default function SiConsole() {
 
   /* ---------- push-to-talk ---------- */
 
+  const releaseMic = useCallback(() => {
+    streamRef.current?.getTracks().forEach((t) => t.stop())
+    streamRef.current = null
+  }, [])
+
   const stopRecording = useCallback(() => {
     const rec = recorderRef.current
     if (rec && rec.state !== 'inactive') rec.stop()
+    recorderRef.current = null
+    releaseMic()
     setRecording(false)
-  }, [])
+  }, [releaseMic])
 
   const startRecording = useCallback(async () => {
     if (busy || recording) return
     try {
-      streamRef.current ??= await navigator.mediaDevices.getUserMedia({
+      // fresh stream per clip — tracks are released on stop, not cached
+      streamRef.current = await navigator.mediaDevices.getUserMedia({
         audio: true,
       })
       const rec = new MediaRecorder(streamRef.current)
@@ -255,9 +263,10 @@ export default function SiConsole() {
       rec.start()
       setRecording(true)
     } catch {
+      releaseMic()
       push({ role: 'sys', text: 'microphone unavailable — check browser permission.' })
     }
-  }, [busy, recording, chamberState, handleResponse, push])
+  }, [busy, recording, chamberState, handleResponse, push, releaseMic])
 
   const hi = highlight ? ACTION_MAP[highlight] : null
   const cardHighlighted = (id: string) => hi?.card === id

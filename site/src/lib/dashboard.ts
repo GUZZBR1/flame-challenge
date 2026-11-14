@@ -69,7 +69,10 @@ export const ALL_THEMES = [
 
 export const DATASET_STATS = {
   investigations: INVESTIGATIONS.length,
-  psiRuns: INVESTIGATIONS.reduce((n, i) => n + (i.psiRuns ?? 0), 0),
+  // unique normalized runs — umbrella/child records share accessions,
+  // so summing per-record counts would double-count evidence
+  psiRuns: (bundle as { meta?: { uniquePsiRuns?: number } }).meta
+    ?.uniquePsiRuns ?? INVESTIGATIONS.reduce((n, i) => n + (i.psiRuns ?? 0), 0),
   verified: INVESTIGATIONS.filter((i) => i.verified).length,
   themes: ALL_THEMES.length,
 }

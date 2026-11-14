@@ -13,6 +13,8 @@ import json
 import math
 from pathlib import Path
 
+from backend.services import explain
+
 ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATH = ROOT / "shared" / "calibrated-data" / "risk_model.json"
 
@@ -90,6 +92,64 @@ def level(risk: float) -> str:
     return "critical"
 
 
+def uncertainty(material_id: str, margin: float, flow_cms: float,
+                gravity: str, risk_val: float,
+                level: float | None = None) -> dict | None:
+    """Conformal prediction interval from risk_model.json["uncertainty"]
+    (data/pipelines/fit_uncertainty.py — MAPIE split-conformal on the
+    labeled PSI runs). Scope resolution: per-material quantile when the
+    material had enough labeled runs, else its family, else the pooled
+    global quantile.
+
+    The conformal guarantee only holds inside the calibration envelope —
+    beyond it (deep margin, unmeasured flow, partial gravity) the
+    halfwidth is scaled and the regime is flagged "extrapolation" rather
+    than pretending coverage still applies.
+    """
+    u = _load().get("uncertainty")
+    if not u or not u.get("global"):
+        return None
+    lvl = float(level or u.get("defaultLevel", 0.90))
+    key = f"{lvl:.2f}"
+    entry, scope = None, None
+    me = u.get("materials", {}).get(material_id)
+    fam = u.get("materialFamily", {}).get(material_id)
+    if me:
+        entry, scope = me, f"material:{material_id}"
+    elif fam and fam in u.get("families", {}):
+        entry, scope = u["families"][fam], f"family:{fam}"
+    else:
+        entry, scope = u["global"], "global"
+    qhat = entry.get("qhat", {})
+    q = qhat.get(key) or qhat.get("0.90") or max(qhat.values())
+    env = entry.get("envelope", {})
+    # normalized distance outside the calibration envelope; the gravity
+    # axis is categorical — every PSI run is µg, so partial-g is
+    # out-of-distribution by definition
+    mspan = max(env.get("marginMax", 0.0) - env.get("marginMin", 0.0), 1.0)
+    fspan = max(env.get("flowMax", 0.0) - env.get("flowMin", 0.0), 20.0)
+    d_margin = max(0.0, float(margin) - env.get("marginMax", 0.0),
+                   env.get("marginMin", 0.0) - float(margin)) / mspan
+    d_flow = max(0.0, float(flow_cms) - env.get("flowMax", 0.0),
+                 env.get("flowMin", 0.0) - float(flow_cms)) / fspan
+    d_grav = 0.5 if str(gravity).lower() != "microgravity" else 0.0
+    score = max(d_margin, d_flow, d_grav)
+    hw = q * (1.0 + 1.5 * score)      # heuristic widening, not guaranteed
+    return {
+        "level": lvl,
+        "halfwidth": round(q, 4),
+        "effectiveHalfwidth": round(hw, 4),
+        "lower": round(max(0.0, risk_val - hw), 4),
+        "upper": round(min(1.0, risk_val + hw), 4),
+        "scaled": score > 0,
+        "regime": "extrapolation" if score > 0 else "interpolation",
+        "extrapolationScore": round(score, 3),
+        "scope": scope,
+        "calibrationN": entry.get("n"),
+        "empiricalCoverage": entry.get("empiricalCoverage", {}).get(key),
+    }
+
+
 def risk_index(material_id: str, o2_pct: float, flow_cms: float = 0.0,
                gravity: str = "microgravity") -> dict:
     mats = _load()["materials"]
@@ -104,6 +164,8 @@ def risk_index(material_id: str, o2_pct: float, flow_cms: float = 0.0,
                + 0.10 * float(m.get("sootIndex", 0.3))))
     g = GRAVITY_FACTOR.get(str(gravity).lower(), 1.0)
     risk = max(0.0, min(1.0, p * f * h * g))
+    breakdown = {"ignitionPressure": round(p, 4), "flowFactor": round(f, 4),
+                 "hiddenFactor": round(h, 4), "gravityFactor": g}
     return {
         "materialId": m["id"],
         "materialName": m.get("name", m["id"]),
@@ -116,12 +178,10 @@ def risk_index(material_id: str, o2_pct: float, flow_cms: float = 0.0,
         "margin": round(margin, 2),
         "riskIndex": round(risk, 4),
         "level": level(risk),
-        "breakdown": {
-            "ignitionPressure": round(p, 4),
-            "flowFactor": round(f, 4),
-            "hiddenFactor": round(h, 4),
-            "gravityFactor": g,
-        },
+        "breakdown": breakdown,
+        "uncertainty": uncertainty(m["id"], margin, float(flow_cms),
+                                   gravity, risk),
+        "explanation": explain.explain(breakdown, risk),
         "flags": {
             "coolFlameCapable": bool(m.get("coolFlameCapable")),
             "smoldering": bool(m.get("smoldering")),
@@ -159,8 +219,12 @@ def curve(material_id: str, flow_cms: float = 0.0,
     o2 = lo
     while o2 <= hi + 1e-9:
         r = risk_index(material_id, o2, flow_cms, gravity)
-        pts.append({"o2Pct": round(o2, 2), "riskIndex": r["riskIndex"],
-                    "level": r["level"]})
+        pt = {"o2Pct": round(o2, 2), "riskIndex": r["riskIndex"],
+              "level": r["level"]}
+        if r.get("uncertainty"):
+            pt["lower"] = r["uncertainty"]["lower"]
+            pt["upper"] = r["uncertainty"]["upper"]
+        pts.append(pt)
         o2 += st
     return {"materialId": material_id, "flowCms": flow_cms,
             "gravity": gravity, "o2Min": lo, "o2Max": hi, "step": st,

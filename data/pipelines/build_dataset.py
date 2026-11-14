@@ -19,6 +19,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import shutil
 import sys
@@ -29,6 +30,7 @@ REPO = ROOT.parent
 DATASET_PATH = ROOT / "bundle" / "investigations.json"
 STRUCTURED_DIR = ROOT / "raw" / "structured"
 STARTER_PATH = ROOT / "investigations.starter.json"
+EXPERIMENTS_CSV = ROOT / "processed" / "experiments.csv"
 
 
 def _rel(path: Path) -> str:
@@ -38,6 +40,31 @@ def _rel(path: Path) -> str:
         return path.relative_to(REPO).as_posix()
     except ValueError:
         return str(path)
+
+def _recompute_run_stats(dataset: dict) -> None:
+    """Recount psiRuns against the normalized table.
+
+    Umbrella and child records share accessions (BASS / BASS-II → PSI-26),
+    so per-record counts must come from rows keyed by the record's own id —
+    summing them double-counts evidence. The corpus total is unique run_ids
+    and lives at meta.uniquePsiRuns for the dashboard header.
+    """
+    if not EXPERIMENTS_CSV.exists():
+        return
+    with EXPERIMENTS_CSV.open(newline="", encoding="utf-8") as fh:
+        rows = list(csv.DictReader(fh))
+    per_inv: dict[str, int] = {}
+    unique: set[str] = set()
+    for r in rows:
+        if r.get("run_id"):
+            unique.add(r["run_id"])
+        iid = r.get("investigation_id")
+        if iid:
+            per_inv[iid] = per_inv.get(iid, 0) + 1
+    for inv in dataset.get("investigations", []):
+        inv["psiRuns"] = per_inv.get(inv.get("id"), 0)
+    dataset.setdefault("meta", {})["uniquePsiRuns"] = len(unique)
+
 
 # Keep a pristine copy of the starter dataset for --sample restores.
 def ensure_starter_backup() -> None:
@@ -50,6 +77,11 @@ def restore_starter() -> None:
     ensure_starter_backup()
     if STARTER_PATH.exists():
         shutil.copy(STARTER_PATH, DATASET_PATH)
+        dataset = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
+        _recompute_run_stats(dataset)
+        DATASET_PATH.write_text(
+            json.dumps(dataset, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8")
         print(f"[OK] starter dataset restored -> {_rel(DATASET_PATH)}")
     else:
         print("[FAIL] no starter backup found", file=sys.stderr)
@@ -105,6 +137,7 @@ def merge_structured() -> None:
 
     dataset["investigations"] = list(merged.values())
     dataset["generated"] = "psi-ntrs-pipeline"
+    _recompute_run_stats(dataset)
     DATASET_PATH.write_text(
         json.dumps(dataset, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
