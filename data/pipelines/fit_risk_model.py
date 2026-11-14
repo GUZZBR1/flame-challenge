@@ -581,6 +581,12 @@ def main() -> int:
     bundle_cal = REPO / "data" / "bundle" / "calibration.json"
     bundle_cal.parent.mkdir(parents=True, exist_ok=True)
     bundle_cal.write_text(json.dumps(cal))
+    # the legacy frontend consumes the same artifacts — calibrate writes
+    # them first with unfitted defaults, so the fit must refresh them or
+    # the shipped copy stays stale (same contract as calibrate_constants)
+    fe_data = REPO / "frontend" / "src" / "data"
+    if fe_data.is_dir():
+        (fe_data / "calibration.json").write_text(bundle_cal.read_text())
 
     model = {
         "generated": "fit_risk_model.py",
