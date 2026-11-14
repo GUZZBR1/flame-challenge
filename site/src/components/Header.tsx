@@ -27,7 +27,7 @@ export default function Header({ dark, onToggleTheme }: Props) {
         ScrollTrigger.create({
           trigger: '#top',
           start: 'top top',
-          end: '58% top',
+          end: () => window.innerHeight * 0.58,
           onUpdate: (self) => gsap.set(brand, { opacity: self.progress }),
         })
         return
