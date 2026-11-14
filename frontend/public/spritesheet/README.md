@@ -1,6 +1,6 @@
 # IGNIS hangar sprite sheets
 
-This folder contains the original reference atlas and two PNG atlases with PixiJS-compatible JSON metadata.
+This folder is inside Vite’s `frontend/public` directory, so its files are served from `/spritesheet/` and copied into the production build. It contains the original reference atlas and two PNG atlases with PixiJS-compatible JSON metadata.
 
 - `ignis_hangar_spritesheet.jpg`: original 1024×1024 source atlas.
 - `ignis_hangar_assets_v1.png` + `.json`: transparent atlas with containers, science shuttle, technician poses, starfield tiles and beacon frames.
