@@ -149,12 +149,34 @@ export interface DashConditions {
 export interface DecisionOption {
   label: string
   why: string
+  /** engine-provided efficacy (0-100); when absent the UI scores the model locally */
+  score?: number
+  /** countermeasure identifier — lets a click actually apply the action
+   *  to the replayed fire instead of only adopting its atmosphere */
+  action?: string
   model: {
     materialId: string
     o2Pct: number
     flowCms: number
     gravity?: string
   }
+}
+
+/** one real PSI run returned by the KNN lookup (/api/neighbors) or the
+ *  offline mirror over the master sheet */
+export interface NeighborRef {
+  runId: string
+  accession: string
+  investigationId: string
+  fuel: string
+  materialKey: string | null
+  o2Pct: number | null
+  flowCms: number | null
+  outcome: string
+  coolFlame: boolean
+  similarity: number
+  sourceUrl: string
+  verified: boolean
 }
 
 export interface DecisionCard {
@@ -165,4 +187,24 @@ export interface DecisionCard {
   metric: string
   options: DecisionOption[]
   sources: string[]
+  /** nearest real PSI runs behind this card's scores */
+  neighbors?: NeighborRef[]
+}
+
+/** GET /api/decision-cards response */
+export interface DecisionCardsPayload {
+  engine: 'c++'
+  chamber: {
+    /** resolved material — may differ from the requested id (unknown ids
+     *  fall back to the risk table's PMMA anchor) */
+    materialId: string
+    /** material id the caller asked for, before resolution */
+    requestedMaterialId?: string
+    o2Pct: number
+    flowCms: number
+    ignitionPressure: number
+  }
+  briefing: string
+  neighbors: NeighborRef[]
+  cards: DecisionCard[]
 }

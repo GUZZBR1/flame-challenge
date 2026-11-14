@@ -52,6 +52,11 @@ def investigation_map() -> dict:
     return _cal.get("investigations", {})
 
 
+def ignition_pressure(material_id: str, o2_pct: float) -> float:
+    """Direct MaterialRisk::ignitionPressure — pure, no chamber state."""
+    return max(0.0, _risks.ignition_pressure(material_id, float(o2_pct)))
+
+
 def _spec(investigation_id: str) -> dict:
     spec = investigation_map().get(investigation_id)
     if spec is None:
