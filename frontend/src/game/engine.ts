@@ -343,6 +343,18 @@ export class Engine {
     const activeFires = [...e.fires.values()].filter((f) => !f.hidden && f.dormant <= 0)
     const fireClaims = new Map<string, number>()
 
+    // release stale run reservations: scientistId only counts while that
+    // scientist still holds the experiment job for this room — a scientist
+    // that fled, died or was pulled to rest must not strand the run
+    for (const r of e.rooms) {
+      const exp = r.experiment
+      if (exp?.state === 'running' && exp.scientistId != null) {
+        const s = e.crew.find((m) => m.id === exp.scientistId)
+        if (!s || s.state === 'dead' || s.job?.kind !== 'experiment' || s.job.roomId !== r.id)
+          exp.scientistId = null
+      }
+    }
+
     for (const c of e.crew) {
       if (c.state === 'dead' || c.state === 'fleeing' || c.state === 'resting') continue
       // injured → forced rest
@@ -353,6 +365,7 @@ export class Engine {
         if (q) {
           c.job = { kind: 'rest', roomId: q.id }
           c.state = 'injured'
+          c.path = []
         }
       }
 
@@ -371,7 +384,22 @@ export class Engine {
         }
         if (bestF) {
           c.job = { kind: 'extinguish', fireKey: `${bestF.x},${bestF.y}` }
+          c.path = []
           fireClaims.set(`${bestF.x},${bestF.y}`, (fireClaims.get(`${bestF.x},${bestF.y}`) ?? 0) + 1)
+          continue
+        }
+      }
+
+      // a queued run preempts a scientist's standing lab duty — reserve only
+      // when the scientist can actually switch (not resting/fleeing/dead)
+      if (c.role === 'scientist' && (!c.job || c.job.kind === 'duty-lab')) {
+        const exp = e.rooms.find(
+          (r) => r.type === 'combustion' && r.state === 'active' && r.experiment?.state === 'running' && !r.experiment.scientistId,
+        )
+        if (exp) {
+          exp.experiment!.scientistId = c.id
+          c.job = { kind: 'experiment', roomId: exp.id }
+          c.path = []
           continue
         }
       }
@@ -382,6 +410,7 @@ export class Engine {
         const q = e.rooms.find((r) => r.type === 'quarters' && r.state === 'active')
         if (q) {
           c.job = { kind: 'rest', roomId: q.id }
+          c.path = []
           continue
         }
       }
@@ -390,30 +419,26 @@ export class Engine {
         const build = e.rooms.find((r) => r.state === 'building')
         if (build) {
           c.job = { kind: 'build', roomId: build.id }
+          c.path = []
           continue
         }
         const damaged = e.rooms.find((r) => r.state === 'damaged' || r.damage > 0.05)
         if (damaged) {
           c.job = { kind: 'repair', roomId: damaged.id }
+          c.path = []
           continue
         }
         const fab = e.rooms.find((r) => r.type === 'fab' && r.fabJob && r.state === 'active')
         if (fab) {
           c.job = { kind: 'fabricate', roomId: fab.id }
+          c.path = []
           continue
         }
       } else {
-        const exp = e.rooms.find(
-          (r) => r.type === 'combustion' && r.state === 'active' && r.experiment?.state === 'running' && !r.experiment.scientistId,
-        )
-        if (exp) {
-          exp.experiment!.scientistId = c.id
-          c.job = { kind: 'experiment', roomId: exp.id }
-          continue
-        }
         const lab = e.rooms.find((r) => r.type === 'lab' && r.state === 'active')
         if (lab) {
           c.job = { kind: 'duty-lab', roomId: lab.id }
+          c.path = []
           continue
         }
       }
