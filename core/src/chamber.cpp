@@ -6,6 +6,17 @@
 
 namespace ff {
 
+namespace {
+// closed-chamber gas balance — reduced-order constants
+constexpr double AIR_DENSITY_KG_M3 = 1.204;   // 1 atm, ~20 °C
+constexpr double FUEL_DENSITY_KG_M3 = 700.0;  // generic hydrocarbon
+constexpr double STOICH_O2_PER_FUEL = 3.0;    // kg O₂ per kg fuel
+constexpr double SPREAD_MASS_KG_PER_CM = 1e-4; // thin sheet, kg per cm of front
+// suppressant diluent penalties on effective O₂ (CO₂ heat-sink > He)
+constexpr double CO2_SUPPRESS = 1.6;
+constexpr double HE_SUPPRESS = 0.8;
+} // namespace
+
 Chamber::Chamber() = default;
 Chamber::Chamber(MaterialRisk risks) : risks_(std::move(risks)) {}
 
@@ -37,6 +48,9 @@ void Chamber::configure(const Config& cfg) {
     ignited_ = false;
     lastRegime_ = -1;
     events_.clear();
+    chamberO2Pct_ = cfg_.o2Pct;
+    o2BelowLoc_ = false;
+    pushAtmosphere();
 }
 
 void Chamber::updateAtmosphere(double o2Pct, double flowCms, double pressureKpa) {
@@ -45,14 +59,72 @@ void Chamber::updateAtmosphere(double o2Pct, double flowCms, double pressureKpa)
     cfg_.o2Pct = std::clamp(o2Pct, 0.0, 100.0);
     cfg_.flowCms = std::max(0.0, flowCms);
     cfg_.pressureKpa = std::max(0.0, pressureKpa);
-    droplet_.updateAtmosphere(cfg_.o2Pct, cfg_.pressureKpa);
-    spread_.updateAtmosphere(cfg_.o2Pct, cfg_.flowCms, cfg_.pressureKpa);
+    // a manual atmosphere update is a gas flush — the measured chamber
+    // O₂ snaps to the supplied value
+    chamberO2Pct_ = cfg_.o2Pct;
+    o2BelowLoc_ = false;
+    pushAtmosphere();
+}
+
+void Chamber::setSuppressants(double co2Pct, double hePct) {
+    cfg_.co2Pct = std::clamp(co2Pct, 0.0, 100.0);
+    cfg_.hePct = std::clamp(hePct, 0.0, 100.0);
+    pushAtmosphere();
+}
+
+double Chamber::effectiveO2Pct() const {
+    return std::clamp(chamberO2Pct_ - CO2_SUPPRESS * cfg_.co2Pct
+                                   - HE_SUPPRESS * cfg_.hePct,
+                      0.0, 100.0);
+}
+
+void Chamber::pushAtmosphere() {
+    const double o2Eff = effectiveO2Pct();
+    droplet_.updateAtmosphere(o2Eff, cfg_.pressureKpa);
+    spread_.updateAtmosphere(o2Eff, cfg_.flowCms, cfg_.pressureKpa);
+}
+
+double Chamber::fuelRateKgS() const {
+    if (useDroplet_) {
+        const auto& s = droplet_.state();
+        const double K = droplet_.burnRateK(); // mm²/s
+        // d²-law mass rate: m = ρπ/6·d³ → ṁ = ρπKd/4 (SI: d,K in m,m²/s)
+        double kgm = FUEL_DENSITY_KG_M3 * 3.14159265358979323846 * K
+                     * s.dropletDMm / 4.0e9;
+        if (s.regime == DropletFlame::Regime::CoolFlame) kgm *= 0.05;
+        if (s.regime != DropletFlame::Regime::HotFlame &&
+            s.regime != DropletFlame::Regime::CoolFlame)
+            return 0.0;
+        return kgm;
+    }
+    const auto& s = spread_.state();
+    if (s.regime != SolidSpread::Regime::Spreading) return 0.0;
+    return s.spreadRateCms * SPREAD_MASS_KG_PER_CM;
+}
+
+void Chamber::stepAtmosphere(double dtSec) {
+    if (cfg_.volumeLiters <= 0.0) return;
+    const double airMassKg = cfg_.volumeLiters / 1000.0 * AIR_DENSITY_KG_M3
+                             * std::max(0.0, cfg_.pressureKpa) / 101.0;
+    if (airMassKg <= 0.0) return;
+    const double ambient = cfg_.ambientO2Pct >= 0.0 ? cfg_.ambientO2Pct
+                                                    : cfg_.o2Pct;
+    double frac = chamberO2Pct_ / 100.0;
+    frac -= STOICH_O2_PER_FUEL * fuelRateKgS() * dtSec / airMassKg;
+    frac += cfg_.ventPerSec * (ambient / 100.0 - frac) * dtSec;
+    chamberO2Pct_ = std::clamp(frac * 100.0, 0.0, 100.0);
+    pushAtmosphere();
+    const Material* m = risks_.get(cfg_.materialId);
+    if (!o2BelowLoc_ && m && effectiveO2Pct() < m->locPct) {
+        o2BelowLoc_ = true;
+        events_.push_back("o2-below-loc");
+    }
 }
 
 double Chamber::ignitionPressure() const {
     const Material* m = risks_.get(cfg_.materialId);
     if (!m) return 0.5;
-    return MaterialRisk::ignitionPressure(*m, cfg_.o2Pct);
+    return MaterialRisk::ignitionPressure(*m, effectiveO2Pct());
 }
 
 void Chamber::step(double dtSec) {
@@ -82,6 +154,7 @@ void Chamber::step(double dtSec) {
             events_.push_back("extinguished");
         lastRegime_ = (int)r;
     }
+    stepAtmosphere(dtSec);
 }
 
 int Chamber::regime() const {
@@ -133,9 +206,11 @@ std::string Chamber::stateJson() const {
             "{\"model\":\"droplet\",\"tSec\":%.3f,\"regime\":%d,"
             "\"dropletDMm\":%.3f,\"flameRMm\":%.3f,\"flameTempK\":%.1f,"
             "\"heatReleaseW\":%.2f,\"burnFraction\":%.3f,"
+            "\"o2Pct\":%.2f,\"o2EffPct\":%.2f,\"volumeLiters\":%.1f,"
             "\"ignited\":%s,\"coolFlame\":%s,\"finished\":%s}",
             s.tSec, (int)s.regime, s.dropletDMm, s.flameRMm, s.flameTempK,
             s.heatReleaseW, s.burnFraction,
+            chamberO2Pct_, effectiveO2Pct(), cfg_.volumeLiters,
             ignited_ ? "true" : "false", coolFlame() ? "true" : "false",
             finished() ? "true" : "false");
     }
@@ -144,9 +219,11 @@ std::string Chamber::stateJson() const {
         "{\"model\":\"spread\",\"tSec\":%.3f,\"regime\":%d,"
         "\"frontPosCm\":%.3f,\"spreadRateCms\":%.3f,\"burnLengthCm\":%.3f,"
         "\"intensity\":%.3f,"
+        "\"o2Pct\":%.2f,\"o2EffPct\":%.2f,\"volumeLiters\":%.1f,"
         "\"ignited\":%s,\"coolFlame\":false,\"finished\":%s}",
         s.tSec, (int)s.regime, s.frontPosCm, s.spreadRateCms,
         s.burnLengthCm, s.intensity,
+        chamberO2Pct_, effectiveO2Pct(), cfg_.volumeLiters,
         ignited_ ? "true" : "false", finished() ? "true" : "false");
 }
 

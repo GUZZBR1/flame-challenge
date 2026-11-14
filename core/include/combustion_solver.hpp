@@ -15,7 +15,13 @@ namespace ff {
  *  - two-stage chemistry: fuels flagged coolFlameCapable enter a
  *    low-temperature "cool flame" regime after hot-flame extinction —
  *    near-invisible, low heat release, real re-ignition hazard.
+ *  - radiative extinction: droplets at/above the measured
+ *    extinctionDHotMm lose the hot flame (FLEX large-droplet regime);
+ *    all combustion dies at the measured terminal extinctionDMinMm.
  *  - extinction when the flame-zone O₂ drops below the material LOC.
+ *  - burning rate K(o2) = k0 + slope·o2 fitted per fuel from measured
+ *    PSI kavg (burnRateK0Mm2s / burnRateKO2Mm2sPct); falls back to the
+ *    ignition-pressure-derived rate when no fit exists.
  */
 class DropletFlame {
   public:

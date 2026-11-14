@@ -19,7 +19,14 @@ PYBIND11_MODULE(freefall_engine, m) {
         .def_readonly("spreadMaxCms", &Material::spreadMaxCms)
         .def_readonly("sootIndex", &Material::sootIndex)
         .def_readonly("coolFlameCapable", &Material::coolFlameCapable)
-        .def_readonly("smoldering", &Material::smoldering);
+        .def_readonly("smoldering", &Material::smoldering)
+        .def_readonly("burnRateK0Mm2s", &Material::burnRateK0Mm2s)
+        .def_readonly("burnRateKO2Mm2sPct", &Material::burnRateKO2Mm2sPct)
+        .def_readonly("extinctionDHotMm", &Material::extinctionDHotMm)
+        .def_readonly("extinctionDMinMm", &Material::extinctionDMinMm)
+        .def_readonly("ignitionLogitA", &Material::ignitionLogitA)
+        .def_readonly("ignitionLogitB", &Material::ignitionLogitB)
+        .def_readonly("ignitionFitN", &Material::ignitionFitN);
 
     py::class_<MaterialRisk>(m, "MaterialRisk")
         .def(py::init<>())
@@ -29,6 +36,13 @@ PYBIND11_MODULE(freefall_engine, m) {
                                      const std::string& id, double o2) {
             const Material* m = self.get(id);
             return m ? MaterialRisk::ignitionPressure(*m, o2) : -1.0;
+        })
+        .def("coflow_outcome", [](const MaterialRisk& self,
+                                  const std::string& fuel, double o2Pct,
+                                  double o2EndPct, double mfLo, double mfHi,
+                                  double burnTimeS) {
+            return static_cast<int>(self.coflowOutcome(
+                fuel, o2Pct, o2EndPct, mfLo, mfHi, burnTimeS));
         });
 
     py::class_<Chamber::Config>(m, "ChamberConfig")
@@ -42,7 +56,12 @@ PYBIND11_MODULE(freefall_engine, m) {
         .def_readwrite("slabLengthCm", &Chamber::Config::slabLengthCm)
         .def_readwrite("dropletD0Mm", &Chamber::Config::dropletD0Mm)
         .def_readwrite("partialGravity", &Chamber::Config::partialGravity)
-        .def_readwrite("seed", &Chamber::Config::seed);
+        .def_readwrite("seed", &Chamber::Config::seed)
+        .def_readwrite("volumeLiters", &Chamber::Config::volumeLiters)
+        .def_readwrite("ambientO2Pct", &Chamber::Config::ambientO2Pct)
+        .def_readwrite("ventPerSec", &Chamber::Config::ventPerSec)
+        .def_readwrite("co2Pct", &Chamber::Config::co2Pct)
+        .def_readwrite("hePct", &Chamber::Config::hePct);
 
     py::class_<Chamber>(m, "Chamber")
         .def(py::init<>())
@@ -50,6 +69,9 @@ PYBIND11_MODULE(freefall_engine, m) {
         .def("configure", &Chamber::configure)
         .def("step", &Chamber::step)
         .def("update_atmosphere", &Chamber::updateAtmosphere)
+        .def("set_suppressants", &Chamber::setSuppressants)
+        .def("chamber_o2_pct", &Chamber::chamberO2Pct)
+        .def("effective_o2_pct", &Chamber::effectiveO2Pct)
         .def("ignition_pressure", &Chamber::ignitionPressure)
         .def("regime", &Chamber::regime)
         .def("hot_burning", &Chamber::hotBurning)

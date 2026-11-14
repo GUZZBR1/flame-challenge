@@ -5,8 +5,13 @@ SoFIE/BASS-II spread limits and ACME sooting indices):
 
     margin(o2, loc)   = o2_pct - loc_pct
     P_ign(margin)     = 0                                margin <= -3
-                        0.04                             -3 < margin <= 0   (µg low-O2 persistence, SoFIE)
-                        min(1, 0.04 + 0.055*margin^1.35) margin > 0        (ignition-pressure curve)
+                        sigmoid(A + B*margin)            PSI logistic fit
+                                                         (ignitionLogitA/B;
+                                                         scope material /
+                                                         material-null /
+                                                         family:<name>)
+                        0.04                             -3 < margin <= 0   (unfitted fallback)
+                        min(1, 0.04 + 0.055*margin^1.35) margin > 0        (unfitted fallback)
     F_flow(flow)      = piecewise ventilation factor (radiative-extinction
                         window at very low flow, O2-supply enhancement in
                         the mid range, blow-off quench at high flow)
@@ -38,6 +43,7 @@ import json
 import math
 import statistics
 import sys
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent          # data/
@@ -64,6 +70,30 @@ DROPLET_INVESTIGATIONS = {"flex-2"}
 # literature range for condensable/gaseous fuels is ~10.5-16.5%)
 LOC_FIT_MIN, LOC_FIT_MAX = 10.0, 17.0
 
+# burn-rate fit: K(o2) = k0 + slope*o2_pct, least squares over runs with
+# both fields; needs this many points to be written into the engine table
+KFIT_MIN_POINTS = 8
+# logistic ignition fit P(sustained burn | margin): per-material needs
+# this many labeled rows with both classes present; materials whose
+# labeled record is all-extinct get an explicit "never sustained burn"
+# curve instead of falling back to a pooled estimate
+LOGIT_MIN_LABELED = 25
+LOGIT_MIN_CLASS = 5
+NULL_FIT_MIN = 15
+FAMILY_MIN_LABELED = 30
+# fuel families for pooled fits — droplet fuels share FLEX physics,
+# coflow gas fuels share ACME strain/extinction physics, solids are the
+# BASS-II/SAFFIRE family
+INVESTIGATION_FAMILY = {"flex-2": "droplet-fuels", "acme": "gaseous-fuels"}
+# hot-flame extinction diameter = median Dext over radiative + cool-flame
+# typed extinctions (the regimes that kill the hot flame while the droplet
+# is still large — FLEX); minimum sustainable diameter = median Dext
+# over oxygen-limit extinctions (the terminal burn-out size every
+# combustion regime dies at, hot or cool)
+DEXT_HOT_TYPES = {"radiative", "cool-flame"}
+DEXT_HOT_MIN_POINTS = 3
+DEXT_MIN_MIN_POINTS = 5
+
 # ventilation factor anchor points (cm/s -> multiplier); linear between
 # anchors: quiescent radiative window, mid-flow O2 supply, high-flow blow-off
 FLOW_ANCHORS = [
@@ -87,11 +117,82 @@ def flow_factor(flow_cms: float, anchors: list[list[float]] = FLOW_ANCHORS) -> f
     return anchors[-1][1]
 
 
-def ignition_pressure(margin: float) -> float:
-    """Keep parity with MaterialRisk::ignitionPressure (C++) / physics.ts."""
+def ignition_pressure(margin: float, material: dict | None = None) -> float:
+    """Keep parity with MaterialRisk::ignitionPressure (C++) / risk.ts."""
+    if margin <= -3.0:
+        return 0.0
+    if material and float(material.get("ignitionFitN") or 0) > 0:
+        z = material["ignitionLogitA"] + material["ignitionLogitB"] * margin
+        return 1.0 / (1.0 + math.exp(-max(-30.0, min(30.0, z))))
     if margin <= 0:
-        return 0.04 if margin > -3.0 else 0.0
+        return 0.04
     return min(1.0, 0.04 + 0.055 * margin ** 1.35)
+
+
+def sigmoid(z: float) -> float:
+    return 1.0 / (1.0 + math.exp(-max(-30.0, min(30.0, z))))
+
+
+def logit_fit(pts: list[tuple[float, float]]) -> tuple[float, float, float] | None:
+    """Newton/IRLS logistic regression y ~ sigmoid(a + b*x).
+    Returns (a, b, mcfadden_r2) or None for single-class inputs."""
+    n = len(pts)
+    if n < 4:
+        return None
+    ys = [y for _, y in pts]
+    p0 = sum(ys) / n
+    if p0 <= 0.0 or p0 >= 1.0:
+        return None                        # single class → no MLE
+    a, b = math.log(p0 / (1.0 - p0)), 0.0
+    for _ in range(64):
+        g0 = g1 = h00 = h01 = h11 = 0.0
+        for x, y in pts:
+            p = sigmoid(a + b * x)
+            w = p * (1.0 - p)
+            r = y - p
+            g0 += r
+            g1 += r * x
+            h00 += w
+            h01 += w * x
+            h11 += w * x * x
+        h00 += 1e-6                        # ridge — keeps det positive
+        det = h00 * h11 - h01 * h01
+        if det <= 1e-12:
+            break
+        da = max(-10.0, min(10.0, (g0 * h11 - g1 * h01) / det))
+        db = max(-10.0, min(10.0, (g1 * h00 - g0 * h01) / det))
+        a += da
+        b += db
+        if abs(da) < 1e-9 and abs(db) < 1e-9:
+            break
+    ll = sum(y * math.log(max(sigmoid(a + b * x), 1e-9))
+             + (1 - y) * math.log(max(1.0 - sigmoid(a + b * x), 1e-9))
+             for x, y in pts)
+    ll0 = n * (p0 * math.log(p0) + (1.0 - p0) * math.log(1.0 - p0))
+    return a, b, (1.0 - ll / ll0) if ll0 < 0 else 0.0
+
+
+def family_of(investigation_id: str | None) -> str:
+    return INVESTIGATION_FAMILY.get(investigation_id or "", "solid-materials")
+
+
+def linfit(pts: list[tuple[float, float]]) -> tuple[float, float, float] | None:
+    """Least-squares y = a + b*x over (x, y) points.
+    Returns (a, b, r2) or None for degenerate inputs."""
+    n = len(pts)
+    if n < 2:
+        return None
+    mx = sum(p[0] for p in pts) / n
+    my = sum(p[1] for p in pts) / n
+    sxx = sum((p[0] - mx) ** 2 for p in pts)
+    if sxx <= 0:
+        return None
+    b = sum((p[0] - mx) * (p[1] - my) for p in pts) / sxx
+    a = my - b * mx
+    sst = sum((p[1] - my) ** 2 for p in pts)
+    ss_res = sum((p[1] - a - b * p[0]) ** 2 for p in pts)
+    r2 = 1.0 - ss_res / sst if sst > 0 else 0.0
+    return a, b, r2
 
 
 def empirical_loc(burned: list[float], extinct: list[float]) -> float | None:
@@ -131,9 +232,13 @@ def main() -> int:
         if not mid:
             continue
         s = stats.setdefault(mid, {"burned": [], "extinct": [], "cool": 0,
-                                   "n": 0, "kavg": [], "dext": [],
-                                   "ext_limit": [], "droplet": False})
+                                   "n": 0, "kavg": [], "kpts": [],
+                                   "dext": [], "dext_hot": [],
+                                   "dext_min": [], "ext_limit": [],
+                                   "labeled": [], "families": Counter(),
+                                   "droplet": False})
         s["n"] += 1
+        s["families"][family_of(r.get("investigation_id"))] += 1
         if r.get("investigation_id") in DROPLET_INVESTIGATIONS:
             s["droplet"] = True
         try:
@@ -143,8 +248,10 @@ def main() -> int:
         if o2 is not None:
             if r.get("outcome") in BURNED:
                 s["burned"].append(o2)
+                s["labeled"].append((o2, 1.0))
             elif r.get("outcome") in EXTINCT:
                 s["extinct"].append(o2)
+                s["labeled"].append((o2, 0.0))
                 if (r.get("extinction_type") in LIMIT_EXTINCT
                         or (r.get("outcome") == "no-ignition"
                             and o2 <= NOIGN_MAX_O2)):
@@ -153,6 +260,11 @@ def main() -> int:
             d = float(r["extinction_d_mm"]) if r.get("extinction_d_mm") else None
             if d:
                 s["dext"].append(d)
+                etype = r.get("extinction_type")
+                if etype in DEXT_HOT_TYPES:
+                    s["dext_hot"].append(d)
+                elif etype == "oxygen-limit":
+                    s["dext_min"].append(d)
         except ValueError:
             pass
         if r.get("cool_flame") in ("True", "true", True):
@@ -161,6 +273,8 @@ def main() -> int:
             k = float(r["burn_rate_mm2_s"]) if r.get("burn_rate_mm2_s") else None
             if k:
                 s["kavg"].append(k)
+                if o2 is not None:
+                    s["kpts"].append((o2, k))
         except ValueError:
             pass
 
@@ -193,8 +307,29 @@ def main() -> int:
             if s["dext"]:
                 entry["extinctionDiameterMedianMm"] = round(
                     statistics.median(s["dext"]), 2)
+            # FLEX extinction diameters feed the engine directly:
+            # extinctionDHotMm — droplets at/above this size lose the hot
+            # flame to radiative loss (or transition to cool-flame
+            # chemistry); extinctionDMinMm — minimum sustainable droplet
+            # diameter: the terminal burn-out size every combustion
+            # regime dies at. Both are measured medians, not tuned.
+            if len(s["dext_hot"]) >= DEXT_HOT_MIN_POINTS:
+                entry["extinctionDHotMm"] = round(
+                    statistics.median(s["dext_hot"]), 2)
+            if len(s["dext_min"]) >= DEXT_MIN_MIN_POINTS:
+                entry["extinctionDMinMm"] = round(
+                    statistics.median(s["dext_min"]), 2)
             if s["kavg"]:
                 entry["burnRateMedianMm2s"] = round(statistics.median(s["kavg"]), 3)
+            # K(o2) linear fit — the engine burns with measured droplet
+            # rates instead of deriving K from the ignition-pressure curve
+            if len(s["kpts"]) >= KFIT_MIN_POINTS:
+                fit = linfit(s["kpts"])
+                if fit is not None:
+                    a, b, r2 = fit
+                    entry["burnRateK0Mm2s"] = round(a, 4)
+                    entry["burnRateKO2Mm2sPct"] = round(b, 5)
+                    entry["burnRateFitR2"] = round(r2, 3)
             # LOC refit — two estimators, both labelled in locMethod:
             #  1. boundary-midpoint: clean burn/extinct separation (rare —
             #     radiative extinctions at high O2 usually overlap)
@@ -224,6 +359,184 @@ def main() -> int:
             + 0.10 * float(entry["sootIndex"]), 3)
         materials[mid] = entry
 
+    # ---- logistic ignition fit: P(sustained burn | margin) -----------
+    # margin uses each material's final locPct — the same value the
+    # engine uses at runtime. Priority: per-material fit > explicit
+    # all-extinct null curve > pooled family curve > hand-set formula.
+    mat_family: dict[str, str] = {}
+    for mid, s in stats.items():
+        if s["families"]:
+            mat_family[mid] = s["families"].most_common(1)[0][0]
+    # table materials with no parsed runs inherit the family of the
+    # investigation spec that references them (ethylene → acme → gases)
+    for inv_id, spec in cal.get("investigations", {}).items():
+        if spec.get("materialId"):
+            mat_family.setdefault(spec["materialId"], family_of(inv_id))
+
+    family_pts: dict[str, list] = defaultdict(list)
+    mat_pts: dict[str, list] = {}
+    for m in cal.get("materials", []):
+        mid = m["id"]
+        s = stats.get(mid)
+        if not s or not s["labeled"]:
+            continue
+        loc = materials[mid]["locPct"]
+        pts = [(o2 - loc, y) for o2, y in s["labeled"]]
+        mat_pts[mid] = pts
+        fam = mat_family.get(mid)
+        if fam:
+            family_pts[fam].extend(pts)
+
+    family_fits: dict[str, tuple] = {}
+    for fam, pts in family_pts.items():
+        n_burn = sum(y for _, y in pts)
+        if (len(pts) >= FAMILY_MIN_LABELED and n_burn >= LOGIT_MIN_CLASS
+                and len(pts) - n_burn >= LOGIT_MIN_CLASS):
+            fit = logit_fit(pts)
+            if fit is not None:
+                family_fits[fam] = fit
+
+    logit_fitted = 0
+    for m in cal.get("materials", []):
+        mid = m["id"]
+        entry = materials.get(mid)
+        if entry is None:
+            continue
+        pts = mat_pts.get(mid, [])
+        n_burn = sum(y for _, y in pts)
+        fit = logit_fit(pts) if len(pts) >= LOGIT_MIN_LABELED else None
+        scope = "material" if fit is not None else None
+        pool_n = len(pts)
+        if fit is None and pts and n_burn == 0 and len(pts) >= NULL_FIT_MIN:
+            # every labeled run failed to sustain burning — an honest
+            # near-zero curve, not a logistic MLE (none exists for a
+            # single-class response)
+            fit, scope = (-6.9, 0.0, None), "material-null"
+        if fit is None:
+            fam = mat_family.get(mid)
+            if fam in family_fits:
+                fit, scope = family_fits[fam], f"family:{fam}"
+                pool_n = len(family_pts[fam])
+        if fit is None:
+            continue
+        entry["ignitionLogitA"] = round(fit[0], 4)
+        entry["ignitionLogitB"] = round(fit[1], 5)
+        entry["ignitionFitN"] = pool_n
+        entry["ignitionFitScope"] = scope
+        if fit[2] is not None:
+            entry["ignitionFitMcFadden"] = round(fit[2], 3)
+        logit_fitted += 1
+
+    # ---- coflow regime fit (ACME CFI-G) -------------------------------
+    # The CFI tables ran two extinction protocols, so the criterion has
+    # two branches, each fitted separately on the labeled rows:
+    #   fuel-ramp SE     — the fuel mass-flow ramp rate (mg/s per s)
+    #                      exceeds a critical strain rate -> blow-off
+    #   oxidizer-ramp SE — the O2 ramp ends below the coflow extinction
+    #                      limit -> oxygen-depletion death
+    # preceded by two ignition gates (end-of-ramp fuel flow under the
+    # minimum sustainable coflow rate; O2 under the gate O2). Thresholds
+    # are grid fits maximizing outcome agreement on labeled runs — a
+    # discriminant, auditable; every constant ships in calibration.json.
+    def _fnum(x):
+        try:
+            return float(x) if x not in (None, "") else None
+        except (TypeError, ValueError):
+            return None
+
+    def coflow_predict(r: dict, p: dict) -> str:
+        """Mirror of MaterialRisk::coflowOutcome — keep in sync with
+        core/src/material_risk.cpp and engine_fallback.coflow_outcome."""
+        o2 = _fnum(r.get("o2_pct"))
+        mf_hi = _fnum(r.get("mass_flow_hi_mgs"))
+        if (o2 is not None and o2 < p["ignO2Pct"]) or \
+                (mf_hi is not None and mf_hi < p["minFlowMgs"]):
+            return "no-ignition"
+        o2e = _fnum(r.get("o2_end_pct"))
+        if o2e is not None and o2e < p["extO2Pct"]:
+            return "extinction"
+        mf_lo = _fnum(r.get("mass_flow_lo_mgs"))
+        bt = _fnum(r.get("burn_time_s"))
+        rc = p.get("rateCrit")
+        if rc is None or rc <= 0:
+            rc = 1e9  # disabled branch — fuel-ramp extinction never fires
+        if mf_lo is not None and mf_hi is not None and bt \
+                and mf_hi > mf_lo and (mf_hi - mf_lo) / bt > rc:
+            return "extinction"
+        return "burn"
+
+    def coflow_fit(sub: list[dict]) -> dict | None:
+        labeled = [r for r in sub if r.get("outcome")
+                   in BURNED | EXTINCT]
+        if len(labeled) < 20:
+            return None
+        noign = [_fnum(r.get("mass_flow_hi_mgs")) for r in labeled
+                 if r["outcome"] == "no-ignition"]
+        noign = [x for x in noign if x is not None]
+        others = [_fnum(r.get("mass_flow_hi_mgs")) for r in labeled
+                  if r["outcome"] != "no-ignition"]
+        others = [x for x in others if x is not None]
+        # min-flow gate: threshold between no-ignition flows and the rest,
+        # only when it actually separates (all-extinct-at-any-flow fuels
+        # keep the gate at 0 rather than misfiring on real extinctions)
+        min_flow, best = 0.0, -1
+        for t in sorted(set(noign + others)):
+            # the runtime gate is mf_hi < minFlow — score the same
+            # half-open split (equality must land on the "burns" side)
+            ok = sum(x < t for x in noign) + sum(x >= t for x in others)
+            if ok > best:
+                best, min_flow = ok, t
+        # O2 gate: highest O2 that still produced a recorded no-ignition
+        noign_o2 = [_fnum(r.get("o2_pct")) for r in labeled
+                    if r["outcome"] == "no-ignition"]
+        ign_o2 = max((x for x in noign_o2 if x is not None and x <= 25.0),
+                     default=0.0)
+        # extinction thresholds: 2-D grid over oxidizer-ramp floor and
+        # fuel-ramp rate, scored on outcome agreement for ignited rows
+        live = [r for r in labeled if r["outcome"] != "no-ignition"]
+        best_p, best_ok = None, -1
+        for ext_o2 in range(0, 46, 2):
+            # rateCrit=0 is not a valid threshold — runtime treats <=0 as
+            # "fuel-ramp branch disabled", so offering it would let the
+            # fitter score a semantics the engine never implements
+            for rate in (0.02, 0.05, 0.08, 0.1, 0.12, 0.15, 0.2,
+                         0.3, 0.5, 1e9):
+                p = {"ignO2Pct": ign_o2, "minFlowMgs": min_flow,
+                     "extO2Pct": ext_o2, "rateCrit": rate}
+                ok = sum(
+                    coflow_predict(r, p)
+                    == ("burn" if r["outcome"] in BURNED else "extinction")
+                    for r in live)
+                if ok > best_ok:
+                    best_ok, best_p = ok, p
+        acc = best_ok / len(live) if live else None
+        return {"ignO2Pct": round(best_p["ignO2Pct"], 1),
+                "minFlowMgs": round(best_p["minFlowMgs"], 3),
+                "extO2Pct": float(best_p["extO2Pct"]),
+                "rateCrit": (round(best_p["rateCrit"], 4)
+                             if best_p["rateCrit"] < 1e8 else None),
+                "fitN": len(labeled), "fitAccuracy": round(acc, 3)
+                if acc is not None else None}
+
+    coflow_rows: dict[str, list[dict]] = defaultdict(list)
+    for r in rows:
+        if family_of(r.get("investigation_id")) != "gaseous-fuels":
+            continue
+        fuel = (r.get("fuel") or r.get("material_id") or "") \
+            .strip().lower()
+        if fuel:
+            coflow_rows[fuel].append(r)
+    coflow: dict[str, dict] = {}
+    pooled = [r for sub in coflow_rows.values() for r in sub]
+    default_fit = coflow_fit(pooled)
+    if default_fit:
+        coflow["_default"] = default_fit
+    for fuel, sub in sorted(coflow_rows.items()):
+        fit = coflow_fit(sub)
+        if fit:
+            coflow[fuel] = fit
+    cal["coflow"] = coflow
+
     # propagate the canonical LOC back into calibration.json — the C++
     # chamber (materials[].locPct), the backend bridge and the TS fallback
     # must all burn with ONE value; investigations[].effectiveLoc follows
@@ -231,6 +544,13 @@ def main() -> int:
     # runs every time, not only when something fitted: a material whose
     # evidence dropped below the fitting bar reverts to locBaseline
     # instead of silently keeping a stale psi-data number.
+    FIT_FIELDS = ("burnRateK0Mm2s", "burnRateKO2Mm2sPct", "burnRateFitR2",
+                  "extinctionDHotMm", "extinctionDMinMm",
+                  "ignitionLogitA", "ignitionLogitB", "ignitionFitN",
+                  "ignitionFitScope", "ignitionFitMcFadden")
+    # renamed/dropped engine fields — always popped so a stale key from
+    # an older fit can't shadow the current semantics
+    DEAD_FIELDS = ("extinctionDCoolMm",)
     for m in cal.get("materials", []):
         fitted_mat = materials.get(m["id"])
         if fitted_mat and fitted_mat.get("locSource") == "psi-data":
@@ -242,6 +562,16 @@ def main() -> int:
             m["locPct"] = m.get("locBaseline", m["locPct"])
             m["locSource"] = "calibration"
             m.pop("locMethod", None)
+        # measured engine fields follow the same contract as locPct —
+        # written when the data supports a fit, removed when it doesn't,
+        # so a shrinking dataset can't leave stale physics behind
+        for f in FIT_FIELDS:
+            if fitted_mat and f in fitted_mat:
+                m[f] = fitted_mat[f]
+            else:
+                m.pop(f, None)
+        for f in DEAD_FIELDS:
+            m.pop(f, None)
     mat_loc = {m["id"]: m.get("locPct") for m in cal.get("materials", [])}
     for spec in cal.get("investigations", {}).values():
         spec["effectiveLoc"] = spec.get("loc") \
@@ -251,6 +581,12 @@ def main() -> int:
     bundle_cal = REPO / "data" / "bundle" / "calibration.json"
     bundle_cal.parent.mkdir(parents=True, exist_ok=True)
     bundle_cal.write_text(json.dumps(cal))
+    # the legacy frontend consumes the same artifacts — calibrate writes
+    # them first with unfitted defaults, so the fit must refresh them or
+    # the shipped copy stays stale (same contract as calibrate_constants)
+    fe_data = REPO / "frontend" / "src" / "data"
+    if fe_data.is_dir():
+        (fe_data / "calibration.json").write_text(bundle_cal.read_text())
 
     model = {
         "generated": "fit_risk_model.py",
@@ -260,7 +596,9 @@ def main() -> int:
             "residualBand": 3.0,
             "coolFlameAdd": 0.25, "smolderAdd": 0.15, "sootAdd": 0.10,
         },
-        "flowAnchors": FLOW_ANCHORS,
+        # flowAnchors come from calibration.json (calibrate_constants.py
+        # is the canonical owner); the local table is a fallback
+        "flowAnchors": cal.get("flowAnchors") or FLOW_ANCHORS,
         "materials": materials,
         "provenance": {
             "psiRunsParsed": len(rows),
@@ -273,7 +611,20 @@ def main() -> int:
                     "locSource=calibration -> literature-seeded. "
                     "extinctionLimitMin/MaxPct = measured extinction "
                     "envelope (includes radiative extinctions — not a "
-                    "flammability limit).",
+                    "flammability limit). burnRateK0/KO2Mm2sPct = "
+                    "least-squares K(o2) over measured kavg (engine "
+                    "d²-law rate). extinctionDHotMm = median Dext over "
+                    "radiative+cool-flame extinctions (large-droplet "
+                    "hot-flame death); extinctionDMinMm = median Dext "
+                    "over oxygen-limit extinctions (terminal "
+                    "diameter all combustion dies at). "
+                    "ignitionLogitA/B = logistic P(sustained burn | "
+                    "o2-loc): scope=material (per-material MLE), "
+                    "material-null (all labeled runs extinct — no MLE "
+                    "exists, ~0 curve written explicitly), or "
+                    "family:<name> (pooled droplet-fuels/gaseous-fuels/"
+                    "solid-materials fit). ignitionFitMcFadden = "
+                    "pseudo-R2 of the fit.",
         },
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
@@ -283,7 +634,14 @@ def main() -> int:
 
     print(f"[DONE] risk model -> {OUT.relative_to(REPO)}")
     print(f"       {len(materials)} materials, {fitted} LOC values fitted "
-          f"from {len(rows)} parsed runs")
+          f"from {len(rows)} parsed runs, "
+          f"{logit_fitted} logistic ignition curves")
+    for mid, entry in sorted(materials.items()):
+        if entry.get("ignitionFitScope"):
+            print(f"       {mid:14s} {entry['ignitionFitScope']:>20s} "
+                  f"a={entry['ignitionLogitA']:+.3f} "
+                  f"b={entry['ignitionLogitB']:+.4f} "
+                  f"n={entry['ignitionFitN']}")
     for mid, s in sorted(stats.items(), key=lambda kv: -kv[1]['n'])[:8]:
         print(f"       {mid:14s} n={s['n']:4d} burned={len(s['burned']):4d} "
               f"extinct={len(s['extinct']):4d} cool={s['cool']:3d}")

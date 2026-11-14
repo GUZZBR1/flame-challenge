@@ -80,14 +80,15 @@
       "coolFlameCapable": true,
       "smoldering": false,
       "hiddenFactor": 1.3,
-      "psiRuns": 22,
+      "psiRuns": 1,
       "psiBurned": 0,
-      "psiExtinguished": 20,
-      "psiCoolFlameRuns": 20,
-      "extinctionLimitMinPct": 17.0,
-      "extinctionLimitMaxPct": 21.0,
-      "extinctionDiameterMedianMm": 3.87,
-      "burnRateMedianMm2s": 0.37
+      "psiExtinguished": 0,
+      "psiCoolFlameRuns": 0,
+      "ignitionLogitA": -3.7526,
+      "ignitionLogitB": 0.34686,
+      "ignitionFitN": 274,
+      "ignitionFitScope": "family:droplet-fuels",
+      "ignitionFitMcFadden": 0.266
     },
     "ethylene": {
       "id": "ethylene",
@@ -103,28 +104,42 @@
       "psiRuns": 222,
       "psiBurned": 0,
       "psiExtinguished": 0,
-      "psiCoolFlameRuns": 0
+      "psiCoolFlameRuns": 0,
+      "ignitionLogitA": -2.0287,
+      "ignitionLogitB": 0.0184,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     "heptane": {
       "id": "heptane",
       "name": "n-heptane",
-      "locPct": 16.0,
-      "locSource": "psi-data",
+      "locPct": 12.0,
+      "locSource": "calibration",
       "spreadMinCms": 0.2,
       "spreadMaxCms": 4.0,
       "sootIndex": 0.55,
       "coolFlameCapable": true,
       "smoldering": false,
       "hiddenFactor": 1.305,
-      "psiRuns": 114,
-      "psiBurned": 15,
-      "psiExtinguished": 88,
-      "psiCoolFlameRuns": 34,
+      "psiRuns": 119,
+      "psiBurned": 57,
+      "psiExtinguished": 60,
+      "psiCoolFlameRuns": 46,
       "extinctionLimitMinPct": 13.0,
-      "extinctionLimitMaxPct": 34.0,
-      "extinctionDiameterMedianMm": 2.31,
+      "extinctionLimitMaxPct": 24.0,
+      "extinctionDiameterMedianMm": 2.33,
+      "extinctionDHotMm": 2.86,
+      "extinctionDMinMm": 0.78,
       "burnRateMedianMm2s": 0.54,
-      "locMethod": "extinction-floor"
+      "burnRateK0Mm2s": 0.2254,
+      "burnRateKO2Mm2sPct": 0.01538,
+      "burnRateFitR2": 0.173,
+      "ignitionLogitA": -2.4741,
+      "ignitionLogitB": 0.28564,
+      "ignitionFitN": 117,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.173
     },
     "iso-octane": {
       "id": "iso-octane",
@@ -140,7 +155,12 @@
       "psiRuns": 1,
       "psiBurned": 0,
       "psiExtinguished": 0,
-      "psiCoolFlameRuns": 0
+      "psiCoolFlameRuns": 0,
+      "ignitionLogitA": -3.7526,
+      "ignitionLogitB": 0.34686,
+      "ignitionFitN": 274,
+      "ignitionFitScope": "family:droplet-fuels",
+      "ignitionFitMcFadden": 0.266
     },
     "jp8": {
       "id": "jp8",
@@ -180,7 +200,12 @@
       "psiRuns": 24,
       "psiBurned": 0,
       "psiExtinguished": 0,
-      "psiCoolFlameRuns": 0
+      "psiCoolFlameRuns": 0,
+      "ignitionLogitA": -2.0287,
+      "ignitionLogitB": 0.0184,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "family:gaseous-fuels",
+      "ignitionFitMcFadden": 0.036
     },
     "methanol": {
       "id": "methanol",
@@ -193,15 +218,25 @@
       "coolFlameCapable": true,
       "smoldering": false,
       "hiddenFactor": 1.26,
-      "psiRuns": 155,
-      "psiBurned": 0,
-      "psiExtinguished": 151,
+      "psiRuns": 157,
+      "psiBurned": 31,
+      "psiExtinguished": 126,
       "psiCoolFlameRuns": 0,
       "extinctionLimitMinPct": 12.0,
-      "extinctionLimitMaxPct": 34.0,
-      "extinctionDiameterMedianMm": 1.61,
+      "extinctionLimitMaxPct": 30.0,
+      "extinctionDiameterMedianMm": 1.62,
+      "extinctionDHotMm": 2.28,
+      "extinctionDMinMm": 1.51,
       "burnRateMedianMm2s": 0.46,
-      "locMethod": "extinction-floor"
+      "burnRateK0Mm2s": 0.1781,
+      "burnRateKO2Mm2sPct": 0.01514,
+      "burnRateFitR2": 0.246,
+      "locMethod": "extinction-floor",
+      "ignitionLogitA": -5.7622,
+      "ignitionLogitB": 0.4685,
+      "ignitionFitN": 157,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.42
     },
     "nomex": {
       "id": "nomex",
@@ -287,7 +322,12 @@
       "psiExtinguished": 80,
       "psiCoolFlameRuns": 0,
       "extinctionLimitMinPct": 18.0,
-      "extinctionLimitMaxPct": 85.0
+      "extinctionLimitMaxPct": 85.0,
+      "ignitionLogitA": -2.0287,
+      "ignitionLogitB": 0.0184,
+      "ignitionFitN": 99,
+      "ignitionFitScope": "material",
+      "ignitionFitMcFadden": 0.036
     },
     "pyrell": {
       "id": "pyrell",
@@ -343,8 +383,8 @@
     }
   },
   "provenance": {
-    "psiRunsParsed": 1063,
-    "materialsFittedFromPsi": 2,
-    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit)."
+    "psiRunsParsed": 1155,
+    "materialsFittedFromPsi": 1,
+    "note": "locSource=psi-data -> LOC re-estimated from parsed PSI test sheets: locMethod=boundary-midpoint for clean burn/extinct separation, extinction-floor for droplet fuels (median of 3 lowest limit-type radiative/cool-flame extinctions excluded). locSource=calibration -> literature-seeded. extinctionLimitMin/MaxPct = measured extinction envelope (includes radiative extinctions \u2014 not a flammability limit). burnRateK0/KO2Mm2sPct = least-squares K(o2) over measured kavg (engine d\u00b2-law rate). extinctionDHotMm = median Dext over radiative+cool-flame extinctions (large-droplet hot-flame death); extinctionDMinMm = median Dext over oxygen-limit extinctions (terminal diameter all combustion dies at). ignitionLogitA/B = logistic P(sustained burn | o2-loc): scope=material (per-material MLE), material-null (all labeled runs extinct \u2014 no MLE exists, ~0 curve written explicitly), or family:<name> (pooled droplet-fuels/gaseous-fuels/solid-materials fit). ignitionFitMcFadden = pseudo-R2 of the fit."
   }
 }

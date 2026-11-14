@@ -10,7 +10,7 @@ import json
 import math
 import time
 
-from fastapi import FastAPI, Query, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, ValidationError
 
 from backend.services import engine_bridge as eb
-from backend.services import neighbors, rag, risk, tactics
+from backend.services import investigations, neighbors, rag, risk, tactics
 
 app = FastAPI(title="Freefall Foundry Engine API", version="0.1.0")
 app.add_middleware(
@@ -84,6 +84,12 @@ class ChamberReq(BaseModel):
     flowCms: float | None = Field(default=None, **_FLOW)
     pressureKpa: float | None = Field(default=None, **_PRESSURE)
     seed: int = Field(default=1, **_SEED)
+    # closed-chamber gas balance — all optional
+    volumeLiters: float | None = Field(default=None, ge=0.0, le=1e6)
+    ambientO2Pct: float | None = Field(default=None, **_O2)
+    ventPerSec: float | None = Field(default=None, ge=0.0, le=10.0)
+    co2Pct: float | None = Field(default=None, ge=0.0, le=100.0)
+    hePct: float | None = Field(default=None, ge=0.0, le=100.0)
 
 
 @app.get("/health")
@@ -163,6 +169,35 @@ def api_risk_materials() -> dict:
     return {"materials": risk.materials()}
 
 
+# ---------- SI layer: investigation leaderboard, detail cards, insights ----------
+
+@app.get("/api/investigations")
+def api_investigations() -> dict:
+    """Ranked investigation cards — the challenge's 'rank' deliverable.
+    Composite score (flammability · hidden hazard · exploration
+    relevance · data richness) with per-component breakdown."""
+    return investigations.leaderboard()
+
+
+@app.get("/api/investigations/{inv_id}")
+def api_investigation_detail(inv_id: str) -> dict:
+    card = investigations.detail(inv_id)
+    if card is None:
+        known = ", ".join(
+            sorted(investigations.DISPLAY_NAME)) or "<none>"
+        raise HTTPException(
+            status_code=404,
+            detail=f"unknown investigationId {inv_id!r} (known: {known})")
+    return card
+
+
+@app.get("/api/insights")
+def api_insights() -> dict:
+    """Corpus-level interpreted findings — the 'interpret' deliverable.
+    Every claim cites its run counts and source investigations."""
+    return investigations.insights()
+
+
 # ---------- SI layer: KNN lookup + deterministic tactical synthesis ----------
 
 @app.get("/api/neighbors")
@@ -232,7 +267,9 @@ async def chamber_ws(ws: WebSocket) -> None:
             await ws.close(code=1008)
             return
         ch = eb.make_chamber(req.investigationId, req.o2Pct, req.flowCms,
-                             req.seed, req.pressureKpa)
+                             req.seed, req.pressureKpa, req.volumeLiters,
+                             req.ambientO2Pct, req.ventPerSec, req.co2Pct,
+                             req.hePct)
         dt = 1.0 / 30.0
         deadline = time.monotonic() + 60
         while not ch.finished() and time.monotonic() < deadline:

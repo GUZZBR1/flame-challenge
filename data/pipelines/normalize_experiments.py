@@ -106,8 +106,9 @@ FUEL_ID = {
 
 FIELDS = [
     "run_id", "accession", "investigation_id", "fuel", "material_id",
-    "o2_pct", "n2_pct", "co2_pct", "he_pct", "pressure_kpa", "temp_k",
-    "flow_cms", "droplet_d0_mm", "burn_rate_mm2_s", "burn_time_s",
+    "o2_pct", "o2_end_pct", "n2_pct", "co2_pct", "he_pct", "pressure_kpa",
+    "temp_k", "flow_cms", "mass_flow_lo_mgs", "mass_flow_hi_mgs", "zst",
+    "droplet_d0_mm", "burn_rate_mm2_s", "burn_time_s",
     "extinction_d_mm", "outcome", "extinction_type", "cool_flame",
     "fiber_support", "comments", "source_file", "source_url", "verified",
 ]
@@ -260,6 +261,8 @@ def parse_testsheet(text: str, fname: str, acc: str, inv: str) -> dict | None:
         "fuel": str(fuel).strip() if fuel else None,
         "material_id": fuel_id(str(fuel) if fuel else None),
         "o2_pct": _pct(_f(r"O2 Mole Fraction\s*=\s*\t?\s*(" + NUM_RE + ")", text)),
+        "o2_end_pct": None, "mass_flow_lo_mgs": None,
+        "mass_flow_hi_mgs": None, "zst": None,
         "n2_pct": _pct(_f(r"N2 Mole Fraction\s*=\s*\t?\s*(" + NUM_RE + ")", text)),
         "co2_pct": _pct(_f(r"CO2 Mole Fraction\s*=\s*\t?\s*(" + NUM_RE + ")", text)),
         "he_pct": _pct(_f(r"He Mole Fraction\s*=\s*\t?\s*(" + NUM_RE + ")", text)),
@@ -302,7 +305,9 @@ def parse_generic_kv(text: str, fname: str, acc: str, inv: str) -> dict | None:
         "accession": acc, "investigation_id": inv,
         "fuel": str(fuel).strip() if fuel else None,
         "material_id": fuel_id(str(fuel) if fuel else None),
-        "o2_pct": _pct(o2), "n2_pct": None, "co2_pct": None, "he_pct": None,
+        "o2_pct": _pct(o2), "o2_end_pct": None,
+        "n2_pct": None, "co2_pct": None, "he_pct": None,
+        "mass_flow_lo_mgs": None, "mass_flow_hi_mgs": None, "zst": None,
         "pressure_kpa": None, "temp_k": None,
         "flow_cms": _f(r"(?:flow|velocity|air ?speed)\D{0,12}(" + NUM_RE + r")\s*cm", text),
         "droplet_d0_mm": None, "burn_rate_mm2_s": None, "burn_time_s": None,
@@ -429,7 +434,9 @@ def sniff_csv_rows(path: Path, acc: str, inv: str) -> list[dict]:
             "accession": acc, "investigation_id": inv,
             "fuel": fuel_s,
             "material_id": fuel_id(fuel_s),
-            "o2_pct": _pct(o2f), "n2_pct": None, "co2_pct": None, "he_pct": None,
+            "o2_pct": _pct(o2f), "o2_end_pct": None,
+            "n2_pct": None, "co2_pct": None, "he_pct": None,
+            "mass_flow_lo_mgs": None, "mass_flow_hi_mgs": None, "zst": None,
             "pressure_kpa": pkpa, "temp_k": t,
             "flow_cms": num(r, "flow cm", "veloc", "speed"),
             "droplet_d0_mm": num(r, "d0", "diameter", "droplet"),
@@ -673,6 +680,21 @@ def parse_legacy_runs(covered: set[str]) -> list[dict]:
         if o2 is None:
             o2mf = _mid(r.get("o2_mf_min"), r.get("o2_mf_max"))
             o2 = o2mf * 100 if o2mf is not None else None
+        # coflow ramp columns (ACME CFI-G): o2_mf_raw / mass_flow_mg_s_raw /
+        # fuel_mf_raw are "start; end" ramps — first and last values both
+        # matter (end-of-ramp O2 decides oxygen-depletion SE; flow span +
+        # burn time gives the strain ramp rate that decides fuel-ramp SE).
+        # o2_mf_min/max discard ramp direction — parse the raw cell like
+        # the flow ramp below and keep the LAST reading, not the max.
+        o2_parts = [p for p in re.findall(NUM_RE,
+                                        r.get("o2_mf_raw") or "")]
+        o2_end = float(o2_parts[-1]) * 100 if o2_parts else None
+        # semicolon ramp in one cell ("1.5; 5.59") — first/last parts
+        parts = [p for p in re.findall(NUM_RE,
+                                       r.get("mass_flow_mg_s_raw") or "")]
+        mf_lo = float(parts[0]) if parts else None
+        mf_hi = float(parts[-1]) if parts else None
+        zst = _num1(r.get("zst"))
         atm = _mid(r.get("pressure_atm_min"), r.get("pressure_atm_max"))
         flow = _mid(r.get("airflow_cm_s_min"), r.get("airflow_cm_s_max"))
         dext = _mid(r.get("dext_mm_min"), r.get("dext_mm_max"))
@@ -693,6 +715,10 @@ def parse_legacy_runs(covered: set[str]) -> list[dict]:
             "fuel": fuel,
             "material_id": fuel_id(fuel),
             "o2_pct": round(o2, 3) if o2 is not None else None,
+            "o2_end_pct": round(o2_end, 2) if o2_end is not None else None,
+            "mass_flow_lo_mgs": round(mf_lo, 4) if mf_lo is not None else None,
+            "mass_flow_hi_mgs": round(mf_hi, 4) if mf_hi is not None else None,
+            "zst": round(zst, 4) if zst is not None else None,
             "n2_pct": _num1(r.get("n2_mf_raw")) and round(_num1(r["n2_mf_raw"]) * 100, 2),
             "co2_pct": _num1(r.get("co2_mf_raw")) and round(_num1(r["co2_mf_raw"]) * 100, 2),
             "he_pct": _num1(r.get("he_mf_raw")) and round(_num1(r["he_mf_raw"]) * 100, 2),
@@ -776,6 +802,8 @@ def parse_legacy_flex(covered: set[str]) -> list[dict]:
             "fuel": fuel,
             "material_id": fuel_id(fuel),
             "o2_pct": round(o2mf * 100, 3) if o2mf is not None else None,
+            "o2_end_pct": None, "mass_flow_lo_mgs": None,
+            "mass_flow_hi_mgs": None, "zst": None,
             "n2_pct": round(_num1(r["n2_mf"]) * 100, 2) if _num1(r.get("n2_mf")) else None,
             "co2_pct": round(_num1(r["co2_mf"]) * 100, 2) if _num1(r.get("co2_mf")) else None,
             "he_pct": round(_num1(r["he_mf"]) * 100, 2) if _num1(r.get("he_mf")) else None,

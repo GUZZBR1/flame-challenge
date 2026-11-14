@@ -56,10 +56,27 @@ CATEGORY_MODEL = {
     "confined": "spread",
     "smoke-aerosol": "spread",
     # ACME coflow gas burners are diffusion flames, not liquid droplets —
-    # the SAFFIRE-type spread model is the closest engine regime
-    "gaseous-diffusion": "spread",
+    # ACME-style coflow diffusion flames have their own regime —
+    # ignition/min-flow gates plus strain (fuel-ramp) and oxygen-depletion
+    # (oxidizer-ramp) extinction criteria fitted in fit_risk_model.py
+    "gaseous-diffusion": "coflow",
     "partial-gravity": "spread",
 }
+
+# ventilation factor anchors (cm/s -> multiplier) — the canonical table
+# for BOTH the engine (MaterialRisk::flowFactor, read from this file)
+# and the risk model (fit_risk_model.py re-exports it into
+# risk_model.json). Quiescent radiative window, mid-flow O2 supply,
+# high-flow blow-off — same physics SoFIE/BASS-II mapped.
+FLOW_ANCHORS = [
+    [0.0, 0.80],   # quiescent: radiative extinction regime (SoFIE-GEL)
+    [2.0, 0.90],
+    [8.0, 1.05],
+    [18.0, 1.15],  # worst-case opposed flow (BASS-II envelope)
+    [40.0, 1.00],
+    [80.0, 0.70],  # stretch/blow-off dominated
+    [150.0, 0.45],
+]
 
 # rough sooting index by fuel family (ACME burner rankings)
 SOOT = {
@@ -163,6 +180,7 @@ def main() -> int:
         "generated": "calibrate_constants.py",
         "materials": sorted(materials.values(), key=lambda m: m["id"]),
         "investigations": inv_map,
+        "flowAnchors": FLOW_ANCHORS,
     }
     OUT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
 
@@ -251,6 +269,13 @@ def main() -> int:
                 "shared/calibrated-data/ (see docs/NASA_PSI_REFERENCES.md)"
             )
         (BUNDLE_DATA / authored).write_text(src.read_text())
+    # legacy frontend still consumes the same artifacts when present
+    FE_DATA = ROOT / "frontend" / "src" / "data"
+    if FE_DATA.is_dir():
+        for f in ("calibration.json", "risk_profiles.json",
+                  "psi_experiments.json", "historical_scenarios.json",
+                  "tech_spinoffs.json"):
+            (FE_DATA / f).write_text((BUNDLE_DATA / f).read_text())
     print(f"wrote calibration + risk_profiles + psi_experiments — "
           f"{len(materials)} materials, {len(inv_map)} investigations")
     return 0

@@ -51,9 +51,15 @@
 
 | Model | Investigation anchor | Implementation |
 |---|---|---|
-| `DropletFlame` | FLEX / ACME | d²-law burn-down, spherical diffusion standoff `r_f/r_d ∝ O₂−LOC`, two-stage cool-flame regime for capable fuels |
-| `SolidSpread` | SoFIE / BASS-II / SAFFIRE | spread rate interpolated within measured `[min,max]` by O₂ margin; **two extinction regimes** — oxygen-limit at high flow, radiative at quiescent flow; partial-g correction |
-| `MaterialRisk` | ACME / all | per-material LOC, spread range, soot index, cool-flame & smolder flags |
+| `DropletFlame` | FLEX / ACME | d²-law burn-down with measured `K(o₂)=k0+slope·o₂` fits; spherical diffusion standoff; **dual diameter extinction** — radiative death at `d ≥ extinctionDHotMm`, terminal death at `d ≤ extinctionDMinMm`; two-stage cool-flame regime |
+| `SolidSpread` | SoFIE / BASS-II / SAFFIRE | spread rate interpolated within measured `[min,max]` by O₂ margin × shared `F_flow` anchors (mid-flow boost, high-flow **blow-off**) × √pressure; oxygen-limit/quiescent extinction regimes; partial-g correction |
+| `MaterialRisk` | ACME / all | per-material LOC, spread range, soot index, cool-flame & smolder flags; `ignitionPressure` is a **PSI logistic fit** `P(sustained burn | o₂−loc)` when `ignitionFitN>0` (scope: material / material-null / family) |
+| `Chamber` | — | aggregate API; **closed-volume gas balance** when `volumeLiters>0` — combustion depletes chamber O₂, ventilation exchanges toward ambient, CO₂/He suppressants cut effective O₂; `setSuppressants()` injects mid-run |
+
+The shared flow anchors live once in `calibration.json` (`flowAnchors`) —
+`calibrate_constants.py` owns them, `fit_risk_model.py` consumes them,
+`MaterialRisk::flowFactor` interpolates them for both the risk formula
+and the spread model.
 
 ## Build matrix
 
