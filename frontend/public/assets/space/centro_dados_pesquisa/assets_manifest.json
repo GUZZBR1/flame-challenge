@@ -1,0 +1,91 @@
+{
+  "name": "ignis_centro_dados_pesquisa",
+  "version": "4.0.0",
+  "assets": {
+    "engine_test_sequence_v4": {
+      "file": "animacoes/engine_test_sequence_v4.png",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGB"
+    },
+    "bancada_pesquisa_v4": {
+      "file": "bancada_pesquisa_v4.png",
+      "width": 270,
+      "height": 225,
+      "mode": "RGBA"
+    },
+    "caixa_ferramentas_v4": {
+      "file": "caixa_ferramentas_v4.png",
+      "width": 260,
+      "height": 270,
+      "mode": "RGBA"
+    },
+    "cientista_v4": {
+      "file": "cientista_v4.png",
+      "width": 175,
+      "height": 315,
+      "mode": "RGBA"
+    },
+    "console_pesquisa_v4": {
+      "file": "console_pesquisa_v4.png",
+      "width": 315,
+      "height": 250,
+      "mode": "RGBA"
+    },
+    "eclusa_v4": {
+      "file": "eclusa_v4.png",
+      "width": 380,
+      "height": 280,
+      "mode": "RGBA"
+    },
+    "janela_espacial_v4": {
+      "file": "janela_espacial_v4.png",
+      "width": 410,
+      "height": 265,
+      "mode": "RGBA"
+    },
+    "mapa_centro_dados_pesquisa_v4": {
+      "file": "mapa_centro_dados_pesquisa_v4.png",
+      "width": 1376,
+      "height": 768,
+      "mode": "RGB"
+    },
+    "motor_prototipo_v4": {
+      "file": "motor_prototipo_v4.png",
+      "width": 404,
+      "height": 340,
+      "mode": "RGBA"
+    },
+    "parede_servidores_v4": {
+      "file": "parede_servidores_v4.png",
+      "width": 395,
+      "height": 260,
+      "mode": "RGBA"
+    },
+    "pesquisador_sentado_v4": {
+      "file": "pesquisador_sentado_v4.png",
+      "width": 285,
+      "height": 275,
+      "mode": "RGBA"
+    },
+    "plataforma_risco_v4": {
+      "file": "plataforma_risco_v4.png",
+      "width": 385,
+      "height": 265,
+      "mode": "RGBA"
+    },
+    "rack_servidor_v4": {
+      "file": "rack_servidor_v4.png",
+      "width": 230,
+      "height": 325,
+      "mode": "RGBA"
+    },
+    "terminal_v4": {
+      "file": "terminal_v4.png",
+      "width": 210,
+      "height": 280,
+      "mode": "RGBA"
+    }
+  },
+  "notes": "Mapa V4 aprovado preservado; sprites V4 extraídos da prancha de assets alinhada ao mapa. Sequência de animação em animacoes/."
+}
