@@ -23,8 +23,7 @@
     { "id": "thrusters-close", "label": "Take 5: Thruster Close-up", "focus": "patrol", "scale": 1.9 },
     { "id": "thrusters-burn", "label": "Take 6: Full Burn", "focus": "patrol", "scale": 1.25 },
     { "id": "comets", "label": "Take 7: Background Comets", "focus": "space", "scale": 0.95 },
-    { "id": "comets-fall", "label": "Take 8: Falling Comet", "focus": "space", "scale": 1.05 },
-    { "id": "comets-flyby", "label": "Take 9: Comet Flyby", "focus": "space", "scale": 1.05 }
+    { "id": "comets", "label": "Take 7: Background Comets", "focus": "space", "scale": 0.95 }
   ],
   "sequences": {
     "starfield_twinkle": {
@@ -59,28 +58,6 @@
         "assets/space/motores/fx_thruster_boost.png"
       ],
       "flare": "assets/space/motores/fx_thruster_flare.png"
-    },
-    "comet_fall": {
-      "kind": "path-animation",
-      "loop": false,
-      "path": "top-to-bottom-diagonal",
-      "speedRange": [7, 15],
-      "assets": [
-        "assets/space/cometas/fx_comet_cyan.png",
-        "assets/space/cometas/fx_comet_gold.png",
-        "assets/space/cometas/fx_comet_green.png"
-      ]
-    },
-    "comet_flyby": {
-      "kind": "path-animation",
-      "loop": false,
-      "path": "left-to-right-shallow-arc",
-      "speedRange": [9, 18],
-      "assets": [
-        "assets/space/cometas/fx_comet_cyan.png",
-        "assets/space/cometas/fx_comet_gold.png",
-        "assets/space/cometas/fx_comet_green.png"
-      ]
     },
     "asteroid_flyby": {
       "kind": "path-animation",
