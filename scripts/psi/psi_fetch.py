@@ -220,13 +220,15 @@ def main():
 
     os.makedirs(CATALOG_DIR, exist_ok=True)
     out = os.path.join(CATALOG_DIR, "files_manifest.csv")
-    # merge: keep catalogue rows for accessions not refreshed in this run
-    new_keys = {(r["accession"], r["key"]) for r in manifest_rows}
+    # merge: keep rows only for accessions NOT refreshed in this run;
+    # a refreshed accession's rows are fully replaced so files removed
+    # upstream don't linger as stale manifest entries
+    refreshed = {r["accession"] for r in manifest_rows}
     merged = manifest_rows
     if os.path.exists(out):
         with open(out, newline="") as fh:
             for row in csv.DictReader(fh):
-                if (row["accession"], row["key"]) not in new_keys:
+                if row["accession"] not in refreshed:
                     merged.append(row)
     fieldnames = ["accession", "version", "file_id", "category", "key",
                   "name", "size_bytes", "updated", "local_path", "status"]
