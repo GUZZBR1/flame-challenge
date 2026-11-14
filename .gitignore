@@ -34,3 +34,8 @@ data/psi/processed/xlsx_csv/
 # Local secrets (LLM keys etc.)
 .env
 .env.*
+
+# C++ core build artifacts (cmake)
+build/
+*.o
+*.a
