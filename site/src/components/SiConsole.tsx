@@ -365,7 +365,10 @@ export default function SiConsole() {
               module
             </div>
             <div className="mt-1 flex flex-wrap gap-1.5">
-              {MODULES.map((m) => (
+              {(focusModule && !MODULES.includes(focusModule)
+                ? [...MODULES, focusModule]
+                : MODULES
+              ).map((m) => (
                 <button
                   key={m}
                   type="button"
