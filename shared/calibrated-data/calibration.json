@@ -535,7 +535,7 @@
   "coflow": {
     "_default": {
       "ignO2Pct": 23.3,
-      "minFlowMgs": 0.4,
+      "minFlowMgs": 0.5,
       "extO2Pct": 40.0,
       "rateCrit": 0.1,
       "fitN": 333,
@@ -543,17 +543,17 @@
     },
     "30% butane": {
       "ignO2Pct": 21.1,
-      "minFlowMgs": 0.5,
+      "minFlowMgs": 0.75,
       "extO2Pct": 40.0,
-      "rateCrit": 0.0,
+      "rateCrit": 0.02,
       "fitN": 52,
-      "fitAccuracy": 0.735
+      "fitAccuracy": 0.647
     },
     "30% ethane": {
       "ignO2Pct": 20.7,
       "minFlowMgs": 0.5,
       "extO2Pct": 40.0,
-      "rateCrit": 0.0,
+      "rateCrit": 0.02,
       "fitN": 27,
       "fitAccuracy": 0.769
     },
@@ -561,17 +561,17 @@
       "ignO2Pct": 21.7,
       "minFlowMgs": 0.125,
       "extO2Pct": 40.0,
-      "rateCrit": 0.0,
+      "rateCrit": 0.02,
       "fitN": 36,
       "fitAccuracy": 0.259
     },
     "50% butane": {
       "ignO2Pct": 23.3,
-      "minFlowMgs": 0.8,
+      "minFlowMgs": 1.2,
       "extO2Pct": 40.0,
-      "rateCrit": 0.0,
+      "rateCrit": 0.02,
       "fitN": 30,
-      "fitAccuracy": 0.556
+      "fitAccuracy": 0.5
     },
     "butane": {
       "ignO2Pct": 21.0,
@@ -591,8 +591,8 @@
     },
     "propane": {
       "ignO2Pct": 21.2,
-      "minFlowMgs": 0.5,
-      "extO2Pct": 0.0,
+      "minFlowMgs": 0.6,
+      "extO2Pct": 40.0,
       "rateCrit": 0.1,
       "fitN": 63,
       "fitAccuracy": 0.6

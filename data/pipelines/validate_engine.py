@@ -126,6 +126,13 @@ def run_chamber(row: dict, spec: dict | None, mat_ids: set[str]):
     cfg.pressureKpa = float(row["pressure_kpa"]) if row.get("pressure_kpa") \
         else float(spec.get("pressureKpa", 101))
     cfg.partialGravity = bool(spec.get("partialGravity", False))
+    # do NOT pass the recorded co2_pct/he_pct as suppressants: the
+    # measured o2_pct is already the O2 fraction of the diluted
+    # atmosphere the test ran in — feeding the recorded diluents into
+    # effectiveO2Pct double-counts the suppression and predicts
+    # no-ignition for every diluted run (measured: flex-2 0.68 -> 0.26).
+    # The suppressant config models EXTRA injected diluent in simulated
+    # runs, which replayed sheets by definition did not have.
     if row.get("droplet_d0_mm"):
         cfg.dropletD0Mm = float(row["droplet_d0_mm"])
     cfg.seed = 1
@@ -140,10 +147,15 @@ def run_chamber(row: dict, spec: dict | None, mat_ids: set[str]):
     events = set(ch.drain_events())
     if "ignited" not in events:
         return "no-ignition", None
+    state = json.loads(ch.state_json())
     if cfg.model == "droplet":
-        frac = json.loads(ch.state_json()).get("burnFraction", 0.0)
-        return ("burn" if frac >= 0.995 else "extinction"), None
-    burn_len = json.loads(ch.state_json()).get("burnLengthCm", 0.0)
+        # fuel exhaustion is the only "burn" path — every end state is
+        # Extinguished, but only fuel-out runs reached d <= 0.02; a
+        # burnFraction threshold can't tell that apart from a terminal-
+        # diameter death (cool flames consume most of the droplet too)
+        d_mm = state.get("dropletDMm", 1.0)
+        return ("burn" if d_mm <= 0.05 else "extinction"), None
+    burn_len = state.get("burnLengthCm", 0.0)
     return ("burn" if burn_len >= cfg.slabLengthCm - 1e-6
             else "extinction"), None
 

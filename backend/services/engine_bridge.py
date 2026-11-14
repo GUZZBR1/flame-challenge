@@ -118,7 +118,15 @@ def make_chamber(
     cfg = fe.ChamberConfig()
     cfg.investigationId = investigation_id
     cfg.materialId = spec.get("materialId", "pmma")
-    cfg.model = spec.get("model", "spread")
+    model = spec.get("model", "spread")
+    # coflow is an outcome criterion, not a transient regime — the
+    # chamber has no coflow solver; spread is the closest visual proxy
+    # for the live/WS surface. Replay scoring uses coflowOutcome
+    # directly, which also evaluates the ramp fields a ChamberReq
+    # doesn't carry — perfect agreement is impossible by design.
+    if model == "coflow":
+        model = "spread"
+    cfg.model = model
     cfg.o2Pct = float(o2_pct)
     fr = spec.get("flowRangeCms") or [0, 10]
     if len(fr) < 2:

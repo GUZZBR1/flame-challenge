@@ -683,10 +683,12 @@ def parse_legacy_runs(covered: set[str]) -> list[dict]:
         # coflow ramp columns (ACME CFI-G): o2_mf_raw / mass_flow_mg_s_raw /
         # fuel_mf_raw are "start; end" ramps — first and last values both
         # matter (end-of-ramp O2 decides oxygen-depletion SE; flow span +
-        # burn time gives the strain ramp rate that decides fuel-ramp SE)
-        o2_end = _num1((r.get("o2_mf_max") or "").strip() or None)
-        if o2_end is not None:
-            o2_end *= 100
+        # burn time gives the strain ramp rate that decides fuel-ramp SE).
+        # o2_mf_min/max discard ramp direction — parse the raw cell like
+        # the flow ramp below and keep the LAST reading, not the max.
+        o2_parts = [p for p in re.findall(NUM_RE,
+                                        r.get("o2_mf_raw") or "")]
+        o2_end = float(o2_parts[-1]) * 100 if o2_parts else None
         # semicolon ramp in one cell ("1.5; 5.59") — first/last parts
         parts = [p for p in re.findall(NUM_RE,
                                        r.get("mass_flow_mg_s_raw") or "")]

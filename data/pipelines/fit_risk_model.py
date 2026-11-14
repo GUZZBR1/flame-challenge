@@ -458,7 +458,7 @@ def main() -> int:
         mf_lo = _fnum(r.get("mass_flow_lo_mgs"))
         bt = _fnum(r.get("burn_time_s"))
         rc = p.get("rateCrit")
-        if rc is None:
+        if rc is None or rc <= 0:
             rc = 1e9  # disabled branch — fuel-ramp extinction never fires
         if mf_lo is not None and mf_hi is not None and bt \
                 and mf_hi > mf_lo and (mf_hi - mf_lo) / bt > rc:
@@ -481,7 +481,9 @@ def main() -> int:
         # keep the gate at 0 rather than misfiring on real extinctions)
         min_flow, best = 0.0, -1
         for t in sorted(set(noign + others)):
-            ok = sum(x <= t for x in noign) + sum(x > t for x in others)
+            # the runtime gate is mf_hi < minFlow — score the same
+            # half-open split (equality must land on the "burns" side)
+            ok = sum(x < t for x in noign) + sum(x >= t for x in others)
             if ok > best:
                 best, min_flow = ok, t
         # O2 gate: highest O2 that still produced a recorded no-ignition
@@ -494,7 +496,10 @@ def main() -> int:
         live = [r for r in labeled if r["outcome"] != "no-ignition"]
         best_p, best_ok = None, -1
         for ext_o2 in range(0, 46, 2):
-            for rate in (0.0, 0.02, 0.05, 0.08, 0.1, 0.12, 0.15, 0.2,
+            # rateCrit=0 is not a valid threshold — runtime treats <=0 as
+            # "fuel-ramp branch disabled", so offering it would let the
+            # fitter score a semantics the engine never implements
+            for rate in (0.02, 0.05, 0.08, 0.1, 0.12, 0.15, 0.2,
                          0.3, 0.5, 1e9):
                 p = {"ignO2Pct": ign_o2, "minFlowMgs": min_flow,
                      "extO2Pct": ext_o2, "rateCrit": rate}

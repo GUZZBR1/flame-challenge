@@ -5,22 +5,22 @@
   "engineModule": "freefall_engine",
   "runsTotal": 1155,
   "runsScored": 612,
-  "accuracy": 0.6438,
+  "accuracy": 0.6732,
   "confusion": {
-    "burn->burn": 57,
-    "burn->extinction": 115,
-    "burn->no-ignition": 9,
-    "extinction->burn": 21,
-    "extinction->extinction": 311,
-    "extinction->no-ignition": 37,
-    "no-ignition->burn": 14,
-    "no-ignition->extinction": 22,
-    "no-ignition->no-ignition": 26
+    "burn->burn": 53,
+    "burn->extinction": 112,
+    "burn->no-ignition": 16,
+    "extinction->burn": 15,
+    "extinction->extinction": 313,
+    "extinction->no-ignition": 41,
+    "no-ignition->burn": 8,
+    "no-ignition->extinction": 8,
+    "no-ignition->no-ignition": 46
   },
   "perInvestigation": {
     "acme": {
       "n": 333,
-      "accuracy": 0.61
+      "accuracy": 0.664
     },
     "flex-2": {
       "n": 274,
@@ -34,7 +34,7 @@
   "perMaterial": {
     "butane": {
       "n": 140,
-      "accuracy": 0.643
+      "accuracy": 0.729
     },
     "cotton": {
       "n": 3,
@@ -58,7 +58,7 @@
     },
     "propane": {
       "n": 99,
-      "accuracy": 0.535
+      "accuracy": 0.596
     }
   },
   "burnRateRelErrMedian": {

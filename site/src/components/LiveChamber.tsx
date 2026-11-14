@@ -233,7 +233,12 @@ export default function LiveChamber() {
             <input
               type="checkbox"
               checked={sealed}
-              onChange={(e) => setSealed(e.target.checked)}
+              onChange={(e) => {
+                setSealed(e.target.checked)
+                // a 1 mm droplet can't deplete 50 L — switch to a solid
+                // spread run so the sealed demo shows real O2 depletion
+                if (e.target.checked && inv === 'flex-2') setInv('saffire')
+              }}
               className="accent-[var(--accent)]"
             />
             seal cabin · 50 l · 0.05%/s vent
