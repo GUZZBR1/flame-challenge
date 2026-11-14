@@ -414,6 +414,31 @@ export default function ResearchLabScene({
       world.addChild(bgSprite)
       bgSpriteRef.current = bgSprite
 
+      // Add the standalone lab concepts over the matching stations in the map.
+      // Keep their dimensions tied to the map so zoom and pan preserve alignment.
+      const equipmentLayer = new Container()
+      const equipment = [
+        { file: 'experiment-chamber.png', x: 0.28, y: 0.39, width: 0.20, anchor: 0.5 },
+        { file: 'analysis-bench.png', x: 0.48, y: 0.68, width: 0.20, anchor: 0.5 },
+        { file: 'control-console.png', x: 0.75, y: 0.58, width: 0.13, anchor: 0.5 },
+        { file: 'gas-cylinder-rack.png', x: 0.39, y: 0.23, width: 0.09, anchor: 0.5 },
+        { file: 'scientist.png', x: 0.37, y: 0.49, width: 0.055, anchor: 1 },
+      ] as const
+      const equipmentTextures = await Promise.all(
+        equipment.map(({ file }) => Assets.load(`/assets/laboratory-experiments/${file}`)),
+      )
+      if (!isMounted) return
+
+      equipment.forEach(({ x, y, width, anchor }, index) => {
+        const sprite = new Sprite(equipmentTextures[index])
+        sprite.anchor.set(0.5, anchor)
+        sprite.width = bgSprite.width * width
+        sprite.height = sprite.width * (equipmentTextures[index].height / equipmentTextures[index].width)
+        sprite.position.set((x - 0.5) * bgSprite.width, (y - 0.5) * bgSprite.height)
+        equipmentLayer.addChild(sprite)
+      })
+      world.addChild(equipmentLayer)
+
       // Calculate initial fit
       const initialScale =
         Math.min(app.screen.width / bgSprite.width, app.screen.height / bgSprite.height) * 1.05
