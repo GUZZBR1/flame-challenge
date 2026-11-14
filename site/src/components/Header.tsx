@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useRef } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { getLenis, gsap, ScrollTrigger } from '../lib/scroll'
 
 interface Props {
@@ -7,15 +7,33 @@ interface Props {
 }
 
 const NAV: { label: string; href: string; className?: string }[] = [
-  { label: 'vision', href: '#top', className: 'max-[900px]:hidden' },
+  { label: 'vision', href: '#top', className: 'max-lg:hidden' },
+  { label: 'simulations', href: '#simulations' },
+  { label: 'psi-dataset', href: '#psi-dataset', className: 'max-[560px]:hidden' },
 ]
 
+
+/** Floating glass header — bare monospace text over the hero, then a
+ *  blurred, glowing pill materializes behind the nav as you scroll. */
+const clockFmt = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'America/Sao_Paulo',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hour12: false,
+})
 
 /** Floating glass header — bare monospace text over the hero, then a
  *  blurred, glowing pill materializes behind the nav as you scroll. */
 export default function Header({ dark, onToggleTheme }: Props) {
   const glassRef = useRef<HTMLSpanElement>(null)
   const brandRef = useRef<HTMLAnchorElement>(null)
+  const [clock, setClock] = useState(() => clockFmt.format(new Date()))
+
+  useEffect(() => {
+    const id = setInterval(() => setClock(clockFmt.format(new Date())), 1000)
+    return () => clearInterval(id)
+  }, [])
 
   useEffect(() => {
     const glass = glassRef.current
@@ -55,7 +73,7 @@ export default function Header({ dark, onToggleTheme }: Props) {
   const go = useCallback((href: string) => {
     const lenis = getLenis()
     if (lenis) {
-      lenis.scrollTo(href === '#top' ? 0 : href)
+      lenis.scrollTo(href === '#top' ? 0 : href, { offset: -96 })
       return
     }
     if (href === '#top') {
@@ -71,7 +89,7 @@ export default function Header({ dark, onToggleTheme }: Props) {
         <span
           ref={glassRef}
           aria-hidden="true"
-          className="absolute inset-0 rounded-full border border-[var(--edge)] bg-[var(--panel)] shadow-[0_10px_36px_-10px_rgba(23,33,43,0.28),0_0_28px_-8px_rgba(73,184,214,0.35)] backdrop-blur-xl backdrop-saturate-150 will-change-transform dark:shadow-[0_10px_36px_-10px_rgba(0,0,0,0.6),0_0_32px_-6px_rgba(73,184,214,0.45)]"
+          className="absolute inset-0 rounded-full border border-[var(--edge)] bg-[var(--panel)] shadow-[0_10px_36px_-10px_rgba(23,33,43,0.28),0_0_28px_-8px_rgba(73,184,214,0.35)] backdrop-blur-xl backdrop-saturate-150 will-change-transform dark:border-[#cbd5e15c] dark:bg-[#0d1524e0] dark:shadow-[0_12px_40px_-10px_rgba(0,0,0,0.75),0_0_44px_-6px_rgba(73,184,214,0.6)]"
         />
 
         <nav className="relative flex items-center gap-2 sm:gap-6 lg:gap-8" aria-label="Primary">
@@ -111,8 +129,20 @@ export default function Header({ dark, onToggleTheme }: Props) {
         </nav>
 
         <div className="relative flex items-center gap-3 sm:gap-6">
-          <span className="hidden font-mono text-[10px] lowercase tracking-[0.18em] text-[var(--ink)] opacity-60 lg:inline">
+          <span className="hidden font-mono text-[13px] lowercase tracking-[0.18em] text-[var(--ink)] opacity-60 xl:inline">
             são paulo, brazil
+          </span>
+          <span
+            className="hidden font-mono text-[13px] lowercase tracking-[0.18em] text-[var(--ink)] opacity-60 sm:inline"
+            aria-label="current time in são paulo, utc-3"
+          >
+            {clock.split(':').map((part, i) => (
+              <Fragment key={i}>
+                {i > 0 && <span className="clock-blink">:</span>}
+                {part}
+              </Fragment>
+            ))}
+            <span className="opacity-60"> utc-3</span>
           </span>
           <button
             type="button"
