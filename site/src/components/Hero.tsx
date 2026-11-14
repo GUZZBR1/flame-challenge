@@ -45,14 +45,18 @@ export default function Hero() {
     const identity = identityRef.current
     if (!hero || !identity) return
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      // no motion — just hide the fixed title once the hero scrolls away
+      // no motion — swap the fixed title for the header wordmark at the
+      // choreography boundary, not on first scroll (the brand is still
+      // nearly transparent earlier in the range)
       const st = ScrollTrigger.create({
         trigger: hero,
         start: 'top top',
         end: () => window.innerHeight * 0.58,
-        onEnter: () => gsap.set(identity, { autoAlpha: 0 }),
-        onLeaveBack: () => gsap.set(identity, { autoAlpha: 1 }),
+        onLeave: () => gsap.set(identity, { autoAlpha: 0 }),
+        onEnterBack: () => gsap.set(identity, { autoAlpha: 1 }),
       })
+      // pages loaded already scrolled past the boundary start hidden
+      if (st.progress >= 1) gsap.set(identity, { autoAlpha: 0 })
       return () => st.kill()
     }
     // capture once — reading offsetHeight inside onUpdate forces layout per frame
