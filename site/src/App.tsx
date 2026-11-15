@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import Challenge from './components/Challenge'
 import Crew from './components/Crew'
-import Dashboard from './components/Dashboard'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import Hero from './components/Hero'
@@ -27,10 +26,9 @@ export default function App() {
   // page for their own screens — the main scroll stays mounted
   // underneath so its position (and every ScrollTrigger) survives the
   // round trip
-  const [view, setView] = useState<'main' | 'psi' | 'sim' | 'dashboard'>(() => {
+  const [view, setView] = useState<'main' | 'psi' | 'sim'>(() => {
     const h = location.hash.slice(1)
     if (h === 'psi-dataset') return 'psi'
-    if (h === 'dashboard' || h.startsWith('dashboard-')) return 'dashboard'
     if (h === 'simulations' || isSimChild(h)) return 'sim'
     return 'main'
   })
@@ -40,10 +38,6 @@ export default function App() {
       const name = location.hash.slice(1)
       if (name === 'psi-dataset') {
         setView('psi')
-        return
-      }
-      if (name === 'dashboard' || name.startsWith('dashboard-')) {
-        setView('dashboard')
         return
       }
       if (name === 'simulations') {
@@ -110,7 +104,6 @@ export default function App() {
       <Footer />
       {view === 'psi' && <PsiDataset />}
       {view === 'sim' && <SimDeck />}
-      {view === 'dashboard' && <Dashboard />}
     </main>
   )
 }

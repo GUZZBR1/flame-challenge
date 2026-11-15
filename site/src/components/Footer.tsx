@@ -4,7 +4,6 @@ import { navigate } from '../lib/scroll'
 const LINKS = [
   { label: 'challenge', href: '#challenge' },
   { label: 'simulations', href: '#simulations' },
-  { label: 'dashboard', href: '#dashboard' },
   { label: 'psi-dataset', href: '#psi-dataset' },
   { label: 'crew', href: '#crew' },
   { label: 'vision', href: '#vision' },
