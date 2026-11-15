@@ -95,6 +95,35 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
     })
   }, [brandVisible])
 
+  const [hidden, setHidden] = useState(false)
+  const [docked, setDocked] = useState(false)
+
+  useEffect(() => {
+    const last = new WeakMap<EventTarget, number>()
+    const onScroll = (e: Event) => {
+      const t = e.target
+      const el = t instanceof Element ? t : document.scrollingElement
+      if (!t || !el) return
+      const y = t instanceof Element ? el.scrollTop : window.scrollY
+      const prev = last.get(t) ?? y
+      last.set(t, y)
+      if (!(t instanceof Element)) setDocked(y > window.innerHeight * 0.58)
+      const safe = t instanceof Element ? 80 : window.innerHeight * 1.15
+      if (y < safe || y < prev - 2) setHidden(false)
+      else if (y > prev + 2) setHidden(true)
+    }
+    window.addEventListener('scroll', onScroll, { capture: true, passive: true })
+    return () => window.removeEventListener('scroll', onScroll, { capture: true })
+  }, [])
+
+  useEffect(() => {
+    if (brandVisible) setHidden(false)
+  }, [brandVisible])
+
+  useEffect(() => {
+    setDocked(brandVisible || window.scrollY > window.innerHeight * 0.58)
+  }, [brandVisible])
+
   const go = useCallback((href: string) => {
     navigate(href)
   }, [])
@@ -118,31 +147,49 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
   )
 
   return (
-    <header className="fixed inset-x-0 top-0 z-20 px-3 py-3 sm:px-8 sm:py-4">
+    <header
+      className={`fixed inset-x-0 top-0 z-20 px-3 py-3 transition-[transform,opacity,filter] ease-out sm:px-8 sm:py-4 ${hidden ? 'pointer-events-none -translate-y-3 opacity-0 blur-[3px] duration-500' : 'duration-400'}`}
+    >
       <div className="relative mx-auto flex w-fit max-w-full items-center justify-center gap-3 px-3 py-1 sm:gap-5 sm:px-4 sm:py-1.5">
         <span
           ref={glassRef}
           aria-hidden="true"
-          className="absolute inset-0 rounded-full border border-white/70 bg-[color-mix(in_srgb,#ffffff_78%,transparent)] shadow-[0_18px_50px_-16px_rgba(23,33,43,0.34),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl backdrop-saturate-200 will-change-transform dark:border-white/25 dark:bg-[#0d1524ed] dark:shadow-[0_18px_52px_-16px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.22)]"
+          className="absolute inset-0 rounded-full border border-white/70 bg-[color-mix(in_srgb,#ffffff_78%,transparent)] shadow-[0_10px_24px_-8px_rgba(23,33,43,0.28),0_3px_8px_-2px_rgba(23,33,43,0.14),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl backdrop-saturate-200 will-change-transform dark:border-white/15 dark:bg-[#0e1116f2] dark:shadow-[0_10px_24px_-8px_rgba(255,255,255,0.16),0_3px_8px_-2px_rgba(255,255,255,0.08),inset_0_-1px_0_rgba(255,255,255,0.22),inset_0_1px_0_rgba(255,255,255,0.08)]"
         />
 
         <nav className="relative flex items-center gap-1 sm:gap-1.5" aria-label="Primary">
           {LEFT.map(navLink)}
         </nav>
 
-        <a
-          ref={brandRef}
-          data-ignis-brand
-          href="#top"
-          onClick={(e) => {
-            e.preventDefault()
-            go('#top')
-          }}
-          aria-label="IGNIS — back to top"
-          className="relative pb-1 font-display text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-tight text-ink opacity-0"
-        >
-          IGNIS
-        </a>
+        <span className={`group/brand relative flex items-center ${docked ? '' : 'pointer-events-none'}`}>
+          <a
+            ref={brandRef}
+            data-ignis-brand
+            href="#top"
+            onClick={(e) => {
+              e.preventDefault()
+              go('#top')
+            }}
+            aria-label="IGNIS — back to top"
+            className="relative isolate pb-1 font-display text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-tight text-ink"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute -inset-x-1.5 bottom-[3px] -z-10 h-[62%] origin-left -rotate-[1.5deg] scale-x-0 rounded-[3px_6px_4px_7px] bg-accent/50 transition-transform duration-500 ease-out group-hover/brand:scale-x-100 dark:bg-accent/40"
+            />
+            IGNIS
+          </a>
+          <span
+            role="tooltip"
+            className="pointer-events-none absolute left-1/2 top-full z-10 mt-4 w-56 -translate-x-1/2 -translate-y-1 rounded-2xl border border-black/10 bg-white/90 px-4 py-3 text-left opacity-0 shadow-[0_10px_24px_-8px_rgba(23,33,43,0.28)] backdrop-blur-xl transition-[opacity,transform] duration-300 group-hover/brand:translate-y-0 group-hover/brand:opacity-100 dark:border-white/15 dark:bg-[#0e1116f2] dark:shadow-[0_10px_24px_-8px_rgba(255,255,255,0.16)]"
+          >
+            <span className="block font-display text-base font-bold leading-none text-ink">ignis</span>
+            <span className="mt-1.5 block font-mono text-[10px] uppercase tracking-label text-ink opacity-50">noun · latin · product</span>
+            <span className="mt-2.5 block font-mono text-caption leading-snug text-ink">
+              Fire, made safe to study. Real NASA combustion data, turned into a ship you can build.
+            </span>
+          </span>
+        </span>
 
         <nav className="relative flex items-center gap-1 sm:gap-1.5" aria-label="Secondary">
           {RIGHT.map(navLink)}
