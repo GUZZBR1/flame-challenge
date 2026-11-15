@@ -78,12 +78,17 @@ export default function VoiceHud() {
                   ? gravityRegime(sim.set_gravity_g)
                   : null,
               trigger_containment: sim.trigger_containment ?? null,
-              // no preset in the command → scope the retune to the
-              // investigation the answer was computed over (the console's
-              // reported state), same as applyUiCommand does — otherwise
-              // LiveChamber sees no runnable id and never restarts
+              // scope the retune to the investigation the answer was
+              // computed over (the console's reported state), same as
+              // applyUiCommand does — but ONLY when a chamber setting is
+              // actually carried: a containment-only order must not
+              // switch LiveChamber's preset and restart its run
               __investigation:
-                sim.load_preset ?? stateRef.current.investigationId ?? null,
+                sim.set_o2_percent != null ||
+                sim.set_airflow_cm_s != null ||
+                sim.load_preset != null
+                  ? (sim.load_preset ?? stateRef.current.investigationId ?? null)
+                  : null,
               __origin: 'voice-hud',
             },
           }),

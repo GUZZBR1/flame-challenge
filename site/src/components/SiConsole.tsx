@@ -180,12 +180,20 @@ export default function SiConsole() {
         // carry the console's experiment so subscribers retune the SAME
         // investigation this answer was computed for, not whichever
         // preset they happen to hold — oxygen-only commands otherwise
-        // restart the wrong run
+        // restart the wrong run. Only attach it when the command tunes
+        // something: a focus/containment-only broadcast must not restart
+        // a running experiment
+        const tunes =
+          cmd.set_o2_percent != null ||
+          cmd.set_airflow_cm_s != null ||
+          cmd.load_preset != null
         window.dispatchEvent(
           new CustomEvent('ignis:ui-command', {
             detail: {
               ...cmd,
-              __investigation: cmd.__investigation ?? cmd.load_preset ?? inv,
+              __investigation: tunes
+                ? (cmd.__investigation ?? cmd.load_preset ?? inv)
+                : null,
               __origin: 'console',
             },
           }),
