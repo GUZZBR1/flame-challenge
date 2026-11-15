@@ -526,21 +526,20 @@ button.pill:active { transform: translateY(0) scale(.96); }
 
 /* ---- simulations deck — asymmetric editorial spread. Named grid
    areas keep the composition continuous: the featured crisis leads
-   left, secondary missions stack in the right rail, and the tertiary
-   scenario runs as a full-width band below. Mobile → single column,
-   tablet → 2-col with the feature on top, desktop → the full spread. */
+   left and the other missions stack in the right rail. Mobile →
+   single column, tablet → 2-col with the feature on top, desktop →
+   the full spread. */
 .mission-areas {
   display: grid;
   gap: 3rem;
-  grid-template-areas: "feature" "side-a" "side-b" "tertiary";
+  grid-template-areas: "feature" "side-a" "side-b";
 }
 @media (min-width: 640px) {
   .mission-areas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
       "feature feature"
-      "side-a side-b"
-      "tertiary tertiary";
+      "side-a side-b";
   }
 }
 @media (min-width: 1024px) {
@@ -549,7 +548,6 @@ button.pill:active { transform: translateY(0) scale(.96); }
     column-gap: 3.5rem;
     grid-template-areas:
       "feature side-a"
-      "feature side-b"
-      "tertiary tertiary";
+      "feature side-b";
   }
 }

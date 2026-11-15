@@ -186,15 +186,16 @@ function splitTitle(preset: MissionPreset) {
   return { kind, name: name ?? preset.title }
 }
 
-/** the editorial spread leads with four envelopes — the rest of the
- *  catalog stays reachable in the mission index below */
-const FEATURE = MISSION_PRESETS[0] // apollo 1
-const SIDE_A = MISSION_PRESETS[1] // apollo 13
-const SIDE_B = MISSION_PRESETS[4] // flex-2
-const TERTIARY = MISSION_PRESETS[3] // saffire
-const INDEX_MISSIONS = MISSION_PRESETS.filter(
-  (p) => ![FEATURE.id, SIDE_A.id, SIDE_B.id, TERTIARY.id].includes(p.id),
-)
+/** the catalog splits by kind — 'Historical Crisis' envelopes are real
+ *  missions (crewed spacecraft events), 'Guided Scenario' envelopes are
+ *  experimental investigation datasets */
+const MISSIONS = MISSION_PRESETS.filter((p) => splitTitle(p).kind === 'Historical Crisis')
+const DATASETS = MISSION_PRESETS.filter((p) => splitTitle(p).kind !== 'Historical Crisis')
+const FEATURE = MISSIONS[0] // apollo 1
+const SIDE_A = MISSIONS[1] // apollo 13
+const SIDE_B = MISSIONS[2] // mir 1997
+const LEAD_DATASET = DATASETS[0] // saffire
+const INDEX_DATASETS = DATASETS.slice(1)
 
 function ActiveMark() {
   return <span className="font-mono text-tiny font-semibold text-accent">● active</span>
@@ -267,7 +268,7 @@ export default function SimDeck() {
   const feature = splitTitle(FEATURE)
   const sideA = splitTitle(SIDE_A)
   const sideB = splitTitle(SIDE_B)
-  const tertiary = splitTitle(TERTIARY)
+  const leadDataset = splitTitle(LEAD_DATASET)
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
@@ -310,81 +311,86 @@ export default function SimDeck() {
           </p>
         </header>
 
-        {/* ---- asymmetric mission spread — names only ---- */}
-        <section className="mission-areas relative mt-16 sm:mt-24" aria-label="Mission envelopes">
-          <OrbitDecor />
+        {/* ---- missions — historical crises, names only ---- */}
+        <section className="mt-16 sm:mt-24" aria-label="Historical missions">
+          <div className="flex items-baseline justify-between gap-4 border-b border-edge pb-4" data-hero>
+            <span className="card-label">Missions</span>
+            <span className="font-mono text-tiny opacity-60">historical crises</span>
+          </div>
 
-          {/* featured — apollo 1 */}
-          <button
-            {...pickProps(FEATURE)}
-            data-hero
-            className="group flex items-center border-t border-edge pt-7 [grid-area:feature] text-left lg:pt-0 lg:border-t-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-          >
-            <span className="min-w-0">
-              <span
-                className="block font-display text-[clamp(3.2rem,6vw,5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                style={activeMission.id === FEATURE.id ? { color: FEATURE.accent } : undefined}
-              >
-                {feature.name}
-              </span>
-              {activeMission.id === FEATURE.id && (
-                <span className="mt-4 block"><ActiveMark /></span>
-              )}
-            </span>
-          </button>
+          <div className="mission-areas relative mt-8 sm:mt-10">
+            <OrbitDecor />
 
-          {/* secondary rail — apollo 13 + flex-2 */}
-          {([
-            [SIDE_A, sideA],
-            [SIDE_B, sideB],
-          ] as const).map(([preset, t], i) => {
-            const isActive = activeMission.id === preset.id
-            return (
-              <button
-                key={preset.id}
-                {...pickProps(preset)}
-                data-hero
-                className={`group border-t border-edge pt-7 text-left lg:border-l lg:pl-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
-                  i === 0 ? '[grid-area:side-a]' : '[grid-area:side-b] sm:border-l sm:pl-6 lg:pl-10'
-                }`}
-              >
+            {/* featured — apollo 1 */}
+            <button
+              {...pickProps(FEATURE)}
+              data-hero
+              className="group flex items-center text-left [grid-area:feature] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            >
+              <span className="min-w-0">
                 <span
-                  className="block font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                  style={isActive ? { color: preset.accent } : undefined}
+                  className="block font-display text-[clamp(3.2rem,6vw,5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                  style={activeMission.id === FEATURE.id ? { color: FEATURE.accent } : undefined}
                 >
-                  {t.name}
+                  {feature.name}
                 </span>
-                {isActive && <span className="mt-3 block"><ActiveMark /></span>}
-              </button>
-            )
-          })}
+                {activeMission.id === FEATURE.id && (
+                  <span className="mt-4 block"><ActiveMark /></span>
+                )}
+              </span>
+            </button>
 
-          {/* tertiary band — saffire */}
+            {/* rail — apollo 13 + mir 1997 */}
+            {([
+              [SIDE_A, sideA],
+              [SIDE_B, sideB],
+            ] as const).map(([preset, t], i) => {
+              const isActive = activeMission.id === preset.id
+              return (
+                <button
+                  key={preset.id}
+                  {...pickProps(preset)}
+                  data-hero
+                  className={`group text-left lg:border-l lg:pl-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
+                    i === 0 ? '[grid-area:side-a]' : '[grid-area:side-b] sm:border-l sm:pl-6 lg:pl-10'
+                  }`}
+                >
+                  <span
+                    className="block font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                    style={isActive ? { color: preset.accent } : undefined}
+                  >
+                    {t.name}
+                  </span>
+                  {isActive && <span className="mt-3 block"><ActiveMark /></span>}
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
+        {/* ---- datasets — experimental investigations, names only ---- */}
+        <section className="mt-20 sm:mt-28" aria-label="Experiment datasets" data-reveal>
+          <div className="flex items-baseline justify-between gap-4 border-b border-edge pb-4">
+            <span className="card-label">Datasets</span>
+            <span className="font-mono text-tiny opacity-60">experimental investigations</span>
+          </div>
+
+          {/* lead dataset — saffire */}
           <button
-            {...pickProps(TERTIARY)}
-            data-reveal
-            className="group flex items-baseline justify-between gap-6 border-t border-edge pt-8 text-left [grid-area:tertiary] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            {...pickProps(LEAD_DATASET)}
+            className="group flex w-full items-baseline justify-between gap-6 border-b border-edge py-8 text-left sm:py-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
           >
             <span
               className="font-display text-[clamp(2rem,3.8vw,3.2rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-              style={activeMission.id === TERTIARY.id ? { color: TERTIARY.accent } : undefined}
+              style={activeMission.id === LEAD_DATASET.id ? { color: LEAD_DATASET.accent } : undefined}
             >
-              {tertiary.name}
+              {leadDataset.name}
             </span>
-            {activeMission.id === TERTIARY.id && <ActiveMark />}
+            {activeMission.id === LEAD_DATASET.id && <ActiveMark />}
           </button>
-        </section>
 
-        {/* ---- full mission index — every remaining envelope, 1-click ---- */}
-        <section className="mt-20 sm:mt-28" aria-label="Full mission index" data-reveal>
-          <div className="flex items-baseline justify-between gap-4 border-b border-edge pb-4">
-            <span className="card-label">All Missions</span>
-            <span className="font-mono text-tiny opacity-60">
-              {INDEX_MISSIONS.length} more envelopes
-            </span>
-          </div>
           <ul>
-            {INDEX_MISSIONS.map((preset) => {
+            {INDEX_DATASETS.map((preset) => {
               const t = splitTitle(preset)
               const isActive = activeMission.id === preset.id
               return (
