@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { startKeyedVideo } from '../lib/keyedVideo'
 import { gsap } from '../lib/scroll'
 
 interface Regime {
@@ -47,50 +48,20 @@ export default function Challenge() {
 
   // luminance keying — black pixels of the footage become real alpha,
   // so the flame floats over the actual page (stars in dark, paper in
-  // light) instead of sitting inside a black rectangle
+  // light) instead of sitting inside a black rectangle. The pixel work
+  // runs in a worker (see lib/keyedVideo); the section only shows the
+  // lit phase — after ~15s the flame dies to a dark smudge.
   useEffect(() => {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    const ctx = c.getContext('2d', { willReadFrequently: true })
-    if (!ctx) return
-    let raf = 0
-    let cancelled = false
-    let visible = true
-
-    // skip the pixel work entirely while the section is off-screen
-    const obs = new IntersectionObserver(
-      ([entry]) => { visible = entry.isIntersecting },
-      { threshold: 0 },
-    )
-    obs.observe(c)
-
-    const tick = () => {
-      if (cancelled) return
-      if (visible && v.readyState >= 2 && v.videoWidth) {
-        const w = v.videoWidth >> 1
-        const h = v.videoHeight >> 1
-        if (c.width !== w || c.height !== h) {
-          c.width = w
-          c.height = h
-        }
-        ctx.drawImage(v, 0, 0, w, h)
-        const img = ctx.getImageData(0, 0, w, h)
-        const d = img.data
-        for (let i = 0; i < d.length; i += 4) {
-          const l = d[i] * 0.2126 + d[i + 1] * 0.7152 + d[i + 2] * 0.0722
-          d[i + 3] = Math.min(255, Math.max(0, (l - 26) * 3.4))
-        }
-        ctx.putImageData(img, 0, 0)
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(raf)
-      obs.disconnect()
-    }
+    return startKeyedVideo({
+      video: v,
+      canvas: c,
+      view: 'main',
+      loopStart: 0.4,
+      loopEnd: 15.5,
+    })
   }, [])
 
   // reveal rows once, on entry — skipped entirely under reduced motion
@@ -208,19 +179,6 @@ export default function Challenge() {
                 muted
                 playsInline
                 preload="metadata"
-                onLoadedMetadata={(e) => {
-                  e.currentTarget.currentTime = 0.4
-                }}
-                onTimeUpdate={(e) => {
-                  // loop only the lit phase — after ~15s the flame dies
-                  // to a dark smudge (the extinction regime)
-                  if (e.currentTarget.currentTime >= 15.5)
-                    e.currentTarget.currentTime = 0.4
-                }}
-                onEnded={(e) => {
-                  e.currentTarget.currentTime = 0.4
-                  void e.currentTarget.play()
-                }}
                 aria-hidden="true"
               >
                 <source src="/assets/sofie_flame_hd.mp4" media="(min-width: 768px)" />

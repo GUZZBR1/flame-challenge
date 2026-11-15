@@ -154,21 +154,54 @@ export default function LiveChamber({
   }, [retuneTick, run])
 
   // ---------- canvas ----------
+  // sizing + ink color are cached here so the 30 Hz draw below only
+  // paints — no buffer realloc, no getComputedStyle per frame
+  const canvasSize = useRef({ cw: 0, ch: 0, dpr: 1 })
+  const inkRef = useRef('#e8e6e0')
+  const [sizeTick, setSizeTick] = useState(0)
+  useEffect(() => {
+    const cv = canvasRef.current
+    if (!cv) return
+    const measure = () => {
+      const dpr = Math.min(devicePixelRatio || 1, 2)
+      cv.width = Math.round(cv.clientWidth * dpr)
+      cv.height = Math.round(cv.clientHeight * dpr)
+      canvasSize.current = { cw: cv.clientWidth, ch: cv.clientHeight, dpr }
+      // resizing wipes the buffer — kick the draw effect to repaint
+      setSizeTick((t) => t + 1)
+    }
+    const readInk = () => {
+      inkRef.current =
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--ink')
+          .trim() || '#e8e6e0'
+    }
+    measure()
+    readInk()
+    const ro = new ResizeObserver(measure)
+    ro.observe(cv)
+    const mo = new MutationObserver(readInk)
+    mo.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
+    return () => {
+      ro.disconnect()
+      mo.disconnect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   useEffect(() => {
     const cv = canvasRef.current
     if (!cv) return
     const ctx = cv.getContext('2d')
     if (!ctx) return
-    const w = (cv.width = cv.clientWidth * devicePixelRatio)
-    const h = (cv.height = cv.clientHeight * devicePixelRatio)
-    ctx.clearRect(0, 0, w, h)
+    const { cw, ch, dpr } = canvasSize.current
     ctx.save()
-    ctx.scale(devicePixelRatio, devicePixelRatio)
-    const cw = cv.clientWidth
-    const ch = cv.clientHeight
-    const ink = getComputedStyle(document.documentElement)
-      .getPropertyValue('--ink')
-      .trim() || '#e8e6e0'
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.clearRect(0, 0, cw, ch)
+    const ink = inkRef.current
 
     if (!frame || !frame.ignited) {
       ctx.globalAlpha = 0.5
@@ -243,7 +276,9 @@ export default function LiveChamber({
       }
     }
     ctx.restore()
-  }, [frame, status])
+    // sizeTick repaints after the ResizeObserver wipes the buffer
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frame, status, sizeTick])
 
   const regime = frame
     ? frame.model === 'droplet'

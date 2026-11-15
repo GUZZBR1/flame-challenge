@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { startKeyedVideo } from '../lib/keyedVideo'
 
 /** NASA combustion footage luminance-keyed to alpha — black pixels
  *  fall away and the flame floats behind the layout, the same
@@ -27,60 +28,15 @@ export default function KeyedFlame({
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    const ctx = c.getContext('2d', { willReadFrequently: true })
-    if (!ctx) return
-    let raf = 0
-    let cancelled = false
-    let visible = true
-    const loopStart = 0.5
-    let loopEnd = Infinity
-
-    const onMeta = () => {
-      v.currentTime = loopStart
-      if (Number.isFinite(v.duration) && v.duration > 1.5)
-        loopEnd = v.duration - 0.4
-    }
-    const onTime = () => {
-      if (v.currentTime >= loopEnd) v.currentTime = loopStart
-    }
-    v.addEventListener('loadedmetadata', onMeta)
-    v.addEventListener('timeupdate', onTime)
-    if (v.readyState >= 1) onMeta()
-
-    const obs = new IntersectionObserver(
-      ([entry]) => { visible = entry.isIntersecting },
-      { threshold: 0 },
-    )
-    obs.observe(c)
-
-    const tick = () => {
-      if (cancelled) return
-      if (visible && v.readyState >= 2 && v.videoWidth) {
-        const w = v.videoWidth >> 1
-        const h = v.videoHeight >> 1
-        if (c.width !== w || c.height !== h) {
-          c.width = w
-          c.height = h
-        }
-        ctx.drawImage(v, 0, 0, w, h)
-        const img = ctx.getImageData(0, 0, w, h)
-        const d = img.data
-        for (let i = 0; i < d.length; i += 4) {
-          const l = d[i] * 0.2126 + d[i + 1] * 0.7152 + d[i + 2] * 0.0722
-          d[i + 3] = Math.min(255, Math.max(0, (l - 26) * 3.4))
-        }
-        ctx.putImageData(img, 0, 0)
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(raf)
-      obs.disconnect()
-      v.removeEventListener('loadedmetadata', onMeta)
-      v.removeEventListener('timeupdate', onTime)
-    }
+    // lives on the simulations deck — the keyed pipeline pauses it
+    // whenever another view covers the page
+    return startKeyedVideo({
+      video: v,
+      canvas: c,
+      view: 'sim',
+      loopStart: 0.5,
+      tailMargin: 0.4,
+    })
   }, [])
 
   return (

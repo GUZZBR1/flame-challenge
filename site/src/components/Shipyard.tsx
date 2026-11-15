@@ -59,16 +59,33 @@ export default function Shipyard() {
   const timerRef = useRef(0)
   const idxRef = useRef(0)
   const startRef = useRef<(() => void) | null>(null)
+  // the feed sleeps while the section is off-screen, the page is covered
+  // by an overlay view, or the tab is hidden — it resumes mid-sentence
+  const visibleRef = useRef(true)
+  const coveredRef = useRef(false)
 
   // typed-transcript state machine — finished lines roll into the log,
   // capped so it keeps rolling like a real comms feed
   useEffect(() => {
     aliveRef.current = true
+    const canRun = () =>
+      visibleRef.current && !coveredRef.current && !document.hidden
+    // every beat goes through defer: parked steps poll cheaply instead
+    // of typing into an invisible feed
+    const defer = (fn: () => void, ms: number) => {
+      timerRef.current = window.setTimeout(() => {
+        if (!aliveRef.current) return
+        if (!canRun()) {
+          defer(fn, 400)
+          return
+        }
+        fn()
+      }, ms)
+    }
     const play = () => {
       if (!aliveRef.current) return
       if (idxRef.current >= SCRIPT.length) {
-        timerRef.current = window.setTimeout(() => {
-          if (!aliveRef.current) return
+        defer(() => {
           idxRef.current = 0
           setPoses({ sci: 'idle', eng: 'idle' })
           play()
@@ -84,22 +101,37 @@ export default function Shipyard() {
         c += 1
         startTransition(() => setTyping({ who, text: text.slice(0, c) }))
         if (c < text.length) {
-          timerRef.current = window.setTimeout(tick, 26)
+          defer(tick, 26)
         } else {
           idxRef.current += 1
-          timerRef.current = window.setTimeout(() => {
+          defer(() => {
             setTyping(null)
             setLog((l) => [...l.slice(-4), { who, pose, text }])
             play()
           }, 1500)
         }
       }
-      timerRef.current = window.setTimeout(tick, 140)
+      defer(tick, 140)
     }
     startRef.current = play
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting
+      },
+      { threshold: 0 },
+    )
+    if (root.current) io.observe(root.current)
+    const onView = (e: Event) => {
+      coveredRef.current =
+        ((e as CustomEvent<{ view?: string }>).detail?.view ?? 'main') !==
+        'main'
+    }
+    window.addEventListener('ignis:view', onView)
     return () => {
       aliveRef.current = false
       window.clearTimeout(timerRef.current)
+      io.disconnect()
+      window.removeEventListener('ignis:view', onView)
     }
   }, [])
 
