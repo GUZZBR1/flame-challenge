@@ -132,6 +132,11 @@ export function startKeyedVideo(opts: KeyedVideoOptions): () => void {
           c.width = bmp.width
           c.height = bmp.height
         }
+        // 'copy' replaces destination pixels outright — same semantics
+        // as the old putImageData path, so transparent areas erase the
+        // previous frame instead of accumulating trails. Re-set every
+        // frame: assigning canvas.width/height resets the context state.
+        out.globalCompositeOperation = 'copy'
         out.drawImage(bmp, 0, 0)
         bmp.close()
       }
