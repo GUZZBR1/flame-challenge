@@ -197,39 +197,50 @@ export function synthesizeLocalSiResponse(message: string, state: SiChamberState
   // 2. Parse airflow dynamically (target 'to X cm/s' takes priority over source)
   const toFlowMatch = q.match(/(?:to|->|→)\s*(\d+(?:\.\d+)?)\s*cm\/s/i)
   const plainFlowMatch = q.match(/(\d+(?:\.\d+)?)\s*cm\/s/i)
+  const flowCut = !toFlowMatch && !plainFlowMatch &&
+    (q.includes('cut airflow') || q.includes('stop airflow') || q.includes('cut ventilation') || q.includes('stagnant'))
   if (toFlowMatch) {
     flowCms = parseFloat(toFlowMatch[1])
   } else if (plainFlowMatch) {
     flowCms = parseFloat(plainFlowMatch[1])
-  } else if (q.includes('cut airflow') || q.includes('stop airflow') || q.includes('cut ventilation') || q.includes('stagnant')) {
+  } else if (flowCut) {
     flowCms = 0.0
   }
+  // numeric match or an explicit shutdown — the mission defaults below
+  // must not resurrect airflow the operator asked to kill
+  const flowExplicit = Boolean(toFlowMatch || plainFlowMatch || flowCut)
 
   // 3. Resolve investigation & material:
-  // First, check for explicit queries
+  // First, check for explicit queries. Word boundaries on the ambiguous
+  // tokens — "the same conditions" is not the SAME rig and "atmosphere"
+  // is not a BASS-II sphere.
   if (q.includes('cotton') || q.includes('saffire') || q.includes('sibal')) {
     invId = 'saffire'
     materialId = 'cotton'
-    if (!toFlowMatch && !plainFlowMatch && (state.flowCms == null || state.flowCms <= 2.0)) flowCms = 20.0
+    if (!flowExplicit && (state.flowCms == null || state.flowCms <= 2.0)) flowCms = 20.0
   } else if (q.includes('hidden flame') || q.includes('cool flame') || q.includes('heptane') || q.includes('droplet')) {
     invId = 'flex-2'
     materialId = 'heptane'
-    if (!toFlowMatch && !plainFlowMatch) flowCms = 0.5
+    if (!flowExplicit) flowCms = 0.5
   } else if (q.includes('sofie') || q.includes('acrylic') || q.includes('pmma slab')) {
     invId = 'sofie-gel'
     materialId = 'pmma'
   } else if (q.includes('flare') || q.includes('airlock') || q.includes('artemis')) {
     invId = 'flare'
     materialId = 'pmma'
-  } else if (q.includes('same') || q.includes('teflon')) {
+  } else if (/\bsame[-_\s]?r\b/i.test(q) || q.includes('teflon')) {
     invId = 'same'
     materialId = 'teflon'
   } else if (q.includes('acme') || q.includes('ethylene')) {
     invId = 'acme'
     materialId = 'ethylene'
-  } else if (q.includes('bass') || q.includes('sphere')) {
+  } else if (/\bbass\b/i.test(q) || /\bsphere\b/i.test(q)) {
     invId = 'bass-ii'
     materialId = 'pmma-sphere'
+  } else if (/\bpmma\b/i.test(q)) {
+    // bare "PMMA" (a SimDeck starter) → the flat-slab rig
+    invId = 'sofie-gel'
+    materialId = 'pmma'
   } else if (state.investigationId && FALLBACK_INVESTIGATIONS[state.investigationId]) {
     // Preserve incoming mission state if no explicit investigation in query
     invId = state.investigationId
