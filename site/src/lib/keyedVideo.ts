@@ -115,7 +115,9 @@ export function startKeyedVideo(opts: KeyedVideoOptions): () => void {
   // ---- frame pipeline ----
   let worker: Worker | null = null
   let inFlight = false
-  const out = c.getContext('2d')
+  // the hint has to be set at first creation — a later getContext call
+  // with different attributes just returns this same context
+  const out = c.getContext('2d', { willReadFrequently: true })
   if (out && typeof Worker === 'function') {
     try {
       worker = new Worker(new URL('./keyedVideo.worker.ts', import.meta.url), {

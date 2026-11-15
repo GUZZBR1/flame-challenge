@@ -32,7 +32,9 @@ export default function LiveChamber({
   /** stage mode only — rendered between the scenario readout and canvas */
   children?: ReactNode
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  // the canvas only exists once a run streams in stage mode — a
+  // callback ref lets the sizing effect initialize it on attach
+  const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | null>(null)
   const wsRef = useRef<WebSocket | null>(null)
   const [inv, setInv] = useState<string>('flex-2')
   const [o2, setO2] = useState(21)
@@ -160,7 +162,7 @@ export default function LiveChamber({
   const inkRef = useRef('#e8e6e0')
   const [sizeTick, setSizeTick] = useState(0)
   useEffect(() => {
-    const cv = canvasRef.current
+    const cv = canvasEl
     if (!cv) return
     const measure = () => {
       const dpr = Math.min(devicePixelRatio || 1, 2)
@@ -190,10 +192,10 @@ export default function LiveChamber({
       mo.disconnect()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [canvasEl])
 
   useEffect(() => {
-    const cv = canvasRef.current
+    const cv = canvasEl
     if (!cv) return
     const ctx = cv.getContext('2d')
     if (!ctx) return
@@ -278,7 +280,7 @@ export default function LiveChamber({
     ctx.restore()
     // sizeTick repaints after the ResizeObserver wipes the buffer
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frame, status, sizeTick])
+  }, [frame, status, sizeTick, canvasEl])
 
   const regime = frame
     ? frame.model === 'droplet'
@@ -327,7 +329,7 @@ export default function LiveChamber({
               the instant new conditions relight the chamber */}
           {(!stage || status === 'streaming' || status === 'done') && (
             <>
-              <canvas ref={canvasRef} className="h-72 w-full rounded-3xl sm:h-80" />
+              <canvas ref={setCanvasEl} className="h-72 w-full rounded-3xl sm:h-80" />
               {frame && (
                 <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-base lowercase text-[var(--ink)] opacity-80">
                   <span>t {frame.tSec.toFixed(1)}s</span>
