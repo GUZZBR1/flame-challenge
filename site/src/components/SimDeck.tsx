@@ -4,6 +4,7 @@ import { emitUiCommand } from '../lib/simBus'
 import { attachSmoothScroll } from '../lib/smoothOverlay'
 import KeyedFlame from './KeyedFlame'
 import Footer from './Footer'
+import SimConsole from './SimConsole'
 import type { MissionOutcomeStatus } from './CrewTimelinePanel'
 
 interface MissionPreset {
@@ -522,6 +523,11 @@ export default function SimDeck() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* ---- live console — chat + flame composer under the envelopes ---- */}
+        <section aria-label="Ignis console" className="relative mt-24 flex h-[85vh] min-h-[560px] flex-col sm:mt-32">
+          <SimConsole presets={MISSION_PRESETS} />
         </section>
       </div>
       <Footer />
