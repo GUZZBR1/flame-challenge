@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { gsap, navigateBack } from '../lib/scroll'
+import { gsap } from '../lib/scroll'
 import { emitUiCommand } from '../lib/simBus'
 import KeyedFlame from './KeyedFlame'
-import { IconArrowLeft } from './Icons'
-import Button from './ui/Button'
 import type { MissionOutcomeStatus } from './CrewTimelinePanel'
 
 interface MissionPreset {
@@ -383,7 +381,7 @@ export default function SimDeck() {
                   <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
                     <button
                       {...pickProps(FEATURE)}
-                      className="inline-flex items-center gap-3 rounded-[6px] bg-[#1e3fae] px-6 py-3.5 font-mono text-caption font-semibold text-white transition-colors duration-300 hover:bg-[#2a52d4] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                      className="inline-flex origin-center items-center gap-3 rounded-[6px] bg-[#1e3fae] px-6 py-3.5 font-mono text-caption font-semibold text-white transition-[transform,background-color] duration-500 ease-out hover:scale-[1.06] hover:bg-[#2a52d4] focus-visible:scale-[1.06] motion-reduce:transform-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                     >
                       {activeMission.id === FEATURE.id ? '● Active' : 'Explore Mission'} <span aria-hidden="true">→</span>
                     </button>
@@ -391,7 +389,7 @@ export default function SimDeck() {
                       type="button"
                       aria-expanded={detailsOpen}
                       onClick={() => setDetailsOpen((o) => !o)}
-                      className="border-b-2 border-[#1e3fae] pb-1 font-mono text-caption font-semibold transition-colors duration-300 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                      className="origin-center border-b-2 border-[#1e3fae] pb-1 font-mono text-caption font-semibold transition-[transform,color] duration-500 ease-out hover:scale-[1.06] hover:text-accent focus-visible:scale-[1.06] motion-reduce:transform-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                     >
                       Details
                     </button>
@@ -518,12 +516,6 @@ export default function SimDeck() {
             </div>
           </div>
         </section>
-
-        <div className="relative mt-20 flex justify-end">
-          <Button variant="glass" onClick={navigateBack}>
-            Back to overview <IconArrowLeft size={16} />
-          </Button>
-        </div>
       </div>
     </div>
   )
