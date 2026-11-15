@@ -64,6 +64,34 @@ const MISSION_PRESETS: MissionPreset[] = [
     prompt: 'Analyze the Mir Vika oxygen-generator fire — self-oxidizing chemical burn that defeats ventilation-cut suppression.',
     outcomeStatus: 'EMERGENCY CONTAINED',
   },
+  {
+    id: 'challenger-1986-crisis',
+    title: 'Historical Crisis: Challenger 51-L',
+    tag: 'SRB Burn-Through · T+73 s',
+    accent: '#9f1239',
+    o2Pct: 21,
+    flowCms: 5.0,
+    gravity: 'earth',
+    investigationId: 'bass-ii',
+    materialId: 'pmma',
+    description: 'A cold-degraded O-ring failed to seal the right SRB field joint — a hot-gas plume burned through to the external tank 73 s after liftoff.',
+    prompt: 'Analyze Challenger 51-L SRB field-joint burn-through — hot-gas impingement escaping a failed seal into the external tank.',
+    outcomeStatus: 'MISSION ABORTED / HULL BREACH',
+  },
+  {
+    id: 'columbia-2003-crisis',
+    title: 'Historical Crisis: Columbia STS-107',
+    tag: 'RCC Breach · Plasma Ingress',
+    accent: '#ea580c',
+    o2Pct: 21,
+    flowCms: 5.0,
+    gravity: 'earth',
+    investigationId: 'confined-combustion',
+    materialId: 'thin-sheet',
+    description: 'A bipod-foam strike breached the left wing leading edge at launch — superheated plasma entered the RCC cavity on reentry and the orbiter broke up over Texas.',
+    prompt: 'Analyze Columbia STS-107 leading-edge breach — plasma ingress into a confined RCC wing cavity during hypersonic reentry.',
+    outcomeStatus: 'MISSION ABORTED / HULL BREACH',
+  },
 ]
 
 const GRAVITY_G = { microgravity: 0, earth: 1, lunar: 0.17, mars: 0.38 } as const
@@ -75,10 +103,13 @@ function splitTitle(preset: MissionPreset) {
 }
 
 /** only the historical crises stay on the deck — the featured mission
- *  leads left, the other two stack in the rail */
+ *  leads left, two stack in the rail, and the shuttle losses close the
+ *  spread as a bottom band */
 const FEATURE = MISSION_PRESETS[0] // apollo 1
 const SIDE_A = MISSION_PRESETS[1] // apollo 13
 const SIDE_B = MISSION_PRESETS[2] // mir 1997
+const BAND_A = MISSION_PRESETS[3] // challenger 51-l
+const BAND_B = MISSION_PRESETS[4] // columbia sts-107
 
 /** official NASA media — images-api.nasa.gov. Apollo 1 flew no mission
  *  (the crew died in a pad test), so the archival CSM photo leads; the
@@ -100,6 +131,16 @@ const MISSION_MEDIA = {
     type: 'image',
     src: '/assets/nasa/mir_sts63.jpg',
     alt: 'Mir space station as seen from STS-63 — NASA sts063-708-095',
+  },
+  bandA: {
+    type: 'image',
+    src: '/assets/nasa/challenger_51l.jpg',
+    alt: 'Space Shuttle Challenger clearing the tower on STS-51-L — NASA 51l-s-156',
+  },
+  bandB: {
+    type: 'image',
+    src: '/assets/nasa/columbia_sts107.jpg',
+    alt: 'Space Shuttle Columbia liftoff on STS-107 — NASA STS107-S-015',
   },
 } as const
 
@@ -163,8 +204,12 @@ export default function SimDeck() {
   })
 
   const feature = splitTitle(FEATURE)
-  const sideA = splitTitle(SIDE_A)
-  const sideB = splitTitle(SIDE_B)
+  const secondary = [
+    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '[grid-area:side-a] lg:border-l lg:pl-10'],
+    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '[grid-area:side-b] sm:border-l sm:pl-6 lg:border-l lg:pl-10'],
+    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '[grid-area:band-a] border-t border-edge pt-8'],
+    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '[grid-area:band-b] border-t border-edge pt-8 sm:border-l sm:pl-6 lg:border-l lg:pl-10'],
+  ] as const
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
@@ -241,20 +286,15 @@ export default function SimDeck() {
               </span>
             </button>
 
-            {/* rail — apollo 13 + mir 1997 */}
-            {([
-              [SIDE_A, sideA, MISSION_MEDIA.sideA],
-              [SIDE_B, sideB, MISSION_MEDIA.sideB],
-            ] as const).map(([preset, t, media], i) => {
+            {/* rail — apollo 13 + mir 1997 · band — challenger + columbia */}
+            {secondary.map(([preset, t, media, cls]) => {
               const isActive = activeMission.id === preset.id
               return (
                 <button
                   key={preset.id}
                   {...pickProps(preset)}
                   data-hero
-                  className={`group text-left lg:border-l lg:pl-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
-                    i === 0 ? '[grid-area:side-a]' : '[grid-area:side-b] sm:border-l sm:pl-6 lg:pl-10'
-                  }`}
+                  className={`group text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${cls}`}
                 >
                   <span
                     className="block font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"

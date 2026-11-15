@@ -532,14 +532,15 @@ button.pill:active { transform: translateY(0) scale(.96); }
 .mission-areas {
   display: grid;
   gap: 3rem;
-  grid-template-areas: "feature" "side-a" "side-b";
+  grid-template-areas: "feature" "side-a" "side-b" "band-a" "band-b";
 }
 @media (min-width: 640px) {
   .mission-areas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas:
       "feature feature"
-      "side-a side-b";
+      "side-a side-b"
+      "band-a band-b";
   }
 }
 @media (min-width: 1024px) {
@@ -548,7 +549,8 @@ button.pill:active { transform: translateY(0) scale(.96); }
     column-gap: 3.5rem;
     grid-template-areas:
       "feature side-a"
-      "feature side-b";
+      "feature side-b"
+      "band-a  band-b";
   }
 }
 
