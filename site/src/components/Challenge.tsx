@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { startKeyedVideo } from '../lib/keyedVideo'
+import { attachKeyedFlame } from '../lib/keyedFlame'
 import { gsap } from '../lib/scroll'
 
 interface Regime {
@@ -48,20 +48,14 @@ export default function Challenge() {
 
   // luminance keying — black pixels of the footage become real alpha,
   // so the flame floats over the actual page (stars in dark, paper in
-  // light) instead of sitting inside a black rectangle. The pixel work
-  // runs in a worker (see lib/keyedVideo); the section only shows the
-  // lit phase — after ~15s the flame dies to a dark smudge.
+  // light) instead of sitting inside a black rectangle. the pixel
+  // pipeline (WebGL luma-key, video-frame cadence, off-screen pause)
+  // lives in lib/keyedFlame
   useEffect(() => {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    return startKeyedVideo({
-      video: v,
-      canvas: c,
-      view: 'main',
-      loopStart: 0.4,
-      loopEnd: 15.5,
-    })
+    return attachKeyedFlame(v, c)
   }, [])
 
   // reveal rows once, on entry — skipped entirely under reduced motion

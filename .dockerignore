@@ -1,0 +1,23 @@
+# VCS / local state
+.git
+.pytest_cache
+.agents
+**/__pycache__
+**/*.pyc
+*.tsbuildinfo
+
+# secrets never enter the image — platform env vars instead
+**/.env
+**/.env.*
+
+# local venvs and build output (the .so comes from the core-build stage)
+.venv
+core/build
+
+# not needed at runtime — frontend deploys separately (Vercel)
+site
+assets
+docs
+data/raw
+data/pipelines
+node_modules

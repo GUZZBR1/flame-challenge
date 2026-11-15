@@ -32,12 +32,15 @@ data/raw/
 # C++ build
 core/build/
 
-# Local secrets (LLM keys etc.)
+# Local secrets (LLM keys etc.) — templates stay commit-able
 .env
 .env.*
+!.env.example
+!**/.env.example
 
-# regenerable artifacts (build_index.py / normalize_experiments.py)
-data/processed/search_index.json
+# regenerable artifact (normalize_experiments.py) — search_index.json IS
+# committed despite being regenerable: the deploy image needs a working
+# retrieval index and data/raw (its source) is not versioned
 data/processed/experiments.json
 
 # C++ core build artifacts (cmake)

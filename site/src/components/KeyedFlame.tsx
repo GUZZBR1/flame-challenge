@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { startKeyedVideo } from '../lib/keyedVideo'
+import { attachKeyedFlame } from '../lib/keyedFlame'
 
 /** NASA combustion footage luminance-keyed to alpha — black pixels
  *  fall away and the flame floats behind the layout, the same
@@ -8,9 +8,10 @@ import { startKeyedVideo } from '../lib/keyedVideo'
  *  challenge page, saffire-vi on the psi screen, saffire-v's uv
  *  channel on the simulations deck). Renders absolutely positioned;
  *  the parent provides the mask/vignette via className on the
- *  wrapper. The loop window is discovered at runtime (the clip's
- *  container reports an odd duration, so we adapt instead of
- *  hardcoding). */
+ *  wrapper. The pixel pipeline lives in lib/keyedFlame (WebGL luma-key,
+ *  video-frame cadence); the loop window is discovered at runtime
+ *  (the clip's container reports an odd duration, so we adapt instead
+ *  of hardcoding). */
 export default function KeyedFlame({
   className = '',
   strength = 0.75,
@@ -23,20 +24,13 @@ export default function KeyedFlame({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const loopEnd = useRef(Infinity)
 
   useEffect(() => {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    // lives on the simulations deck — the keyed pipeline pauses it
-    // whenever another view covers the page
-    return startKeyedVideo({
-      video: v,
-      canvas: c,
-      view: 'sim',
-      loopStart: 0.5,
-      tailMargin: 0.4,
-    })
+    return attachKeyedFlame(v, c)
   }, [])
 
   return (
@@ -50,6 +44,16 @@ export default function KeyedFlame({
         loop
         preload="metadata"
         aria-hidden="true"
+        onLoadedMetadata={(e) => {
+          e.currentTarget.currentTime = 0.5
+          const d = e.currentTarget.duration
+          loopEnd.current =
+            Number.isFinite(d) && d > 1.5 ? d - 0.4 : Infinity
+        }}
+        onTimeUpdate={(e) => {
+          if (e.currentTarget.currentTime >= loopEnd.current)
+            e.currentTarget.currentTime = 0.5
+        }}
       >
         <source src={src.hd} media="(min-width: 768px)" />
         <source src={src.sd} />

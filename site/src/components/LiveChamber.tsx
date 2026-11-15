@@ -5,13 +5,8 @@ import {
   type ChamberState,
 } from '../lib/live'
 import { emitSimFrame, peekPendingUiCmd } from '../lib/simBus'
-
-/**
- * Live combustion chamber — streams the compiled C++ engine over
- * /ws/chamber at 30 Hz and draws the run on canvas. Closed-cabin mode
- * exercises the sealed atmosphere balance (O2 depletion -> emergent
- * extinction), the physics the dashboard claims.
- */
+import Button from './ui/Button'
+import { IconVideo } from './Icons'
 
 export const CHAMBER_INVESTIGATIONS = Object.entries(FALLBACK_INVESTIGATIONS).map(([id, spec]) => ({
   id,
@@ -23,30 +18,40 @@ const REGIME = ['ignition', 'hot flame', 'cool flame', 'extinction', 'out']
 const SPREAD_REGIME = ['preheat', 'spreading', 'cooling', 'out']
 
 type Status = 'idle' | 'streaming' | 'done' | 'offline'
+type SensorMode = 'visible' | 'uv'
 
 export default function LiveChamber({
   stage = false,
   children,
 }: {
   stage?: boolean
-  /** stage mode only — rendered between the scenario readout and canvas */
   children?: ReactNode
 }) {
-  // the canvas only exists once a run streams in stage mode — a
-  // callback ref lets the sizing effect initialize it on attach
-  const [canvasEl, setCanvasEl] = useState<HTMLCanvasElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const wsRef = useRef<WebSocket | null>(null)
   const [inv, setInv] = useState<string>('flex-2')
   const [o2, setO2] = useState(21)
-  // null = let the engine pick the investigation's mid-range flow;
-  // null lets the engine choose the investigation's default airflow
   const [flow, setFlow] = useState<number | null>(null)
   const [sealed, setSealed] = useState(false)
   const [frame, setFrame] = useState<ChamberState | null>(null)
   const [status, setStatus] = useState<Status>('idle')
   const [log, setLog] = useState<string[]>([])
   const [retuneTick, setRetuneTick] = useState(0)
+
+  // Interactive High-Impact Upgrades
+  const [splitScreen, setSplitScreen] = useState(false)
+  const [sensorMode, setSensorMode] = useState<SensorMode>('visible')
+  const [showNasaVideo, setShowNasaVideo] = useState(false)
+
   const runObservations = useRef({ coolFlameObserved: false, events: [] as string[] })
+
+  // the 30 Hz stream paints the canvas imperatively; React state only
+  // tracks a ~10 Hz slice for the text readout, so the deck doesn't
+  // reconcile the component on every engine frame
+  const frameRef = useRef<ChamberState | null>(null)
+  const statusRef = useRef<Status>('idle')
+  const viewRef = useRef({ split: false, sensor: 'visible' as SensorMode })
+  const lastUiTs = useRef(0)
 
   const stop = useCallback(() => {
     wsRef.current?.close()
@@ -55,9 +60,12 @@ export default function LiveChamber({
 
   const run = useCallback(() => {
     stop()
+    frameRef.current = null
     setFrame(null)
     setLog([])
+    statusRef.current = 'streaming'
     setStatus('streaming')
+    lastUiTs.current = 0
     runObservations.current = { coolFlameObserved: false, events: [] }
     const req = {
       investigationId: inv,
@@ -76,26 +84,63 @@ export default function LiveChamber({
           if (!runObservations.current.events.includes(event)) runObservations.current.events.push(event)
         }
         const completed = s.done
-          ? { ...s, observations: { coolFlameObserved: runObservations.current.coolFlameObserved, events: [...runObservations.current.events] } }
+          ? {
+              ...s,
+              observations: {
+                coolFlameObserved: runObservations.current.coolFlameObserved,
+                events: [...runObservations.current.events],
+              },
+            }
           : s
-        setFrame(completed)
+        frameRef.current = completed
+        paint()
         emitSimFrame(completed)
         if (s.events?.length) {
           setLog((l) => [...l.slice(-5), ...s.events!])
         }
-        if (s.done) setStatus('done')
-        if (s.done) window.dispatchEvent(new CustomEvent('ignis:chamber-complete', { detail: completed }))
+        const now = performance.now()
+        if (s.done || now - lastUiTs.current > 100) {
+          lastUiTs.current = now
+          setFrame(completed)
+        }
+        if (s.done) {
+          statusRef.current = 'done'
+          setStatus('done')
+          window.dispatchEvent(new CustomEvent('ignis:chamber-complete', { detail: completed }))
+        }
       },
-      () => setStatus('offline'),
+      () => {
+        statusRef.current = 'offline'
+        setStatus('offline')
+        paint()
+      },
     )
-    if (!wsRef.current) setStatus('offline')
+    if (!wsRef.current) {
+      statusRef.current = 'offline'
+      setStatus('offline')
+      paint()
+    }
   }, [inv, o2, flow, sealed, stop])
 
   useEffect(() => stop, [stop])
 
-  // The tick makes identical repeated commands trigger a new run too.
+  const runRef = useRef(run)
+  useEffect(() => {
+    runRef.current = run
+  }, [run])
+
+  // Auto-seed boot run on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      runRef.current()
+    }, 250)
+    return () => clearTimeout(timer)
+  }, [])
+
   const invRef = useRef(inv)
-  useEffect(() => { invRef.current = inv }, [inv])
+  useEffect(() => {
+    invRef.current = inv
+  }, [inv])
 
   const applyCmd = useCallback(
     (cmd: ChamberUiCommand & { __investigation?: string | null }) => {
@@ -104,22 +149,21 @@ export default function LiveChamber({
       const hasPreset = requestedInv != null
       const runnable = !hasPreset || CHAMBER_INVESTIGATIONS.some((i) => i.id === requestedInv)
       if (!runnable) {
-        window.dispatchEvent(new CustomEvent('ignis:chamber-command-error', { detail: { preset: requestedInv } }))
+        window.dispatchEvent(
+          new CustomEvent('ignis:chamber-command-error', { detail: { preset: requestedInv } }),
+        )
         return
       }
       const srcInv = requestedInv ?? invRef.current
       const af = cmd.set_airflow_cm_s
       const hasFlow = typeof af === 'number'
       if (runnable) {
-        // only a *different* investigation invalidates a pinned flow —
-        // oxygen-only follow-ups on the same experiment keep it
         if (srcInv !== invRef.current && !hasFlow) setFlow(null)
         setInv(srcInv)
         touched = true
       }
       if (typeof cmd.set_o2_percent === 'number') {
-        setO2(Math.round(
-          Math.min(Math.max(cmd.set_o2_percent, 0), 40) * 10) / 10)
+        setO2(Math.round(Math.min(Math.max(cmd.set_o2_percent, 0), 40) * 10) / 10)
         touched = true
       }
       if (hasFlow) {
@@ -128,6 +172,13 @@ export default function LiveChamber({
       }
       if (cmd.trigger_containment) {
         setSealed(true)
+        const isN2Purge =
+          typeof cmd.trigger_containment === 'string' &&
+          (cmd.trigger_containment.toLowerCase().includes('n2') ||
+            cmd.trigger_containment.toLowerCase().includes('purge'))
+        if (isN2Purge && typeof cmd.set_o2_percent !== 'number') {
+          setO2(11.5)
+        }
         touched = true
       }
       if (touched && cmd.__run) setRetuneTick((tick) => tick + 1)
@@ -138,149 +189,212 @@ export default function LiveChamber({
   useEffect(() => {
     const onCmd = (e: Event) => {
       applyCmd(
-        (e as CustomEvent<ChamberUiCommand & {
-          __investigation?: string | null
-        }>).detail ?? {},
+        (e as CustomEvent<ChamberUiCommand & { __investigation?: string | null }>).detail ?? {},
       )
     }
     window.addEventListener('ignis:ui-command', onCmd)
-    // A fresh dashboard command can seed this mount with its parameters.
     const pending = peekPendingUiCmd()
     if (pending) applyCmd(pending)
     return () => window.removeEventListener('ignis:ui-command', onCmd)
   }, [applyCmd])
 
-  // Re-stream after the batched state updates land, even for repeated values.
   useEffect(() => {
     if (retuneTick > 0) run()
   }, [retuneTick, run])
 
-  // ---------- canvas ----------
-  // sizing + ink color are cached here so the 30 Hz draw below only
-  // paints — no buffer realloc, no getComputedStyle per frame
-  const canvasSize = useRef({ cw: 0, ch: 0, dpr: 1 })
-  const inkRef = useRef('#e8e6e0')
-  const [sizeTick, setSizeTick] = useState(0)
-  useEffect(() => {
-    const cv = canvasEl
-    if (!cv) return
-    const measure = () => {
-      const dpr = Math.min(devicePixelRatio || 1, 2)
-      cv.width = Math.round(cv.clientWidth * dpr)
-      cv.height = Math.round(cv.clientHeight * dpr)
-      canvasSize.current = { cw: cv.clientWidth, ch: cv.clientHeight, dpr }
-      // resizing wipes the buffer — kick the draw effect to repaint
-      setSizeTick((t) => t + 1)
-    }
-    const readInk = () => {
-      inkRef.current =
-        getComputedStyle(document.documentElement)
-          .getPropertyValue('--ink')
-          .trim() || '#e8e6e0'
-    }
-    measure()
-    readInk()
-    const ro = new ResizeObserver(measure)
-    ro.observe(cv)
-    const mo = new MutationObserver(readInk)
-    mo.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme'],
-    })
-    return () => {
-      ro.disconnect()
-      mo.disconnect()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasEl])
-
-  useEffect(() => {
-    const cv = canvasEl
+  // Canvas Rendering (Supporting Split-Screen 1g vs µg & UV Sensor Modes)
+  // paint() reads refs — the WS handler calls it directly on every
+  // frame; the effect below repaints on the ~10 Hz state slice and on
+  // view toggles (split screen, sensor mode, theme ink changes)
+  function paint(
+    f: ChamberState | null = frameRef.current,
+    st: Status = statusRef.current,
+    split: boolean = viewRef.current.split,
+    sensor: SensorMode = viewRef.current.sensor,
+  ) {
+    const cv = canvasRef.current
     if (!cv) return
     const ctx = cv.getContext('2d')
     if (!ctx) return
-    const { cw, ch, dpr } = canvasSize.current
+    const w = (cv.width = cv.clientWidth * devicePixelRatio)
+    const h = (cv.height = cv.clientHeight * devicePixelRatio)
+    ctx.clearRect(0, 0, w, h)
     ctx.save()
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    ctx.clearRect(0, 0, cw, ch)
-    const ink = inkRef.current
+    ctx.scale(devicePixelRatio, devicePixelRatio)
+    const cw = cv.clientWidth
+    const ch = cv.clientHeight
+    const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#e8e6e0'
 
-    if (!frame || !frame.ignited) {
+    if (!f || !f.ignited) {
       ctx.globalAlpha = 0.5
-      ctx.font = '15px monospace'
+      ctx.font = '14px monospace'
       ctx.fillStyle = ink
       ctx.textAlign = 'center'
-      ctx.fillText(
-        status === 'streaming' ? 'igniting…' : 'stand by',
-        cw / 2,
-        ch / 2 + 3,
-      )
+      ctx.fillText(st === 'streaming' ? 'igniting physical chamber…' : 'chamber stand by', cw / 2, ch / 2 + 3)
       ctx.restore()
       return
     }
 
-    const cx = cw / 2
-    const cy = ch / 2
+    const isCool = f.coolFlame || (f.model === 'droplet' && f.regime === 2)
+    const showInvisible = isCool && sensor === 'visible'
 
-    if (frame.model === 'droplet') {
-      const d = Math.max(2, (frame.dropletDMm ?? 1) * 14)
-      const fr = Math.max(d, (frame.flameRMm ?? 0) * 14)
-      // flame shell — hot flame amber, cool flame ghost-blue halo
-      if (fr > d + 2 && frame.regime !== 4) {
-        const cool = frame.coolFlame || frame.regime === 2
-        const g = ctx.createRadialGradient(cx, cy, d, cx, cy, fr * 2.2)
-        g.addColorStop(0, cool ? 'rgba(80,140,255,0.25)' : 'rgba(255,170,60,0.5)')
-        g.addColorStop(0.6, cool ? 'rgba(80,140,255,0.10)' : 'rgba(255,120,30,0.18)')
-        g.addColorStop(1, 'rgba(0,0,0,0)')
-        ctx.fillStyle = g
+    // Helper to draw Microgravity Flame
+    const drawMicrogravityFlame = (cx: number, cy: number, maxRadius: number) => {
+      if (f.model === 'droplet') {
+        const d = Math.max(3, (f.dropletDMm ?? 1) * 12)
+        const fr = Math.max(d, (f.flameRMm ?? 0) * 12)
+
+        if (fr > d + 2 && f.regime !== 4) {
+          if (showInvisible) {
+            // Invisible to naked eye
+            ctx.fillStyle = 'rgba(80,120,200,0.06)'
+            ctx.beginPath()
+            ctx.arc(cx, cy, fr * 1.2, 0, Math.PI * 2)
+            ctx.fill()
+          } else {
+            const g = ctx.createRadialGradient(cx, cy, d, cx, cy, fr * 2.1)
+            if (sensor === 'uv' && isCool) {
+              g.addColorStop(0, 'rgba(0, 240, 255, 0.75)') // UV false-color cyan
+              g.addColorStop(0.4, 'rgba(180, 50, 255, 0.45)') // OH* band magenta
+              g.addColorStop(1, 'rgba(0,0,0,0)')
+            } else {
+              g.addColorStop(0, isCool ? 'rgba(80,140,255,0.30)' : 'rgba(255,170,60,0.55)')
+              g.addColorStop(0.6, isCool ? 'rgba(80,140,255,0.12)' : 'rgba(255,120,30,0.22)')
+              g.addColorStop(1, 'rgba(0,0,0,0)')
+            }
+            ctx.fillStyle = g
+            ctx.beginPath()
+            ctx.arc(cx, cy, fr * 2.1, 0, Math.PI * 2)
+            ctx.fill()
+
+            ctx.strokeStyle = sensor === 'uv' ? 'rgba(0, 240, 255, 0.9)' : isCool ? 'rgba(120,170,255,0.7)' : 'rgba(255,190,90,0.7)'
+            ctx.lineWidth = 1.2
+            ctx.beginPath()
+            ctx.arc(cx, cy, fr, 0, Math.PI * 2)
+            ctx.stroke()
+          }
+        }
+
+        // Droplet fuel core
+        ctx.fillStyle = f.regime === 4 ? 'rgba(120,120,120,0.6)' : ink
         ctx.beginPath()
-        ctx.arc(cx, cy, fr * 2.2, 0, Math.PI * 2)
+        ctx.arc(cx, cy, d / 2, 0, Math.PI * 2)
         ctx.fill()
-        ctx.strokeStyle = cool ? 'rgba(120,170,255,0.6)' : 'rgba(255,190,90,0.7)'
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        ctx.arc(cx, cy, fr, 0, Math.PI * 2)
-        ctx.stroke()
-      }
-      // droplet
-      ctx.fillStyle = frame.regime === 4 ? 'rgba(120,120,120,0.6)' : ink
-      ctx.beginPath()
-      ctx.arc(cx, cy, d / 2, 0, Math.PI * 2)
-      ctx.fill()
-      // fuel gauge
-      const frac = frame.burnFraction ?? 0
-      ctx.globalAlpha = 0.7
-      ctx.fillStyle = ink
-      ctx.fillRect(cx - 50, ch - 22, 100 * Math.min(1, frac), 2)
-      ctx.strokeStyle = ink
-      ctx.globalAlpha = 0.3
-      ctx.strokeRect(cx - 50, ch - 22, 100, 2)
-    } else {
-      // solid spread: slab + advancing front
-      const slabW = cw * 0.7
-      const x0 = (cw - slabW) / 2
-      const pos = Math.min(1, (frame.frontPosCm ?? 0) / 30)
-      ctx.strokeStyle = ink
-      ctx.globalAlpha = 0.4
-      ctx.strokeRect(x0, cy - 6, slabW, 12)
-      ctx.fillStyle = ink
-      ctx.fillRect(x0, cy - 6, slabW * pos, 12)
-      const fx = x0 + slabW * pos
-      if (frame.regime === 1) {
-        const inten = Math.min(1, frame.intensity ?? 0.5)
-        const g = ctx.createRadialGradient(fx, cy, 2, fx, cy, 40)
-        g.addColorStop(0, `rgba(255,180,70,${0.7 * inten})`)
-        g.addColorStop(1, 'rgba(0,0,0,0)')
-        ctx.fillStyle = g
-        ctx.beginPath()
-        ctx.arc(fx, cy, 40, 0, Math.PI * 2)
-        ctx.fill()
+      } else {
+        // Solid spread front
+        const slabW = Math.min(240, maxRadius * 2)
+        const x0 = cx - slabW / 2
+        const pos = Math.min(1, (f.frontPosCm ?? 0) / 30)
+        ctx.strokeStyle = ink
+        ctx.globalAlpha = 0.4
+        ctx.strokeRect(x0, cy - 6, slabW, 12)
+        ctx.fillStyle = ink
+        ctx.fillRect(x0, cy - 6, slabW * pos, 12)
+        const fx = x0 + slabW * pos
+        if (f.regime === 1) {
+          const inten = Math.min(1, f.intensity ?? 0.5)
+          const g = ctx.createRadialGradient(fx, cy, 2, fx, cy, 38)
+          g.addColorStop(0, sensor === 'uv' ? 'rgba(0, 240, 255, 0.8)' : `rgba(255,180,70,${0.75 * inten})`)
+          g.addColorStop(1, 'rgba(0,0,0,0)')
+          ctx.fillStyle = g
+          ctx.beginPath()
+          ctx.arc(fx, cy, 38, 0, Math.PI * 2)
+          ctx.fill()
+        }
       }
     }
+
+    // Helper to draw Earth 1g Buoyant Teardrop Flame
+    const drawEarth1gFlame = (cx: number, cy: number) => {
+      const d = 16
+      const baseFlameH = 75
+      const flicker = Math.sin(f.tSec * 16) * 4
+
+      // Rising Buoyant Soot Column
+      const plumeG = ctx.createLinearGradient(cx, cy, cx, cy - 110)
+      plumeG.addColorStop(0, 'rgba(255, 120, 20, 0.25)')
+      plumeG.addColorStop(0.5, 'rgba(100, 100, 100, 0.15)')
+      plumeG.addColorStop(1, 'rgba(0, 0, 0, 0)')
+      ctx.fillStyle = plumeG
+      ctx.fillRect(cx - 8, cy - 110, 16, 110)
+
+      // Classic Teardrop Shape
+      ctx.save()
+      ctx.beginPath()
+      ctx.moveTo(cx - d, cy + 2)
+      ctx.quadraticCurveTo(cx - d * 0.8, cy - baseFlameH * 0.5, cx, cy - baseFlameH - flicker)
+      ctx.quadraticCurveTo(cx + d * 0.8, cy - baseFlameH * 0.5, cx + d, cy + 2)
+      ctx.closePath()
+
+      const flameG = ctx.createLinearGradient(cx, cy + 2, cx, cy - baseFlameH)
+      flameG.addColorStop(0, 'rgba(255, 230, 120, 0.85)')
+      flameG.addColorStop(0.4, 'rgba(255, 120, 20, 0.75)')
+      flameG.addColorStop(0.9, 'rgba(220, 40, 10, 0.4)')
+      flameG.addColorStop(1, 'rgba(0, 0, 0, 0)')
+      ctx.fillStyle = flameG
+      ctx.fill()
+
+      // Inner Blue Reaction Zone at Base
+      ctx.beginPath()
+      ctx.arc(cx, cy + 2, d * 0.7, 0, Math.PI)
+      ctx.fillStyle = 'rgba(60, 140, 255, 0.65)'
+      ctx.fill()
+
+      // Fuel source
+      ctx.fillStyle = ink
+      ctx.beginPath()
+      ctx.arc(cx, cy + 5, 5, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    }
+
+    if (split) {
+      // Split-screen: Left is Earth 1g, Right is µg
+      const dividerX = cw / 2
+
+      // Divider line
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'
+      ctx.setLineDash([4, 4])
+      ctx.beginPath()
+      ctx.moveTo(dividerX, 20)
+      ctx.lineTo(dividerX, ch - 20)
+      ctx.stroke()
+      ctx.setLineDash([])
+
+      // Left: Earth 1g
+      ctx.font = '11px monospace'
+      ctx.fillStyle = ink
+      ctx.globalAlpha = 0.7
+      ctx.textAlign = 'center'
+      ctx.fillText('EARTH 1G (BUOYANT CONVECTION)', dividerX / 2, 28)
+      ctx.fillText('Peak T ≈ 1950 K · Buoyancy Plume Active', dividerX / 2, ch - 16)
+      drawEarth1gFlame(dividerX / 2, ch / 2 + 25)
+
+      // Right: Microgravity µg
+      ctx.fillText('FLIGHT µG (DIFFUSIVE SPHERE)', dividerX + dividerX / 2, 28)
+      ctx.fillText(
+        isCool ? 'Cool-Flame Active · Sub-optical ~720 K' : 'Isotropic Flame Shell · No Chimney',
+        dividerX + dividerX / 2,
+        ch - 16,
+      )
+      drawMicrogravityFlame(dividerX + dividerX / 2, ch / 2, dividerX / 2 - 20)
+    } else {
+      // Single view (µg)
+      drawMicrogravityFlame(cw / 2, ch / 2, cw / 2 - 40)
+    }
+
     ctx.restore()
-    // sizeTick repaints after the ResizeObserver wipes the buffer
+  }
+
+  // React-driven repaints: the ~10 Hz frame slice for the readout and
+  // the view toggles — the 30 Hz stream itself paints via paint()
+  useEffect(() => {
+    frameRef.current = frame
+    statusRef.current = status
+    viewRef.current = { split: splitScreen, sensor: sensorMode }
+    paint()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [frame, status, sizeTick, canvasEl])
+  }, [frame, status, splitScreen, sensorMode])
 
   const regime = frame
     ? frame.model === 'droplet'
@@ -288,78 +402,172 @@ export default function LiveChamber({
       : SPREAD_REGIME[frame.regime] ?? '?'
     : '—'
 
-  const invLabel =
-    CHAMBER_INVESTIGATIONS.find((i) => i.id === inv)?.label ?? inv
+  const invLabel = CHAMBER_INVESTIGATIONS.find((i) => i.id === inv)?.label ?? inv
+  const isCoolFlame = frame?.coolFlame || (frame?.model === 'droplet' && frame?.regime === 2)
 
   return (
-    <section
-      id="chamber"
-      className={`relative scroll-mt-24 ${
-        stage ? '' : 'px-5 pb-28 pt-6 sm:px-10 lg:px-16'
-      }`}
-    >
-      <div className="flex flex-wrap items-baseline justify-between gap-3 font-mono text-sm lowercase tracking-[0.1em] text-[var(--ink)] opacity-70">
-        <span>live chamber — compiled c++ core</span>
-        <span>{status === 'offline' ? 'engine offline' : `ws · 30 hz · ${status}`}</span>
+    <section id="chamber" className={`relative scroll-mt-24 ${stage ? '' : 'px-5 pb-28 pt-6 sm:px-10 lg:px-16'}`}>
+      {/* Top telemetry bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs lowercase tracking-[0.1em] text-[var(--ink)] opacity-70">
+        <span>live chamber — compiled c++20 core (xorshift-seeded)</span>
+        <div className="flex items-center gap-3">
+          <span>{status === 'offline' ? 'engine offline' : `ws · 30 hz · ${status}`}</span>
+          <button
+            type="button"
+            onClick={run}
+            className="rounded border border-[var(--edge)] bg-white/10 px-2 py-0.5 text-[11px] font-semibold hover:bg-white/20"
+          >
+            re-fire
+          </button>
+        </div>
       </div>
+
       {!stage && (
         <>
           <h2 className="m-0 mt-4 font-[family-name:var(--font-display)] text-[clamp(1.6rem,3.2vw,2.6rem)] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--ink)]">
             The engine, running.
           </h2>
           <p className="m-0 mt-1 max-w-3xl text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-75">
-            compiled c++ physics streamed frame by frame — seal the cabin to
-            watch the flame consume its own oxygen and die on the loc boundary.
+            compiled c++ physics streamed frame by frame — seal the cabin to watch the flame consume its own oxygen and die on the loc boundary.
           </p>
         </>
       )}
 
-      <div className="mt-6">
-        <div>
-          {stage && (
-            <div className="mb-4 font-mono text-base lowercase tracking-[0.08em] text-[var(--ink)] opacity-85 sm:text-lg">
-              <span className="text-[var(--accent)]">▸</span> {invLabel} · o₂{' '}
-              {o2}%{flow != null ? ` · ${flow} cm/s` : ''}
-              {sealed ? ' · sealed cabin' : ''}
-            </div>
-          )}
-          {stage && children}
-          {/* the stage stays empty until a command arrives — that's the
-              "things appear" moment: the instrument panel materializes
-              the instant new conditions relight the chamber */}
-          {(!stage || status === 'streaming' || status === 'done') && (
-            <>
-              <canvas ref={setCanvasEl} className="h-72 w-full rounded-3xl sm:h-80" />
-              {frame && (
-                <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-base lowercase text-[var(--ink)] opacity-80">
-                  <span>t {frame.tSec.toFixed(1)}s</span>
-                  <span>{regime}</span>
-                  <span>o₂ {frame.o2Pct.toFixed(1)}%</span>
-                  {sealed && <span>o₂eff {frame.o2EffPct.toFixed(1)}%</span>}
-                  {frame.heatReleaseW != null && (
-                    <span>{frame.heatReleaseW.toFixed(2)} w</span>
-                  )}
-                  {frame.spreadRateCms != null && (
-                    <span>{frame.spreadRateCms.toFixed(2)} cm/s</span>
-                  )}
-                </div>
-              )}
-              {log.length > 0 && (
-                <div className="mt-2 font-mono text-[10px] lowercase tracking-[0.14em] text-[var(--ink)] opacity-50">
-                  {log.map((e, i) => (
-                    <span key={i} className="mr-4">→ {e}</span>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-          {stage && status === 'idle' && (
-            <p className="m-0 rounded-3xl border border-dashed border-[var(--edge)] px-6 py-8 text-center text-base leading-7 text-[var(--ink)] opacity-65 sm:text-lg">
-              The chamber is ready. Describe a combustion scenario in the conversation above to tune conditions and stream a run here.
+      {/* COOL FLAME TELEMETRY ALERT BANNER */}
+      {isCoolFlame && (
+        <div
+          role="alert"
+          className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/15 p-4 text-amber-300 shadow-lg backdrop-blur-xl animate-pulse"
+        >
+          <span className="text-xl">⚠️</span>
+          <div className="text-xs leading-relaxed">
+            <strong className="font-mono uppercase font-bold tracking-wider">
+              Anomaly Detected: Radiative Quenching — Cool Flame Active
+            </strong>
+            <p className="mt-1 font-mono text-[11px] opacity-90">
+              Visible emission: 0%. Droplet consumption continues via low-temperature kinetics (T ≈ 720 K).
+              Extreme risk of sudden explosive re-ignition upon forced airflow resumption.
             </p>
-          )}
+          </div>
+        </div>
+      )}
+
+      <div className="mt-5">
+        {/* Controls HUD: Split-Screen & Sensor Mode */}
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] bg-black/10 px-4 py-2.5 backdrop-blur-lg">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs uppercase tracking-wider opacity-60">View Mode:</span>
+            <button
+              type="button"
+              onClick={() => setSplitScreen(false)}
+              className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
+                !splitScreen
+                  ? 'bg-[var(--accent)] text-black'
+                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+              }`}
+            >
+              Flight µg
+            </button>
+            <button
+              type="button"
+              onClick={() => setSplitScreen(true)}
+              className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
+                splitScreen
+                  ? 'bg-[var(--accent)] text-black'
+                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+              }`}
+            >
+              Split-Screen (Earth 1g vs µg)
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-xs uppercase tracking-wider opacity-60">Sensor:</span>
+            <button
+              type="button"
+              onClick={() => setSensorMode('visible')}
+              className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
+                sensorMode === 'visible'
+                  ? 'bg-amber-400 text-black'
+                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+              }`}
+            >
+              Visible Spectrum (Eye)
+            </button>
+            <button
+              type="button"
+              onClick={() => setSensorMode('uv')}
+              className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
+                sensorMode === 'uv'
+                  ? 'bg-cyan-400 text-black'
+                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+              }`}
+            >
+              UV / Radiometric (310nm OH*)
+            </button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowNasaVideo(!showNasaVideo)}
+              className="!text-xs"
+            >
+              <IconVideo size={13} /> {showNasaVideo ? 'Hide UV Video' : 'NASA UV Video'}
+            </Button>
+          </div>
         </div>
 
+        {/* Embedded NASA Video PIP if toggled */}
+        {showNasaVideo && (
+          <div className="relative mb-4 overflow-hidden rounded-2xl border border-cyan-500/40 bg-black p-2">
+            <div className="flex items-center justify-between px-2 py-1 text-xs font-mono text-cyan-400">
+              <span>NASA SAFFIRE-V FLIGHT FOOTAGE (UV CHEMILUMINESCENCE)</span>
+              <button onClick={() => setShowNasaVideo(false)} className="opacity-70 hover:opacity-100">✕</button>
+            </div>
+            <video
+              src="/assets/saffire5_uv.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="h-44 w-full rounded-xl object-contain bg-black"
+            />
+          </div>
+        )}
+
+        {stage && (
+          <div className="mb-4 font-mono text-sm lowercase tracking-[0.08em] text-[var(--ink)] opacity-85">
+            <span className="text-[var(--accent)]">▸</span> {invLabel} · o₂ {o2}%
+            {flow != null ? ` · ${flow} cm/s` : ''}
+            {sealed ? ' · sealed cabin' : ''}
+          </div>
+        )}
+
+        {stage && children}
+
+        <canvas ref={canvasRef} className="h-72 w-full rounded-3xl sm:h-80 bg-black/20" />
+
+        {frame && (
+          <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-sm lowercase text-[var(--ink)] opacity-85">
+            <span>t {frame.tSec.toFixed(1)}s</span>
+            <span className="font-semibold text-[var(--accent)]">{regime}</span>
+            <span>o₂ {frame.o2Pct.toFixed(1)}%</span>
+            {sealed && <span>o₂eff {frame.o2EffPct.toFixed(1)}%</span>}
+            {frame.heatReleaseW != null && <span>{frame.heatReleaseW.toFixed(2)} w</span>}
+            {frame.spreadRateCms != null && <span>{frame.spreadRateCms.toFixed(2)} cm/s</span>}
+            {frame.flameRMm != null && <span>r {frame.flameRMm.toFixed(1)} mm</span>}
+          </div>
+        )}
+
+        {log.length > 0 && (
+          <div className="mt-2 font-mono text-[10px] lowercase tracking-[0.14em] text-[var(--ink)] opacity-60">
+            {log.map((e, i) => (
+              <span key={i} className="mr-4">
+                → {e}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

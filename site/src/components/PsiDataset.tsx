@@ -5,7 +5,7 @@ import {
   INVESTIGATIONS,
   THEME_LABELS,
 } from '../lib/dashboard'
-import { startKeyedVideo } from '../lib/keyedVideo'
+import { attachKeyedFlame } from '../lib/keyedFlame'
 import { getFilterTag, gsap, navigateBack, setFilterTag } from '../lib/scroll'
 import { IconArrowLeft } from './Icons'
 import Button from './ui/Button'
@@ -47,20 +47,14 @@ export default function PsiDataset() {
 
   // luminance keying — saffire-vi flame-on-black becomes real alpha and
   // floats behind the headline, same trick as the challenge section.
-  // the pixel work runs in a worker (see lib/keyedVideo); the loop
-  // window is discovered at runtime (the clip's container reports an
-  // odd duration, so we adapt instead of hardcoding)
+  // the loop window is discovered at runtime (the clip's container
+  // reports an odd duration, so we adapt instead of hardcoding)
+  const loopEnd = useRef(Infinity)
   useEffect(() => {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    return startKeyedVideo({
-      video: v,
-      canvas: c,
-      view: 'psi',
-      loopStart: 0.5,
-      tailMargin: 0.4,
-    })
+    return attachKeyedFlame(v, c)
   }, [])
 
   // choreography — hero elements fly in on mount; further blocks reveal
@@ -120,6 +114,16 @@ export default function PsiDataset() {
           loop
           preload="metadata"
           aria-hidden="true"
+          onLoadedMetadata={(e) => {
+            e.currentTarget.currentTime = 0.5
+            const d = e.currentTarget.duration
+            loopEnd.current =
+              Number.isFinite(d) && d > 1.5 ? d - 0.4 : Infinity
+          }}
+          onTimeUpdate={(e) => {
+            if (e.currentTarget.currentTime >= loopEnd.current)
+              e.currentTarget.currentTime = 0.5
+          }}
         >
           <source src="/assets/saffire_pmma.mp4" media="(min-width: 768px)" />
           <source src="/assets/saffire_pmma_sd.mp4" />
