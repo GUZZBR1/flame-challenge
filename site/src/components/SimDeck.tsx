@@ -205,14 +205,14 @@ export default function SimDeck() {
 
   const feature = splitTitle(FEATURE)
   const secondary = [
-    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '[grid-area:side-a] lg:border-l lg:pl-10', 'lg:w-[calc(100%+4rem)]'],
-    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '[grid-area:side-b] sm:border-l sm:pl-6 lg:border-l lg:pl-10', 'lg:w-[calc(100%+4rem)]'],
-    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '[grid-area:band-a] border-t border-edge pt-8', 'lg:-ml-16'],
-    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '[grid-area:band-b] border-t border-edge pt-8 sm:border-l sm:pl-6 lg:border-l lg:pl-10', 'lg:w-[calc(100%+4rem)]'],
+    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '[grid-area:side-a]', 'bleed-x bleed-r'],
+    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '[grid-area:side-b]', 'bleed-x bleed-r'],
+    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '[grid-area:band-a]', 'bleed-x bleed-l'],
+    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '[grid-area:band-b]', 'bleed-x bleed-r'],
   ] as const
 
   return (
-    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
+    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
       <div className="shell relative pb-24 pt-28 sm:pt-32">
         <KeyedFlame
           className="inset-x-0 -top-8 h-[min(54vh,460px)]"
@@ -276,7 +276,7 @@ export default function SimDeck() {
               {activeMission.id === FEATURE.id && (
                 <span className="mt-4 block"><ActiveMark /></span>
               )}
-              <span className="relative mt-8 block min-h-[260px] flex-1 sm:min-h-[340px] lg:-ml-16">
+              <span className="bleed-x bleed-l relative mt-8 block min-h-[280px] flex-1 sm:min-h-[400px] lg:min-h-[480px]">
                 <img
                   src={MISSION_MEDIA.feature.src}
                   alt={MISSION_MEDIA.feature.alt}
@@ -303,7 +303,7 @@ export default function SimDeck() {
                     {t.name}
                   </span>
                   {isActive && <span className="mt-3 block"><ActiveMark /></span>}
-                  <span className={`mt-4 block h-36 sm:h-44 ${mediaCls}`}>
+                  <span className={`mt-5 block h-44 sm:h-56 lg:h-64 ${mediaCls}`}>
                     {media.type === 'video' ? (
                       <video
                         className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"

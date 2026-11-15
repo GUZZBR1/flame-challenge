@@ -529,6 +529,23 @@ button.pill:active { transform: translateY(0) scale(.96); }
    left and the other missions stack in the right rail. Mobile →
    single column, tablet → 2-col with the feature on top, desktop →
    the full spread. */
+/* full-bleed spread — the grid breaks out of the 72rem shell to the
+   viewport edges; --gut is the shell's content inset, so names stay on
+   the editorial column while media stretches to the screen edge */
+.mission-areas {
+  --gut: 1.5rem;
+  margin-inline: calc(50% - 50vw);
+  padding-inline: var(--gut);
+}
+@media (min-width: 640px) { .mission-areas { --gut: calc(2.5rem + max(0px, (100vw - 72rem) / 2)); } }
+@media (min-width: 1024px) { .mission-areas { --gut: calc(4rem + max(0px, (100vw - 72rem) / 2)); } }
+@media (max-width: 639.98px) {
+  .bleed-x { margin-inline: calc(-1 * var(--gut)); }
+}
+@media (min-width: 640px) {
+  .bleed-l { margin-left: calc(-1 * var(--gut)); }
+  .bleed-r { margin-right: calc(-1 * var(--gut)); }
+}
 .mission-areas {
   display: grid;
   gap: 3.5rem;
