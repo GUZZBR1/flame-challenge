@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap, navigateBack } from '../lib/scroll'
+import { emitUiCommand } from '../lib/simBus'
 import KeyedFlame from './KeyedFlame'
 import { IconArrowLeft } from './Icons'
 import Button from './ui/Button'
@@ -177,6 +178,70 @@ const MISSION_PRESETS: MissionPreset[] = [
   },
 ]
 
+const GRAVITY_G = { microgravity: 0, earth: 1, lunar: 0.17, mars: 0.38 } as const
+
+/** 'Historical Crisis: Apollo 13' → { kind: 'Historical Crisis', name: 'Apollo 13' } */
+function splitTitle(preset: MissionPreset) {
+  const [kind, name] = preset.title.split(': ')
+  return { kind, name: name ?? preset.title }
+}
+
+/** the editorial spread leads with four envelopes — the rest of the
+ *  catalog stays reachable in the mission index below */
+const FEATURE = MISSION_PRESETS[0] // apollo 1
+const SIDE_A = MISSION_PRESETS[1] // apollo 13
+const SIDE_B = MISSION_PRESETS[4] // flex-2
+const TERTIARY = MISSION_PRESETS[3] // saffire
+const INDEX_MISSIONS = MISSION_PRESETS.filter(
+  (p) => ![FEATURE.id, SIDE_A.id, SIDE_B.id, TERTIARY.id].includes(p.id),
+)
+
+/** real NASA imagery, pulled from the official image & video library
+ *  (images.nasa.gov) — nasa ids kept for provenance:
+ *    apollo1_crew → S66-30236      apollo 1 prime crew portrait
+ *    apollo13_sm  → as13-59-8500   service module after jettison
+ *    flex2_mdca   → iss035e017702  mdca reservoir swap for the flex-2 run
+ *    saffire clip → saffire-v uv flight footage already in /assets */
+const MISSION_MEDIA = {
+  feature: { type: 'image', src: '/assets/nasa/apollo1_crew.jpg', alt: 'Apollo 1 prime crew — White, Grissom, Chaffee (NASA S66-30236)' },
+  sideA: { type: 'image', src: '/assets/nasa/apollo13_sm.jpg', alt: 'Damaged Apollo 13 service module after jettison (NASA as13-59-8500)' },
+  sideB: { type: 'image', src: '/assets/nasa/flex2_mdca.jpg', alt: 'MDCA reconfiguration for the FLEX-2 experiment aboard the ISS (NASA iss035e017702)' },
+  tertiary: { type: 'video', src: '/assets/saffire5_uv_sd.mp4', alt: 'SAFFIRE-V UV chemiluminescence flight footage' },
+} as const
+
+function ActiveMark() {
+  return <span className="font-mono text-tiny font-semibold text-accent">● active</span>
+}
+
+/** quiet category eyebrow — crisis vs scenario stays legible at a
+ *  glance without shouting over the mission name */
+function KindLine({ kind, className = '' }: { kind: string; className?: string }) {
+  return (
+    <p className={`font-mono text-mini uppercase tracking-label opacity-55 ${className}`}>
+      {kind}
+    </p>
+  )
+}
+
+/** orbital arc + diagonal tick — pure decoration behind the spread */
+function OrbitDecor() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="pointer-events-none absolute right-0 top-4 hidden h-[420px] w-[420px] text-ink opacity-[0.14] lg:block"
+      viewBox="0 0 420 420"
+      fill="none"
+    >
+      <circle cx="310" cy="110" r="170" stroke="currentColor" strokeWidth="1" strokeDasharray="3 6" />
+      <circle cx="310" cy="110" r="230" stroke="currentColor" strokeWidth="0.75" opacity="0.6" />
+      <circle cx="428" cy="196" r="4" fill="currentColor" />
+      <line x1="20" y1="330" x2="150" y2="200" stroke="currentColor" strokeWidth="0.75" />
+      <line x1="150" y1="200" x2="150" y2="212" stroke="currentColor" strokeWidth="0.75" />
+      <line x1="150" y1="200" x2="138" y2="200" stroke="currentColor" strokeWidth="0.75" />
+    </svg>
+  )
+}
+
 export default function SimDeck() {
   const rootRef = useRef<HTMLDivElement>(null)
   const [activeMission, setActiveMission] = useState<MissionPreset>(MISSION_PRESETS[0])
@@ -184,16 +249,48 @@ export default function SimDeck() {
   useEffect(() => {
     const root = rootRef.current
     if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const ctx = gsap.context(
-      () => gsap.from('[data-hero]', { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', stagger: 0.07 }),
-      root,
-    )
+    const ctx = gsap.context(() => {
+      gsap.from('[data-hero]', { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', stagger: 0.07 })
+      gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
+        gsap.from(el, {
+          opacity: 0,
+          y: 18,
+          duration: 0.55,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 94%', scroller: root },
+        })
+      })
+    }, root)
     return () => ctx.revert()
   }, [])
 
-  // selecting an envelope is a visual pick only — it marks the active
-  // mission; the run/report pipeline intentionally lives outside this view
-  const loadMissionPreset = (preset: MissionPreset) => setActiveMission(preset)
+  // selecting an envelope marks it active and announces the pick on the
+  // chamber bus — a mounted chamber retunes to the preset (o₂/flow/grav);
+  // the run/report pipeline itself intentionally lives outside this view
+  const loadMissionPreset = (preset: MissionPreset) => {
+    setActiveMission(preset)
+    emitUiCommand({
+      load_preset: preset.investigationId,
+      set_o2_percent: preset.o2Pct,
+      set_airflow_cm_s: preset.flowCms,
+      set_gravity_g: GRAVITY_G[preset.gravity],
+      trigger_containment: null,
+      __investigation: preset.investigationId,
+      __origin: 'sim-deck',
+      __run: false,
+    })
+  }
+
+  const pickProps = (preset: MissionPreset) => ({
+    type: 'button' as const,
+    'aria-pressed': activeMission.id === preset.id,
+    onClick: () => loadMissionPreset(preset),
+  })
+
+  const feature = splitTitle(FEATURE)
+  const sideA = splitTitle(SIDE_A)
+  const sideB = splitTitle(SIDE_B)
+  const tertiary = splitTitle(TERTIARY)
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
@@ -203,6 +300,8 @@ export default function SimDeck() {
           strength={0.3}
           src={{ hd: '/assets/saffire5_uv.mp4', sd: '/assets/saffire5_uv_sd.mp4' }}
         />
+
+        {/* ---- editorial hero ---- */}
         <header className="relative">
           <div data-hero className="eyebrow flex items-baseline justify-between gap-6 opacity-70">
             <Button asChild variant="glass" size="sm" className="lowercase">
@@ -217,75 +316,186 @@ export default function SimDeck() {
               </a>
             </Button>
             <span className="hidden cursor-default transition-colors duration-300 hover:text-accent hover:opacity-100 sm:inline">
-              guided mission envelopes
+              simulations · mission envelopes
             </span>
           </div>
-          <h1 data-hero className="mt-8 font-display text-[clamp(2.4rem,6vw,4.6rem)] font-bold leading-display tracking-tight">
-            Simulations
+
+          <p data-hero className="card-label mt-12 sm:mt-16">Guided Scenarios &amp; Historical Crises</p>
+          <h1
+            data-hero
+            className="mt-4 font-display text-[clamp(2.75rem,6.5vw,4rem)] font-bold leading-display tracking-tight"
+          >
+            1-Click Mission Envelopes
           </h1>
-          <p data-hero className="mt-10 max-w-2xl text-body leading-[1.85] opacity-80">
-            Test real-world mission atmospheres, partial-gravity regimes, and historical fire crises. The copilot
-            cross-references 30 years of NASA PSI data and streams physical combustion runs in real time.
+          <p data-hero className="mt-8 max-w-xl text-body leading-[1.85] opacity-80">
+            Explore historical fire crises and experimental combustion environments from NASA
+            research — one click previews the mission.
           </p>
         </header>
 
-        {/* GUIDED MISSION PRESETS CARDS (1-CLICK EXECUTION) */}
-        <section className="rounded-shell panel-85 relative mt-20 p-6 shadow-xl backdrop-blur-2xl sm:mt-24 sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
-            <div>
-              <span className="card-label">
-                Guided Scenarios &amp; Historical Crises
-              </span>
-              <h2 className="mt-1 font-display text-xl font-bold sm:text-2xl">
-                1-Click Mission Envelopes
-              </h2>
-            </div>
-            <span className="hidden font-mono text-tiny opacity-60 sm:inline">Click any card to preview the mission</span>
-          </div>
+        {/* ---- asymmetric mission spread ---- */}
+        <section className="mission-areas relative mt-16 sm:mt-24" aria-label="Mission envelopes">
+          <OrbitDecor />
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {MISSION_PRESETS.map((preset) => {
-              const isActive = activeMission.id === preset.id
-              return (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => loadMissionPreset(preset)}
-                  className={`group flex flex-col justify-between rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-lg ${
-                    isActive
-                      ? 'border-accent bg-white/60 shadow-md dark:bg-white/[0.08]'
-                      : 'border-edge bg-white/30 dark:bg-white/[0.03] hover:border-accent/50'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-tiny font-semibold" style={{ color: preset.accent }}>
-                        {preset.tag}
-                      </span>
-                      {isActive && (
-                        <span className="rounded bg-accent/20 px-2 py-1 font-mono text-micro font-bold text-accent">
-                          ACTIVE
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="mt-2 text-base font-bold group-hover:text-accent transition-colors">
-                      {preset.title}
-                    </h3>
-                    <p className="mt-2 text-tiny leading-relaxed opacity-75">{preset.description}</p>
-                  </div>
-                  <div className="mt-4 flex items-center justify-between border-t border-edge pt-2 text-tiny font-mono opacity-70">
-                    <span>
-                      {preset.investigationId} · {preset.o2Pct}% O₂
-                    </span>
-                    <span className="group-hover:translate-x-0.5 transition-transform">Select →</span>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
+          {/* featured — apollo 1 */}
+          <button
+            {...pickProps(FEATURE)}
+            data-hero
+            className="feature-grid group relative [grid-area:feature] text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          >
+            <div className="[grid-area:head] lg:pr-16 xl:pr-20">
+              <KindLine kind={feature.kind} />
+              <h2 className="mt-3 font-display text-[clamp(3rem,5.8vw,4.5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent">
+                {feature.name}
+              </h2>
+              <p className="mt-3 font-mono text-caption font-semibold" style={{ color: FEATURE.accent }}>
+                {FEATURE.tag}
+              </p>
+            </div>
+
+            <div className="[grid-area:media] relative min-h-[260px] sm:min-h-[340px] lg:-ml-16 lg:min-h-[420px] xl:-ml-20">
+              <div className="clip-diag-l absolute inset-0 overflow-hidden">
+                <img
+                  src={MISSION_MEDIA.feature.src}
+                  alt={MISSION_MEDIA.feature.alt}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-bg/60 via-bg/5 to-transparent" />
+              </div>
+            </div>
+
+            <div className="[grid-area:body] flex flex-col lg:pr-16 xl:pr-20">
+              <p className="max-w-md text-body leading-[1.8] opacity-80">{FEATURE.description}</p>
+              <span className="mt-8 font-mono text-tiny font-semibold text-accent">
+                {activeMission.id === FEATURE.id ? '● active envelope' : 'explore →'}
+              </span>
+            </div>
+          </button>
+
+          {/* secondary rail — apollo 13 + flex-2 */}
+          {([
+            [SIDE_A, sideA, MISSION_MEDIA.sideA],
+            [SIDE_B, sideB, MISSION_MEDIA.sideB],
+          ] as const).map(([preset, t, media], i) => (
+            <button
+              key={preset.id}
+              {...pickProps(preset)}
+              data-hero
+              className={`group border-t border-edge pt-7 text-left lg:border-l lg:pl-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
+                i === 0 ? '[grid-area:side-a]' : '[grid-area:side-b] sm:border-l sm:pl-6 lg:pl-10'
+              }`}
+            >
+              <KindLine kind={t.kind} />
+              <h2 className="mt-2 font-display text-[clamp(1.7rem,3vw,2.4rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent">
+                {t.name}
+              </h2>
+              <div className="clip-para mt-4 h-32 overflow-hidden bg-black sm:h-36">
+                <img
+                  src={media.src}
+                  alt={media.alt}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+                />
+              </div>
+              <p className="mt-4 line-clamp-2 max-w-md text-caption leading-relaxed opacity-75">
+                {preset.description}
+              </p>
+              <div className="mt-5 flex items-baseline justify-between gap-4">
+                <span className="truncate font-mono text-tiny font-semibold" style={{ color: preset.accent }}>
+                  {preset.tag}
+                </span>
+                <span className="shrink-0 font-mono text-tiny font-semibold text-accent">
+                  {activeMission.id === preset.id ? '● active' : 'explore →'}
+                </span>
+              </div>
+            </button>
+          ))}
+
+          {/* tertiary band — saffire */}
+          <button
+            {...pickProps(TERTIARY)}
+            data-reveal
+            className="group grid items-center gap-8 [grid-area:tertiary] border-t border-edge pt-10 text-left sm:grid-cols-[minmax(0,9fr)_minmax(0,11fr)] lg:gap-14 lg:pt-14 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          >
+            <div className="clip-diag-r relative min-h-[220px] overflow-hidden bg-black lg:min-h-[280px]">
+              <video
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                src={MISSION_MEDIA.tertiary.src}
+                aria-label={MISSION_MEDIA.tertiary.alt}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-bg/40 via-transparent to-transparent" />
+            </div>
+            <div>
+              <KindLine kind={tertiary.kind} />
+              <h2 className="mt-2 font-display text-[clamp(1.9rem,3.6vw,3rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent">
+                {tertiary.name}
+              </h2>
+              <p className="mt-4 max-w-lg text-caption leading-relaxed opacity-75">{TERTIARY.description}</p>
+              <div className="mt-6 flex flex-wrap items-baseline justify-between gap-4">
+                <span className="font-mono text-tiny font-semibold" style={{ color: TERTIARY.accent }}>
+                  {TERTIARY.tag}
+                </span>
+                <span className="font-mono text-tiny font-semibold text-accent">
+                  {activeMission.id === TERTIARY.id ? '● active' : 'explore →'}
+                </span>
+              </div>
+            </div>
+          </button>
         </section>
 
-        <div className="relative mt-8 flex justify-end">
+        {/* ---- full mission index — every remaining envelope, 1-click ---- */}
+        <section className="mt-20 sm:mt-28" aria-label="Full mission index" data-reveal>
+          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-edge pb-4">
+            <div>
+              <span className="card-label">View All Missions</span>
+              <h2 className="mt-1 font-display text-xl font-bold sm:text-2xl">Full Mission Index</h2>
+            </div>
+            <span className="hidden font-mono text-tiny opacity-60 sm:inline">
+              {INDEX_MISSIONS.length} more envelopes — imagery · nasa archives
+            </span>
+          </div>
+          <ul>
+            {INDEX_MISSIONS.map((preset, i) => {
+              const t = splitTitle(preset)
+              const isActive = activeMission.id === preset.id
+              return (
+                <li key={preset.id}>
+                  <button
+                    {...pickProps(preset)}
+                    className="row-hover group grid w-full grid-cols-[2rem_minmax(0,1fr)_auto] items-baseline gap-x-5 border-b border-edge py-5 text-left sm:grid-cols-[3rem_minmax(0,5fr)_minmax(0,6fr)_auto] sm:items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    <span className="font-mono text-tiny opacity-40">
+                      {String(i + 5).padStart(2, '0')}
+                    </span>
+                    <span className="min-w-0 truncate text-body font-bold transition-colors duration-300 group-hover:text-accent">
+                      {t.name}
+                    </span>
+                    <span className="hidden min-w-0 truncate font-mono text-tiny opacity-55 sm:block">
+                      {preset.tag}
+                    </span>
+                    <span className="justify-self-end font-mono text-tiny font-semibold">
+                      {isActive ? (
+                        <ActiveMark />
+                      ) : (
+                        <span className="opacity-50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100">
+                          select →
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
+        <div className="relative mt-12 flex justify-end">
           <Button variant="glass" onClick={navigateBack}>
             Back to overview <IconArrowLeft size={16} />
           </Button>
