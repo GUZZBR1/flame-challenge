@@ -544,16 +544,17 @@ button.pill:active { transform: translateY(0) scale(.96); }
 .cut-panel { clip-path: url(#cut-panel); }
 
 /* scrolling carousel — two identical groups slide left by exactly one
-   group width for a seamless loop; hover / focus pauses it, reduced-motion
+   group width for a seamless loop; keyboard focus pauses it (hover does not), reduced-motion
    users get a plain horizontal scroller instead */
 .bleed-both { margin-inline: calc(-1 * var(--gut)); }
 .marquee {
   overflow: hidden;
+  padding-block: 1.75rem;
   -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
   mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
 }
 .marquee-track { display: flex; width: max-content; animation: marquee-slide 70s linear infinite; }
-.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
+.marquee:has(:focus-visible) .marquee-track { animation-play-state: paused; }
 .marquee-group { display: flex; flex-shrink: 0; gap: clamp(2.5rem, 5vw, 6rem); padding-right: clamp(2.5rem, 5vw, 6rem); list-style: none; margin: 0; padding-left: 0; }
 .marquee-item { width: clamp(19rem, 30vw, 28rem); flex-shrink: 0; }
 @keyframes marquee-slide { to { transform: translateX(-50%); } }

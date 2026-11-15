@@ -150,9 +150,9 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
 
         <div className="relative flex items-center gap-2 sm:gap-4">
           <span
-            className="group/loc hidden cursor-default items-center gap-2 rounded-full border border-transparent px-2.5 py-1 font-mono text-tiny lowercase tracking-card text-ink opacity-60 transition-[background,border-color,box-shadow,opacity,transform] duration-300 hover:-translate-y-px hover:border-white/60 hover:bg-white/70 hover:opacity-100 hover:shadow-[0_6px_18px_rgba(23,33,43,0.10)] relative sm:inline-flex dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.4)]"
+            className="group/loc hidden cursor-default items-center self-stretch gap-2 rounded-full border border-transparent px-2.5 py-1 font-mono text-tiny lowercase tracking-card text-ink opacity-60 transition-[background,border-color,box-shadow,opacity,transform] duration-300 hover:-translate-y-px hover:border-white/60 hover:bg-white/70 hover:opacity-100 hover:shadow-[0_6px_18px_rgba(23,33,43,0.10)] relative sm:inline-flex dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.4)]"
           >
-            <span className="relative flex items-center gap-2 transition-transform duration-300 group-hover/loc:-translate-y-[7px]">
+            <span className="relative flex items-center gap-2 transition-transform duration-300 group-hover/loc:-translate-y-[8px]">
               <span
                 aria-hidden="true"
                 className="loc-dot size-1.5 shrink-0 rounded-full bg-accent transition-transform duration-300 group-hover/loc:scale-125"
@@ -160,12 +160,12 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
               são paulo, brazil
               <span
                 aria-hidden="true"
-                className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-current transition-transform duration-300 group-hover/loc:scale-x-100"
+                className="absolute inset-x-0 -bottom-px h-px origin-left scale-x-0 bg-current transition-transform duration-300 group-hover/loc:scale-x-100"
               />
             </span>
             <span
               role="tooltip"
-              className="pointer-events-none absolute left-1/2 top-1/2 mt-[5px] -translate-x-1/2 translate-y-1 whitespace-nowrap font-mono text-[11px] leading-none text-ink opacity-0 transition-[opacity,transform] duration-300 group-hover/loc:translate-y-0 group-hover/loc:opacity-100"
+              className="pointer-events-none absolute left-1/2 top-1/2 mt-[6px] -translate-x-1/2 translate-y-1 whitespace-nowrap font-mono text-[11px] leading-none text-ink opacity-0 transition-[opacity,transform] duration-300 group-hover/loc:translate-y-0 group-hover/loc:opacity-100"
             >
               {clock.split(':').map((part, i) => (
                 <Fragment key={i}>

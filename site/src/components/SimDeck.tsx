@@ -478,7 +478,7 @@ export default function SimDeck() {
                             {...pickProps(preset)}
                             tabIndex={copy === 1 ? -1 : undefined}
                             data-hover-media
-                            className="group flex h-full w-full flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                            className="group flex h-full w-full origin-center flex-col text-left transition-transform duration-500 ease-out hover:scale-[1.06] focus-visible:scale-[1.06] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-reduce:transform-none"
                           >
                             <span className={`${shape} block h-48 overflow-hidden bg-black sm:h-56`}>
                               {renderMedia(media, mediaCls)}
