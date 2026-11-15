@@ -30,24 +30,9 @@ export default function Composer({
   const holdingRef = useRef(false)
   const cancelRecordingRef = useRef(false)
   const [pulse, setPulse] = useState({ id: 0, position: 0.5 })
-  const [regime, setRegime] = useState<'auto' | 'earth' | 'micro' | 'cool'>('auto')
   const formRef = useRef<HTMLFormElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
-  const parsedParameters = parseFlameParameters(text, flameDefaults)
-  const flameParameters: FlameParameters =
-    regime === 'earth'
-      ? { ...parsedParameters, gravityG: 1, coolFlame: false }
-      : regime === 'micro'
-        ? { ...parsedParameters, gravityG: 0, coolFlame: false }
-        : regime === 'cool'
-          ? { ...parsedParameters, coolFlame: true }
-          : parsedParameters
-
-  const cycleRegime = () => {
-    setRegime((current) =>
-      current === 'auto' ? 'earth' : current === 'earth' ? 'micro' : current === 'micro' ? 'cool' : 'auto',
-    )
-  }
+  const flameParameters: FlameParameters = parseFlameParameters(text, flameDefaults)
 
   const stopTimer = () => {
     if (timerRef.current != null) {
@@ -147,14 +132,6 @@ export default function Composer({
   return (
     <div className="relative w-full overflow-visible">
       <MathematicalFlameField parameters={flameParameters} pulse={pulse} barRef={formRef} glowRef={glowRef} />
-      <button
-        type="button"
-        onClick={cycleRegime}
-        title="Cycle flame regime: auto → 1g earth → 0g microgravity → cool flame"
-        className="absolute -top-[19px] right-1 z-20 cursor-pointer rounded-t-md border border-edge/35 bg-[#F4F3EE]/90 px-2 py-0.5 font-mono text-[9px] tracking-[0.015em] text-ink/55 backdrop-blur-sm transition-colors hover:border-accent/60 hover:text-ink/80"
-      >
-        {`g: ${flameParameters.gravityG.toFixed(2)}g\u00a0 | \u00a0O₂: ${Math.round(flameParameters.o2Pct)}%\u00a0 | \u00a0Re: ${Math.round(flameParameters.airflowCms * 42)}\u00a0 | \u00a0solver: ${flameParameters.coolFlame ? 'cool-flame-720K' : 'curl-eulerian-2d'}`}
-      </button>
       <div className="relative">
         <div
           ref={glowRef}

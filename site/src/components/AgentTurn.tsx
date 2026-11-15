@@ -1,13 +1,11 @@
 import type { AgentTurnModel } from '../lib/simConsole'
-import SimRunCard from './SimRunCard'
 import IgnisSprite from './IgnisSprite'
 
 export default function AgentTurn({
   turn,
-  live,
 }: {
   turn: AgentTurnModel
-  live: boolean
+  live?: boolean
 }) {
   if (turn.pending) {
     return (
@@ -82,7 +80,21 @@ export default function AgentTurn({
         </details>
       )}
 
-      {turn.run && <SimRunCard run={turn.run} live={live} />}
+      {turn.run && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-accent/25 bg-accent/[0.06] px-4 py-3">
+          <div className="min-w-0 flex-1 text-sm text-ink/75">
+            Run queued{turn.run.presetId ? ` · ${turn.run.presetId}` : ''}
+            {turn.run.o2Pct != null ? ` · O₂ ${turn.run.o2Pct}%` : ''}
+            {turn.run.flowCms != null ? ` · ${turn.run.flowCms} cm/s` : ''}
+          </div>
+          <a
+            href="#dashboard"
+            className="flex-none rounded-full bg-[#1e3fae] px-4 py-2 font-mono text-xs font-semibold text-white transition-colors hover:bg-[#2a52d4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            view dashboards →
+          </a>
+        </div>
+      )}
     </div>
   )
 }

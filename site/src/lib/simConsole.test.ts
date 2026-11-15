@@ -36,7 +36,7 @@ describe('toolCallsFromCommands', () => {
     ])
     expect(tools[0].arg).toBe('"saffire"')
     expect(tools[1].arg).toBe('21.8')
-    expect(tools.at(-1)?.live).toBe(true)
+    expect(tools.at(-1)?.live).toBe(false)
   })
 
   it('does not run the chamber for a gravity-only command', () => {

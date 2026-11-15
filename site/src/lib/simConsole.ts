@@ -97,7 +97,7 @@ export function toolCallsFromCommands(
     push('trigger_containment', JSON.stringify(sim.trigger_containment))
 
   const runnable = hasRunCondition(sim)
-  if (runnable) push('chamber.run', 'seed 1 · 30 Hz', true)
+  if (runnable) push('chamber.run', 'seed 1 · 30 Hz')
 
   return {
     tools,

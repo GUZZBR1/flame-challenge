@@ -9,6 +9,7 @@ import {
   type SiSimulationCommands,
 } from '../lib/api'
 import { emitSimulationCommands } from '../lib/simBus'
+import { navigate } from '../lib/scroll'
 import {
   GRAVITY_G,
   mergeChamberState,
@@ -25,6 +26,7 @@ export interface SimPreset extends PresetCommandSource {
   title: string
   description: string
   outcomeStatus: string
+  prompt?: string
 }
 
 export default function SimConsole({ presets }: { presets: SimPreset[] }) {
@@ -115,6 +117,10 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
       emitSimulationCommands(mergedSim, 'sim-console', nextChamber.investigationId ?? null)
       setChamber(nextChamber)
     }
+    // when the copilot points somewhere (generated dashboards, a section),
+    // follow it — this is how answers surface the dashboards they produced
+    const section = res.navigation?.scroll_to_section
+    if (section) navigate(section.startsWith('#') ? section : `#${section}`)
     setMsgs((ms2) =>
       ms2.map((m) =>
         m.id === turnId
@@ -154,10 +160,11 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     ms: null,
   })
 
+  const sendTextRef = useRef<((text: string, display?: string) => Promise<void>) | null>(null)
   // mission envelopes in the deck above announce picks on the chamber bus
-  // (__origin 'sim-deck'). Land each pick as a run-bearing turn so a
-  // SimRunCard mounts a LiveChamber even in an empty conversation — emit
-  // first: the lazy mount peeks the pending command (2.5 s window).
+  // (__origin 'sim-deck'). Each pick becomes a real LLM turn: the preset's
+  // chamber context is applied first so the copilot answers under the
+  // mission's O₂/flow/gravity conditions.
   useEffect(() => {
     const onDeckCommand = (event: Event) => {
       const cmd = (event as CustomEvent<ChamberUiCommand>).detail
@@ -171,49 +178,31 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
       }
       const nextChamber = mergeChamberState(chamberRef.current, sim)
       setChamber(nextChamber)
-      const { tools, run } = toolCallsFromCommands(sim)
-      // re-emit as 'sim-console' so this listener doesn't consume its own
-      // echo (emitSimulationCommands fans back out on the same event name)
-      emitSimulationCommands(sim, 'sim-console', nextChamber.investigationId ?? null)
       const preset = presets.find(
         (p) => p.investigationId === (cmd.__investigation ?? cmd.load_preset),
       )
-      setMsgs((ms) => [
-        ...ms,
-        {
-          kind: 'agent',
-          id: nid(),
-          pending: false,
-          tools,
-          briefing: preset?.description ?? '',
-          action: null,
-          run,
-          mode: 'preset',
-          model: null,
-          engine: null,
-          riskIndex: null,
-          evidence: [],
-          ms: null,
-        },
-      ])
-      stickRef.current = true
+      void sendTextRef.current?.(
+        preset?.prompt ?? `Analyze ${cmd.__investigation ?? cmd.load_preset ?? 'this mission'}.`,
+        preset ? `Explore mission — ${preset.title}` : undefined,
+      )
     }
     window.addEventListener('ignis:ui-command', onDeckCommand)
     return () => window.removeEventListener('ignis:ui-command', onDeckCommand)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presets])
 
-  const sendText = async (text: string) => {
+  const sendText = async (text: string, display?: string) => {
     const uid = nid()
     const tid = nid()
     stickRef.current = true
-    setMsgs((ms) => [...ms, { kind: 'user', id: uid, text }, pendingTurn(tid)])
+    setMsgs((ms) => [...ms, { kind: 'user', id: uid, text: display ?? text }, pendingTurn(tid)])
     const t0 = performance.now()
     const res =
       (await siChat(text, chamberRef.current)) ??
       synthesizeLocalSiResponse(text, chamberRef.current)
     applyResponse(res, tid, performance.now() - t0)
   }
+  sendTextRef.current = sendText
 
   const sendVoice = async (blob: Blob) => {
     const uid = nid()
