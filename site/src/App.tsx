@@ -9,7 +9,7 @@ import PsiDataset from './components/PsiDataset'
 import Shipyard from './components/Shipyard'
 import SimDeck from './components/SimDeck'
 import Stars from './components/Stars'
-import { initScroll, isSimChild, scrollInner, scrollToSection } from './lib/scroll'
+import { getLenis, initScroll, isSimChild, scrollInner, scrollToSection } from './lib/scroll'
 
 type Theme = 'light' | 'dark'
 
@@ -97,6 +97,21 @@ export default function App() {
     window.dispatchEvent(
       new CustomEvent('ignis:view', { detail: { view } }),
     )
+  }, [view])
+
+  // the overlay screens scroll inside their own fixed container —
+  // freeze the page behind them so the root scrollbar doesn't render
+  // a second track next to the overlay's own
+  useEffect(() => {
+    const overlay = view !== 'main'
+    document.documentElement.classList.toggle('overlay-open', overlay)
+    const l = getLenis()
+    if (overlay) l?.stop()
+    else l?.start()
+    return () => {
+      document.documentElement.classList.remove('overlay-open')
+      l?.start()
+    }
   }, [view])
 
   const toggleTheme = useCallback(
