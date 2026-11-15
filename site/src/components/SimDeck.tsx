@@ -244,9 +244,9 @@ export default function SimDeck() {
               <p data-hero className="card-label">Guided Scenarios &amp; Historical Crises</p>
               <h1
                 data-hero
-                className="mt-2 font-display text-[clamp(1.75rem,3vw,2.6rem)] font-bold leading-display tracking-tight"
+                className="mt-2 font-display text-[clamp(2.1rem,3.8vw,3.25rem)] font-bold leading-display tracking-tight"
               >
-                1-Click Mission Envelopes
+                Mission Envelopes
               </h1>
             </div>
             <p data-hero className="max-w-sm text-caption leading-[1.7] opacity-70">
