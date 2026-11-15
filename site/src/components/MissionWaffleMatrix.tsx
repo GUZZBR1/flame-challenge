@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react'
 import { emitSimulationCommands } from '../lib/simBus'
 import { navigate } from '../lib/scroll'
-import Button from './ui/Button'
 import { IconArrowUpRight } from './Icons'
+import { cn } from '../lib/cn'
 
 export type WaffleCategory = 'all' | 'cool-flame' | 'crew-endangered' | 'mission-aborted' | 'contained'
 
@@ -110,25 +110,55 @@ const GENERATE_WAFFLE_RUNS = (): WaffleRun[] => {
 
 const ALL_RUNS = GENERATE_WAFFLE_RUNS()
 
-export default function MissionWaffleMatrix() {
-  const [filter, setFilter] = useState<WaffleCategory>('all')
-  const [selectedRun, setSelectedRun] = useState<WaffleRun | null>(ALL_RUNS[4]) // Seed with cool-flame
+const CATEGORIES = [
+  { key: 'contained', label: 'Contained', cell: 'bg-emerald-500/80 border-emerald-700 dark:bg-emerald-500/45 dark:border-emerald-500/60', dot: 'bg-emerald-500' },
+  { key: 'cool-flame', label: 'Cool-flame stealth', cell: 'bg-amber-500/80 border-amber-700 dark:bg-amber-500/55 dark:border-amber-500/70', dot: 'bg-amber-500' },
+  { key: 'crew-endangered', label: 'Crew endangered', cell: 'bg-orange-500/80 border-orange-700 dark:bg-orange-500/60 dark:border-orange-500/75', dot: 'bg-orange-500' },
+  { key: 'mission-aborted', label: 'Mission aborted', cell: 'bg-rose-600/80 border-rose-800 dark:bg-rose-600/65 dark:border-rose-600/80', dot: 'bg-rose-600' },
+] as const
 
-  const filteredRuns = useMemo(() => {
-    if (filter === 'all') return ALL_RUNS
-    return ALL_RUNS.filter((r) => r.category === filter)
-  }, [filter])
+const INVESTIGATION_ROWS = ['FLEX-2', 'SAFFIRE-IV', 'SAME-R', 'BASS-II', 'ACME', 'SoFIE'] as const
+
+const INV_PRESET: Record<string, string> = {
+  'FLEX-2': 'flex-2',
+  'SAFFIRE-IV': 'saffire',
+  'SAME-R': 'same',
+  'BASS-II': 'bass-ii',
+  ACME: 'acme',
+  SoFIE: 'sofie-gel',
+}
+
+export interface MatrixFocus {
+  label: string
+  test: (run: WaffleRun) => boolean
+}
+
+const ROWS = INVESTIGATION_ROWS.map((inv) => ({ inv, runs: ALL_RUNS.filter((r) => r.investigation === inv) }))
+const COLS = Math.max(...ROWS.map((r) => r.runs.length))
+
+/** The run matrix, drawn like a contribution graph: one row per
+ *  investigation, one square per run, colour = outcome. Filters dim
+ *  rather than remove cells so the distribution stays legible. */
+export default function MissionWaffleMatrix({
+  focus,
+  onClearFocus,
+}: {
+  focus?: MatrixFocus | null
+  onClearFocus?: () => void
+}) {
+  const [filter, setFilter] = useState<string[]>([])
+  const [inv, setInv] = useState<string[]>([])
+  const [selectedRun, setSelectedRun] = useState<WaffleRun | null>(ALL_RUNS[4])
+  const [hover, setHover] = useState<WaffleRun | null>(null)
+
+  const matches = (r: WaffleRun) =>
+    (!filter.length || filter.includes(r.category)) &&
+    (!inv.length || inv.includes(r.investigation)) &&
+    (!focus || focus.test(r))
+  const shown = useMemo(() => ALL_RUNS.filter(matches).length, [filter, inv, focus])
 
   const handleSimulate = (run: WaffleRun) => {
-    const invMap: Record<string, string> = {
-      'FLEX-2': 'flex-2',
-      'SAFFIRE-IV': 'saffire',
-      'SAME-R': 'same',
-      'BASS-II': 'bass-ii',
-      'ACME': 'acme',
-      'SoFIE': 'sofie-gel',
-    }
-    const presetId = invMap[run.investigation] ?? 'flex-2'
+    const presetId = INV_PRESET[run.investigation] ?? 'flex-2'
     const commandSet = {
       load_preset: presetId,
       set_o2_percent: run.o2Pct,
@@ -140,174 +170,149 @@ export default function MissionWaffleMatrix() {
     navigate('#simulations')
   }
 
-  const counts = useMemo(() => {
-    return {
-      all: ALL_RUNS.length,
-      'cool-flame': ALL_RUNS.filter((r) => r.category === 'cool-flame').length,
-      'crew-endangered': ALL_RUNS.filter((r) => r.category === 'crew-endangered').length,
-      'mission-aborted': ALL_RUNS.filter((r) => r.category === 'mission-aborted').length,
-      contained: ALL_RUNS.filter((r) => r.category === 'contained').length,
-    }
-  }, [])
+  const counts = useMemo(
+    () => Object.fromEntries(CATEGORIES.map((c) => [c.key, ALL_RUNS.filter((r) => r.category === c.key).length])) as Record<string, number>,
+    [],
+  )
+  const probe = hover ?? selectedRun
+  const toggle = (list: string[], k: string) => (list.includes(k) ? list.filter((x) => x !== k) : [...list, k])
+  const toggleCat = (k: string) => setFilter((f) => toggle(f, k))
 
   return (
-    <div className="rounded-card panel-85 p-6 shadow-xl backdrop-blur-xl sm:p-8">
-      {/* Header & Filter Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
-        <div>
-          <span className="card-label">
-            Corpus Population Matrix (Simile Waffle Matrix)
-          </span>
-          <h3 className="mt-1 font-display text-xl font-bold sm:text-2xl">
-            1,000+ NASA PSI Runs &amp; Human Factor Catalog
-          </h3>
-          <p className="mt-0.5 text-xs opacity-70">
-            Each cell represents a real physical microgravity flight run cross-referenced to crew operational outcomes.
-          </p>
-        </div>
-
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-2">
-          {(
-            [
-              { key: 'all', label: `All Runs (${counts.all})` },
-              { key: 'cool-flame', label: `Cool Flame Stealth (${counts['cool-flame']})` },
-              { key: 'crew-endangered', label: `Crew Endangered (${counts['crew-endangered']})` },
-              { key: 'mission-aborted', label: `Mission Aborted (${counts['mission-aborted']})` },
-              { key: 'contained', label: `Contained (${counts.contained})` },
-            ] as const
-          ).map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              onClick={() => setFilter(item.key)}
-              className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
-                filter === item.key
-                  ? 'bg-accent text-black'
-                  : 'border border-edge bg-white/30 text-ink hover:bg-white/50 dark:bg-white/[0.04]'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
+    <div>
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.key}
+            type="button"
+            aria-pressed={filter.includes(c.key)}
+            onClick={() => toggleCat(c.key)}
+            className={cn(
+              'flex items-center gap-2 border-b-2 border-transparent pb-1 font-mono text-tiny uppercase tracking-label transition',
+              filter.includes(c.key) ? 'border-[#1e3fae] text-[color-mix(in_srgb,var(--accent)_55%,var(--ink))] dark:text-accent' : 'opacity-85 dark:opacity-65 hover:opacity-100',
+            )}
+          >
+            <span className={cn('size-3 rounded-[3px]', c.dot)} />
+            {c.label}
+            <span className="tabular-nums opacity-75 dark:opacity-60">{counts[c.key]}</span>
+          </button>
+        ))}
+        <span className="ml-auto font-mono text-micro lowercase tracking-card opacity-75 dark:opacity-60">
+          {shown} of {ALL_RUNS.length} runs lit
+        </span>
       </div>
 
-      {/* Grid Layout: Waffle Matrix + Inspector Side Panel */}
-      <div className="mt-6 grid gap-6 lg:grid-cols-12">
-        {/* Left: 10x10 Waffle Grid */}
-        <div className="lg:col-span-7">
-          <div className="grid grid-cols-10 gap-1.5 sm:gap-2">
-            {filteredRuns.map((run) => {
-              const isSelected = selectedRun?.id === run.id
-              const cellColor =
-                run.category === 'contained'
-                  ? 'bg-emerald-500/30 border-emerald-500/50 hover:bg-emerald-400'
-                  : run.category === 'cool-flame'
-                  ? 'bg-amber-500/40 border-amber-500/60 hover:bg-amber-400'
-                  : run.category === 'crew-endangered'
-                  ? 'bg-orange-500/40 border-orange-500/60 hover:bg-orange-400'
-                  : 'bg-rose-600/40 border-rose-600/70 hover:bg-rose-500'
+      {focus && (
+        <div className="mt-5 flex flex-wrap items-center gap-4 border-l-2 border-[#e5202e] pl-4 font-mono text-tiny">
+          <span className="font-semibold">Tracing finding: {focus.label}</span>
+          <button type="button" onClick={onClearFocus} className="underline underline-offset-4 opacity-85 dark:opacity-70 hover:text-accent hover:opacity-100">
+            clear
+          </button>
+        </div>
+      )}
 
-              return (
-                <button
-                  key={run.id}
-                  type="button"
-                  onClick={() => setSelectedRun(run)}
-                  title={`${run.code} · ${run.investigation} · ${run.category}`}
-                  className={`aspect-square w-full rounded-md border transition-all ${cellColor} ${
-                    isSelected ? 'ring-2 ring-accent scale-110 z-10' : 'opacity-85 hover:opacity-100 hover:scale-105'
-                  }`}
-                />
-              )
-            })}
+      <div className="mt-10 grid gap-x-[clamp(3rem,6vw,8rem)] gap-y-14 lg:grid-cols-[auto_minmax(0,1fr)]">
+        <div className="min-w-0">
+          <div className="-m-2 overflow-x-auto p-2">
+            <div className="w-max" onMouseLeave={() => setHover(null)}>
+              {ROWS.map(({ inv: name, runs }) => (
+                <div key={name} className="mb-1 grid grid-cols-[5.5rem_auto] items-center gap-3">
+                  <button
+                    type="button"
+                    aria-pressed={inv.includes(name)}
+                    onClick={() => setInv((v) => toggle(v, name))}
+                    className={cn(
+                      'text-left font-mono text-tiny uppercase tracking-label transition',
+                      inv.includes(name) ? 'text-[color-mix(in_srgb,var(--accent)_55%,var(--ink))] dark:text-accent' : 'opacity-75 dark:opacity-60 hover:opacity-100',
+                    )}
+                  >
+                    {name}
+                  </button>
+                  <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${COLS}, 1.375rem)` }}>
+                    {runs.map((run) => {
+                      const cat = CATEGORIES.find((c) => c.key === run.category)!
+                      const on = matches(run)
+                      const isSelected = selectedRun?.id === run.id
+                      return (
+                        <button
+                          key={run.id}
+                          type="button"
+                          onClick={() => setSelectedRun(run)}
+                          onMouseEnter={() => setHover(run)}
+                          onFocus={() => setHover(run)}
+                          onBlur={() => setHover(null)}
+                          aria-label={`${run.code}, ${cat.label}`}
+                          aria-pressed={isSelected}
+                          className={cn(
+                            'size-[1.375rem] rounded-[3px] border transition-all duration-200',
+                            cat.cell,
+                            on ? 'hover:z-10 hover:scale-110' : 'opacity-[0.1]',
+                            isSelected && 'z-10 scale-110 ring-2 ring-accent ring-offset-1 ring-offset-bg',
+                          )}
+                        />
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Legend */}
-          <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-edge pt-3 font-mono text-xs opacity-75">
-            <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm bg-emerald-500/50 border border-emerald-500" /> Contained / Nominal
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm bg-amber-500/60 border border-amber-500" /> Cool Flame Stealth
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm bg-orange-500/60 border border-orange-500" /> Crew Endangered
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="size-2.5 rounded-sm bg-rose-600/60 border border-rose-600" /> Mission Aborted
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-ink/30 dark:border-edge pt-4 font-mono text-micro lowercase tracking-label">
+            <span className="opacity-85 dark:opacity-70">{probe ? `${probe.code} · ${probe.fuel}` : 'hover a square'}</span>
+            <span className="tabular-nums opacity-85 dark:opacity-70">
+              {probe ? `${probe.o2Pct}% o₂ · ${probe.flowCms} cm/s · risk ${probe.riskIndex}%` : ''}
             </span>
           </div>
+          <p className="mt-3 text-micro opacity-70 dark:opacity-55">Illustrative 100-run sample.</p>
         </div>
 
-        {/* Right: Inspector Detail Panel */}
-        <div className="lg:col-span-5">
+        <aside className="min-w-0">
           {selectedRun ? (
-            <div className="flex h-full flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 backdrop-blur-md dark:bg-white/[0.03]">
-              <div>
-                <div className="flex items-center justify-between border-b border-edge pb-3">
-                  <div>
-                    <span className="font-mono text-xs font-bold text-accent">{selectedRun.code}</span>
-                    <h4 className="font-bold text-base">{selectedRun.investigation} · {selectedRun.fuel}</h4>
+            <div className="lg:sticky lg:top-8">
+              <span className="font-mono text-tiny uppercase tracking-label text-[#e5202e]">{selectedRun.code}</span>
+              <h4 className="m-0 mt-2 font-display text-[clamp(1.3rem,1.8vw,1.6rem)] font-bold leading-display tracking-tight">
+                {selectedRun.investigation}
+                <span className="opacity-50"> · {selectedRun.fuel}</span>
+              </h4>
+              <span
+                className={cn(
+                  'mt-3 inline-block font-mono text-micro font-bold uppercase tracking-card',
+                  selectedRun.missionStatus === 'COMPLETED'
+                    ? 'text-emerald-700 dark:text-emerald-500'
+                    : selectedRun.missionStatus === 'EMERGENCY CONTAINED'
+                      ? 'text-amber-700 dark:text-amber-500'
+                      : 'text-rose-700 dark:text-rose-500',
+                )}
+              >
+                {selectedRun.missionStatus}
+              </span>
+              <dl className="m-0 mt-6 divide-y divide-ink/25 dark:divide-edge border-y border-ink/30 dark:border-edge font-mono text-tiny">
+                {[
+                  ['Atmosphere', `${selectedRun.o2Pct}% O₂ · ${selectedRun.flowCms} cm/s · ${selectedRun.gravity}`],
+                  ['Composite risk', `${selectedRun.riskIndex}%`],
+                  ['Crew state', selectedRun.crewState],
+                  ['Primary actor', selectedRun.crewRole],
+                ].map(([k, v]) => (
+                  <div key={k} className="flex justify-between gap-6 py-2.5">
+                    <dt className="opacity-70 dark:opacity-55">{k}</dt>
+                    <dd className="m-0 text-right font-semibold">{v}</dd>
                   </div>
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 font-mono text-micro font-bold uppercase ${
-                      selectedRun.missionStatus === 'COMPLETED'
-                        ? 'bg-emerald-500/20 text-emerald-400'
-                        : selectedRun.missionStatus === 'EMERGENCY CONTAINED'
-                        ? 'bg-amber-500/20 text-amber-400'
-                        : 'bg-rose-500/20 text-rose-400'
-                    }`}
-                  >
-                    {selectedRun.missionStatus}
-                  </span>
-                </div>
-
-                <div className="mt-3 space-y-2.5 text-xs">
-                  <div className="flex justify-between font-mono">
-                    <span className="opacity-60">Atmosphere Conditions:</span>
-                    <strong>{selectedRun.o2Pct}% O₂ · {selectedRun.flowCms} cm/s · {selectedRun.gravity}</strong>
-                  </div>
-                  <div className="flex justify-between font-mono">
-                    <span className="opacity-60">Risk Index:</span>
-                    <strong className="text-accent">{selectedRun.riskIndex}% Composite</strong>
-                  </div>
-
-                  {/* Crew Life & Human Factor Box */}
-                  <div className="mt-4 rounded-xl border border-edge bg-black/10 p-3 dark:bg-black/25">
-                    <div className="flex items-center justify-between font-mono text-mini text-accent">
-                      <span>HUMAN FACTOR &amp; CREW STATUS</span>
-                      <span className="rounded bg-white/10 px-1.5 py-0.5 font-bold uppercase">
-                        {selectedRun.crewState}
-                      </span>
-                    </div>
-                    <div className="mt-1.5 text-xs font-semibold">
-                      Primary Actor: {selectedRun.crewRole}
-                    </div>
-                    <p className="mt-1 text-xs leading-relaxed opacity-80">
-                      &quot;{selectedRun.humanError}&quot;
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-3 border-t border-edge">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => handleSimulate(selectedRun)}
-                  className="w-full justify-center"
-                >
-                  Simulate in Live Chamber <IconArrowUpRight size={14} />
-                </Button>
-              </div>
+                ))}
+              </dl>
+              <p className="m-0 mt-6 text-caption italic leading-[1.7] opacity-90 dark:opacity-80">&ldquo;{selectedRun.humanError}&rdquo;</p>
+              <button
+                type="button"
+                onClick={() => handleSimulate(selectedRun)}
+                className="mt-8 inline-flex origin-center items-center gap-3 rounded-[6px] bg-[#1e3fae] px-6 py-3.5 font-mono text-caption font-semibold text-white transition-[transform,background-color] duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] will-change-transform hover:scale-[1.03] hover:bg-[#2a52d4] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-reduce:transform-none"
+              >
+                Simulate in Live Chamber <IconArrowUpRight size={14} />
+              </button>
             </div>
           ) : (
-            <div className="grid h-full place-items-center rounded-2xl border border-dashed border-edge p-6 text-center text-xs opacity-60">
-              Select any cell in the waffle matrix to inspect the mission and human error details.
-            </div>
+            <p className="text-tiny opacity-75 dark:opacity-60">Select any square to inspect the mission and human error details.</p>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   )

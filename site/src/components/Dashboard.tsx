@@ -1,426 +1,273 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  dashboardGeneratedEvent,
-  getGeneratedDashboards,
-  clearGeneratedDashboards,
-  SEED_REPORTS,
-  exportReportMarkdown,
-  type GeneratedDashboard,
+  HEADLINE_EXPLORATION_FINDINGS,
 } from '../lib/generatedDashboards'
-import { navigate, navigateBack } from '../lib/scroll'
-import Button from './ui/Button'
-import { IconArrowLeft, IconArrowUpRight, IconDownload, IconFileText } from './Icons'
-import SafetyEnvelopeChart from './SafetyEnvelopeChart'
-import CrewTimelinePanel from './CrewTimelinePanel'
-import InteractiveEquationCanvas from './InteractiveEquationCanvas'
-import CounterfactualTrackCard from './CounterfactualTrackCard'
-import MissionWaffleMatrix from './MissionWaffleMatrix'
+import { DATASET_STATS } from '../lib/dashboard'
+import { gsap, navigate } from '../lib/scroll'
+import { attachSmoothScroll } from '../lib/smoothOverlay'
+import { cn } from '../lib/cn'
+import { IconArrowUpRight } from './Icons'
+import KeyedFlame from './KeyedFlame'
+import { HoverVideo } from './SimDeck'
+import MissionWaffleMatrix, { type MatrixFocus } from './MissionWaffleMatrix'
 import Footer from './Footer'
 
-function percent(value: unknown): string | null {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return null
-  return `${Math.round(value <= 1 ? value * 100 : value)}%`
+/** findings that map onto a field the run matrix actually carries */
+const FINDING_FOCUS: Record<string, MatrixFocus> = {
+  'finding-loc-persistence': { label: 'flame persists below Earth LOC — runs under 21% O₂', test: (r) => r.o2Pct < 21 },
+  'finding-cool-flames': { label: 'silent cool-flame post-flameout — cool-flame runs', test: (r) => r.category === 'cool-flame' },
+  'finding-exploration-atmospheres': { label: '34% O₂ exploration atmospheres — runs at 34% O₂', test: (r) => r.o2Pct >= 34 },
+  'finding-partial-gravity': { label: 'lunar & martian partial-g — partial-gravity runs', test: (r) => r.gravity === 'lunar' || r.gravity === 'mars' },
 }
 
-function ReportCard({ item }: { item: GeneratedDashboard }) {
-  const spec = item.spec
-  const rubric = spec.rubric
-  const risk = percent(item.response?.chamber?.riskIndex ?? rubric.rank.compositeRisk)
-  const level = rubric.rank.level
-  const evidence = item.response?.evidence ?? []
+/** one official NASA clip per finding, in HEADLINE_EXPLORATION_FINDINGS order */
+const FINDING_MEDIA = [
+  {
+    src: '/assets/sofie_flame.mp4',
+    poster: '/assets/sofie_poster.jpg',
+    caption: 'SoFIE-GEL flame in microgravity — NASA',
+  },
+  {
+    src: '/assets/saffire5_uv_sd.mp4',
+    poster: '/assets/nasa/saffire5_uv_poster.jpg',
+    caption: 'Saffire-V flame, UV channel — NASA',
+  },
+  {
+    src: '/assets/nasa/acme_loop.mp4',
+    poster: '/assets/nasa/acme_loop_poster.jpg',
+    caption: 'ACME microgravity flame — NASA Glenn',
+  },
+  {
+    src: '/assets/nasa/soot_loop.mp4',
+    poster: '/assets/nasa/soot_loop_poster.jpg',
+    caption: 'Glowing soot clusters in a microgravity flame — NASA',
+  },
+  {
+    src: '/assets/nasa/droptower_loop.mp4',
+    poster: '/assets/nasa/droptower_loop_poster.jpg',
+    caption: 'Zero-G Drop Tower, NASA Glenn',
+  },
+] as const
 
-  const isDroplet = rubric.summarize.investigationId === 'flex-2'
+const blueBtn =
+  'inline-flex origin-center items-center gap-3 rounded-[6px] bg-[#1e3fae] px-6 py-3.5 font-mono text-caption font-semibold text-white transition-[transform,background-color] duration-[900ms] ease-[cubic-bezier(.22,1,.36,1)] will-change-transform hover:scale-[1.03] hover:bg-[#2a52d4] focus-visible:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-reduce:transform-none'
 
-  const handlePrint = () => {
-    window.print()
-  }
-
-  const handleExport = () => {
-    exportReportMarkdown(item)
-  }
-
+function SectionHead({ id, title }: { id: string; title: string }) {
   return (
-    <article
-      id={`dashboard-${item.id}`}
-      className="dashboard-result scroll-mt-28 space-y-8 rounded-shell panel-85 p-6 shadow-[0_24px_70px_-42px_rgba(16,35,60,.5)] backdrop-blur-2xl sm:p-10"
-    >
-      {/* Top Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <span className="rounded-full border border-edge bg-white/40 px-3.5 py-1 font-mono text-xs font-semibold uppercase tracking-label text-accent dark:bg-white/[0.05]">
-            {spec.missionTag}
-          </span>
-          <span className="rounded-full border border-edge px-3 py-1 font-mono text-xs opacity-70">
-            {item.run ? 'Simulation Verified (C++20 Core)' : 'Copilot Grounded Analytical Head'}
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <time className="font-mono text-xs opacity-60" dateTime={new Date(item.createdAt).toISOString()}>
-            {new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(item.createdAt)}
-          </time>
-          <div className="flex items-center gap-2">
-            <Button variant="glass" size="sm" onClick={handleExport} title="Download Markdown Executive Brief">
-              <IconDownload size={14} /> Export Brief (.md)
-            </Button>
-            <Button variant="glass" size="sm" onClick={handlePrint} title="Print / Save PDF">
-              <IconFileText size={14} /> PDF
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Title & Executive Abstract */}
-      <div>
-        <h2 className="max-w-4xl font-display text-2xl font-bold leading-tight tracking-tight sm:text-4xl">
-          {spec.title}
-        </h2>
-        <p className="mt-4 max-w-4xl text-base leading-relaxed opacity-85 sm:text-lg">
-          {rubric.summarize.abstract}
-        </p>
-      </div>
-
-      {/* 1. INTERACTIVE MATHEMATICAL PHYSICAL SOLVER CANVAS */}
-      <div>
-        <InteractiveEquationCanvas
-          modelType={isDroplet ? 'droplet' : 'spread'}
-          o2Pct={rubric.summarize.o2Pct}
-          flowCms={rubric.summarize.flowCms}
-          materialName={rubric.summarize.materialId}
-        />
-      </div>
-
-      {/* 2. NASA RUBRIC PILLARS: Summarize · Rank · Interpret */}
-      <div className="space-y-4">
-        <div className="card-label flex items-center gap-2 opacity-80">
-          <span>NASA Evaluation Rubric</span>
-          <span>·</span>
-          <span>Summarize · Rank · Interpret</span>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Pillar 1: SUMMARIZE */}
-          <div className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-400">
-                  1. Summarize
-                </span>
-                <span className="font-mono text-mini opacity-60">PSI Data Ingestion</span>
-              </div>
-              <h3 className="mt-2 text-base font-semibold">Microgravity Regimes</h3>
-              <p className="mt-2 text-xs leading-relaxed opacity-75">
-                Model: <strong className="font-mono font-medium">{rubric.summarize.investigationId}</strong> on{' '}
-                <strong className="font-mono font-medium">{rubric.summarize.materialId}</strong> at{' '}
-                <strong className="font-mono font-medium">{rubric.summarize.o2Pct}% O₂</strong>,{' '}
-                <strong className="font-mono font-medium">{rubric.summarize.flowCms} cm/s</strong> forced airflow.
-              </p>
-            </div>
-            <div className="mt-4 border-t border-edge pt-3">
-              <div className="text-mini font-semibold uppercase tracking-wider opacity-60">NASA PSI Evidence IDs</div>
-              <div className="mt-1 flex flex-wrap gap-1.5">
-                {rubric.summarize.psiAccessions.slice(0, 3).map((acc) => (
-                  <span
-                    key={acc}
-                    className="rounded bg-black/10 px-2 py-0.5 font-mono text-micro dark:bg-white/10"
-                  >
-                    {acc}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Pillar 2: RANK */}
-          <div className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
-                  2. Rank
-                </span>
-                <span className="font-mono text-mini opacity-60">Conformal Risk Head</span>
-              </div>
-              <div className="mt-2 flex items-baseline gap-3">
-                <span className="font-display text-4xl font-bold tabular-nums">
-                  {risk ?? `${rubric.rank.compositeRisk}%`}
-                </span>
-                <span className="font-mono text-xs uppercase font-semibold text-rose-400">
-                  {level.toUpperCase()} HAZARD
-                </span>
-              </div>
-              <div className="mt-1 font-mono text-xs opacity-65">
-                {rubric.rank.uncertaintyBand
-                  ? `${Math.round((rubric.rank.uncertaintyBand.level ?? 0.9) * 100)}% Conformal Confidence: [${rubric.rank.uncertaintyBand.low}%, ${rubric.rank.uncertaintyBand.high}%]`
-                  : 'Conformal bounds: uncalibrated'}
-              </div>
-            </div>
-            <div className="mt-4 border-t border-edge pt-3">
-              <div className="text-mini font-semibold uppercase tracking-wider opacity-60">Top SHAP Attribution</div>
-              <div className="mt-1.5 space-y-1">
-                {rubric.rank.shapDrivers.slice(0, 2).map((driver, idx) => (
-                  <div key={idx} className="flex justify-between text-mini">
-                    <span className="opacity-75">{driver.factor}</span>
-                    <span className="font-mono font-bold text-accent">{driver.delta}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Pillar 3: INTERPRET */}
-          <div className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
-            <div>
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
-                  3. Interpret
-                </span>
-                <span className="font-mono text-mini opacity-60">Actionable Safety</span>
-              </div>
-              <h3 className="mt-2 text-base font-semibold">Operational Containment</h3>
-              <p className="mt-2 text-xs leading-relaxed opacity-75">
-                {rubric.interpret.actionableGuidance}
-              </p>
-            </div>
-            <div className="mt-4 border-t border-edge pt-3">
-              <div className="text-mini font-semibold uppercase tracking-wider opacity-60">Sensor Advisory</div>
-              <div className="mt-1 text-mini opacity-75">
-                {rubric.interpret.sensorAdvisory}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. 2D SAFETY OPERATING ENVELOPE (GO / NO-GO) */}
-      <div>
-        <SafetyEnvelopeChart
-          currentO2={spec.safetyEnvelope.currentO2}
-          currentFlow={spec.safetyEnvelope.currentFlow}
-          materialName={rubric.summarize.materialId}
-          gravityMode={rubric.summarize.gravityRegime}
-          trajectory={spec.safetyEnvelope.trajectory}
-        />
-      </div>
-
-      {/* 4. COUNTERFACTUAL DECISION TRACK CARD */}
-      <div>
-        <CounterfactualTrackCard
-          scenarioTitle={spec.title}
-          originalAction={spec.crewImpact.causalLog[2]?.action ?? 'Maintain forced ventilation without thermal isolation'}
-          originalIntegrityPct={rubric.rank.level === 'critical' ? 18 : 28}
-          originalCasualties={rubric.rank.level === 'critical' ? '1 Severe Casualty / Compartment Breached' : 'Smoke Inhalation Incident'}
-          siProtocolAction={rubric.interpret.containmentDoctrine}
-          siProtocolIntegrityPct={88}
-          siProtocolCasualties="Zero Casualties · Module 100% Preserved"
-          recommendedFlowCms={0.0}
-          investigationId={rubric.summarize.investigationId}
-          baselineO2={rubric.summarize.o2Pct}
-        />
-      </div>
-
-      {/* 5. CREW TIMELINE & CASUALTY LOG */}
-      <div>
-        <CrewTimelinePanel
-          missionTitle={`${spec.title} — Human Factors Audit`}
-          outcomeStatus={spec.crewImpact.missionStatus}
-          crew={spec.crewImpact.crew}
-          causalLog={spec.crewImpact.causalLog}
-          counterfactual={spec.crewImpact.counterfactual}
-        />
-      </div>
-
-      {/* Source Records from PSI */}
-      {evidence.length > 0 && (
-        <div className="border-t border-edge pt-6">
-          <h4 className="text-sm font-semibold">Closest Corroborating NASA PSI Records</h4>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-            {evidence.slice(0, 4).map((source) => (
-              <li key={`${item.id}-${source.runId}`}>
-                <a
-                  className="inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-edge px-4 text-xs transition-colors hover:bg-white/50 dark:hover:bg-white/10"
-                  href={source.sourceUrl || '#psi-dataset'}
-                  target={source.sourceUrl ? '_blank' : undefined}
-                  rel="noreferrer"
-                >
-                  <span className="truncate">
-                    {source.accession} · {source.fuel} · {source.outcome}
-                  </span>
-                  <span className="shrink-0 font-mono tabular-nums opacity-65">
-                    {Math.round(source.similarity)}% match
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Footer Actions */}
-      <div className="flex flex-wrap gap-3 border-t border-edge pt-6">
-        <Button asChild variant="glass" size="default">
-          <a
-            href="#simulations"
-            onClick={(event) => {
-              event.preventDefault()
-              navigate('#simulations')
-            }}
-          >
-            Re-test in Live Chamber <IconArrowUpRight size={16} />
-          </a>
-        </Button>
-        <Button variant="ghost" size="default" onClick={handleExport}>
-          <IconDownload size={15} /> Download Flight Brief
-        </Button>
-      </div>
-    </article>
+    <h2 id={id} className="m-0 scroll-mt-12 font-display text-[clamp(1.6rem,2.6vw,2.25rem)] font-bold leading-display tracking-tight">
+      {title}
+    </h2>
   )
 }
 
 export default function Dashboard() {
-  const [items, setItems] = useState<GeneratedDashboard[]>(getGeneratedDashboards)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [finding, setFinding] = useState(0)
+  const [focusId, setFocusId] = useState<string | null>(null)
 
   useEffect(() => {
-    const refresh = () => setItems(getGeneratedDashboards())
-    window.addEventListener(dashboardGeneratedEvent(), refresh)
-    return () => window.removeEventListener(dashboardGeneratedEvent(), refresh)
+    const root = rootRef.current
+    if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const ctx = gsap.context(() => {
+      gsap.from('[data-hero]', { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', stagger: 0.07 })
+    }, root)
+    return () => ctx.revert()
   }, [])
 
   useEffect(() => {
-    const id = location.hash.startsWith('#dashboard-') ? location.hash.slice('#dashboard-'.length) : null
-    if (!id) return
-    const timer = window.setTimeout(
-      () => document.getElementById(`dashboard-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
-      100,
-    )
-    return () => window.clearTimeout(timer)
-  }, [items])
+    const root = rootRef.current
+    return root ? attachSmoothScroll(root) : undefined
+  }, [])
+
+  const f = HEADLINE_EXPLORATION_FINDINGS[finding]
+  const focus = focusId ? FINDING_FOCUS[focusId] : null
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const traceFinding = () => {
+    setFocusId(f.id)
+    scrollTo('run-matrix')
+  }
+  const stats = useMemo(
+    () => [
+      [DATASET_STATS.investigations, 'investigations'],
+      [DATASET_STATS.psiRuns, 'parsed PSI runs'],
+      [DATASET_STATS.verified, 'pipeline-verified'],
+    ],
+    [],
+  )
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
-      <div className="shell pb-24 pt-28">
-        <Button variant="glass" size="default" onClick={navigateBack}>
-          <IconArrowLeft size={16} /> Back to Overview
-        </Button>
+    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
+      <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-32 sm:pt-40">
+        <svg width="0" height="0" aria-hidden="true" className="absolute">
+          <defs>
+            <clipPath id="dash-cut-hero" clipPathUnits="objectBoundingBox">
+              <path d="M0.3,0 L0.97,0 Q1,0 1,0.04 L1,0.62 Q1,0.68 0.975,0.74 L0.92,0.95 Q0.905,1 0.87,1 L0.04,1 Q0,1 0.014,0.95 L0.28,0.04 Q0.29,0 0.3,0 Z" />
+            </clipPath>
+            <clipPath id="dash-cut-panel" clipPathUnits="objectBoundingBox">
+              <path d="M0.07,0.03 Q0.075,0 0.1,0 L0.975,0 Q1,0 1,0.05 L1,0.95 Q1,1 0.975,1 L0.03,1 Q0,1 0.006,0.95 Z" />
+            </clipPath>
+          </defs>
+        </svg>
 
-        {/* Dashboard Title & Introduction */}
-        <div className="mt-12 flex flex-wrap items-end justify-between gap-6">
-          <div>
-            <p className="font-mono text-xs font-semibold uppercase tracking-eyebrow text-accent">
-              IGNIS · NASA PSI Flight Safety Intelligence
-            </p>
-            <h1 className="mt-3 font-display text-4xl font-bold tracking-tighter sm:text-6xl">
-              Mission Safety Dashboard
-            </h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 opacity-75 sm:text-lg">
-              Schema-driven flight certification briefs generated from 30 years of NASA microgravity combustion
-              experiments, C++20 physical boundary models, and crew survival protocols.
-            </p>
-          </div>
-          <Button variant="primary" size="default" onClick={() => navigate('#simulations')}>
-            Run Live Simulation <IconArrowUpRight size={16} />
-          </Button>
-        </div>
+        <KeyedFlame
+          className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
+          strength={0.3}
+          mask="[mask-image:radial-gradient(ellipse_closest-side_at_50%_45%,black_12%,transparent_100%)]"
+          src={{ hd: '/assets/saffire5_uv.mp4', sd: '/assets/saffire5_uv_sd.mp4' }}
+        />
 
-        {/* SECTION: 5 Headline Exploration Findings */}
-        <section className="mt-12 rounded-card panel-60 p-6 backdrop-blur-xl sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge pb-4">
+        {/* ---- masthead ---- */}
+        <header className="relative sm:pl-[clamp(1rem,6vw,7rem)]">
+          <div className="grid items-end gap-x-[clamp(3rem,7vw,9rem)] gap-y-8 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             <div>
-              <span className="card-label">
-                Corpus Core Discoveries
-              </span>
-              <h2 className="mt-1 font-display text-xl font-bold sm:text-2xl">
-                The 5 Headline Exploration Findings
-              </h2>
+              <p data-hero className="card-label !text-[color-mix(in_srgb,var(--accent)_55%,var(--ink))] dark:!text-[color-mix(in_srgb,var(--accent)_55%,var(--ink))] dark:text-accent">
+                IGNIS · NASA PSI Flight Safety Intelligence
+              </p>
+              <h1
+                data-hero
+                className="mt-2 font-display text-[clamp(2.4rem,5vw,4.5rem)] font-bold leading-[0.95] tracking-tight"
+              >
+                Mission Safety Dashboard
+              </h1>
             </div>
-            <span className="font-mono text-xs opacity-60">Verified across 614 NASA PSI Flight Runs</span>
+            <div data-hero>
+              <p className="max-w-sm text-caption leading-[1.7] opacity-90 dark:opacity-80">
+                Schema-driven flight certification briefs generated from 30 years of NASA microgravity combustion
+                experiments, C++20 physical boundary models, and crew survival protocols.
+              </p>
+              <button type="button" onClick={() => navigate('#simulations')} className={cn(blueBtn, 'mt-6')}>
+                Run Live Simulation <IconArrowUpRight size={16} />
+              </button>
+            </div>
           </div>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                num: '01',
-                title: 'Flame Persists Below Earth LOC',
-                tag: 'Limiting O₂',
-                desc: 'Without buoyant heat dissipation, microgravity flames sustain creeping spread down to 12% O₂ — well beneath Earth flammability limits.',
-                evidence: 'NASA PSI SoFIE-GEL & BASS-II',
-              },
-              {
-                num: '02',
-                title: 'Silent Cool-Flame Re-ignition',
-                tag: 'Hidden Hazard',
-                desc: 'Droplets sustain low-temperature (~600–720 K) invisible chemistry long after visible extinction. Premature air resumption triggers violent flashover.',
-                evidence: 'FLEX & FLEX-2 (53 confirmed PSI runs)',
-              },
-              {
-                num: '03',
-                title: '34% O₂ Exploration Atmospheres',
-                tag: 'Artemis Architecture',
-                desc: 'Artemis 8.2 psia / 34% O₂ exploration atmospheres double polymer flame spread rates, invalidating standard terrestrial safety certifications.',
-                evidence: 'NASA Saffire-IV & ACME',
-              },
-              {
-                num: '04',
-                title: 'Zero-Buoyancy Sensor Blindness',
-                tag: 'Life Support Gap',
-                desc: 'Lack of upward convective smoke plumes causes particulate agglomeration, bypassing standard optical ionization alarms calibrated for Earth.',
-                evidence: 'SAME & SAME-R (PSI-102)',
-              },
-              {
-                num: '05',
-                title: 'Lunar / Martian Partial-g Spikes',
-                tag: 'Moon / Mars Frontier',
-                desc: 'Weak buoyancy in 0.16g (Moon) and 0.38g (Mars) supplies steady oxidizer without blowing flames out, creating higher peak flame speed than 0g.',
-                evidence: 'FLARE (JAXA / NASA)',
-              },
-            ].map((f) => (
-              <div
-                key={f.num}
-                className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 transition-all hover:border-accent/50 dark:bg-white/[0.03]"
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-accent">{f.num}</span>
-                    <span className="rounded bg-black/10 px-2 py-0.5 font-mono text-micro uppercase font-semibold dark:bg-white/10">
-                      {f.tag}
-                    </span>
-                  </div>
-                  <h3 className="mt-2 text-sm font-bold">{f.title}</h3>
-                  <p className="mt-2 text-xs leading-relaxed opacity-75">{f.desc}</p>
+          <div data-hero className="mt-10 border-t border-ink/30 dark:border-edge pt-6">
+            <dl className="m-0 flex flex-wrap gap-x-10 gap-y-3">
+              {stats.map(([v, k]) => (
+                <div key={k}>
+                  <dd className="m-0 font-display text-2xl font-bold tabular-nums tracking-tight">{v}</dd>
+                  <dt className="font-mono text-tiny uppercase tracking-label opacity-75 dark:opacity-60">{k}</dt>
                 </div>
-                <div className="mt-4 border-t border-edge pt-2.5 font-mono text-micro text-accent opacity-80">
-                  Evidence: {f.evidence}
+              ))}
+            </dl>
+          </div>
+        </header>
+
+        {/* ---- 01 headline findings ---- */}
+        <section className="relative mt-16 sm:mt-20" aria-label="Headline findings">
+          <SectionHead id="findings" title="What the corpus tells us" />
+
+          <div className="relative mt-8 grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-10 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+            <article key={f.id} className="rise-in flex min-w-0 flex-col">
+              <span className="inline-block self-start bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
+                {f.badge}
+              </span>
+              <h3 className="m-0 mt-4 font-display text-[clamp(1.8rem,3.4vw,3rem)] font-bold leading-[0.98] tracking-tight">
+                {f.title}
+              </h3>
+              <div className="mt-6 grid flex-1 items-start gap-x-[clamp(2.5rem,5vw,6rem)] gap-y-12 sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+                <div className="min-w-0">
+                  <p className="m-0 text-body leading-[1.8] opacity-95 dark:opacity-85">{f.finding}</p>
+                  <p className="mt-4 font-mono text-micro opacity-75 dark:opacity-60">{f.code} · {f.psiProof}</p>
+                  {FINDING_FOCUS[f.id] && (
+                    <button type="button" onClick={traceFinding} className={cn(blueBtn, 'mt-5')}>
+                      Trace in run matrix <span aria-hidden="true">↓</span>
+                    </button>
+                  )}
+                </div>
+                <div data-hover-media className="min-w-0">
+                  <div
+                    style={{ clipPath: 'url(#dash-cut-hero)' }}
+                    className="group/feat relative h-[220px] origin-center overflow-hidden bg-black transition-transform duration-500 ease-out hover:scale-[1.04] motion-reduce:transform-none sm:h-[280px] lg:h-[320px]"
+                  >
+                    <HoverVideo
+                      key={f.id}
+                      src={FINDING_MEDIA[finding].src}
+                      poster={FINDING_MEDIA[finding].poster}
+                      label={FINDING_MEDIA[finding].caption}
+                      className="h-full w-full object-cover grayscale contrast-125 brightness-95 transition-[filter,transform] duration-700 ease-out group-hover/feat:scale-[1.03] group-hover/feat:grayscale-0 group-hover/feat:contrast-100"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-[#1e3fae]/15 mix-blend-multiply transition-opacity duration-700 group-hover/feat:opacity-0" />
+                  </div>
+                  <p className="mt-2 font-mono text-micro opacity-70 dark:opacity-55">{FINDING_MEDIA[finding].caption}</p>
                 </div>
               </div>
-            ))}
+            </article>
+
+
+            <ol className="finding-carousel m-0 flex list-none flex-col gap-2 p-0" role="tablist" aria-label="Headline findings">
+              {HEADLINE_EXPLORATION_FINDINGS.map((item, i) => {
+                const on = finding === i
+                return (
+                  <li key={item.id} className="flex flex-1">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={on}
+                      onClick={() => setFinding(i)}
+                      style={{ clipPath: 'url(#dash-cut-panel)' }}
+                      className={cn(
+                        'group flex w-full origin-center items-center gap-4 py-3 pl-10 pr-6 text-left transition-[background-color,transform] duration-500 ease-out motion-reduce:transform-none',
+                        on
+                          ? 'scale-[1.03] bg-ink/[0.3] dark:bg-ink/[0.2]'
+                          : 'bg-ink/[0.11] hover:scale-[1.02] hover:bg-ink/[0.17] dark:bg-ink/[0.07] dark:hover:bg-ink/[0.11]',
+                      )}
+                    >
+                      <span className="relative grid size-10 shrink-0 place-items-center">
+                        <svg viewBox="0 0 48 48" aria-hidden="true" className="absolute inset-0 size-full">
+                          <rect x="1.5" y="1.5" width="45" height="45" rx="10" pathLength="100" fill="none" strokeWidth="2" className="stroke-ink/25" />
+                          {on && (
+                            <rect
+                              key={finding}
+                              x="1.5"
+                              y="1.5"
+                              width="45"
+                              height="45"
+                              rx="10"
+                              pathLength="100"
+                              fill="none"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              className="finding-timer stroke-[#e5202e]"
+                              onAnimationEnd={() => setFinding((v) => (v + 1) % HEADLINE_EXPLORATION_FINDINGS.length)}
+                            />
+                          )}
+                        </svg>
+                        <span className={cn('font-mono text-tiny font-bold tabular-nums', on ? 'text-[#e5202e]' : 'opacity-75 dark:opacity-60')}>
+                          {String(i + 1).padStart(2, '0')}
+                        </span>
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span
+                          className={cn(
+                            'block font-display text-base font-bold leading-snug tracking-tight transition-colors group-hover:text-accent',
+                            on && 'text-[#e5202e]',
+                          )}
+                        >
+                          {item.title}
+                        </span>
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className="grid size-8 shrink-0 place-items-center rounded-full border border-[#1e3fae] font-mono text-caption text-[#1e3fae] transition-colors group-hover:bg-[#1e3fae] group-hover:text-white"
+                      >
+                        →
+                      </span>
+                    </button>
+                  </li>
+                )
+              })}
+            </ol>
           </div>
         </section>
 
-        {/* SECTION: Simile Mission Waffle Matrix */}
-        <section className="mt-12">
-          <MissionWaffleMatrix />
+        {/* ---- 02 run matrix ---- */}
+        <section className="relative mt-16 sm:mt-20" aria-label="Run matrix">
+          <SectionHead id="run-matrix" title="Every run, one square" />
+          <div className="mt-8">
+            <MissionWaffleMatrix focus={focus} onClearFocus={() => setFocusId(null)} />
+          </div>
         </section>
-
-        {/* Generated Reports List */}
-        <div className="mt-14 space-y-10">
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-display text-2xl font-bold sm:text-3xl">
-              Interactive Mission Briefs ({items.length})
-            </h2>
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-xs opacity-60">Pre-Seeded &amp; Live Simulation Reports</span>
-              {items.length > SEED_REPORTS.length && (
-                <Button variant="glass" size="sm" onClick={clearGeneratedDashboards}>
-                  Clear generated
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="grid gap-12">
-            {items.map((item) => (
-              <ReportCard key={item.id} item={item} />
-            ))}
-          </div>
-        </div>
       </div>
       <Footer />
     </div>

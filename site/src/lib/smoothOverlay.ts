@@ -27,6 +27,8 @@ export function attachSmoothScroll(el: HTMLElement, lerp = 0.11, wheel = 0.95): 
 
   const onWheel = (e: WheelEvent) => {
     if (e.ctrlKey || e.defaultPrevented) return
+    // horizontal gestures belong to inner scrollers (e.g. the run matrix)
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
     // Nested scrollable containers (e.g. the console history) consume the
     // wheel natively; the deck only takes over once they hit their own edge.
     let node = e.target as HTMLElement | null
