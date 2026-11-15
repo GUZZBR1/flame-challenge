@@ -205,10 +205,10 @@ export default function SimDeck() {
 
   const feature = splitTitle(FEATURE)
   const secondary = [
-    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '[grid-area:side-a] lg:border-l lg:pl-10'],
-    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '[grid-area:side-b] sm:border-l sm:pl-6 lg:border-l lg:pl-10'],
-    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '[grid-area:band-a] border-t border-edge pt-8'],
-    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '[grid-area:band-b] border-t border-edge pt-8 sm:border-l sm:pl-6 lg:border-l lg:pl-10'],
+    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '[grid-area:side-a] lg:border-l lg:pl-10', 'lg:w-[calc(100%+4rem)]'],
+    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '[grid-area:side-b] sm:border-l sm:pl-6 lg:border-l lg:pl-10', 'lg:w-[calc(100%+4rem)]'],
+    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '[grid-area:band-a] border-t border-edge pt-8', 'lg:-ml-16'],
+    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '[grid-area:band-b] border-t border-edge pt-8 sm:border-l sm:pl-6 lg:border-l lg:pl-10', 'lg:w-[calc(100%+4rem)]'],
   ] as const
 
   return (
@@ -276,18 +276,18 @@ export default function SimDeck() {
               {activeMission.id === FEATURE.id && (
                 <span className="mt-4 block"><ActiveMark /></span>
               )}
-              <span className="relative mt-8 block min-h-[220px] flex-1 sm:min-h-[300px]">
+              <span className="relative mt-8 block min-h-[260px] flex-1 sm:min-h-[340px] lg:-ml-16">
                 <img
                   src={MISSION_MEDIA.feature.src}
                   alt={MISSION_MEDIA.feature.alt}
                   loading="lazy"
-                  className="mask-oval absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  className="absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
               </span>
             </button>
 
             {/* rail — apollo 13 + mir 1997 · band — challenger + columbia */}
-            {secondary.map(([preset, t, media, cls]) => {
+            {secondary.map(([preset, t, media, cls, mediaCls]) => {
               const isActive = activeMission.id === preset.id
               return (
                 <button
@@ -303,10 +303,10 @@ export default function SimDeck() {
                     {t.name}
                   </span>
                   {isActive && <span className="mt-3 block"><ActiveMark /></span>}
-                  <span className="mt-4 block h-28 sm:h-32">
+                  <span className={`mt-4 block h-36 sm:h-44 ${mediaCls}`}>
                     {media.type === 'video' ? (
                       <video
-                        className="mask-oval-wide h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         src={media.src}
                         poster={media.poster}
                         aria-label={media.alt}
@@ -318,7 +318,7 @@ export default function SimDeck() {
                       />
                     ) : (
                       <img
-                        className="mask-oval-wide h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         src={media.src}
                         alt={media.alt}
                         loading="lazy"

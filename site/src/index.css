@@ -531,7 +531,7 @@ button.pill:active { transform: translateY(0) scale(.96); }
    the full spread. */
 .mission-areas {
   display: grid;
-  gap: 3rem;
+  gap: 3.5rem;
   grid-template-areas: "feature" "side-a" "side-b" "band-a" "band-b";
 }
 @media (min-width: 640px) {
@@ -547,20 +547,10 @@ button.pill:active { transform: translateY(0) scale(.96); }
   .mission-areas {
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     column-gap: 3.5rem;
+    row-gap: 4.5rem;
     grid-template-areas:
       "feature side-a"
       "feature side-b"
       "band-a  band-b";
   }
-}
-
-/* dissolve-in masks — mission media floats loose on the page instead
-   of sitting inside a clipped rectangle */
-.mask-oval {
-  -webkit-mask-image: radial-gradient(82% 78% at 50% 50%, black 55%, transparent 100%);
-  mask-image: radial-gradient(82% 78% at 50% 50%, black 55%, transparent 100%);
-}
-.mask-oval-wide {
-  -webkit-mask-image: radial-gradient(105% 115% at 50% 50%, black 52%, transparent 100%);
-  mask-image: radial-gradient(105% 115% at 50% 50%, black 52%, transparent 100%);
 }
