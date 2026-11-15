@@ -10,7 +10,7 @@ require a PRO subscription — Render is the drop-in replacement.
 |---|---|---|
 | `site/` | Vercel | IGNIS dashboard — static SPA, falls back to the bundled physics mirror while the API wakes up |
 | root `Dockerfile` | Render (or Koyeb) | C++20 engine `.so` + FastAPI on `$PORT` — no whisper sidecar |
-| LLM | Groq free tier | `llama-3.3-70b-versatile` via the OpenAI-compatible endpoint |
+| LLM | Groq free tier | `qwen/qwen3.8-27b` via the OpenAI-compatible endpoint |
 | STT | Groq free tier | `whisper-large-v3-turbo` via the OpenAI-compatible endpoint |
 
 ## Step 1 — push the repo
@@ -33,7 +33,7 @@ git push origin main
 |---|---|
 | `NINE_ROUTER_BASE_URL` | `https://api.groq.com/openai/v1` |
 | `NINE_ROUTER_API_KEY` | **secret** — Groq console key |
-| `NINE_ROUTER_MODEL` | `llama-3.3-70b-versatile` |
+| `NINE_ROUTER_MODEL` | `qwen/qwen3.8-27b` |
 | `STT_BASE_URL` | `https://api.groq.com/openai/v1/audio/transcriptions` |
 | `STT_API_KEY` | same Groq key |
 | `STT_MODEL` | `whisper-large-v3-turbo` |
