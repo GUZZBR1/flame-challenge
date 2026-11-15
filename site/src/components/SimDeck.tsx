@@ -201,12 +201,12 @@ export default function SimDeck() {
   const feature = splitTitle(FEATURE)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const rail = [
-    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '02'],
-    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '03'],
+    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '02', 'cut-trap'],
+    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '03', 'cut-lozenge'],
   ] as const
   const band = [
-    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '04'],
-    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '05'],
+    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '04', 'cut-rail'],
+    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '05', 'cut-slant'],
   ] as const
 
   const renderMedia = (media: (typeof MISSION_MEDIA)[keyof typeof MISSION_MEDIA], cls: string) =>
@@ -282,6 +282,15 @@ export default function SimDeck() {
               <clipPath id="cut-hero" clipPathUnits="objectBoundingBox">
                 <path d="M0.3,0 L0.97,0 Q1,0 1,0.04 L1,0.62 Q1,0.68 0.975,0.74 L0.92,0.95 Q0.905,1 0.87,1 L0.04,1 Q0,1 0.014,0.95 L0.28,0.04 Q0.29,0 0.3,0 Z" />
               </clipPath>
+              <clipPath id="cut-trap" clipPathUnits="objectBoundingBox">
+                <path d="M0.1,0.02 Q0.11,0 0.14,0 L0.86,0 Q0.89,0 0.9,0.02 L0.995,0.9 Q1,1 0.96,1 L0.04,1 Q0,1 0.005,0.9 Z" />
+              </clipPath>
+              <clipPath id="cut-lozenge" clipPathUnits="objectBoundingBox">
+                <path d="M0.14,0.04 Q0.15,0 0.19,0 L0.81,0 Q0.85,0 0.86,0.04 L0.995,0.46 Q1,0.5 0.995,0.54 L0.86,0.96 Q0.85,1 0.81,1 L0.19,1 Q0.15,1 0.14,0.96 L0.005,0.54 Q0,0.5 0.005,0.46 Z" />
+              </clipPath>
+              <clipPath id="cut-slant" clipPathUnits="objectBoundingBox">
+                <path d="M0.2,0 L0.96,0 Q1,0 1,0.06 L1,0.94 Q1,1 0.96,1 L0.03,1 Q0,1 0.01,0.94 L0.19,0.03 Q0.195,0 0.2,0 Z" />
+              </clipPath>
               <clipPath id="cut-rail" clipPathUnits="objectBoundingBox">
                 <path d="M0.1,0 L0.97,0 Q1,0 0.99,0.05 L0.93,0.95 Q0.92,1 0.89,1 L0.03,1 Q0,1 0.01,0.95 L0.07,0.05 Q0.08,0 0.1,0 Z" />
               </clipPath>
@@ -348,7 +357,7 @@ export default function SimDeck() {
 
             {/* rail — apollo 13 + mir 1997 */}
             <div className="flex flex-col gap-14">
-              {rail.map(([preset, t, media, n]) => {
+              {rail.map(([preset, t, media, n, shape]) => {
                 const isActive = activeMission.id === preset.id
                 return (
                   <button
@@ -379,7 +388,7 @@ export default function SimDeck() {
                         →
                       </span>
                     </span>
-                    <span className="cut-rail mt-5 block h-40 overflow-hidden bg-black sm:h-44">
+                    <span className={`${shape} mt-5 block h-40 overflow-hidden bg-black sm:h-48`}>
                       {renderMedia(media, mediaCls)}
                     </span>
                   </button>
@@ -391,7 +400,7 @@ export default function SimDeck() {
           {/* band — challenger + columbia, media bleeding to the screen edges */}
           <div className="mission-bleed relative mt-24 border-t border-edge pt-12 sm:mt-28">
             <div className="grid gap-14 lg:grid-cols-2 lg:gap-16">
-              {band.map(([preset, t, media, n], i) => {
+              {band.map(([preset, t, media, n, shape], i) => {
                 const isActive = activeMission.id === preset.id
                 const imageLeft = i === 0
                 return (
@@ -402,7 +411,7 @@ export default function SimDeck() {
                     className="group flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
                   >
                     <span
-                      className={`cut-rail block h-44 overflow-hidden bg-black sm:h-48 sm:w-[46%] sm:shrink-0 ${
+                      className={`${shape} block h-44 overflow-hidden bg-black sm:h-48 sm:w-[46%] sm:shrink-0 ${
                         imageLeft ? 'bleed-l' : 'bleed-r sm:order-2'
                       }`}
                     >

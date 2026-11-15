@@ -542,3 +542,6 @@ button.pill:active { transform: translateY(0) scale(.96); }
    clipPaths are defined inline in SimDeck so they scale to any box */
 .cut-hero { clip-path: url(#cut-hero); }
 .cut-rail { clip-path: url(#cut-rail); }
+.cut-trap { clip-path: url(#cut-trap); }
+.cut-lozenge { clip-path: url(#cut-lozenge); }
+.cut-slant { clip-path: url(#cut-slant); }
