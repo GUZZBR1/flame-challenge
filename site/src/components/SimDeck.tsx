@@ -149,7 +149,7 @@ function OrbitDecor() {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute -right-40 -top-72 hidden h-[1000px] w-[1100px] text-ink opacity-[0.14] lg:block"
+      className="pointer-events-none absolute -right-40 -top-72 hidden h-[1000px] w-[1100px] text-ink opacity-[0.09] lg:block"
       viewBox="0 0 1100 1000"
       fill="none"
     >
@@ -229,7 +229,7 @@ export default function SimDeck() {
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
-      <div className="relative mx-auto w-[min(92vw,96rem)] pb-40 pt-40 sm:pt-48">
+      <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-28 sm:pt-32">
         <KeyedFlame
           className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
           strength={0.3}
@@ -256,27 +256,24 @@ export default function SimDeck() {
             </span>
           </div>
 
-          <p data-hero className="card-label mt-12 sm:mt-16">Guided Scenarios &amp; Historical Crises</p>
-          <h1
-            data-hero
-            className="mt-4 font-display text-[clamp(2.25rem,4.4vw,4rem)] font-bold leading-display tracking-tight"
-          >
-            1-Click Mission Envelopes
-          </h1>
-          <p data-hero className="mt-10 max-w-2xl text-body leading-[1.85] opacity-80">
-            Explore historical fire crises from NASA research — one click previews the mission.
-          </p>
-          <p
-            data-hero
-            aria-hidden="true"
-            className="absolute bottom-1 right-0 hidden border-r border-ink/40 pr-4 text-right font-mono text-tiny uppercase leading-[1.9] tracking-label opacity-70 lg:block"
-          >
-            Fire<br />Combustion<br />Microgravity
-          </p>
+          <div className="mt-8 grid items-end gap-x-[clamp(3rem,7vw,9rem)] gap-y-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+            <div>
+              <p data-hero className="card-label">Guided Scenarios &amp; Historical Crises</p>
+              <h1
+                data-hero
+                className="mt-2 font-display text-[clamp(1.75rem,3vw,2.6rem)] font-bold leading-display tracking-tight"
+              >
+                1-Click Mission Envelopes
+              </h1>
+            </div>
+            <p data-hero className="max-w-sm text-caption leading-[1.7] opacity-70">
+              Explore historical fire crises from NASA research — one click previews the mission.
+            </p>
+          </div>
         </header>
 
         {/* ---- missions — historical crises ---- */}
-        <section className="relative mt-28 sm:mt-40" aria-label="Historical missions">
+        <section className="relative mt-12 sm:mt-16" aria-label="Historical missions">
           <svg width="0" height="0" aria-hidden="true" className="absolute">
             <defs>
               <clipPath id="cut-hero" clipPathUnits="objectBoundingBox">
@@ -301,10 +298,10 @@ export default function SimDeck() {
               <span className="inline-block self-start bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
                 Historical Crisis
               </span>
-              <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(2.75rem,7vw,6.5rem)] font-bold leading-[0.92] tracking-tight">
+              <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3rem,7.6vw,7rem)] font-bold leading-[0.92] tracking-tight">
                 {feature.name}
               </h2>
-              <div className="mt-14 grid flex-1 items-center gap-x-[clamp(2.5rem,5vw,6rem)] gap-y-12 sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+              <div className="mt-10 grid flex-1 items-center gap-x-[clamp(2.5rem,5vw,6rem)] gap-y-12 sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
                 <div className="min-w-0">
                   <p className="font-mono text-[clamp(0.9rem,1.3vw,1.05rem)] font-semibold text-[#e5202e]">
                     {FEATURE.tag}
@@ -342,7 +339,7 @@ export default function SimDeck() {
                   >
                     <line x1="34" y1="4" x2="2" y2="64" stroke="#e5202e" strokeWidth="1" vectorEffect="non-scaling-stroke" />
                   </svg>
-                  <div className="cut-hero relative h-[280px] overflow-hidden bg-black sm:h-[380px] lg:h-[440px] xl:h-[500px]">
+                  <div className="cut-hero relative h-[300px] overflow-hidden bg-black sm:h-[420px] lg:h-[500px] xl:h-[560px]">
                     <img
                       src={MISSION_MEDIA.feature.src}
                       alt={MISSION_MEDIA.feature.alt}
@@ -388,7 +385,7 @@ export default function SimDeck() {
                           →
                         </span>
                       </span>
-                      <span className={`${shape} block h-44 overflow-hidden bg-black sm:h-56`}>
+                      <span className={`${shape} block h-48 overflow-hidden bg-black sm:h-60`}>
                         {renderMedia(media, mediaCls)}
                       </span>
                     </span>
@@ -399,7 +396,7 @@ export default function SimDeck() {
           </div>
 
           {/* band — challenger + columbia, media bleeding to the screen edges */}
-          <div className="mission-bleed relative mt-36 border-t border-edge pt-20 sm:mt-48">
+          <div className="mission-bleed relative mt-24 border-t border-edge pt-16 sm:mt-32">
             <div className="grid gap-24 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-[clamp(4rem,8vw,10rem)]">
               {band.map(([preset, t, media, n, shape], i) => {
                 const isActive = activeMission.id === preset.id
@@ -412,7 +409,7 @@ export default function SimDeck() {
                     className="group flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
                   >
                     <span
-                      className={`${shape} block h-44 overflow-hidden bg-black sm:h-56 sm:w-[48%] sm:shrink-0 ${
+                      className={`${shape} block h-48 overflow-hidden bg-black sm:h-60 sm:w-[48%] sm:shrink-0 ${
                         imageLeft ? 'bleed-l' : 'bleed-r sm:order-2'
                       }`}
                     >
@@ -447,16 +444,10 @@ export default function SimDeck() {
                 )
               })}
             </div>
-            <div aria-hidden="true" className="mt-10 flex gap-1.5">
-              <span className="h-[3px] w-8 bg-[#1e3fae]" />
-              <span className="h-[3px] w-8 bg-ink/20" />
-              <span className="h-[3px] w-8 bg-ink/20" />
-              <span className="h-[3px] w-8 bg-ink/20" />
-            </div>
           </div>
         </section>
 
-        <div className="relative mt-24 flex justify-end">
+        <div className="relative mt-20 flex justify-end">
           <Button variant="glass" onClick={navigateBack}>
             Back to overview <IconArrowLeft size={16} />
           </Button>
