@@ -230,7 +230,7 @@ const MISSION_MEDIA = {
 /** poster until the pointer (or keyboard focus) reaches the nearest
  *  [data-hover-media] host, then it plays; touch devices have no hover, so
  *  they loop on their own. Reduced-motion users keep the poster. */
-function HoverVideo({ src, poster, label, className }: { src: string; poster: string; label: string; className: string }) {
+export function HoverVideo({ src, poster, label, className }: { src: string; poster: string; label: string; className: string }) {
   const ref = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     const v = ref.current

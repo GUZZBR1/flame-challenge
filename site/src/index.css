@@ -586,3 +586,16 @@ button.pill:active { transform: translateY(0) scale(.96); }
 @keyframes ship-float { from { transform: translateY(0); } to { transform: translateY(-0.05em); } }
 .ship-float { animation: ship-float 1.8s ease-in-out infinite alternate; }
 @media (prefers-reduced-motion: reduce) { .ship-float, .ship-sprite:hover { animation: none; } .ship-sprite:hover { background-position: 33.333% 40.7%; } }
+
+/* finding timer — a stroke travels around the number box, then the
+   carousel advances to the next finding; hovering the section pauses it */
+.finding-timer {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: finding-timer 9s linear forwards;
+}
+.finding-carousel button:hover .finding-timer { animation-play-state: paused; }
+@keyframes finding-timer { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .finding-timer { animation: none; stroke-dashoffset: 0; }
+}
