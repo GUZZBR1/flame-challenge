@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '../lib/scroll'
 import { emitUiCommand } from '../lib/simBus'
+import { attachSmoothScroll } from '../lib/smoothOverlay'
 import KeyedFlame from './KeyedFlame'
 import Footer from './Footer'
 import type { MissionOutcomeStatus } from './CrewTimelinePanel'
@@ -267,6 +268,11 @@ export default function SimDeck() {
       gsap.from('[data-hero]', { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', stagger: 0.07 })
     }, root)
     return () => ctx.revert()
+  }, [])
+
+  useEffect(() => {
+    const root = rootRef.current
+    return root ? attachSmoothScroll(root) : undefined
   }, [])
 
   // selecting an envelope marks it active and announces the pick on the
