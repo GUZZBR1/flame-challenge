@@ -86,36 +86,48 @@ _lock = threading.Lock()
 
 
 def _load() -> None:
-    global _docs, _idf, _ready, _duck
+    global _docs, _idf, _ready, _duck, _postings, _doc_len, _docs_by_id
     if _ready:
         return
     with _lock:
         if _ready:
             return
-        _ready = True
+        new_docs: list[dict] = []
         if INDEX.exists():
-            _docs = json.loads(INDEX.read_text()).get("documents", [])
+            new_docs = json.loads(INDEX.read_text()).get("documents", [])
+        new_doc_len: list[int] = []
+        new_docs_by_id: dict[str, dict] = {}
+        new_postings: dict[str, list[tuple[int, int]]] = {}
         df: Counter = Counter()
-        for i, d in enumerate(_docs):
+        for i, d in enumerate(new_docs):
             toks = d.get("tokens", [])
-            _doc_len.append(len(toks))
-            _docs_by_id[d["id"]] = d
+            new_doc_len.append(len(toks))
+            new_docs_by_id[d["id"]] = d
             counts = Counter(toks)
             for t, tf in counts.items():
                 df[t] += 1
-                _postings.setdefault(t, []).append((i, tf))
-        n = max(1, len(_docs))
-        _idf = {t: math.log(1 + (n - c + 0.5) / (c + 0.5)) for t, c in df.items()}
+                new_postings.setdefault(t, []).append((i, tf))
+        n = max(1, len(new_docs))
+        new_idf = {t: math.log(1 + (n - c + 0.5) / (c + 0.5)) for t, c in df.items()}
+        new_duck = None
         if EXPERIMENTS.exists():
             try:
                 import duckdb  # noqa: PLC0415
-                _duck = duckdb.connect(":memory:")
-                _duck.execute(
+                new_duck = duckdb.connect(":memory:")
+                new_duck.execute(
                     "CREATE TABLE experiments AS SELECT * FROM read_csv_auto(?, "
                     "header=true)", [str(EXPERIMENTS)])
             except Exception as exc:  # noqa: BLE001 - degrade to search only
                 logger.warning("duckdb unavailable, sql-rag disabled: %s", exc)
-                _duck = None
+                new_duck = None
+
+        _docs = new_docs
+        _doc_len = new_doc_len
+        _docs_by_id = new_docs_by_id
+        _postings = new_postings
+        _idf = new_idf
+        _duck = new_duck
+        _ready = True
 
 
 def _duck_query(sql: str, params: list | None = None
@@ -134,7 +146,8 @@ def _duck_query(sql: str, params: list | None = None
 
 def reload() -> None:
     global _ready
-    _ready = False
+    with _lock:
+        _ready = False
     _load()
 
 

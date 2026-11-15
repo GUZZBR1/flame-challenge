@@ -80,3 +80,39 @@ def test_concurrent_ask_and_stats_do_not_race(fake_duck):
         (kind == "stats" and value == 5)
         or (kind == "ask" and "2 matching" in value)
         for kind, value in results)
+
+
+def test_reload_clears_old_index(monkeypatch, tmp_path):
+    index_file = tmp_path / "index.json"
+    docs_v1 = {
+        "documents": [
+            {"id": "doc1", "tokens": ["droplet", "cool", "flame"], "type": "experiment"},
+            {"id": "doc2", "tokens": ["cotton", "airflow", "spread"], "type": "experiment"},
+        ]
+    }
+    index_file.write_text(rag.json.dumps(docs_v1))
+    monkeypatch.setattr(rag, "INDEX", index_file)
+    monkeypatch.setattr(rag, "EXPERIMENTS", tmp_path / "nonexistent.csv")
+
+    rag.reload()
+    assert len(rag._docs) == 2
+    assert len(rag._doc_len) == 2
+    assert "doc1" in rag._docs_by_id
+    assert "doc2" in rag._docs_by_id
+
+    # Reload with a smaller index
+    docs_v2 = {
+        "documents": [
+            {"id": "doc3", "tokens": ["methane", "jet"], "type": "experiment"},
+        ]
+    }
+    index_file.write_text(rag.json.dumps(docs_v2))
+    rag.reload()
+    assert len(rag._docs) == 1
+    assert len(rag._doc_len) == 1
+    assert "doc1" not in rag._docs_by_id
+    assert "doc3" in rag._docs_by_id
+    # Postings from v1 should not exist
+    assert "droplet" not in rag._postings
+    assert "methane" in rag._postings
+
