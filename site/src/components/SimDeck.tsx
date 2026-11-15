@@ -229,7 +229,7 @@ export default function SimDeck() {
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
-      <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-24 sm:pt-28">
+      <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-32 sm:pt-40">
         <KeyedFlame
           className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
           strength={0.3}
@@ -238,7 +238,7 @@ export default function SimDeck() {
         />
 
         {/* ---- editorial hero ---- */}
-        <header className="relative">
+        <header className="relative sm:pl-[clamp(1rem,6vw,7rem)]">
           <div className="grid items-end gap-x-[clamp(3rem,7vw,9rem)] gap-y-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             <div>
               <p data-hero className="card-label">Guided Scenarios &amp; Historical Crises</p>
