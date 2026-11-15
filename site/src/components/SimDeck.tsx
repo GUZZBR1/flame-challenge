@@ -92,6 +92,62 @@ const MISSION_PRESETS: MissionPreset[] = [
     prompt: 'Analyze Columbia STS-107 leading-edge breach — plasma ingress into a confined RCC wing cavity during hypersonic reentry.',
     outcomeStatus: 'MISSION ABORTED / HULL BREACH',
   },
+  {
+    id: 'apollo-12-crisis',
+    title: 'Historical Crisis: Apollo 12',
+    tag: 'Lightning · T+36 s',
+    accent: '#7c3aed',
+    o2Pct: 21,
+    flowCms: 5.0,
+    gravity: 'earth',
+    investigationId: 'same',
+    materialId: 'teflon',
+    description: 'Two lightning strikes in the first minute knocked the fuel cells offline and scrambled telemetry — one switch call from the ground restored power.',
+    prompt: 'Analyze Apollo 12 lightning strike — electrical discharge through a pressurized-oxygen spacecraft and the loss of fuel-cell power.',
+    outcomeStatus: 'EMERGENCY CONTAINED',
+  },
+  {
+    id: 'gemini-8-crisis',
+    title: 'Historical Crisis: Gemini 8',
+    tag: 'Stuck Thruster · ~1 rev/s',
+    accent: '#0f766e',
+    o2Pct: 21,
+    flowCms: 5.0,
+    gravity: 'microgravity',
+    investigationId: 'bass-ii',
+    materialId: 'pmma',
+    description: 'A thruster stuck on after the first-ever docking and spun the linked craft until Armstrong cut away from the Agena and stopped the roll with the reentry thrusters.',
+    prompt: 'Analyze the Gemini 8 stuck-thruster emergency — runaway propellant burn and spin after the first orbital docking.',
+    outcomeStatus: 'EMERGENCY CONTAINED',
+  },
+  {
+    id: 'skylab-crisis',
+    title: 'Historical Crisis: Skylab',
+    tag: 'Shield Loss · ~52 °C',
+    accent: '#b45309',
+    o2Pct: 35,
+    flowCms: 5.0,
+    gravity: 'microgravity',
+    investigationId: 'sofie-gel',
+    materialId: 'pmma',
+    description: 'A micrometeoroid shield tore away at launch and the station overheated; a parasol sunshade saved it, and crews later burned samples in its zero-g flammability tests.',
+    prompt: 'Analyze Skylab launch damage and thermal runaway, plus the zero-gravity flammability experiments flown aboard.',
+    outcomeStatus: 'EMERGENCY CONTAINED',
+  },
+  {
+    id: 'apollo-11-crisis',
+    title: 'Historical Crisis: Apollo 11',
+    tag: '1202 Alarm · ~25 s of fuel',
+    accent: '#0369a1',
+    o2Pct: 21,
+    flowCms: 5.0,
+    gravity: 'lunar',
+    investigationId: 'flare',
+    materialId: 'pmma',
+    description: 'Computer overload alarms and a shrinking descent-fuel margin threatened to abort the first lunar landing seconds from touchdown.',
+    prompt: 'Analyze Apollo 11 powered descent — program alarms and a thin propellant margin on approach to the lunar surface.',
+    outcomeStatus: 'MISSION ACCOMPLISHED',
+  },
 ]
 
 const GRAVITY_G = { microgravity: 0, earth: 1, lunar: 0.17, mars: 0.38 } as const
@@ -104,12 +160,10 @@ function splitTitle(preset: MissionPreset) {
 
 /** only the historical crises stay on the deck — the featured mission
  *  leads left, two stack in the rail, and the shuttle losses close the
- *  spread as a bottom band */
+ *  spread as a scrolling carousel */
 const FEATURE = MISSION_PRESETS[0] // apollo 1
 const SIDE_A = MISSION_PRESETS[3] // challenger 51-l
 const SIDE_B = MISSION_PRESETS[2] // mir 1997
-const BAND_A = MISSION_PRESETS[1] // apollo 13
-const BAND_B = MISSION_PRESETS[4] // columbia sts-107
 
 /** official NASA video — images-api.nasa.gov. Every plate is a short,
  *  muted loop cut from archival footage (Apollo 1 / Challenger / Columbia
@@ -141,6 +195,30 @@ const MISSION_MEDIA = {
     poster: '/assets/nasa/challenger_loop_poster.jpg',
     alt: 'Challenger STS-51L crew walking the flight line — NASA, Fallen Heroes montage',
   },
+  apollo12: {
+    type: 'video',
+    src: '/assets/nasa/apollo12_loop.mp4',
+    poster: '/assets/nasa/apollo12_loop_poster.jpg',
+    alt: 'Lightning strikes the Apollo 12 launch pad area during liftoff — NASA, Apollo 12: The Pinpoint Mission',
+  },
+  gemini8: {
+    type: 'video',
+    src: '/assets/nasa/gemini8_loop.mp4',
+    poster: '/assets/nasa/gemini8_loop_poster.jpg',
+    alt: 'Agena target vehicle seen from the Gemini 8 window over Earth — NASA Mercury/Gemini/Apollo resource reel',
+  },
+  skylab: {
+    type: 'video',
+    src: '/assets/nasa/skylab_loop.mp4',
+    poster: '/assets/nasa/skylab_loop_poster.jpg',
+    alt: 'Flame burning in microgravity during the Skylab zero-g flammability studies — NASA Glenn film',
+  },
+  apollo11: {
+    type: 'video',
+    src: '/assets/nasa/apollo11_loop.mp4',
+    poster: '/assets/nasa/apollo11_loop_poster.jpg',
+    alt: 'Apollo 11 Saturn V rising from the launch pad cloud — NASA KSC press-site film',
+  },
   bandB: {
     type: 'video',
     src: '/assets/nasa/columbia_loop.mp4',
@@ -160,8 +238,9 @@ function HoverVideo({ src, poster, label, className }: { src: string; poster: st
     const play = () => void v.play().catch(() => {})
     const stop = () => v.pause()
     if (matchMedia('(hover: none)').matches) {
-      play()
-      return
+      const io = new IntersectionObserver(([e]) => (e.isIntersecting ? play() : stop()), { threshold: 0.35 })
+      io.observe(v)
+      return () => io.disconnect()
     }
     const host = v.closest<HTMLElement>('[data-hover-media]') ?? v
     host.addEventListener('pointerenter', play)
@@ -220,9 +299,13 @@ export default function SimDeck() {
     [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.bandA, '02', 'cut-slant'],
     [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '03', 'cut-slant'],
   ] as const
-  const band = [
-    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.sideA, '04', 'cut-rail'],
-    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '05', 'cut-slant'],
+  const carousel = [
+    [MISSION_PRESETS[1], MISSION_MEDIA.sideA, 'cut-rail'],
+    [MISSION_PRESETS[4], MISSION_MEDIA.bandB, 'cut-slant'],
+    [MISSION_PRESETS[5], MISSION_MEDIA.apollo12, 'cut-rail'],
+    [MISSION_PRESETS[6], MISSION_MEDIA.gemini8, 'cut-slant'],
+    [MISSION_PRESETS[7], MISSION_MEDIA.skylab, 'cut-rail'],
+    [MISSION_PRESETS[8], MISSION_MEDIA.apollo11, 'cut-slant'],
   ] as const
 
   const renderMedia = (media: (typeof MISSION_MEDIA)[keyof typeof MISSION_MEDIA], cls: string) =>
@@ -377,54 +460,61 @@ export default function SimDeck() {
             </div>
           </div>
 
-          {/* band — challenger + columbia, media bleeding to the screen edges */}
+          {/* carousel — the other crises scroll past; pauses on hover / focus */}
           <div className="mission-bleed relative mt-24 pt-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-ink/50 before:to-transparent dark:before:from-ink/30 sm:mt-32">
-            <div className="grid gap-24 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-[clamp(4rem,8vw,10rem)]">
-              {band.map(([preset, t, media, n, shape], i) => {
-                const isActive = activeMission.id === preset.id
-                const imageLeft = i === 0
-                return (
-                  <button
-                    key={preset.id}
-                    {...pickProps(preset)}
-                    data-hero
-                    data-hover-media className="group relative flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
-                  >
-                    <span
-                      className={`${shape} block h-48 overflow-hidden bg-black sm:h-60 sm:w-[48%] sm:shrink-0 ${
-                        imageLeft ? 'bleed-l' : 'bleed-r sm:order-2'
-                      }`}
-                    >
-                      {renderMedia(media, mediaCls)}
-                    </span>
-                    <span className="flex min-w-0 flex-1 items-start justify-between gap-4">
-                      <span className="min-w-0">
-                        <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
-                          {n} / Historical Crisis
-                        </span>
-                        <span
-                          className="mt-1 block font-display text-[clamp(1.5rem,2.3vw,2rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                          style={isActive ? { color: preset.accent } : undefined}
-                        >
-                          {t.name}
-                        </span>
-                        <span className="mt-2 block font-mono text-tiny font-semibold text-[#1e3fae]">
-                          {isActive ? '● active' : preset.tag}
-                        </span>
-                        <span className="mt-3 line-clamp-2 block max-w-[17rem] text-caption leading-relaxed opacity-75">
-                          {preset.description}
-                        </span>
-                      </span>
-                      <span
-                        aria-hidden="true"
-                        className="mt-2 grid size-10 shrink-0 place-items-center rounded-full border border-[#1e3fae] font-mono text-caption text-[#1e3fae] transition-colors duration-300 group-hover:bg-[#1e3fae] group-hover:text-white"
-                      >
-                        →
-                      </span>
-                    </span>
-                  </button>
-                )
-              })}
+            <p className="mb-10 font-mono text-tiny uppercase tracking-label opacity-60">
+              More historical crises <span aria-hidden="true">→</span>
+            </p>
+            <div className="marquee bleed-both">
+              <div className="marquee-track">
+                {[0, 1].map((copy) => (
+                  <ul key={copy} className="marquee-group" aria-hidden={copy === 1 || undefined}>
+                    {carousel.map(([preset, media, shape], i) => {
+                      const t = splitTitle(preset)
+                      const isActive = activeMission.id === preset.id
+                      return (
+                        <li key={preset.id} className="marquee-item">
+                          <button
+                            {...pickProps(preset)}
+                            tabIndex={copy === 1 ? -1 : undefined}
+                            data-hover-media
+                            className="group flex h-full w-full flex-col text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                          >
+                            <span className={`${shape} block h-48 overflow-hidden bg-black sm:h-56`}>
+                              {renderMedia(media, mediaCls)}
+                            </span>
+                            <span className="mt-6 flex min-w-0 flex-1 items-start justify-between gap-4">
+                              <span className="min-w-0">
+                                <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
+                                  {String(i + 4).padStart(2, '0')} / Historical Crisis
+                                </span>
+                                <span
+                                  className="mt-1 block font-display text-[clamp(1.5rem,2.3vw,2rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                                  style={isActive ? { color: preset.accent } : undefined}
+                                >
+                                  {t.name}
+                                </span>
+                                <span className="mt-2 block font-mono text-tiny font-semibold text-[#1e3fae]">
+                                  {isActive ? '● active' : preset.tag}
+                                </span>
+                                <span className="mt-3 line-clamp-3 block text-caption leading-relaxed opacity-75">
+                                  {preset.description}
+                                </span>
+                              </span>
+                              <span
+                                aria-hidden="true"
+                                className="mt-2 grid size-10 shrink-0 place-items-center rounded-full border border-[#1e3fae] font-mono text-caption text-[#1e3fae] transition-colors duration-300 group-hover:bg-[#1e3fae] group-hover:text-white"
+                              >
+                                →
+                              </span>
+                            </span>
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                ))}
+              </div>
             </div>
           </div>
         </section>

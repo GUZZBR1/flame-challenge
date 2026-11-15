@@ -12,10 +12,12 @@ interface Props {
   brandVisible?: boolean
 }
 
-const NAV: { label: string; href: string; className?: string }[] = [
-  { label: 'vision', href: '#vision', className: 'max-lg:hidden' },
+const LEFT = [
   { label: 'simulations', href: '#simulations', className: 'max-[520px]:hidden' },
   { label: 'dashboard', href: '#dashboard', className: 'max-[700px]:hidden' },
+]
+const RIGHT = [
+  { label: 'vision', href: '#vision', className: 'max-lg:hidden' },
   { label: 'psi-dataset', href: '#psi-dataset', className: 'max-[640px]:hidden' },
 ]
 
@@ -97,9 +99,27 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
     navigate(href)
   }, [])
 
+  const navLink = (item: { label: string; href: string; className?: string }) => (
+    <a
+      key={item.label}
+      href={item.href}
+      onClick={(e) => {
+        e.preventDefault()
+        go(item.href)
+      }}
+      className={`nav-glass-link group relative inline-flex min-h-8 items-center whitespace-nowrap rounded-full px-3 font-mono text-[clamp(13px,1.05vw,15px)] font-semibold lowercase tracking-micro text-ink transition-[background,box-shadow,transform,color] duration-300 hover:-translate-y-px ${item.className ?? ''}`}
+    >
+      {item.label}
+      <span
+        aria-hidden="true"
+        className="absolute inset-x-3 bottom-0.5 h-px origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"
+      />
+    </a>
+  )
+
   return (
-    <header className="fixed inset-x-0 top-0 z-20 px-3 py-4 sm:px-8 sm:py-6">
-      <div className="relative mx-auto flex w-fit max-w-full items-center justify-center gap-3 px-3.5 py-2.5 sm:gap-8 sm:px-8 sm:py-3.5">
+    <header className="fixed inset-x-0 top-0 z-20 px-3 py-3 sm:px-8 sm:py-4">
+      <div className="relative mx-auto flex w-fit max-w-full items-center justify-center gap-3 px-3 py-1 sm:gap-5 sm:px-4 sm:py-1.5">
         <span
           ref={glassRef}
           aria-hidden="true"
@@ -107,63 +127,54 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
         />
 
         <nav className="relative flex items-center gap-1 sm:gap-1.5" aria-label="Primary">
-          {NAV.map((item, i) => (
-            <Fragment key={item.label}>
-              <a
-                href={item.href}
-                onClick={(e) => {
-                  e.preventDefault()
-                  go(item.href)
-                }}
-                className={`nav-glass-link group relative inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-3.5 font-mono text-[clamp(14px,1.15vw,16px)] font-semibold lowercase tracking-micro text-ink transition-[background,box-shadow,transform,color] duration-300 hover:-translate-y-px ${item.className ?? ''}`}
-              >
-                {item.label}
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-x-3 bottom-1 h-px origin-left scale-x-0 bg-current transition-transform duration-300 group-hover:scale-x-100"
-                />
-              </a>
-              {i === NAV.length - 1 && (
-                <a
-                  ref={brandRef}
-                  data-ignis-brand
-                  href="#top"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    go('#top')
-                  }}
-                  aria-label="IGNIS — back to top"
-                  className="relative pb-1 font-display text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-tight text-ink opacity-0"
-                >
-                  IGNIS
-                </a>
-              )}
-            </Fragment>
-          ))}
+          {LEFT.map(navLink)}
         </nav>
 
-        <div className="relative flex items-center gap-3 sm:gap-6">
+        <a
+          ref={brandRef}
+          data-ignis-brand
+          href="#top"
+          onClick={(e) => {
+            e.preventDefault()
+            go('#top')
+          }}
+          aria-label="IGNIS — back to top"
+          className="relative pb-1 font-display text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-tight text-ink opacity-0"
+        >
+          IGNIS
+        </a>
+
+        <nav className="relative flex items-center gap-1 sm:gap-1.5" aria-label="Secondary">
+          {RIGHT.map(navLink)}
+        </nav>
+
+        <div className="relative flex items-center gap-2 sm:gap-4">
           <span
-            className="group/loc hidden cursor-default items-center gap-2 rounded-full border border-transparent px-3 py-1.5 font-mono text-caption lowercase tracking-card text-ink opacity-60 transition-[background,border-color,box-shadow,opacity,transform] duration-300 hover:-translate-y-px hover:border-white/60 hover:bg-white/70 hover:opacity-100 hover:shadow-[0_6px_18px_rgba(23,33,43,0.10)] xl:inline-flex dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.4)]"
-            title="são paulo, brazil — utc-3"
+            className="group/loc hidden cursor-default items-center gap-2 rounded-full border border-transparent px-2.5 py-1 font-mono text-tiny lowercase tracking-card text-ink opacity-60 transition-[background,border-color,box-shadow,opacity,transform] duration-300 hover:-translate-y-px hover:border-white/60 hover:bg-white/70 hover:opacity-100 hover:shadow-[0_6px_18px_rgba(23,33,43,0.10)] relative sm:inline-flex dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.4)]"
           >
+            <span className="relative flex items-center gap-2 transition-transform duration-300 group-hover/loc:-translate-y-[7px]">
+              <span
+                aria-hidden="true"
+                className="loc-dot size-1.5 shrink-0 rounded-full bg-accent transition-transform duration-300 group-hover/loc:scale-125"
+              />
+              são paulo, brazil
+              <span
+                aria-hidden="true"
+                className="absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 bg-current transition-transform duration-300 group-hover/loc:scale-x-100"
+              />
+            </span>
             <span
-              aria-hidden="true"
-              className="loc-dot size-1.5 shrink-0 rounded-full bg-accent transition-transform duration-300 group-hover/loc:scale-125"
-            />
-            são paulo, brazil
-          </span>
-          <span
-            className="hidden font-mono text-caption lowercase tracking-card text-ink opacity-60 sm:inline"
-            aria-label="current time in são paulo, utc-3"
-          >
-            {clock.split(':').map((part, i) => (
-              <Fragment key={i}>
-                {i > 0 && <span className="clock-blink">:</span>}
-                {part}
-              </Fragment>
-            ))}
-            <span className="opacity-60"> utc-3</span>
+              role="tooltip"
+              className="pointer-events-none absolute left-1/2 top-1/2 mt-[5px] -translate-x-1/2 translate-y-1 whitespace-nowrap font-mono text-[11px] leading-none text-ink opacity-0 transition-[opacity,transform] duration-300 group-hover/loc:translate-y-0 group-hover/loc:opacity-100"
+            >
+              {clock.split(':').map((part, i) => (
+                <Fragment key={i}>
+                  {i > 0 && <span className="clock-blink">:</span>}
+                  {part}
+                </Fragment>
+              ))}
+              <span className="opacity-60"> utc-3</span>
+            </span>
           </span>
           <Button
             type="button"

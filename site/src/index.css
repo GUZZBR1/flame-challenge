@@ -373,9 +373,9 @@ button.pill:active { transform: translateY(0) scale(.96); }
   background: color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
-.header-theme-toggle { min-height: 48px; padding-inline: .9rem; }
+.header-theme-toggle { min-height: 34px; padding-inline: .8rem; }
 .nav-glass-link {
-  min-height: 48px;
+  min-height: 34px;
   border: 1px solid color-mix(in srgb, white 72%, var(--accent) 12%);
   background: linear-gradient(180deg, rgb(255 255 255 / .5), rgb(255 255 255 / .17));
   box-shadow: 0 5px 14px rgb(23 33 43 / .08), inset 0 1.5px 0 rgb(255 255 255 / .85), inset 0 -1px 0 rgb(23 33 43 / .06);
@@ -542,3 +542,23 @@ button.pill:active { transform: translateY(0) scale(.96); }
 .cut-rail { clip-path: url(#cut-rail); }
 .cut-slant { clip-path: url(#cut-slant); }
 .cut-panel { clip-path: url(#cut-panel); }
+
+/* scrolling carousel — two identical groups slide left by exactly one
+   group width for a seamless loop; hover / focus pauses it, reduced-motion
+   users get a plain horizontal scroller instead */
+.bleed-both { margin-inline: calc(-1 * var(--gut)); }
+.marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+.marquee-track { display: flex; width: max-content; animation: marquee-slide 70s linear infinite; }
+.marquee:hover .marquee-track, .marquee:focus-within .marquee-track { animation-play-state: paused; }
+.marquee-group { display: flex; flex-shrink: 0; gap: clamp(2.5rem, 5vw, 6rem); padding-right: clamp(2.5rem, 5vw, 6rem); list-style: none; margin: 0; padding-left: 0; }
+.marquee-item { width: clamp(19rem, 30vw, 28rem); flex-shrink: 0; }
+@keyframes marquee-slide { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .marquee { overflow-x: auto; }
+  .marquee-track { animation: none; }
+  .marquee-group[aria-hidden="true"] { display: none; }
+}
