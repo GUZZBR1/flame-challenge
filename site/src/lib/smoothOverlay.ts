@@ -27,6 +27,8 @@ export function attachSmoothScroll(el: HTMLElement, lerp = 0.11, wheel = 0.95): 
 
   const onWheel = (e: WheelEvent) => {
     if (e.ctrlKey || e.defaultPrevented) return
+    // horizontal gestures belong to inner scrollers (e.g. the run matrix)
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
     e.preventDefault()
     if (!raf) pos = target = el.scrollTop
     const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? el.clientHeight : 1
