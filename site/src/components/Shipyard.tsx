@@ -26,6 +26,17 @@ const WHO: Record<Line['who'], string> = {
   eng: 'the engineer',
 }
 
+/** hand-placed feel — each speaker tag gets a small tilt + nudge so the
+ *  feed reads like scribbled comms, not a centered column. */
+const TAG_TILTS = [
+  { r: -0.9, x: 2 },
+  { r: 0.6, x: -3 },
+  { r: -0.4, x: 5 },
+  { r: 1.1, x: -4 },
+  { r: -0.7, x: 3 },
+  { r: 0.8, x: -2 },
+]
+
 const SPRITES: Record<Line['who'], Record<string, string>> = {
   sci: {
     idle: '/assets/pixel_scientist.png',
@@ -170,7 +181,7 @@ export default function Shipyard() {
       className="relative scroll-mt-24 overflow-x-clip px-5 pb-24 pt-6 sm:px-10 lg:px-16"
     >
       <div className="mx-auto max-w-5xl">
-        <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
+        <div className="text-center font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
           <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
             day by day in the shipyard — live feed
           </span>
@@ -178,12 +189,12 @@ export default function Shipyard() {
 
         <h2
           id="shipyard-title"
-          className="mt-4 cursor-default font-[family-name:var(--font-display)] text-[clamp(26px,4.5vw,40px)] font-bold leading-[1.08] tracking-[-0.02em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
+          className="mt-4 cursor-default text-center font-[family-name:var(--font-display)] text-[clamp(26px,4.5vw,40px)] font-bold leading-[1.08] tracking-[-0.02em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
         >
-          the station where the numbers live
+          The Station Where The Numbers Live
         </h2>
 
-        <p className="mt-5 max-w-2xl font-mono text-[13px] leading-relaxed text-[var(--ink)] opacity-80">
+        <p className="mx-auto mt-5 max-w-2xl text-center font-mono text-[13px] leading-relaxed text-[var(--ink)] opacity-80">
           docked crews argue about combustion the way ground crews argue about
           weather — because out here a flame can hide at 600 k and still be
           alive. every burn is checked against the psi record: droplet d²-law
@@ -209,22 +220,54 @@ export default function Shipyard() {
           ))}
         </div>
 
-        {/* comms feed — typed transcript, rolling */}
-        <div className="mx-auto mt-8 max-w-2xl space-y-2.5 font-mono text-[12.5px] leading-relaxed sm:mt-10" aria-live="polite">
+        {/* comms feed — typed transcript, rolling. sci on the left lane,
+            eng on the right (under their sprites), tags dropped in loose */}
+        <div className="mx-auto mt-8 max-w-3xl space-y-3 font-mono text-[12.5px] leading-relaxed sm:mt-10" aria-live="polite">
           {!started && (
             <p className="text-[var(--ink)] opacity-40">comms — idle · waiting for the crew</p>
           )}
-          {log.map((l, i) => (
-            <p key={i} className="text-[var(--ink)] opacity-75">
-              <span className="text-[var(--accent)]">{WHO[l.who]}:</span> {l.text}
-            </p>
-          ))}
-          {typing && (
-            <p className="text-[var(--ink)]">
-              <span className="text-[var(--accent)]">{WHO[typing.who]}:</span> {typing.text}
-              <span className="caret-blink text-[var(--accent)]">▍</span>
-            </p>
-          )}
+          {log.map((l, i) => {
+            const t = TAG_TILTS[i % TAG_TILTS.length]
+            const eng = l.who === 'eng'
+            return (
+              <div
+                key={i}
+                className={`max-w-[86%] text-[var(--ink)] opacity-75 sm:max-w-[76%] ${
+                  eng ? 'ml-auto text-right' : 'mr-auto'
+                }`}
+              >
+                <span
+                  className="mb-0.5 inline-block text-[10px] lowercase tracking-[0.22em] text-[var(--accent)]"
+                  style={{ transform: `rotate(${t.r}deg) translateX(${eng ? -t.x : t.x}px)` }}
+                >
+                  {WHO[l.who]}
+                </span>
+                <span className="block">{l.text}</span>
+              </div>
+            )
+          })}
+          {typing && (() => {
+            const t = TAG_TILTS[log.length % TAG_TILTS.length]
+            const eng = typing.who === 'eng'
+            return (
+              <div
+                className={`max-w-[86%] text-[var(--ink)] sm:max-w-[76%] ${
+                  eng ? 'ml-auto text-right' : 'mr-auto'
+                }`}
+              >
+                <span
+                  className="mb-0.5 inline-block text-[10px] lowercase tracking-[0.22em] text-[var(--accent)]"
+                  style={{ transform: `rotate(${t.r}deg) translateX(${eng ? -t.x : t.x}px)` }}
+                >
+                  {WHO[typing.who]}
+                </span>
+                <span className="block">
+                  {typing.text}
+                  <span className="caret-blink text-[var(--accent)]">▍</span>
+                </span>
+              </div>
+            )
+          })()}
         </div>
 
         <div
