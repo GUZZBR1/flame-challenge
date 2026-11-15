@@ -538,15 +538,7 @@ button.pill:active { transform: translateY(0) scale(.96); }
 .bleed-l { margin-left: calc(-1 * var(--gut)); }
 .bleed-r { margin-right: calc(-1 * var(--gut)); }
 @media (max-width: 639.98px) { .bleed-l, .bleed-r { margin-inline: calc(-1 * var(--gut)); } }
-.fade-to-l, .fade-to-r {
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
-.fade-to-l {
-  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
-  mask-image: linear-gradient(to right, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
-}
-.fade-to-r {
-  -webkit-mask-image: linear-gradient(to left, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
-  mask-image: linear-gradient(to left, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
-}
+/* rounded diagonal cuts for the mission plates — objectBoundingBox
+   clipPaths are defined inline in SimDeck so they scale to any box */
+.cut-hero { clip-path: url(#cut-hero); }
+.cut-rail { clip-path: url(#cut-rail); }
