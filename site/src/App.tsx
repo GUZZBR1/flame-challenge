@@ -11,6 +11,7 @@ import Insights from './components/Insights'
 import Shipyard from './components/Shipyard'
 import SiConsole from './components/SiConsole'
 import Stars from './components/Stars'
+import VoiceHud from './components/VoiceHud'
 import { initScroll } from './lib/scroll'
 
 type Theme = 'light' | 'dark'
@@ -61,6 +62,7 @@ export default function App() {
       <Shipyard />
       <SiConsole />
       <Footer />
+      <VoiceHud />
     </main>
   )
 }
