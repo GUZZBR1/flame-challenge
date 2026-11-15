@@ -469,7 +469,10 @@ export default function MathematicalFlameField({
           const gvx = pointerNear ? (pointer.vx / CELL) * 0.02 : 0
           const gvy = pointerNear ? (pointer.vy / CELL) * 0.02 : 0
           const thermal = temperature[i]
-          const buoy = thermal * buoyK * 2.6
+          // lift varies along the bar so neighbouring columns rise at
+          // different speeds → asymmetric 15–110px peaks instead of a slab
+          const buoyJit = 0.45 + 1.1 * fbm3(nx * 0.7 + 7.7, simTime * 0.32)
+          const buoy = thermal * buoyK * 2.6 * buoyJit
           // Microgravity: weak radial outflow from the bar centre instead of rise.
           const radial = micro * 0.25 * Math.max(0, thermal - 0.05)
           const rdx = x - bar.cx / CELL
@@ -528,11 +531,13 @@ export default function MathematicalFlameField({
           const o2inject = pointerNear
             ? Math.exp(-(dx * dx + dy * dy) / 320) * (0.4 + Math.min(1.2, pointerSpeed / 600))
             : 0
+          // tips cool faster than the base — thin ends pinch off into wisps
+          const tipCool = coolDecay * (1 + 1.6 * smooth(0.45, 1.2, temperature[i]))
           nextTemperature[i] = Math.max(
             0,
             Math.min(
               1.6,
-              advected + lap * diffuse * dt * 8 + (emit + o2inject * 0.5) * dt * 3.4 - coolDecay * dt,
+              advected + lap * diffuse * dt * 8 + (emit + o2inject * 0.5) * dt * 3.4 - tipCool * dt,
             ),
           )
         }
