@@ -313,7 +313,7 @@ export default function PsiDataset() {
                     expanded ? (
                       <tr key={`${inv.id}-detail`} className="bg-accent/4">
                         <td colSpan={7} className="border-b border-edge px-2 py-4">
-                          <div className="grid gap-4 pl-7 sm:grid-cols-2 lg:grid-cols-3">
+                          <div className="grid gap-4 pl-8 sm:grid-cols-2 lg:grid-cols-3">
                             <div>
                               <div className="font-mono text-micro lowercase tracking-eyebrow text-accent">
                                 objectives
