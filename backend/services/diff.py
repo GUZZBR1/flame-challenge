@@ -170,8 +170,9 @@ def _load() -> dict[str, dict]:
 
 
 def reload() -> None:
-    global _rows
+    global _rows, _curated_cache
     _rows = None
+    _curated_cache = None
 
 
 def _val(row: dict, field: str) -> str:
@@ -259,16 +260,24 @@ def build_cards() -> list[dict]:
     return cards
 
 
+_curated_cache: list[dict] | None = None
+
+
 def curated() -> list[dict]:
     """Cards from the frozen bundle when present, else computed live —
     the API serves the same payload before and after the pipeline runs."""
+    global _curated_cache
+    if _curated_cache is not None:
+        return _curated_cache
     if DIFFS_BUNDLE.exists():
         try:
-            return json.loads(DIFFS_BUNDLE.read_text(
+            _curated_cache = json.loads(DIFFS_BUNDLE.read_text(
                 encoding="utf-8"))["cards"]
+            return _curated_cache
         except (OSError, json.JSONDecodeError, KeyError):
             pass
-    return build_cards()
+    _curated_cache = build_cards()
+    return _curated_cache
 
 
 def runs(investigation: str | None = None, accession: str | None = None,

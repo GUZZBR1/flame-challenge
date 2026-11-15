@@ -35,13 +35,19 @@ const CELL_ORDER = Array.from({ length: CELLS_W * CELLS_H }, (_, i) => {
 const STEP_X = (EXTENT * 2) / CELLS_W
 const STEP_Y = (EXTENT * 2) / CELLS_H
 
-function surfaceZ(x: number, y: number, t: number): number {
-  // Stylized mathematical wave for the hero; it is illustrative, not experimental data.
-  return (
-    0.78 * Math.sin(x * 1.18 + t) * Math.cos(y * 1.04 - t * 0.72) +
-    0.28 * Math.sin(x * 2.05 - t * 0.68) * Math.cos(y * 1.55 + t * 0.8)
-  )
-}
+// fillStyle LUT — 257 quantized thermal-ramp strings, so the cell loop
+// assigns a cached string instead of formatting one per quad per frame
+const FILL_LUT = (() => {
+  const out: string[] = []
+  for (let i = 0; i <= 256; i++) {
+    const level = i / 256
+    const hue = 168 - 164 * level
+    const sat = 76 + level * 10
+    const lit = 30 + level * 14
+    out[i] = `hsla(${hue.toFixed(2)}, ${sat.toFixed(1)}%, ${lit.toFixed(1)}%, .92)`
+  }
+  return out
+})()
 
 export default function HeroCanvas() {
   const starsRef = useRef<HTMLCanvasElement>(null)
@@ -74,6 +80,13 @@ export default function HeroCanvas() {
     let cyBase = 0
 
     const zGrid = new Float32Array(N_VERT)
+    // the wave field is separable — z = A(t)·sin(fx·x)cos(gy·y) terms —
+    // so each frame evaluates trig once per row/column (~200 calls)
+    // instead of four times per vertex (~10,400)
+    const s1x = new Float32Array(VW)
+    const s2x = new Float32Array(VW)
+    const c1y = new Float32Array(VH)
+    const c2y = new Float32Array(VH)
     const pointer = { sx: -9999, sy: -9999 }
     const mouse = { x: 0, y: 0 }
     let hasPointer = false
@@ -107,68 +120,88 @@ export default function HeroCanvas() {
       }
     }
 
-    function vertexHeight(x: number, y: number, t: number): number {
-      if (!hasPointer) return surfaceZ(x, y, t)
-      // gaussian ignition bump where the cursor is — lerped for smoothness
-      const dx = x - mouse.x
-      const dy = y - mouse.y
-      const bump =
-        1.45 * Math.exp(-(dx * dx + dy * dy) / (2 * 0.82 * 0.82))
-      return surfaceZ(x, y, t) + bump
+    function vertexHeightNoPointer(ix: number, iy: number): number {
+      // Stylized mathematical wave for the hero; it is illustrative, not experimental data.
+      return 0.78 * s1x[ix] * c1y[iy] + 0.28 * s2x[ix] * c2y[iy]
     }
 
     function drawWave(time: number) {
       wave.clearRect(0, 0, width, height)
 
-      // 1) vertex heights — shared by the 4 cells that touch each vertex
-      let v = 0
-      for (let iy = 0; iy <= CELLS_H; iy++) {
+      // 1) separable terms — one trig pass per axis, then vertex heights
+      //    are pure multiplies (the cursor bump reuses the same grid)
+      for (let ix = 0; ix < VW; ix++) {
+        const x = -EXTENT + ix * STEP_X
+        s1x[ix] = Math.sin(x * 1.18 + time)
+        s2x[ix] = Math.sin(x * 2.05 - time * 0.68)
+      }
+      for (let iy = 0; iy < VH; iy++) {
         const y = -EXTENT + iy * STEP_Y
-        for (let ix = 0; ix <= CELLS_W; ix++, v++) {
-          const x = -EXTENT + ix * STEP_X
-          zGrid[v] = vertexHeight(x, y, time)
+        c1y[iy] = Math.cos(y * 1.04 - time * 0.72)
+        c2y[iy] = Math.cos(y * 1.55 + time * 0.8)
+      }
+      let v = 0
+      for (let iy = 0; iy < VH; iy++) {
+        for (let ix = 0; ix < VW; ix++, v++) {
+          zGrid[v] = vertexHeightNoPointer(ix, iy)
+        }
+      }
+      if (hasPointer) {
+        // gaussian ignition bump where the cursor is — lerped for smoothness
+        v = 0
+        for (let iy = 0; iy < VH; iy++) {
+          const y = -EXTENT + iy * STEP_Y
+          const dy = y - mouse.y
+          for (let ix = 0; ix < VW; ix++, v++) {
+            const x = -EXTENT + ix * STEP_X
+            const dx = x - mouse.x
+            zGrid[v] +=
+              1.45 * Math.exp(-(dx * dx + dy * dy) / (2 * 0.82 * 0.82))
+          }
         }
       }
 
-      // 2) cells back→front, flat-shaded quads with thermal color
+      // 2) cells back→front, flat-shaded quads with thermal color.
+      //    fills need per-cell colors; the hairline grid is one Path2D
+      //    stroked once at the end (was: 2,432 stroke() calls/frame)
       const stepX = STEP_X
       const stepY = STEP_Y
+      const strokePath = new Path2D()
       for (const ci of CELL_ORDER) {
         const cx = ci % CELLS_W
         const cy = (ci / CELLS_W) | 0
         const i0 = cy * VW + cx
-        const corners = [i0, i0 + 1, i0 + 1 + VW, i0 + VW]
-        const zs = [zGrid[corners[0]], zGrid[corners[1]], zGrid[corners[2]], zGrid[corners[3]]]
+        const z0 = zGrid[i0]
+        const z1 = zGrid[i0 + 1]
+        const z2 = zGrid[i0 + 1 + VW]
+        const z3 = zGrid[i0 + VW]
         const x0 = -EXTENT + cx * stepX
         const y0 = -EXTENT + cy * stepY
-        const pts: [number, number][] = [
-          [x0, y0],
-          [x0 + stepX, y0],
-          [x0 + stepX, y0 + stepY],
-          [x0, y0 + stepY],
-        ]
-        const avgZ = (zs[0] + zs[1] + zs[2] + zs[3]) / 4
+        const p0 = project(x0, y0, z0)
+        const p1 = project(x0 + stepX, y0, z1)
+        const p2 = project(x0 + stepX, y0 + stepY, z2)
+        const p3 = project(x0, y0 + stepY, z3)
+        const avgZ = (z0 + z1 + z2 + z3) / 4
         // map the wave field to the thermal ramp: crests ignite red,
         // troughs stay deep teal (matches the original hero.js mapping)
         const level = Math.max(0, Math.min(1, (avgZ + 1.05) / 2.1))
-        // thermal ramp: teal-green → yellow → orange → red-ignition
-        const hue = 168 - 164 * level
-        const sat = 76 + level * 10
-        const lit = 30 + level * 14
         wave.beginPath()
-        pts.forEach(([px, py], idx) => {
-          const pz = zs[idx]
-          const [sx, sy] = project(px, py, pz)
-          if (idx === 0) wave.moveTo(sx, sy)
-          else wave.lineTo(sx, sy)
-        })
+        wave.moveTo(p0[0], p0[1])
+        wave.lineTo(p1[0], p1[1])
+        wave.lineTo(p2[0], p2[1])
+        wave.lineTo(p3[0], p3[1])
         wave.closePath()
-        wave.fillStyle = `hsla(${hue}, ${sat}%, ${lit}%, .92)`
+        wave.fillStyle = FILL_LUT[(level * 256) | 0]
         wave.fill()
-        wave.strokeStyle = 'rgba(235,255,244,.16)'
-        wave.lineWidth = 0.6
-        wave.stroke()
+        strokePath.moveTo(p0[0], p0[1])
+        strokePath.lineTo(p1[0], p1[1])
+        strokePath.lineTo(p2[0], p2[1])
+        strokePath.lineTo(p3[0], p3[1])
+        strokePath.closePath()
       }
+      wave.strokeStyle = 'rgba(235,255,244,.16)'
+      wave.lineWidth = 0.6
+      wave.stroke(strokePath)
     }
 
     function resize() {
@@ -213,8 +246,21 @@ export default function HeroCanvas() {
     function start() {
       cancelAnimationFrame(frame)
       if (reduced.matches) drawWave(waveTime)
-      else frame = requestAnimationFrame(animate)
+      else if (onScreen) frame = requestAnimationFrame(animate)
     }
+
+    // the hero only renders while the section is on screen — scrolling
+    // past it stops the wave loop entirely instead of drawing off-screen
+    let onScreen = true
+    const visibility = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting
+        if (onScreen) start()
+        else cancelAnimationFrame(frame)
+      },
+      { threshold: 0 },
+    )
+    visibility.observe(host)
 
     resize()
     start()
@@ -229,6 +275,7 @@ export default function HeroCanvas() {
     }
     scope.addEventListener('pointerleave', onPointerLeave)
     return () => {
+      visibility.disconnect()
       observer.disconnect()
       reduced.removeEventListener('change', start)
       scope.removeEventListener('pointermove', onPointerMove)

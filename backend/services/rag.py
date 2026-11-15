@@ -72,6 +72,11 @@ FUEL_RE = re.compile(
 
 _docs: list[dict] = []
 _idf: dict[str, float] = {}
+# inverted index: term -> [(doc_idx, term_freq)] — scoring only touches
+# docs that carry a query term instead of recounting all 29k docs
+_postings: dict[str, list[tuple[int, int]]] = {}
+_doc_len: list[int] = []
+_docs_by_id: dict[str, dict] = {}
 _ready = False
 _duck = None
 # one lock guards lazy init AND every query: a shared DuckDB connection's
@@ -91,8 +96,14 @@ def _load() -> None:
         if INDEX.exists():
             _docs = json.loads(INDEX.read_text()).get("documents", [])
         df: Counter = Counter()
-        for d in _docs:
-            df.update(set(d.get("tokens", [])))
+        for i, d in enumerate(_docs):
+            toks = d.get("tokens", [])
+            _doc_len.append(len(toks))
+            _docs_by_id[d["id"]] = d
+            counts = Counter(toks)
+            for t, tf in counts.items():
+                df[t] += 1
+                _postings.setdefault(t, []).append((i, tf))
         n = max(1, len(_docs))
         _idf = {t: math.log(1 + (n - c + 0.5) / (c + 0.5)) for t, c in df.items()}
         if EXPERIMENTS.exists():
@@ -141,25 +152,23 @@ def _snippet(text: str, terms: list[str], width: int = 160) -> str:
     return ("…" if a else "") + text[a:b].strip() + ("…" if b < len(text) else "")
 
 
-def _score(doc: dict, terms: list[str], boosts: dict[str, float]) -> float:
-    if not terms:
-        return 0.0
-    toks = doc.get("tokens", [])
-    if not toks:
-        return 0.0
-    counts = Counter(toks)
+def _score(doc_idx: int, tfs: dict[str, int], terms: list[str],
+           boosts: dict[str, float]) -> float:
+    """BM25-lite score from posting-list term freqs — identical formula
+    to the old per-doc Counter, but only query terms are looked up."""
     k1, b = 1.4, 0.65
     avg = 220.0
     s = 0.0
+    ntoks = _doc_len[doc_idx]
     for t in terms:
-        tf = counts.get(t, 0)
+        tf = tfs.get(t, 0)
         if not tf:
             continue
         idf = _idf.get(t, math.log(1 + len(_docs)))
-        s += boosts.get(t, 1.0) * idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * len(toks) / avg))
+        s += boosts.get(t, 1.0) * idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * ntoks / avg))
     # type priors: real runs and citations beat file names
     s *= {"experiment": 1.15, "citation": 1.1, "investigation": 1.05,
-          "psi-file": 0.8}.get(doc["type"], 1.0)
+          "psi-file": 0.8}.get(_docs[doc_idx]["type"], 1.0)
     return s
 
 
@@ -192,11 +201,19 @@ def search(q: str, k: int = 8) -> dict:
     _load()
     terms, inv, fuel = _ground(q)
     boosts = {t: 1.6 for t in terms if t in {inv, fuel}}
+    # posting merge — candidates are exactly the docs that carry a query
+    # term; iterating them in doc order keeps the stable-sort tie order
+    # identical to the old full scan
+    cand: dict[int, dict[str, int]] = {}
+    for t in terms:
+        for i, tf in _postings.get(t, ()):
+            cand.setdefault(i, {})[t] = tf
     scored = []
-    for d in _docs:
+    for i in sorted(cand):
+        d = _docs[i]
         if inv and d.get("investigationId") not in (None, inv):
             continue
-        s = _score(d, terms, boosts)
+        s = _score(i, cand[i], terms, boosts)
         if s > 0:
             scored.append((s, d))
     scored.sort(key=lambda x: -x[0])
@@ -319,7 +336,7 @@ def ask(q: str, k: int = 6) -> dict:
     citations = []
     seen = set()
     for h in hits:
-        doc = next((d for d in _docs if d["id"] == h["id"]), None)
+        doc = _docs_by_id.get(h["id"])
         if doc and doc["id"] not in seen:
             citations.append(_cite(doc))
             seen.add(doc["id"])

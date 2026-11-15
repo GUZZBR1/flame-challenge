@@ -45,6 +45,14 @@ export default function LiveChamber({
 
   const runObservations = useRef({ coolFlameObserved: false, events: [] as string[] })
 
+  // the 30 Hz stream paints the canvas imperatively; React state only
+  // tracks a ~10 Hz slice for the text readout, so the deck doesn't
+  // reconcile the component on every engine frame
+  const frameRef = useRef<ChamberState | null>(null)
+  const statusRef = useRef<Status>('idle')
+  const viewRef = useRef({ split: false, sensor: 'visible' as SensorMode })
+  const lastUiTs = useRef(0)
+
   const stop = useCallback(() => {
     wsRef.current?.close()
     wsRef.current = null
@@ -52,9 +60,12 @@ export default function LiveChamber({
 
   const run = useCallback(() => {
     stop()
+    frameRef.current = null
     setFrame(null)
     setLog([])
+    statusRef.current = 'streaming'
     setStatus('streaming')
+    lastUiTs.current = 0
     runObservations.current = { coolFlameObserved: false, events: [] }
     const req = {
       investigationId: inv,
@@ -81,17 +92,34 @@ export default function LiveChamber({
               },
             }
           : s
-        setFrame(completed)
+        frameRef.current = completed
+        paint()
         emitSimFrame(completed)
         if (s.events?.length) {
           setLog((l) => [...l.slice(-5), ...s.events!])
         }
-        if (s.done) setStatus('done')
-        if (s.done) window.dispatchEvent(new CustomEvent('ignis:chamber-complete', { detail: completed }))
+        const now = performance.now()
+        if (s.done || now - lastUiTs.current > 100) {
+          lastUiTs.current = now
+          setFrame(completed)
+        }
+        if (s.done) {
+          statusRef.current = 'done'
+          setStatus('done')
+          window.dispatchEvent(new CustomEvent('ignis:chamber-complete', { detail: completed }))
+        }
       },
-      () => setStatus('offline'),
+      () => {
+        statusRef.current = 'offline'
+        setStatus('offline')
+        paint()
+      },
     )
-    if (!wsRef.current) setStatus('offline')
+    if (!wsRef.current) {
+      statusRef.current = 'offline'
+      setStatus('offline')
+      paint()
+    }
   }, [inv, o2, flow, sealed, stop])
 
   useEffect(() => stop, [stop])
@@ -163,7 +191,15 @@ export default function LiveChamber({
   }, [retuneTick, run])
 
   // Canvas Rendering (Supporting Split-Screen 1g vs µg & UV Sensor Modes)
-  useEffect(() => {
+  // paint() reads refs — the WS handler calls it directly on every
+  // frame; the effect below repaints on the ~10 Hz state slice and on
+  // view toggles (split screen, sensor mode, theme ink changes)
+  function paint(
+    f: ChamberState | null = frameRef.current,
+    st: Status = statusRef.current,
+    split: boolean = viewRef.current.split,
+    sensor: SensorMode = viewRef.current.sensor,
+  ) {
     const cv = canvasRef.current
     if (!cv) return
     const ctx = cv.getContext('2d')
@@ -177,26 +213,26 @@ export default function LiveChamber({
     const ch = cv.clientHeight
     const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#e8e6e0'
 
-    if (!frame || !frame.ignited) {
+    if (!f || !f.ignited) {
       ctx.globalAlpha = 0.5
       ctx.font = '14px monospace'
       ctx.fillStyle = ink
       ctx.textAlign = 'center'
-      ctx.fillText(status === 'streaming' ? 'igniting physical chamber…' : 'chamber stand by', cw / 2, ch / 2 + 3)
+      ctx.fillText(st === 'streaming' ? 'igniting physical chamber…' : 'chamber stand by', cw / 2, ch / 2 + 3)
       ctx.restore()
       return
     }
 
-    const isCool = frame.coolFlame || frame.regime === 2
-    const showInvisible = isCool && sensorMode === 'visible'
+    const isCool = f.coolFlame || f.regime === 2
+    const showInvisible = isCool && sensor === 'visible'
 
     // Helper to draw Microgravity Flame
     const drawMicrogravityFlame = (cx: number, cy: number, maxRadius: number) => {
-      if (frame.model === 'droplet') {
-        const d = Math.max(3, (frame.dropletDMm ?? 1) * 12)
-        const fr = Math.max(d, (frame.flameRMm ?? 0) * 12)
+      if (f.model === 'droplet') {
+        const d = Math.max(3, (f.dropletDMm ?? 1) * 12)
+        const fr = Math.max(d, (f.flameRMm ?? 0) * 12)
 
-        if (fr > d + 2 && frame.regime !== 4) {
+        if (fr > d + 2 && f.regime !== 4) {
           if (showInvisible) {
             // Invisible to naked eye
             ctx.fillStyle = 'rgba(80,120,200,0.06)'
@@ -205,7 +241,7 @@ export default function LiveChamber({
             ctx.fill()
           } else {
             const g = ctx.createRadialGradient(cx, cy, d, cx, cy, fr * 2.1)
-            if (sensorMode === 'uv' && isCool) {
+            if (sensor === 'uv' && isCool) {
               g.addColorStop(0, 'rgba(0, 240, 255, 0.75)') // UV false-color cyan
               g.addColorStop(0.4, 'rgba(180, 50, 255, 0.45)') // OH* band magenta
               g.addColorStop(1, 'rgba(0,0,0,0)')
@@ -219,7 +255,7 @@ export default function LiveChamber({
             ctx.arc(cx, cy, fr * 2.1, 0, Math.PI * 2)
             ctx.fill()
 
-            ctx.strokeStyle = sensorMode === 'uv' ? 'rgba(0, 240, 255, 0.9)' : isCool ? 'rgba(120,170,255,0.7)' : 'rgba(255,190,90,0.7)'
+            ctx.strokeStyle = sensor === 'uv' ? 'rgba(0, 240, 255, 0.9)' : isCool ? 'rgba(120,170,255,0.7)' : 'rgba(255,190,90,0.7)'
             ctx.lineWidth = 1.2
             ctx.beginPath()
             ctx.arc(cx, cy, fr, 0, Math.PI * 2)
@@ -228,7 +264,7 @@ export default function LiveChamber({
         }
 
         // Droplet fuel core
-        ctx.fillStyle = frame.regime === 4 ? 'rgba(120,120,120,0.6)' : ink
+        ctx.fillStyle = f.regime === 4 ? 'rgba(120,120,120,0.6)' : ink
         ctx.beginPath()
         ctx.arc(cx, cy, d / 2, 0, Math.PI * 2)
         ctx.fill()
@@ -236,17 +272,17 @@ export default function LiveChamber({
         // Solid spread front
         const slabW = Math.min(240, maxRadius * 2)
         const x0 = cx - slabW / 2
-        const pos = Math.min(1, (frame.frontPosCm ?? 0) / 30)
+        const pos = Math.min(1, (f.frontPosCm ?? 0) / 30)
         ctx.strokeStyle = ink
         ctx.globalAlpha = 0.4
         ctx.strokeRect(x0, cy - 6, slabW, 12)
         ctx.fillStyle = ink
         ctx.fillRect(x0, cy - 6, slabW * pos, 12)
         const fx = x0 + slabW * pos
-        if (frame.regime === 1) {
-          const inten = Math.min(1, frame.intensity ?? 0.5)
+        if (f.regime === 1) {
+          const inten = Math.min(1, f.intensity ?? 0.5)
           const g = ctx.createRadialGradient(fx, cy, 2, fx, cy, 38)
-          g.addColorStop(0, sensorMode === 'uv' ? 'rgba(0, 240, 255, 0.8)' : `rgba(255,180,70,${0.75 * inten})`)
+          g.addColorStop(0, sensor === 'uv' ? 'rgba(0, 240, 255, 0.8)' : `rgba(255,180,70,${0.75 * inten})`)
           g.addColorStop(1, 'rgba(0,0,0,0)')
           ctx.fillStyle = g
           ctx.beginPath()
@@ -260,7 +296,7 @@ export default function LiveChamber({
     const drawEarth1gFlame = (cx: number, cy: number) => {
       const d = 16
       const baseFlameH = 75
-      const flicker = Math.sin(frame.tSec * 16) * 4
+      const flicker = Math.sin(f.tSec * 16) * 4
 
       // Rising Buoyant Soot Column
       const plumeG = ctx.createLinearGradient(cx, cy, cx, cy - 110)
@@ -300,7 +336,7 @@ export default function LiveChamber({
       ctx.restore()
     }
 
-    if (splitScreen) {
+    if (split) {
       // Split-screen: Left is Earth 1g, Right is µg
       const dividerX = cw / 2
 
@@ -336,6 +372,16 @@ export default function LiveChamber({
     }
 
     ctx.restore()
+  }
+
+  // React-driven repaints: the ~10 Hz frame slice for the readout and
+  // the view toggles — the 30 Hz stream itself paints via paint()
+  useEffect(() => {
+    frameRef.current = frame
+    statusRef.current = status
+    viewRef.current = { split: splitScreen, sensor: sensorMode }
+    paint()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [frame, status, splitScreen, sensorMode])
 
   const regime = frame

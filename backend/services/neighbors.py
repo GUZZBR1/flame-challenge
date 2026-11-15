@@ -110,9 +110,16 @@ def _norm(text: str) -> str:
     return " " + " ".join(t for t in TOKEN_SPLIT.split(text.lower()) if t) + " "
 
 
-def _has_alias(text_norm: str, alias: str) -> bool:
-    a = _norm(alias)
-    return len(a) > 2 and a in text_norm
+# aliases normalized once — _affinity runs per row per request, so the
+# regex stays out of the hot path
+_ALIAS_NORM: dict[str, tuple[str, ...]] = {
+    key: tuple(_norm(a) for a in aliases)
+    for key, aliases in MATERIAL_ALIASES.items()
+}
+
+
+def _has_alias(text_norm: str, alias_norm: str) -> bool:
+    return len(alias_norm) > 2 and alias_norm in text_norm
 
 
 def _row_material_key(row: dict) -> str | None:
@@ -124,12 +131,14 @@ def _row_material_key(row: dict) -> str | None:
     for key, aliases in MATERIAL_ALIASES.items():
         # whole-phrase match — 'ethane' must not catch inside 'methane',
         # but 'iso-octane' must catch 'iso-octane'/'iso octane'
-        if any(_has_alias(fuel_norm, a) for a in aliases):
+        if any(_has_alias(fuel_norm, a) for a in _ALIAS_NORM[key]):
             return key
     return None
 
 
-def _affinity(query_mat: str, row_mat: str | None, fuel: str) -> float:
+def _affinity(query_mat: str, row_mat: str | None, hay: str) -> float:
+    """hay = the row's precomputed _norm(f"{fuel} {material_key}") — the
+    caller passes it in so no normalization runs inside the scan."""
     if not query_mat:
         return AFFINITY_CLASS
     if row_mat is None:
@@ -137,10 +146,11 @@ def _affinity(query_mat: str, row_mat: str | None, fuel: str) -> float:
     q = query_mat.lower()
     if row_mat == q:
         return AFFINITY_EXACT
-    aliases = MATERIAL_ALIASES.get(q, (q,))
+    aliases = _ALIAS_NORM.get(q)
+    if aliases is None:
+        aliases = (_norm(q),)
     # alias = same substance under another name; whole-phrase matching keeps
     # distinct chemicals apart ('ethane' ≠ 'methane', 'ethanol' ≠ 'methanol')
-    hay = _norm(f"{fuel} {row_mat}")
     if any(_has_alias(hay, a) for a in aliases):
         return AFFINITY_ALIAS
     if row_mat in _class_of(q):
@@ -164,6 +174,7 @@ def _load() -> list[dict]:
         if EXPERIMENTS.exists():
             with EXPERIMENTS.open(newline="", encoding="utf-8") as fh:
                 for r in csv.DictReader(fh):
+                    mk = _row_material_key(r)
                     rows.append({
                         "run_id": r.get("run_id", ""),
                         "accession": r.get("accession", ""),
@@ -175,7 +186,12 @@ def _load() -> list[dict]:
                         "cool_flame": (r.get("cool_flame") or "").lower() == "true",
                         "source_url": r.get("source_url", ""),
                         "verified": (r.get("verified") or "").lower() == "true",
-                        "material_key": _row_material_key(r),
+                        "material_key": mk,
+                        # affinity haystack normalized once at load —
+                        # identical to _norm(f"{fuel} {material_key}") the
+                        # old per-call path computed
+                        "hay_norm": _norm(
+                            f"{r.get('fuel', '')} {mk or ''}"),
                     })
         _rows = rows
         return _rows
@@ -194,7 +210,7 @@ def _distance(row: dict, o2_pct: float, flow_cms: float, material_id: str) -> fl
     # quiescent default: missing flow means the run burned in still air
     row_flow = row["flow_cms"] if row["flow_cms"] is not None else 0.0
     flow_term = (row_flow - flow_cms) / FLOW_SCALE
-    aff = _affinity(material_id, row["material_key"], row["fuel"])
+    aff = _affinity(material_id, row["material_key"], row["hay_norm"])
     return math.sqrt(o2_term * o2_term + flow_term * flow_term + aff * aff)
 
 

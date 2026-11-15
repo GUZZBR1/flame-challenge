@@ -185,14 +185,20 @@ def api_investigations() -> dict:
 _BUNDLE = Path(__file__).resolve().parents[2] / "data" / "bundle"
 
 
+_matrix_cache: dict | None = None
+
+
 @app.get("/api/investigations/matrix")
 def api_investigation_matrix() -> dict:
     """Summarize feed — the full investigation matrix served to the
     dashboard (objectives, fuels, conditions, variation, sensors)."""
+    global _matrix_cache
     path = _BUNDLE / "investigations.json"
     if not path.exists():
         return {"investigations": []}
-    return json.loads(path.read_text(encoding="utf-8"))
+    if _matrix_cache is None:
+        _matrix_cache = json.loads(path.read_text(encoding="utf-8"))
+    return _matrix_cache
 
 
 @app.get("/api/investigations/{inv_id}")
@@ -452,10 +458,16 @@ async def chamber_ws(ws: WebSocket) -> None:
             # the pure-Python fallback is CPU-bound — keep the event loop free
             await asyncio.to_thread(ch.step, dt)
             events = ch.drain_events()
-            payload = json.loads(ch.state_json())
+            state = ch.state_json()
             if events:
+                # rare path — only parse+reserialize when events must
+                # merge into the frame payload
+                payload = json.loads(state)
                 payload["events"] = events
-            await ws.send_text(json.dumps(payload))
+                await ws.send_text(json.dumps(payload))
+            else:
+                # state_json() is already serialized — send verbatim
+                await ws.send_text(state)
             await asyncio.sleep(dt)
         await ws.send_text(json.dumps({"done": True, "state": json.loads(ch.state_json())}))
     except WebSocketDisconnect:
