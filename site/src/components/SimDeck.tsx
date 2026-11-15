@@ -229,7 +229,7 @@ export default function SimDeck() {
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
-      <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-28 sm:pt-32">
+      <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-24 sm:pt-28">
         <KeyedFlame
           className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
           strength={0.3}
@@ -239,24 +239,7 @@ export default function SimDeck() {
 
         {/* ---- editorial hero ---- */}
         <header className="relative">
-          <div data-hero className="eyebrow flex items-baseline justify-between gap-6 opacity-70">
-            <Button asChild variant="glass" size="sm" className="lowercase">
-              <a
-                href="#top"
-                onClick={(e) => {
-                  e.preventDefault()
-                  navigateBack()
-                }}
-              >
-                <IconArrowLeft size={14} /> back
-              </a>
-            </Button>
-            <span className="hidden cursor-default transition-colors duration-300 hover:text-accent hover:opacity-100 sm:inline">
-              simulations · mission envelopes
-            </span>
-          </div>
-
-          <div className="mt-8 grid items-end gap-x-[clamp(3rem,7vw,9rem)] gap-y-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
+          <div className="grid items-end gap-x-[clamp(3rem,7vw,9rem)] gap-y-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             <div>
               <p data-hero className="card-label">Guided Scenarios &amp; Historical Crises</p>
               <h1
