@@ -149,7 +149,7 @@ function OrbitDecor() {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute -right-40 -top-72 hidden h-[1000px] w-[1100px] text-ink opacity-[0.09] lg:block"
+      className="pointer-events-none absolute -right-40 -top-72 hidden h-[1000px] w-[1100px] text-ink opacity-[0.22] dark:opacity-[0.09] lg:block"
       viewBox="0 0 1100 1000"
       fill="none"
     >
@@ -241,7 +241,7 @@ export default function SimDeck() {
         <header className="relative sm:pl-[clamp(1rem,6vw,7rem)]">
           <div className="grid items-end gap-x-[clamp(3rem,7vw,9rem)] gap-y-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             <div>
-              <p data-hero className="card-label">Guided Scenarios &amp; Historical Crises</p>
+              <p data-hero className="card-label !text-[color-mix(in_srgb,var(--accent)_55%,var(--ink))] dark:!text-accent">Guided Scenarios &amp; Historical Crises</p>
               <h1
                 data-hero
                 className="mt-2 font-display text-[clamp(2.1rem,3.8vw,3.25rem)] font-bold leading-display tracking-tight"
@@ -249,7 +249,7 @@ export default function SimDeck() {
                 Mission Envelopes
               </h1>
             </div>
-            <p data-hero className="max-w-sm text-caption leading-[1.7] opacity-70">
+            <p data-hero className="max-w-sm text-caption leading-[1.7] opacity-80">
               Explore historical fire crises from NASA research — one click previews the mission.
             </p>
           </div>
@@ -279,10 +279,10 @@ export default function SimDeck() {
             aria-hidden="true"
             className="relative mb-12 grid h-3 gap-x-[clamp(3rem,7vw,9rem)] sm:mb-16 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]"
           >
-            <span className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-ink/35 via-ink/15 to-transparent" />
-            <span className="absolute left-0 top-0 h-3 w-px bg-ink/45" />
+            <span className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-ink/60 via-ink/30 to-transparent dark:from-ink/35 dark:via-ink/15" />
+            <span className="absolute left-0 top-0 h-3 w-px bg-ink/70 dark:bg-ink/45" />
             <span className="relative hidden lg:col-start-2 lg:block">
-              <span className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[2px] h-2 w-px bg-ink/30" />
+              <span className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[2px] h-2 w-px bg-ink/55 dark:bg-ink/30" />
               <span className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e5202e]" />
             </span>
           </div>
@@ -294,7 +294,7 @@ export default function SimDeck() {
                 <span className="inline-block shrink-0 bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
                   Historical Crisis
                 </span>
-                <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-[#e5202e]/60 to-transparent" />
+                <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-[#e5202e] to-transparent dark:from-[#e5202e]/60" />
               </div>
               <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3rem,7.6vw,7rem)] font-bold leading-[0.92] tracking-tight">
                 {feature.name}
@@ -353,7 +353,7 @@ export default function SimDeck() {
             <div className="relative flex flex-col gap-10">
               <span
                 aria-hidden="true"
-                className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[6%] hidden h-[88%] w-px bg-gradient-to-b from-transparent via-ink/30 to-transparent lg:block"
+                className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[6%] hidden h-[88%] w-px bg-gradient-to-b from-transparent via-ink/55 to-transparent dark:via-ink/30 lg:block"
               />
               <svg
                 aria-hidden="true"
@@ -363,7 +363,7 @@ export default function SimDeck() {
                 viewBox="0 0 64 64"
                 fill="none"
               >
-                <line x1="4" y1="60" x2="60" y2="4" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1" />
+                <line x1="4" y1="60" x2="60" y2="4" stroke="currentColor" strokeOpacity="0.7" strokeWidth="1" />
                 <circle cx="32" cy="32" r="3" fill="#e5202e" />
               </svg>
               {rail.map(([preset, t, media, n, shape]) => {
@@ -375,7 +375,7 @@ export default function SimDeck() {
                     data-hero
                     className="group flex flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                   >
-                    <span className="cut-panel grid w-full grid-cols-[minmax(0,1fr)_46%] items-center gap-3 bg-ink/[0.07] py-10 pl-12 pr-8 transition-colors duration-300 group-hover:bg-ink/[0.1]">
+                    <span className="cut-panel grid w-full grid-cols-[minmax(0,1fr)_46%] items-center gap-3 bg-ink/[0.09] dark:bg-ink/[0.07] py-10 pl-12 pr-8 transition-colors duration-300 group-hover:bg-ink/[0.13] dark:group-hover:bg-ink/[0.1]">
                       <span className="flex h-full min-w-0 flex-col justify-between gap-6">
                         <span className="block">
                           <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
@@ -409,7 +409,7 @@ export default function SimDeck() {
           </div>
 
           {/* band — challenger + columbia, media bleeding to the screen edges */}
-          <div className="mission-bleed relative mt-24 pt-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-ink/35 before:via-ink/20 before:to-transparent sm:mt-32">
+          <div className="mission-bleed relative mt-24 pt-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-ink/60 before:via-ink/35 before:to-transparent dark:before:from-ink/35 dark:before:via-ink/20 sm:mt-32">
             <span aria-hidden="true" className="absolute left-[var(--gut)] top-0 h-[3px] w-14 -translate-y-px bg-[#1e3fae]" />
             <div className="grid gap-24 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-[clamp(4rem,8vw,10rem)]">
               {band.map(([preset, t, media, n, shape], i) => {
@@ -425,7 +425,7 @@ export default function SimDeck() {
                     {!imageLeft && (
                       <span
                         aria-hidden="true"
-                        className="absolute -left-[clamp(2rem,4vw,5rem)] top-[10%] hidden h-[80%] w-px bg-gradient-to-b from-transparent via-ink/30 to-transparent lg:block"
+                        className="absolute -left-[clamp(2rem,4vw,5rem)] top-[10%] hidden h-[80%] w-px bg-gradient-to-b from-transparent via-ink/55 to-transparent dark:via-ink/30 lg:block"
                       />
                     )}
                     <span
