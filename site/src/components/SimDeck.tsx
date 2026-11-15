@@ -231,8 +231,9 @@ export default function SimDeck() {
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
       <div className="shell relative pb-24 pt-28 sm:pt-32">
         <KeyedFlame
-          className="inset-x-0 -top-8 h-[min(54vh,460px)]"
+          className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
           strength={0.3}
+          mask="[mask-image:radial-gradient(ellipse_closest-side_at_50%_45%,black_12%,transparent_100%)]"
           src={{ hd: '/assets/saffire5_uv.mp4', sd: '/assets/saffire5_uv_sd.mp4' }}
         />
 
