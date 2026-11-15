@@ -23,6 +23,7 @@ import TypedText from './TypedText'
 import { IconMic, IconSend } from './Icons'
 import { useMissionVoiceControl } from '../hooks/useMissionVoiceControl'
 import Button from './ui/Button'
+import AsciiBrain from './AsciiBrain'
 
 /* recommended_action → which card + option actions it maps to */
 const ACTION_MAP: Record<string, { card: string; options: string[] }> = {
@@ -84,6 +85,7 @@ export default function SiConsole({ slim = false }: { slim?: boolean }) {
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [voiceOn, setVoiceOn] = useState(false)
+  const [showBrain, setShowBrain] = useState(true)
   // entries mounted with the console render full; only answers that
   // arrive while you're watching get the typewriter treatment
   const [typedIds] = useState(() => new Set(log.map((e) => e.id)))
@@ -487,7 +489,18 @@ export default function SiConsole({ slim = false }: { slim?: boolean }) {
               frameless: no box, the conversation just lives on the page */}
           <div className={slim ? '' : 'border-2 border-[var(--ink)] bg-[var(--panel)] shadow-[4px_4px_0_0_color-mix(in_srgb,var(--ink)_30%,transparent)]'}>
             <div className={`flex items-center justify-between font-mono lowercase tracking-[0.2em] ${slim ? 'py-1 text-[11.5px]' : 'border-b border-[var(--edge)] px-4 py-2 text-[10px]'}`}>
-              <span className="opacity-60">comms · ignis copilot</span>
+              <div className="flex items-center gap-2.5">
+                <span className="opacity-60">comms · ignis copilot</span>
+                <Button
+                  type="button"
+                  onClick={() => setShowBrain((v) => !v)}
+                  variant="glass"
+                  size="sm"
+                  className="h-6 px-2.5 text-[9.5px] font-mono lowercase tracking-wider"
+                >
+                  {showBrain ? 'hide 3D cortex' : 'show 3D cortex'}
+                </Button>
+              </div>
               {slim && risk && (
                 <span className={`flex items-baseline gap-2 ${LEVEL_TONE[risk.level] ?? ''}`}>
                   <span className="text-[11px] tracking-[0.16em] opacity-60">
@@ -514,6 +527,12 @@ export default function SiConsole({ slim = false }: { slim?: boolean }) {
                 voice feedback
               </label>
             </div>
+
+            {showBrain && (
+              <div className="border-b border-white/10 px-2 py-1">
+                <AsciiBrain compact />
+              </div>
+            )}
 
             <div
               ref={logRef}

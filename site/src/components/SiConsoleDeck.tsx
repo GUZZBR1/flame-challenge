@@ -127,25 +127,22 @@ export default function SiConsoleDeck() {
           </p>
         </div>
 
-        {/* the auditable path — same record, exact rows + citations */}
-        <div data-hero className="relative mt-12">
-          <AskPanel slim />
-        </div>
-
-        {/* the copilot's brain — every record it has consumed wired as
-            live tissue; click a region to zoom and audit its sources */}
-        <div data-reveal className="relative mt-20">
-          <div className="font-mono text-[13px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
+        {/* the copilot's living 3D ASCII cortex — centerpiece */}
+        <div data-hero className="relative mt-10">
+          <div className="mb-2 font-mono text-[12px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
             <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
-              the copilot's brain
+              3D ASCII cortex · neural telemetry & evidence lobes
             </span>
           </div>
-          <p className="m-0 mt-3 max-w-2xl text-[14px] lowercase leading-[1.75] text-[var(--ink)] opacity-75">
-            the llm's memory, rendered live — each neuron is a psi/ntrs
-            record the copilot actually touched answering you. watch it
-            fire as it learns; click a region to audit its sources.
-          </p>
           <AsciiBrain />
+        </div>
+
+        {/* the auditable path — same record, exact rows + citations */}
+        <div data-reveal className="relative mt-16 border-t border-[var(--edge)] pt-10">
+          <div className="mb-4 font-mono text-[12px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
+            <span>search the psi ground truth corpus</span>
+          </div>
+          <AskPanel slim />
         </div>
 
         <div

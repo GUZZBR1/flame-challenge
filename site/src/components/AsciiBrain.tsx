@@ -278,7 +278,7 @@ interface WavePulse {
   maxRadius: number
 }
 
-export default function AsciiBrain() {
+export default function AsciiBrain({ compact = false }: { compact?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -420,9 +420,9 @@ export default function AsciiBrain() {
     if (!ctx) return
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    // High resolution ASCII terminal grid
-    const COLS = 96
-    const ROWS = 42
+    // High resolution ASCII terminal grid (compact mode for embedded console)
+    const COLS = compact ? 74 : 96
+    const ROWS = compact ? 28 : 42
     const zBuffer = new Float32Array(COLS * ROWS)
     const energyBuf = new Float32Array(COLS * ROWS)
     const hotBuf = new Uint8Array(COLS * ROWS)
@@ -437,7 +437,7 @@ export default function AsciiBrain() {
 
     const draw = (timeMs: number) => {
       const avail = cv.parentElement?.clientWidth ?? 720
-      const stageH = cv.parentElement?.clientHeight ?? 640
+      const stageH = compact ? 300 : (cv.parentElement?.clientHeight ?? 640)
       const fs = Math.max(9.5, Math.min(avail / (COLS * 0.6), stageH / (ROWS * 1.15), 23))
       const cellW = fs * 0.6
       const cellH = fs * 1.14
@@ -812,7 +812,8 @@ export default function AsciiBrain() {
       </div>
 
       {/* 3D ASCII Canvas Stage — 100% transparent, no background box */}
-      <div className="brain-stage relative mt-4 overflow-hidden">
+      <div className={`brain-stage relative overflow-hidden ${compact ? "mt-2 min-h-[18rem]" : "mt-4 min-h-[28rem]"}`}>
+
         <canvas
           ref={canvasRef}
           className="relative z-[1] mx-auto block cursor-grab active:cursor-grabbing touch-none select-none"
