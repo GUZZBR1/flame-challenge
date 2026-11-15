@@ -204,15 +204,16 @@ export default function SimDeck() {
   })
 
   const feature = splitTitle(FEATURE)
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const secondary = [
-    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '[grid-area:side-a]', 'bleed-x bleed-r'],
-    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '[grid-area:side-b]', 'bleed-x bleed-r'],
-    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '[grid-area:band-a]', 'bleed-x bleed-l'],
-    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '[grid-area:band-b]', 'bleed-x bleed-r'],
+    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA],
+    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB],
+    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA],
+    [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB],
   ] as const
 
   return (
-    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
+    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
       <div className="shell relative pb-24 pt-28 sm:pt-32">
         <KeyedFlame
           className="inset-x-0 -top-8 h-[min(54vh,460px)]"
@@ -251,62 +252,117 @@ export default function SimDeck() {
           </p>
         </header>
 
-        {/* ---- missions — historical crises, names only ---- */}
+        {/* ---- missions — historical crises ---- */}
         <section className="mt-16 sm:mt-24" aria-label="Historical missions">
-          <div className="flex items-baseline justify-between gap-4 border-b border-edge pb-4" data-hero>
-            <span className="card-label">Missions</span>
-            <span className="font-mono text-tiny opacity-60">historical crises</span>
-          </div>
+          <svg width="0" height="0" aria-hidden="true" className="absolute">
+            <defs>
+              <clipPath id="cut-hero" clipPathUnits="objectBoundingBox">
+                <path d="M0.32,0 L0.97,0 Q1,0 1,0.04 L1,0.62 Q1,0.68 0.975,0.74 L0.92,0.95 Q0.905,1 0.87,1 L0.04,1 Q0,1 0.014,0.95 L0.3,0.04 Q0.31,0 0.32,0 Z" />
+              </clipPath>
+              <clipPath id="cut-rail" clipPathUnits="objectBoundingBox">
+                <path d="M0.1,0 L0.97,0 Q1,0 0.99,0.05 L0.93,0.95 Q0.92,1 0.89,1 L0.03,1 Q0,1 0.01,0.95 L0.07,0.05 Q0.08,0 0.1,0 Z" />
+              </clipPath>
+            </defs>
+          </svg>
 
-          <div className="mission-areas relative mt-8 sm:mt-10">
+          {/* featured — apollo 1 */}
+          <article
+            data-hero
+            className="relative grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-6"
+          >
             <OrbitDecor />
-
-            {/* featured — apollo 1 */}
-            <button
-              {...pickProps(FEATURE)}
-              data-hero
-              className="group flex flex-col text-left [grid-area:feature] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-            >
-              <span
-                className="block font-display text-[clamp(3.2rem,6vw,5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                style={activeMission.id === FEATURE.id ? { color: FEATURE.accent } : undefined}
-              >
-                {feature.name}
+            <div className="relative min-w-0">
+              <span className="inline-block bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
+                Historical Crisis
               </span>
-              {activeMission.id === FEATURE.id && (
-                <span className="mt-4 block"><ActiveMark /></span>
+              <h2 className="mt-5 font-display text-[clamp(3.5rem,8vw,6.5rem)] font-bold leading-[0.95] tracking-tight">
+                {feature.name}
+              </h2>
+              <p className="mt-5 font-mono text-[clamp(1.1rem,2vw,1.5rem)] font-semibold text-[#e5202e]">
+                {FEATURE.tag}
+              </p>
+              <p className="mt-6 max-w-md text-body leading-[1.8] opacity-80">{FEATURE.description}</p>
+              <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+                <button
+                  {...pickProps(FEATURE)}
+                  className="inline-flex items-center gap-3 rounded-[6px] bg-[#1e3fae] px-6 py-3.5 font-mono text-caption font-semibold text-white transition-colors duration-300 hover:bg-[#2a52d4] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                >
+                  Explore Mission <span aria-hidden="true">→</span>
+                </button>
+                <button
+                  type="button"
+                  aria-expanded={detailsOpen}
+                  onClick={() => setDetailsOpen((o) => !o)}
+                  className="border-b-2 border-[#1e3fae] pb-1 font-mono text-caption font-semibold transition-colors duration-300 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                >
+                  Details
+                </button>
+                {activeMission.id === FEATURE.id && <ActiveMark />}
+              </div>
+              {detailsOpen && (
+                <p className="mt-6 max-w-md font-mono text-tiny leading-relaxed opacity-70">
+                  {FEATURE.prompt} — {FEATURE.outcomeStatus}
+                </p>
               )}
-              <span className="bleed-x bleed-l relative mt-8 block min-h-[280px] flex-1 sm:min-h-[400px] lg:min-h-[480px]">
+            </div>
+
+            <div className="relative min-w-0">
+              <svg
+                aria-hidden="true"
+                className="pointer-events-none absolute -left-2 top-0 z-10 hidden h-full w-[40%] lg:block"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                fill="none"
+              >
+                <line x1="30" y1="2" x2="2" y2="62" stroke="#e5202e" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+              </svg>
+              <div className="cut-hero relative h-[300px] overflow-hidden bg-black sm:h-[400px] lg:h-[500px]">
                 <img
                   src={MISSION_MEDIA.feature.src}
                   alt={MISSION_MEDIA.feature.alt}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  className="h-full w-full object-cover grayscale contrast-125 brightness-95"
                 />
-              </span>
-            </button>
+                <div className="absolute inset-0 bg-[#1e3fae]/15 mix-blend-multiply" />
+              </div>
+            </div>
+          </article>
 
-            {/* rail — apollo 13 + mir 1997 · band — challenger + columbia */}
-            {secondary.map(([preset, t, media, cls, mediaCls]) => {
+          {/* secondary missions — horizontal rules, circular go-icons */}
+          <div className="mt-20 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
+            {secondary.map(([preset, t, media]) => {
               const isActive = activeMission.id === preset.id
               return (
                 <button
                   key={preset.id}
                   {...pickProps(preset)}
                   data-hero
-                  className={`group text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${cls}`}
+                  className="group flex flex-col border-t border-edge pt-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                 >
-                  <span
-                    className="block font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                    style={isActive ? { color: preset.accent } : undefined}
-                  >
-                    {t.name}
+                  <span className="flex items-start justify-between gap-3">
+                    <span className="min-w-0">
+                      <span className="block font-mono text-tiny font-semibold uppercase tracking-label text-[#e5202e]">
+                        Historical Crisis
+                      </span>
+                      <span
+                        className="mt-2 block font-display text-[clamp(1.6rem,2.6vw,2.2rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                        style={isActive ? { color: preset.accent } : undefined}
+                      >
+                        {t.name}
+                      </span>
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="mt-1 grid size-9 shrink-0 place-items-center rounded-full border border-edge font-mono text-caption transition-colors duration-300 group-hover:border-accent group-hover:text-accent"
+                    >
+                      →
+                    </span>
                   </span>
-                  {isActive && <span className="mt-3 block"><ActiveMark /></span>}
-                  <span className={`mt-5 block h-44 sm:h-56 lg:h-64 ${mediaCls}`}>
+                  <span className="mt-3 block font-mono text-tiny font-semibold text-[#e5202e]">{preset.tag}</span>
+                  {isActive && <span className="mt-2 block"><ActiveMark /></span>}
+                  <span className="cut-rail mt-5 block h-44 overflow-hidden bg-black sm:h-48">
                     {media.type === 'video' ? (
                       <video
-                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        className="h-full w-full object-cover grayscale contrast-110 transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0"
                         src={media.src}
                         poster={media.poster}
                         aria-label={media.alt}
@@ -318,7 +374,7 @@ export default function SimDeck() {
                       />
                     ) : (
                       <img
-                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        className="h-full w-full object-cover grayscale contrast-110 transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0"
                         src={media.src}
                         alt={media.alt}
                         loading="lazy"

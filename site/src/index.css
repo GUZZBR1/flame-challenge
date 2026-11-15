@@ -524,50 +524,8 @@ button.pill:active { transform: translateY(0) scale(.96); }
   .heat-surface { animation: none; opacity: .85; }
 }
 
-/* ---- simulations deck — asymmetric editorial spread. Named grid
-   areas keep the composition continuous: the featured crisis leads
-   left and the other missions stack in the right rail. Mobile →
-   single column, tablet → 2-col with the feature on top, desktop →
-   the full spread. */
-/* full-bleed spread — the grid breaks out of the 72rem shell to the
-   viewport edges; --gut is the shell's content inset, so names stay on
-   the editorial column while media stretches to the screen edge */
-.mission-areas {
-  --gut: 1.5rem;
-  margin-inline: calc(50% - 50vw);
-  padding-inline: var(--gut);
-}
-@media (min-width: 640px) { .mission-areas { --gut: calc(2.5rem + max(0px, (100vw - 72rem) / 2)); } }
-@media (min-width: 1024px) { .mission-areas { --gut: calc(4rem + max(0px, (100vw - 72rem) / 2)); } }
-@media (max-width: 639.98px) {
-  .bleed-x { margin-inline: calc(-1 * var(--gut)); }
-}
-@media (min-width: 640px) {
-  .bleed-l { margin-left: calc(-1 * var(--gut)); }
-  .bleed-r { margin-right: calc(-1 * var(--gut)); }
-}
-.mission-areas {
-  display: grid;
-  gap: 3.5rem;
-  grid-template-areas: "feature" "side-a" "side-b" "band-a" "band-b";
-}
-@media (min-width: 640px) {
-  .mission-areas {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas:
-      "feature feature"
-      "side-a side-b"
-      "band-a band-b";
-  }
-}
-@media (min-width: 1024px) {
-  .mission-areas {
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-    column-gap: 3.5rem;
-    row-gap: 4.5rem;
-    grid-template-areas:
-      "feature side-a"
-      "feature side-b"
-      "band-a  band-b";
-  }
-}
+/* ---- simulations deck — rounded diagonal cuts for the mission media.
+   Shapes are defined as objectBoundingBox clipPaths in SimDeck so they
+   scale with whatever box they are applied to. */
+.cut-hero { clip-path: url(#cut-hero); }
+.cut-rail { clip-path: url(#cut-rail); }
