@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { gsap } from '../lib/scroll'
 import { emitUiCommand } from '../lib/simBus'
 import KeyedFlame from './KeyedFlame'
+import Footer from './Footer'
 import type { MissionOutcomeStatus } from './CrewTimelinePanel'
 
 interface MissionPreset {
@@ -517,6 +518,7 @@ export default function SimDeck() {
           </div>
         </section>
       </div>
+      <Footer />
     </div>
   )
 }

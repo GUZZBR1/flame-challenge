@@ -13,6 +13,7 @@ import CrewTimelinePanel from './CrewTimelinePanel'
 import InteractiveEquationCanvas from './InteractiveEquationCanvas'
 import CounterfactualTrackCard from './CounterfactualTrackCard'
 import MissionWaffleMatrix from './MissionWaffleMatrix'
+import Footer from './Footer'
 
 function percent(value: unknown): string | null {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null
@@ -412,6 +413,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
