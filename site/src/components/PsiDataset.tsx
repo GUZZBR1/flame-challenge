@@ -6,6 +6,7 @@ import {
   THEME_LABELS,
 } from '../lib/dashboard'
 import { getFilterTag, gsap, navigateBack, setFilterTag } from '../lib/scroll'
+import { attachKeyedFlame } from '../lib/keyedFlame'
 import { IconArrowLeft } from './Icons'
 import Button from './ui/Button'
 
@@ -48,64 +49,12 @@ export default function PsiDataset() {
   // floats behind the headline, same trick as the challenge section.
   // the loop window is discovered at runtime (the clip's container
   // reports an odd duration, so we adapt instead of hardcoding)
+  const loopEnd = useRef(Infinity)
   useEffect(() => {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    const ctx = c.getContext('2d', { willReadFrequently: true })
-    if (!ctx) return
-    let raf = 0
-    let cancelled = false
-    let visible = true
-    const loopStart = 0.5
-    let loopEnd = Infinity
-
-    const onMeta = () => {
-      v.currentTime = loopStart
-      if (Number.isFinite(v.duration) && v.duration > 1.5)
-        loopEnd = v.duration - 0.4
-    }
-    const onTime = () => {
-      if (v.currentTime >= loopEnd) v.currentTime = loopStart
-    }
-    v.addEventListener('loadedmetadata', onMeta)
-    v.addEventListener('timeupdate', onTime)
-    if (v.readyState >= 1) onMeta()
-
-    const obs = new IntersectionObserver(
-      ([entry]) => { visible = entry.isIntersecting },
-      { threshold: 0 },
-    )
-    obs.observe(c)
-
-    const tick = () => {
-      if (cancelled) return
-      if (visible && v.readyState >= 2 && v.videoWidth) {
-        const w = v.videoWidth >> 1
-        const h = v.videoHeight >> 1
-        if (c.width !== w || c.height !== h) {
-          c.width = w
-          c.height = h
-        }
-        ctx.drawImage(v, 0, 0, w, h)
-        const img = ctx.getImageData(0, 0, w, h)
-        const d = img.data
-        for (let i = 0; i < d.length; i += 4) {
-          const l = d[i] * 0.2126 + d[i + 1] * 0.7152 + d[i + 2] * 0.0722
-          d[i + 3] = Math.min(255, Math.max(0, (l - 26) * 3.4))
-        }
-        ctx.putImageData(img, 0, 0)
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(raf)
-      obs.disconnect()
-      v.removeEventListener('loadedmetadata', onMeta)
-      v.removeEventListener('timeupdate', onTime)
-    }
+    return attachKeyedFlame(v, c)
   }, [])
 
   // choreography — hero elements fly in on mount; further blocks reveal
@@ -165,6 +114,16 @@ export default function PsiDataset() {
           loop
           preload="metadata"
           aria-hidden="true"
+          onLoadedMetadata={(e) => {
+            e.currentTarget.currentTime = 0.5
+            const d = e.currentTarget.duration
+            loopEnd.current =
+              Number.isFinite(d) && d > 1.5 ? d - 0.4 : Infinity
+          }}
+          onTimeUpdate={(e) => {
+            if (e.currentTarget.currentTime >= loopEnd.current)
+              e.currentTarget.currentTime = 0.5
+          }}
         >
           <source src="/assets/saffire_pmma.mp4" media="(min-width: 768px)" />
           <source src="/assets/saffire_pmma_sd.mp4" />

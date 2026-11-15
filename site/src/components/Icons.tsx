@@ -97,3 +97,47 @@ export const IconX = ({ size = 16 }: { size?: number }) => (
     <path d="m6 6 12 12" />
   </I>
 )
+
+export const IconCheck = ({ size = 16 }: { size?: number }) => (
+  <I size={size}>
+    <path d="M20 6 9 17l-5-5" />
+  </I>
+)
+
+export const IconRotateCcw = ({ size = 16 }: { size?: number }) => (
+  <I size={size}>
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+  </I>
+)
+
+export const IconDownload = ({ size = 16 }: { size?: number }) => (
+  <I size={size}>
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <polyline points="7 10 12 15 17 10" />
+    <line x1="12" y1="15" x2="12" y2="3" />
+  </I>
+)
+
+export const IconFileText = ({ size = 16 }: { size?: number }) => (
+  <I size={size}>
+    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+    <path d="M10 9H8" />
+    <path d="M16 13H8" />
+    <path d="M16 17H8" />
+  </I>
+)
+
+export const IconVideo = ({ size = 16 }: { size?: number }) => (
+  <I size={size}>
+    <path d="m22 8-6 4 6 4V8Z" />
+    <rect x="2" y="6" width="14" height="12" rx="2" />
+  </I>
+)
+
+export const IconFlame = ({ size = 16 }: { size?: number }) => (
+  <I size={size}>
+    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+  </I>
+)

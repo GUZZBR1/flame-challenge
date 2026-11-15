@@ -60,11 +60,15 @@ def test_ethane_does_not_alias_methane():
 
 def test_ethanol_does_not_alias_methanol():
     # methanol is a same-CLASS neighbor for ethanol, never an alias —
-    # the regression was substring matching ('ethanol' inside 'methanol')
-    assert neighbors._affinity("ethanol", "methanol", "Methanol") \
+    # the regression was substring matching ('ethanol' inside 'methanol').
+    # _affinity's third arg is the row's normalized haystack —
+    # production builds it as _norm(f"{fuel} {material_key}")
+    assert neighbors._affinity(
+        "ethanol", "methanol", neighbors._norm("Methanol methanol")) \
         == neighbors.AFFINITY_CLASS
     # while real ethanol wording in the fuel text still earns the alias
-    assert neighbors._affinity("ethanol", "methanol", "Ethanol (pure)") \
+    assert neighbors._affinity(
+        "ethanol", "methanol", neighbors._norm("Ethanol (pure) methanol")) \
         == neighbors.AFFINITY_ALIAS
 
 

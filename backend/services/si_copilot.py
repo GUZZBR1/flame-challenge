@@ -30,7 +30,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from backend.services import engine_bridge as eb
-from backend.services import neighbors, risk, tactics
+from backend.services import risk, tactics
 
 logger = logging.getLogger(__name__)
 
@@ -52,8 +52,11 @@ except ImportError:  # gateway client optional — offline fallback still works
 
 try:
     import httpx
-except ImportError:  # pragma: no cover - httpx is a hard dep via httpx2
-    httpx = None  # type: ignore[assignment]
+except ImportError:  # fresh installs: openai no longer pulls httpx —
+    try:            # requirements carry httpx2, a same-API fork
+        import httpx2 as httpx  # type: ignore[no-redef]
+    except ImportError:
+        httpx = None  # type: ignore[assignment]
 
 
 # ---------------- config ----------------
@@ -436,8 +439,11 @@ def factual_packet(state: ChamberState) -> dict:
     mat = state.resolved_material()
     o2, flow, grav = state.o2Pct, state.flowCms, state.gravity
     r = risk.risk_index(mat, o2, flow, grav)
-    nb = neighbors.nearest(r["materialId"], o2, flow, 3)
+    # decision_cards already runs the identical neighbors.nearest(mat,
+    # o2, flow, 3) scan internally — reuse its result instead of
+    # scanning the run table twice per message
     cards = tactics.decision_cards(mat, o2, flow, grav)
+    nb = cards["neighbors"]
     ign = eb.ignition_pressure(r["materialId"], o2)
     # compact option summary — full card payloads would flood the prompt
     options = [

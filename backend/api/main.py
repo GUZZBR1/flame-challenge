@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import os
 import time
 from pathlib import Path
 
@@ -24,9 +25,10 @@ from backend.services import (diff, investigations, neighbors, rag, risk,
                               si_copilot, tactics)
 
 app = FastAPI(title="Freefall Foundry Engine API", version="0.1.0")
+_extra_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] + _extra_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -185,14 +187,20 @@ def api_investigations() -> dict:
 _BUNDLE = Path(__file__).resolve().parents[2] / "data" / "bundle"
 
 
+_matrix_cache: dict | None = None
+
+
 @app.get("/api/investigations/matrix")
 def api_investigation_matrix() -> dict:
     """Summarize feed — the full investigation matrix served to the
     dashboard (objectives, fuels, conditions, variation, sensors)."""
+    global _matrix_cache
     path = _BUNDLE / "investigations.json"
     if not path.exists():
         return {"investigations": []}
-    return json.loads(path.read_text(encoding="utf-8"))
+    if _matrix_cache is None:
+        _matrix_cache = json.loads(path.read_text(encoding="utf-8"))
+    return _matrix_cache
 
 
 @app.get("/api/investigations/{inv_id}")
@@ -306,6 +314,48 @@ def api_decision_cards(materialId: str = "pmma",
     }
 
 
+@app.get("/api/mission-reports/templates")
+def api_mission_reports_templates() -> dict:
+    """Pre-seeded canonical mission reports for Golden Path demo."""
+    return {
+        "templates": [
+            {
+                "id": "artemis-lunar-airlock",
+                "title": "Artemis Lunar Airlock: 34% O₂ Flashover & Depressurization Assessment",
+                "missionTag": "Artemis Base Camp · Lunar Surface (0.16g)",
+                "investigationId": "saffire-4",
+                "materialId": "pmma",
+                "o2Pct": 34.0,
+                "flowCms": 1.5,
+                "gravity": "lunar",
+                "risk": risk.risk_index("pmma", 34.0, 1.5, "lunar"),
+            },
+            {
+                "id": "iss-flex2-cool-flame",
+                "title": "ISS MSG FLEX-2: Silent Cool Flame Re-ignition Investigation",
+                "missionTag": "ISS MSG Glovebox · Microgravity (0g)",
+                "investigationId": "flex-2",
+                "materialId": "heptane",
+                "o2Pct": 21.0,
+                "flowCms": 0.0,
+                "gravity": "microgravity",
+                "risk": risk.risk_index("heptane", 21.0, 0.0, "microgravity"),
+            },
+            {
+                "id": "cygnus-saffire4-burn",
+                "title": "Cygnus SAFFIRE-IV: Large-Scale Spacecraft Fabric Burnout",
+                "missionTag": "Cygnus PCM · Uncrewed Post-Departure (0g)",
+                "investigationId": "saffire-4",
+                "materialId": "cotton",
+                "o2Pct": 21.0,
+                "flowCms": 20.0,
+                "gravity": "microgravity",
+                "risk": risk.risk_index("cotton", 21.0, 20.0, "microgravity"),
+            },
+        ]
+    }
+
+
 # ---------- SI layer: conversational + voice copilot ----------
 
 class SiChatReq(BaseModel):
@@ -410,10 +460,16 @@ async def chamber_ws(ws: WebSocket) -> None:
             # the pure-Python fallback is CPU-bound — keep the event loop free
             await asyncio.to_thread(ch.step, dt)
             events = ch.drain_events()
-            payload = json.loads(ch.state_json())
+            state = ch.state_json()
             if events:
+                # rare path — only parse+reserialize when events must
+                # merge into the frame payload
+                payload = json.loads(state)
                 payload["events"] = events
-            await ws.send_text(json.dumps(payload))
+                await ws.send_text(json.dumps(payload))
+            else:
+                # state_json() is already serialized — send verbatim
+                await ws.send_text(state)
             await asyncio.sleep(dt)
         await ws.send_text(json.dumps({"done": True, "state": json.loads(ch.state_json())}))
     except WebSocketDisconnect:
