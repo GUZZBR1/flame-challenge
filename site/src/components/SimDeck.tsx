@@ -229,7 +229,7 @@ export default function SimDeck() {
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
-      <div className="relative mx-auto w-[min(92vw,112rem)] pb-40 pt-40 sm:pt-48">
+      <div className="relative mx-auto w-[min(92vw,96rem)] pb-40 pt-40 sm:pt-48">
         <KeyedFlame
           className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
           strength={0.3}
@@ -259,7 +259,7 @@ export default function SimDeck() {
           <p data-hero className="card-label mt-12 sm:mt-16">Guided Scenarios &amp; Historical Crises</p>
           <h1
             data-hero
-            className="mt-4 font-display text-[clamp(2.75rem,5.6vw,5.5rem)] font-bold leading-display tracking-tight"
+            className="mt-4 font-display text-[clamp(2.25rem,4.4vw,4rem)] font-bold leading-display tracking-tight"
           >
             1-Click Mission Envelopes
           </h1>
@@ -301,12 +301,12 @@ export default function SimDeck() {
               <span className="inline-block self-start bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
                 Historical Crisis
               </span>
-              <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3.5rem,9vw,9rem)] font-bold leading-[0.92] tracking-tight">
+              <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(2.75rem,7vw,6.5rem)] font-bold leading-[0.92] tracking-tight">
                 {feature.name}
               </h2>
               <div className="mt-14 grid flex-1 items-center gap-x-[clamp(2.5rem,5vw,6rem)] gap-y-12 sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
                 <div className="min-w-0">
-                  <p className="font-mono text-[clamp(1rem,1.6vw,1.2rem)] font-semibold text-[#e5202e]">
+                  <p className="font-mono text-[clamp(0.9rem,1.3vw,1.05rem)] font-semibold text-[#e5202e]">
                     {FEATURE.tag}
                   </p>
                   <p className="mt-5 max-w-xs text-body leading-[1.8] opacity-80">{FEATURE.description}</p>
@@ -342,7 +342,7 @@ export default function SimDeck() {
                   >
                     <line x1="34" y1="4" x2="2" y2="64" stroke="#e5202e" strokeWidth="1" vectorEffect="non-scaling-stroke" />
                   </svg>
-                  <div className="cut-hero relative h-[340px] overflow-hidden bg-black sm:h-[480px] lg:h-[560px] xl:h-[640px]">
+                  <div className="cut-hero relative h-[280px] overflow-hidden bg-black sm:h-[380px] lg:h-[440px] xl:h-[500px]">
                     <img
                       src={MISSION_MEDIA.feature.src}
                       alt={MISSION_MEDIA.feature.alt}
@@ -372,7 +372,7 @@ export default function SimDeck() {
                             {n} / Historical Crisis
                           </span>
                           <span
-                            className="mt-2 block font-display text-[clamp(1.8rem,2.8vw,3rem)] font-bold leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-accent"
+                            className="mt-2 block font-display text-[clamp(1.5rem,2.2vw,2.25rem)] font-bold leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-accent"
                             style={isActive ? { color: preset.accent } : undefined}
                           >
                             {t.name}
@@ -388,7 +388,7 @@ export default function SimDeck() {
                           →
                         </span>
                       </span>
-                      <span className={`${shape} block h-56 overflow-hidden bg-black sm:h-72`}>
+                      <span className={`${shape} block h-44 overflow-hidden bg-black sm:h-56`}>
                         {renderMedia(media, mediaCls)}
                       </span>
                     </span>
@@ -412,7 +412,7 @@ export default function SimDeck() {
                     className="group flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
                   >
                     <span
-                      className={`${shape} block h-52 overflow-hidden bg-black sm:h-72 sm:w-[48%] sm:shrink-0 ${
+                      className={`${shape} block h-44 overflow-hidden bg-black sm:h-56 sm:w-[48%] sm:shrink-0 ${
                         imageLeft ? 'bleed-l' : 'bleed-r sm:order-2'
                       }`}
                     >
@@ -424,7 +424,7 @@ export default function SimDeck() {
                           {n} / Historical Crisis
                         </span>
                         <span
-                          className="mt-1 block font-display text-[clamp(1.8rem,3vw,2.5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                          className="mt-1 block font-display text-[clamp(1.5rem,2.3vw,2rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
                           style={isActive ? { color: preset.accent } : undefined}
                         >
                           {t.name}

@@ -529,7 +529,7 @@ button.pill:active { transform: translateY(0) scale(.96); }
    inset so type stays on the editorial column while media bleeds to the
    screen edge and dissolves inward (no boxes, no clips). */
 .mission-bleed {
-  --gut: calc(50vw - min(46vw, 56rem));
+  --gut: calc(50vw - min(46vw, 48rem));
   margin-inline: calc(50% - 50vw);
   padding-inline: var(--gut);
 }
