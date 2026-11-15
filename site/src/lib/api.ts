@@ -176,46 +176,64 @@ export async function siVoice(audio: Blob, state: SiChamberState): Promise<SiRes
 export function synthesizeLocalSiResponse(message: string, state: SiChamberState): SiResponse {
   const q = message.toLowerCase()
   let invId = state.investigationId ?? 'flex-2'
-  let materialId = state.materialId ?? 'pmma'
+  let materialId = state.materialId ?? (FALLBACK_INVESTIGATIONS[invId]?.materialId ?? 'heptane')
   let o2Pct = state.o2Pct ?? 21
   let flowCms = state.flowCms ?? 2.0
   const gravity = state.gravity ?? 'microgravity'
   let briefing = ''
   let action = ''
 
-  // 1. Parse oxygen dynamically without overwriting material
-  const o2Match = q.match(/(\d+(?:\.\d+)?)\s*%/i)
-  if (o2Match) {
-    o2Pct = parseFloat(o2Match[1])
+  // 1. Parse oxygen dynamically (target 'to X%' takes priority over 'from X%')
+  const toO2Match = q.match(/(?:to|->|→)\s*(\d+(?:\.\d+)?)\s*%/i)
+  const plainO2Match = q.match(/(\d+(?:\.\d+)?)\s*%/i)
+  if (toO2Match) {
+    o2Pct = parseFloat(toO2Match[1])
+  } else if (plainO2Match) {
+    o2Pct = parseFloat(plainO2Match[1])
   } else if (q.includes('oxygen drops') || q.includes('drops to') || q.includes('o2 drops')) {
     o2Pct = 18
   }
 
-  // 2. Parse airflow dynamically if present
-  const flowMatch = q.match(/(\d+(?:\.\d+)?)\s*cm\/s/i)
-  if (flowMatch) {
-    flowCms = parseFloat(flowMatch[1])
+  // 2. Parse airflow dynamically (target 'to X cm/s' takes priority over source)
+  const toFlowMatch = q.match(/(?:to|->|→)\s*(\d+(?:\.\d+)?)\s*cm\/s/i)
+  const plainFlowMatch = q.match(/(\d+(?:\.\d+)?)\s*cm\/s/i)
+  if (toFlowMatch) {
+    flowCms = parseFloat(toFlowMatch[1])
+  } else if (plainFlowMatch) {
+    flowCms = parseFloat(plainFlowMatch[1])
+  } else if (q.includes('cut airflow') || q.includes('stop airflow') || q.includes('cut ventilation') || q.includes('stagnant')) {
+    flowCms = 0.0
   }
 
-  // 3. Resolve investigation & material: prioritize explicit query keywords,
-  // then preserve incoming mission state
+  // 3. Resolve investigation & material:
+  // First, check for explicit queries
   if (q.includes('cotton') || q.includes('saffire') || q.includes('sibal')) {
     invId = 'saffire'
     materialId = 'cotton'
-    if (!flowMatch && (state.flowCms == null || state.flowCms <= 2.0)) flowCms = 20.0
+    if (!toFlowMatch && !plainFlowMatch && (state.flowCms == null || state.flowCms <= 2.0)) flowCms = 20.0
   } else if (q.includes('hidden flame') || q.includes('cool flame') || q.includes('heptane') || q.includes('droplet')) {
     invId = 'flex-2'
     materialId = 'heptane'
-    if (!flowMatch) flowCms = 0.5
-  } else if (q.includes('airlock') || q.includes('artemis') || q.includes('lunar') || state.investigationId === 'flare') {
-    invId = state.investigationId === 'flare' || q.includes('flare') ? 'flare' : 'sofie-gel'
-    materialId = 'pmma'
-  } else if (q.includes('sofie') || q.includes('acrylic') || q.includes('pmma')) {
+    if (!toFlowMatch && !plainFlowMatch) flowCms = 0.5
+  } else if (q.includes('sofie') || q.includes('acrylic') || q.includes('pmma slab')) {
     invId = 'sofie-gel'
     materialId = 'pmma'
-  } else if (state.investigationId) {
+  } else if (q.includes('flare') || q.includes('airlock') || q.includes('artemis')) {
+    invId = 'flare'
+    materialId = 'pmma'
+  } else if (q.includes('same') || q.includes('teflon')) {
+    invId = 'same'
+    materialId = 'teflon'
+  } else if (q.includes('acme') || q.includes('ethylene')) {
+    invId = 'acme'
+    materialId = 'ethylene'
+  } else if (q.includes('bass') || q.includes('sphere')) {
+    invId = 'bass-ii'
+    materialId = 'pmma-sphere'
+  } else if (state.investigationId && FALLBACK_INVESTIGATIONS[state.investigationId]) {
+    // Preserve incoming mission state if no explicit investigation in query
     invId = state.investigationId
-    materialId = state.materialId ?? (FALLBACK_INVESTIGATIONS[invId]?.materialId ?? 'pmma')
+    materialId = state.materialId ?? FALLBACK_INVESTIGATIONS[invId].materialId
   }
 
   // 4. Construct grounded technical briefing
@@ -228,7 +246,7 @@ export function synthesizeLocalSiResponse(message: string, state: SiChamberState
       'LOCAL ENGINE GROUNDED ANALYSIS (NASA FLEX-2 Cool-Flame Catalog): In 53 documented NASA PSI runs, hydrocarbon droplets exhibited radiative extinction of the visible hot flame, followed by sustained low-temperature (~600–720 K) invisible burning. Premature atmosphere replenishment causes violent explosive flashover.'
     action =
       'Maintain nitrogen purge hold for at least 180 seconds; verify thermal core temperature with IR sensors before hatch release.'
-  } else if (invId === 'flare' || gravity === 'lunar') {
+  } else if (invId === 'flare') {
     briefing = `LOCAL ENGINE GROUNDED ANALYSIS (NASA FLARE Partial Gravity): Under ${gravity} (${o2Pct}% O₂ at ${flowCms} cm/s), partial buoyancy creates a steady chimney updraft along solid PMMA conduits without inducing blowout, causing rapid boundary-layer flame propagation.`
     action = 'Seal airlock bulkhead and throttle recirculating airflow below 1 cm/s.'
   } else if (invId === 'sofie-gel') {
