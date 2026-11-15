@@ -78,7 +78,12 @@ export default function VoiceHud() {
                   ? gravityRegime(sim.set_gravity_g)
                   : null,
               trigger_containment: sim.trigger_containment ?? null,
-              __investigation: sim.load_preset ?? null,
+              // no preset in the command → scope the retune to the
+              // investigation the answer was computed over (the console's
+              // reported state), same as applyUiCommand does — otherwise
+              // LiveChamber sees no runnable id and never restarts
+              __investigation:
+                sim.load_preset ?? stateRef.current.investigationId ?? null,
               __origin: 'voice-hud',
             },
           }),
@@ -139,6 +144,15 @@ export default function VoiceHud() {
           onPointerDown={() => void voice.start()}
           onPointerUp={voice.stop}
           onPointerLeave={voice.stop}
+          onKeyDown={(e) => {
+            if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
+              e.preventDefault()
+              void voice.start()
+            }
+          }}
+          onKeyUp={(e) => {
+            if (e.key === ' ' || e.key === 'Enter') voice.stop()
+          }}
           className={`cursor-pointer border px-1.5 py-0.5 transition-colors duration-150 ${
             voice.recording
               ? 'border-[var(--accent)] bg-[var(--accent)] text-[var(--bg)]'

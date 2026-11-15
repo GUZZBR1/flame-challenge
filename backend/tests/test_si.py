@@ -183,6 +183,53 @@ def test_normalize_ui_command_fills_simulation():
     assert sim.trigger_containment == "REDUCE_O2"
 
 
+def test_normalize_focus_only_command_fires_no_containment():
+    """A focus_module-only ui tunes nothing — mirroring it as
+    trigger_containment would fire suppression for a camera move."""
+    resp = si.CopilotResponse(
+        briefing="camera on lab",
+        recommended_action="SUPPRESS_LOCAL",
+        ui_command={"focus_module": "lab"},
+    ).normalize()
+    assert resp.simulation_commands is None
+
+
+def test_normalize_canonicalizes_ui_preset_alias():
+    """Spoken aliases must resolve on BOTH surfaces — SiConsole looks
+    ui_command.load_preset up in its canonical spec table."""
+    resp = si.CopilotResponse(
+        briefing="load flex",
+        recommended_action="SUPPRESS_LOCAL",
+        ui_command={"load_preset": "FLEX"},
+    ).normalize()
+    assert resp.ui_command.load_preset == "flex-2"
+    assert resp.simulation_commands.load_preset == "flex-2"
+
+
+def test_normalize_simulation_preset_wins_conflict():
+    """Both surfaces supplied with different presets — the executable
+    surface is authoritative."""
+    resp = si.CopilotResponse(
+        briefing="run bass",
+        recommended_action="SUPPRESS_LOCAL",
+        ui_command={"load_preset": "saffire"},
+        simulation_commands={"load_preset": "BASS_II"},
+    ).normalize()
+    assert resp.ui_command.load_preset == "bass-ii"
+
+
+def test_offline_below_loc_focus_emits_no_nav():
+    """Below-LOC with a module focus: the ui holds only a camera hint —
+    no containment, no chamber scroll."""
+    st = {**STATE, "o2Pct": 10.0, "flowCms": 0.0, "module": "lab"}
+    r = client.post("/api/si/chat",
+                    json={"message": "status?", "current_chamber_state": st})
+    j = r.json()
+    assert j["recommended_action"] == "SUPPRESS_LOCAL"
+    assert j["simulation_commands"] is None
+    assert j["navigation"] is None
+
+
 def test_preset_alias_resolution():
     assert si.resolve_preset("FLEX") == "flex-2"
     assert si.resolve_preset("saffire") == "saffire"

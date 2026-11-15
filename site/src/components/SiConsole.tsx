@@ -243,7 +243,8 @@ export default function SiConsole() {
         const resp = await siChat(text, chamberState())
         push({ role: 'ignis', text: resp.briefing, resp })
         handleResponse(resp)
-        applyNavigation(resp.navigation)
+        // typed chat keeps the operator in the console — navigation is a
+        // voice-command surface (hands-free), not an answer side effect
         const g = resp.simulation_commands?.set_gravity_g
         if (g != null) applyUiCommand({ set_gravity: gravityRegime(g) })
       } finally {
@@ -526,6 +527,15 @@ export default function SiConsole() {
                 onPointerDown={() => void voice.start()}
                 onPointerUp={voice.stop}
                 onPointerLeave={voice.stop}
+                onKeyDown={(e) => {
+                  if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) {
+                    e.preventDefault()
+                    void voice.start()
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === ' ' || e.key === 'Enter') voice.stop()
+                }}
                 className={`w-14 cursor-pointer border-l border-[var(--edge)] font-mono text-[15px] transition-colors duration-150 ${
                   voice.recording
                     ? 'bg-[var(--accent)] text-[var(--bg)]'

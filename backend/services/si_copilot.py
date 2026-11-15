@@ -267,17 +267,34 @@ class CopilotResponse(BaseModel):
         """Reconcile the two command surfaces: simulation_commands is the
         voice-first contract, ui_command the legacy console one — derive
         whichever side the model left empty."""
-        if self.simulation_commands is None and self.ui_command is not None:
-            self.simulation_commands = SimulationCommands(
-                load_preset=self.ui_command.load_preset,
-                set_o2_percent=self.ui_command.set_o2_percent,
-                set_airflow_cm_s=self.ui_command.set_airflow_cm_s,
-                # an emitted ui_command means the policy already decided
-                # to act on the sim — containment mirrors the action
-                trigger_containment=self.recommended_action,
-            )
-        if self.ui_command is None and self.simulation_commands is not None:
-            self.ui_command = self.simulation_commands.to_ui_command()
+        ui, sim = self.ui_command, self.simulation_commands
+        if sim is None and ui is not None:
+            # a focus_module-only command tunes nothing — mirroring it as
+            # an executable containment would fire suppression for a
+            # camera move; only real chamber settings earn a sim surface
+            tuning = ui.model_dump(exclude_none=True,
+                                   exclude={"focus_module"})
+            if tuning:
+                sim = self.simulation_commands = SimulationCommands(
+                    load_preset=ui.load_preset,
+                    set_o2_percent=ui.set_o2_percent,
+                    set_airflow_cm_s=ui.set_airflow_cm_s,
+                    # an emitted ui_command means the policy already
+                    # decided to act — containment mirrors the action
+                    trigger_containment=self.recommended_action,
+                )
+        if ui is None and sim is not None:
+            ui = self.ui_command = sim.to_ui_command()
+        # canonicalize presets on both surfaces — the console rejects
+        # aliases it cannot find in its spec table, and when both sides
+        # carry a preset the executable surface wins
+        if sim is not None and sim.load_preset:
+            if ui is not None:
+                ui.load_preset = sim.load_preset
+        elif ui is not None and ui.load_preset:
+            resolved = resolve_preset(ui.load_preset)
+            if resolved:
+                ui.load_preset = resolved
         return self
 
 
@@ -481,9 +498,13 @@ def _offline_response(state: ChamberState, packet: dict) -> CopilotResponse:
             briefing += (" Operating point is outside the calibrated "
                          "PSI envelope — extrapolation regime.")
     # the voice contract: when the policy decided to act on the sim the
-    # command is executable, so containment mirrors the action
+    # command is executable, so containment mirrors the action. A
+    # focus_module-only ui (or an all-None one) tunes nothing — emitting
+    # sim/nav for it would yank the page and fire a phantom containment
+    tuning = (ui.model_dump(exclude_none=True, exclude={"focus_module"})
+              if ui is not None else {})
     sim = None
-    if ui is not None:
+    if tuning:
         sim = SimulationCommands(
             load_preset=ui.load_preset,
             set_o2_percent=ui.set_o2_percent,
