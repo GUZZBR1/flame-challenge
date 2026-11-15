@@ -64,118 +64,6 @@ const MISSION_PRESETS: MissionPreset[] = [
     prompt: 'Analyze the Mir Vika oxygen-generator fire — self-oxidizing chemical burn that defeats ventilation-cut suppression.',
     outcomeStatus: 'EMERGENCY CONTAINED',
   },
-  {
-    id: 'saffire-scenario',
-    title: 'Guided Scenario: SAFFIRE',
-    tag: '21.8% O₂ · 10.2 psia',
-    accent: '#be123c',
-    o2Pct: 21.8,
-    flowCms: 25.0,
-    gravity: 'microgravity',
-    investigationId: 'saffire',
-    materialId: 'cotton',
-    description: 'Largest deliberate fires ever set in an uncrewed cargo vehicle — meter-scale flame spread after Cygnus departure.',
-    prompt: 'Analyze SAFFIRE meter-scale flame spread over cotton-fabric samples in a ventilated uncrewed vehicle.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
-  {
-    id: 'flex-2-scenario',
-    title: 'Guided Scenario: FLEX-2',
-    tag: '12–34% O₂ · Cool Flame',
-    accent: '#0369a1',
-    o2Pct: 21,
-    flowCms: 0.5,
-    gravity: 'microgravity',
-    investigationId: 'flex-2',
-    materialId: 'heptane',
-    description: 'Droplet combustion that exposed sustained invisible cool-flame chemistry at ~600 K after visible hot-flame extinction.',
-    prompt: 'Analyze FLEX-2 droplet cool-flame persistence and the post-extinction detection gap.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
-  {
-    id: 'sofie-gel-scenario',
-    title: 'Guided Scenario: SoFIE-GEL',
-    tag: '15–24% O₂ · Quiescent',
-    accent: '#047857',
-    o2Pct: 17,
-    flowCms: 2.0,
-    gravity: 'microgravity',
-    investigationId: 'sofie-gel',
-    materialId: 'pmma',
-    description: 'PMMA flame spread sustained at ~15% O₂ in quiescent microgravity — below Earth extinction limits.',
-    prompt: 'Analyze SoFIE-GEL low-oxygen flame persistence below Earth flammability limits.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
-  {
-    id: 'bass-ii-scenario',
-    title: 'Guided Scenario: BASS-II',
-    tag: '17–40% O₂ · Opposed Flow',
-    accent: '#0f766e',
-    o2Pct: 21,
-    flowCms: 10.0,
-    gravity: 'microgravity',
-    investigationId: 'bass-ii',
-    materialId: 'pmma-sphere',
-    description: 'Opposed-flow flame spread and extinction over solid samples across a wide oxygen and flow envelope.',
-    prompt: 'Analyze BASS-II opposed-flow flame spread and extinction boundaries over solid samples.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
-  {
-    id: 'acme-scenario',
-    title: 'Guided Scenario: ACME',
-    tag: '12–85% O₂ · Coflow Jet',
-    accent: '#7c3aed',
-    o2Pct: 40,
-    flowCms: 20.0,
-    gravity: 'microgravity',
-    investigationId: 'acme',
-    materialId: 'ethylene',
-    description: 'Laminar coflow diffusion flames mapping soot inception and growth without buoyancy distortion.',
-    prompt: 'Analyze ACME ethylene coflow soot inception under elevated oxygen and E-field control.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
-  {
-    id: 'same-scenario',
-    title: 'Guided Scenario: SAME',
-    tag: '21% O₂ · Smoke Aerosol',
-    accent: '#475569',
-    o2Pct: 21,
-    flowCms: 5.0,
-    gravity: 'microgravity',
-    investigationId: 'same',
-    materialId: 'teflon',
-    description: 'Smoke particle sizing from overheated and ignited spacecraft materials — the detector-gap dataset.',
-    prompt: 'Analyze SAME smoke-aerosol signatures from overheated wire insulation for detector design.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
-  {
-    id: 'confined-combustion-scenario',
-    title: 'Guided Scenario: Confined Combustion',
-    tag: '8.3 psia · Confined Plates',
-    accent: '#4338ca',
-    o2Pct: 30,
-    flowCms: 8.0,
-    gravity: 'microgravity',
-    investigationId: 'confined-combustion',
-    materialId: 'thin-sheet',
-    description: 'Flame spread between close parallel plates — rack/duct geometry amplified by wall heat recirculation.',
-    prompt: 'Analyze confined-geometry flame spread between parallel plates at reduced pressure.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
-  {
-    id: 'flare-scenario',
-    title: 'Guided Scenario: FLARE',
-    tag: 'Partial-G · 15–40% O₂',
-    accent: '#b45309',
-    o2Pct: 30,
-    flowCms: 15.0,
-    gravity: 'lunar',
-    investigationId: 'flare',
-    materialId: 'pmma',
-    description: 'Material flammability limits mapped at Lunar (0.17 g) and Martian (0.38 g) gravity with an on-orbit centrifuge.',
-    prompt: 'Analyze FLARE partial-gravity flammability limits for lunar and martian cabin atmospheres.',
-    outcomeStatus: 'MISSION ACCOMPLISHED',
-  },
 ]
 
 const GRAVITY_G = { microgravity: 0, earth: 1, lunar: 0.17, mars: 0.38 } as const
@@ -186,16 +74,11 @@ function splitTitle(preset: MissionPreset) {
   return { kind, name: name ?? preset.title }
 }
 
-/** the catalog splits by kind — 'Historical Crisis' envelopes are real
- *  missions (crewed spacecraft events), 'Guided Scenario' envelopes are
- *  experimental investigation datasets */
-const MISSIONS = MISSION_PRESETS.filter((p) => splitTitle(p).kind === 'Historical Crisis')
-const DATASETS = MISSION_PRESETS.filter((p) => splitTitle(p).kind !== 'Historical Crisis')
-const FEATURE = MISSIONS[0] // apollo 1
-const SIDE_A = MISSIONS[1] // apollo 13
-const SIDE_B = MISSIONS[2] // mir 1997
-const LEAD_DATASET = DATASETS[0] // saffire
-const INDEX_DATASETS = DATASETS.slice(1)
+/** only the historical crises stay on the deck — the featured mission
+ *  leads left, the other two stack in the rail */
+const FEATURE = MISSION_PRESETS[0] // apollo 1
+const SIDE_A = MISSION_PRESETS[1] // apollo 13
+const SIDE_B = MISSION_PRESETS[2] // mir 1997
 
 function ActiveMark() {
   return <span className="font-mono text-tiny font-semibold text-accent">● active</span>
@@ -229,15 +112,6 @@ export default function SimDeck() {
     if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       gsap.from('[data-hero]', { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', stagger: 0.07 })
-      gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
-        gsap.from(el, {
-          opacity: 0,
-          y: 18,
-          duration: 0.55,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: el, start: 'top 94%', scroller: root },
-        })
-      })
     }, root)
     return () => ctx.revert()
   }, [])
@@ -268,7 +142,6 @@ export default function SimDeck() {
   const feature = splitTitle(FEATURE)
   const sideA = splitTitle(SIDE_A)
   const sideB = splitTitle(SIDE_B)
-  const leadDataset = splitTitle(LEAD_DATASET)
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
@@ -298,7 +171,7 @@ export default function SimDeck() {
             </span>
           </div>
 
-          <p data-hero className="card-label mt-12 sm:mt-16">Guided Scenarios &amp; Historical Crises</p>
+          <p data-hero className="card-label mt-12 sm:mt-16">Historical Crises</p>
           <h1
             data-hero
             className="mt-4 font-display text-[clamp(2.75rem,6.5vw,4rem)] font-bold leading-display tracking-tight"
@@ -306,8 +179,7 @@ export default function SimDeck() {
             1-Click Mission Envelopes
           </h1>
           <p data-hero className="mt-8 max-w-xl text-body leading-[1.85] opacity-80">
-            Explore historical fire crises and experimental combustion environments from NASA
-            research — one click previews the mission.
+            Explore historical fire crises from NASA research — one click previews the mission.
           </p>
         </header>
 
@@ -366,59 +238,6 @@ export default function SimDeck() {
               )
             })}
           </div>
-        </section>
-
-        {/* ---- datasets — experimental investigations, names only ---- */}
-        <section className="mt-20 sm:mt-28" aria-label="Experiment datasets" data-reveal>
-          <div className="flex items-baseline justify-between gap-4 border-b border-edge pb-4">
-            <span className="card-label">Datasets</span>
-            <span className="font-mono text-tiny opacity-60">experimental investigations</span>
-          </div>
-
-          {/* lead dataset — saffire */}
-          <button
-            {...pickProps(LEAD_DATASET)}
-            className="group flex w-full items-baseline justify-between gap-6 border-b border-edge py-8 text-left sm:py-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-          >
-            <span
-              className="font-display text-[clamp(2rem,3.8vw,3.2rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-              style={activeMission.id === LEAD_DATASET.id ? { color: LEAD_DATASET.accent } : undefined}
-            >
-              {leadDataset.name}
-            </span>
-            {activeMission.id === LEAD_DATASET.id && <ActiveMark />}
-          </button>
-
-          <ul>
-            {INDEX_DATASETS.map((preset) => {
-              const t = splitTitle(preset)
-              const isActive = activeMission.id === preset.id
-              return (
-                <li key={preset.id}>
-                  <button
-                    {...pickProps(preset)}
-                    className="row-hover group flex w-full items-baseline justify-between gap-6 border-b border-edge py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  >
-                    <span
-                      className="min-w-0 truncate font-display text-lg font-bold transition-colors duration-300 group-hover:text-accent sm:text-xl"
-                      style={isActive ? { color: preset.accent } : undefined}
-                    >
-                      {t.name}
-                    </span>
-                    <span className="shrink-0 font-mono text-tiny font-semibold">
-                      {isActive ? (
-                        <ActiveMark />
-                      ) : (
-                        <span className="opacity-40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100">
-                          select →
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
         </section>
 
         <div className="relative mt-12 flex justify-end">
