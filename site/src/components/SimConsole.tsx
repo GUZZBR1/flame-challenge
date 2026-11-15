@@ -120,7 +120,16 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     // when the copilot points somewhere (generated dashboards, a section),
     // follow it — this is how answers surface the dashboards they produced
     const section = res.navigation?.scroll_to_section
-    if (section) navigate(section.startsWith('#') ? section : `#${section}`)
+    if (section) {
+      // 'chamber' is the copilot's name for this console — the live-chamber
+      // video section no longer exists
+      const target = section === 'chamber' ? '#ignis-console' : section.startsWith('#') ? section : `#${section}`
+      if (target === '#ignis-console') {
+        document.getElementById('ignis-console')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        navigate(target)
+      }
+    }
     setMsgs((ms2) =>
       ms2.map((m) =>
         m.id === turnId

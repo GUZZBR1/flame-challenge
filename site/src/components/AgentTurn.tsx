@@ -1,5 +1,26 @@
+import { useEffect, useState } from 'react'
 import type { AgentTurnModel } from '../lib/simConsole'
 import IgnisSprite from './IgnisSprite'
+
+/** rotating status quips while the copilot thinks — dry mission-log humor */
+const WORKING_QUIPS = [
+  'Ignis is working…',
+  'Calibrating oxygen sensors…',
+  'A module just broke. Logging it.',
+  'Querying NASA PSI archives…',
+  'Rechecking crew oxygen budget…',
+  'One astronaut misplaced. Found him.',
+  'Venting the wrong valve — fixing.',
+  'Re-running the burn simulation…',
+  'Flashover risk: arguing with physics…',
+  'Patching hull integrity (software side)…',
+  'Crew notified. Nobody panicked. Yet.',
+  'Duct-taping the O₂ generator…',
+  'Cool flame detected — it is being subtle.',
+  'Asking the engine nicely this time…',
+  'Saffire says hi. And fire.',
+  'Purging nitrogen. And doubts.',
+]
 
 export default function AgentTurn({
   turn,
@@ -7,11 +28,22 @@ export default function AgentTurn({
   turn: AgentTurnModel
   live?: boolean
 }) {
+  const [quip, setQuip] = useState(0)
+  useEffect(() => {
+    if (!turn.pending) return
+    setQuip(Math.floor(Math.random() * WORKING_QUIPS.length))
+    const timer = window.setInterval(
+      () => setQuip((q) => (q + 1 + Math.floor(Math.random() * 3)) % WORKING_QUIPS.length),
+      2200,
+    )
+    return () => window.clearInterval(timer)
+  }, [turn.pending])
+
   if (turn.pending) {
     return (
       <div className="flex items-center gap-3 py-1 text-sm text-ink/65">
         <IgnisSprite working size={68} />
-        <span>Ignis is working…</span>
+        <span key={quip} className="transition-opacity">{WORKING_QUIPS[quip]}</span>
       </div>
     )
   }

@@ -325,7 +325,7 @@ export default function SimDeck() {
     'h-full w-full object-cover grayscale contrast-110 transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0 group-focus-visible:grayscale-0'
 
   return (
-    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
+    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-clip overscroll-contain bg-bg">
       <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-32 sm:pt-40">
         <KeyedFlame
           className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
