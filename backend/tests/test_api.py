@@ -281,3 +281,18 @@ def test_insights_are_evidence_backed():
     ids = {i["id"] for i in j["items"]}
     assert "cool-flame-detection-gap" in ids
     assert "engine-fidelity-map" in ids
+
+
+def test_mission_reports_templates():
+    r = client.get("/api/mission-reports/templates")
+    assert r.status_code == 200
+    j = r.json()
+    assert "templates" in j
+    assert len(j["templates"]) == 3
+    ids = {t["id"] for t in j["templates"]}
+    assert "artemis-lunar-airlock" in ids
+    assert "iss-flex2-cool-flame" in ids
+    assert "cygnus-saffire4-burn" in ids
+    for t in j["templates"]:
+        assert "risk" in t
+        assert "riskIndex" in t["risk"]

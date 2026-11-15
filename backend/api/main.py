@@ -306,6 +306,48 @@ def api_decision_cards(materialId: str = "pmma",
     }
 
 
+@app.get("/api/mission-reports/templates")
+def api_mission_reports_templates() -> dict:
+    """Pre-seeded canonical mission reports for Golden Path demo."""
+    return {
+        "templates": [
+            {
+                "id": "artemis-lunar-airlock",
+                "title": "Artemis Lunar Airlock: 34% O₂ Flashover & Depressurization Assessment",
+                "missionTag": "Artemis Base Camp · Lunar Surface (0.16g)",
+                "investigationId": "saffire-4",
+                "materialId": "pmma",
+                "o2Pct": 34.0,
+                "flowCms": 1.5,
+                "gravity": "lunar",
+                "risk": risk.risk_index("pmma", 34.0, 1.5, "lunar"),
+            },
+            {
+                "id": "iss-flex2-cool-flame",
+                "title": "ISS MSG FLEX-2: Silent Cool Flame Re-ignition Investigation",
+                "missionTag": "ISS MSG Glovebox · Microgravity (0g)",
+                "investigationId": "flex-2",
+                "materialId": "heptane",
+                "o2Pct": 21.0,
+                "flowCms": 0.0,
+                "gravity": "microgravity",
+                "risk": risk.risk_index("heptane", 21.0, 0.0, "microgravity"),
+            },
+            {
+                "id": "cygnus-saffire4-burn",
+                "title": "Cygnus SAFFIRE-IV: Large-Scale Spacecraft Fabric Burnout",
+                "missionTag": "Cygnus PCM · Uncrewed Post-Departure (0g)",
+                "investigationId": "saffire-4",
+                "materialId": "cotton",
+                "o2Pct": 21.0,
+                "flowCms": 20.0,
+                "gravity": "microgravity",
+                "risk": risk.risk_index("cotton", 21.0, 20.0, "microgravity"),
+            },
+        ]
+    }
+
+
 # ---------- SI layer: conversational + voice copilot ----------
 
 class SiChatReq(BaseModel):
