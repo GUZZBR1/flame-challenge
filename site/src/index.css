@@ -42,6 +42,10 @@
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 
+/* overlay screens scroll inside their own fixed container — drop the
+   root scrollbar so it doesn't double up next to the overlay's own */
+html.overlay-open { overflow: hidden; }
+
 body {
   margin: 0;
   background: var(--bg);
