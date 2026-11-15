@@ -647,22 +647,38 @@ async def answer(message: str, state: ChamberState) -> dict:
 
 async def transcribe_audio(payload: bytes, filename: str | None = None,
                            content_type: str | None = None) -> str | None:
-    """Forward the clip to whisper.cpp; None means STT unavailable."""
+    """Forward the clip to the STT endpoint; None means STT unavailable.
+
+    Any OpenAI-compatible /audio/transcriptions route works: local
+    whisper.cpp (default), Groq (`STT_BASE_URL=https://api.groq.com/
+    openai/v1/audio/transcriptions`, `STT_API_KEY`, `STT_MODEL=
+    whisper-large-v3-turbo`), etc. Auth and model are only sent when
+    configured — whisper.cpp ignores neither being absent.
+    """
     if httpx is None or not payload:
         return None
-    url = _env("WHISPER_CPP_URL",
-               "http://localhost:8081/v1/audio/transcriptions")
+    url = _env("STT_BASE_URL",
+               _env("WHISPER_CPP_URL",
+                    "http://localhost:8081/v1/audio/transcriptions"))
+    api_key = os.environ.get("STT_API_KEY") or os.environ.get(
+        "WHISPER_CPP_API_KEY") or ""
+    model = os.environ.get("STT_MODEL") or ""
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+    data = {"response_format": "json"}
+    if model:
+        data["model"] = model
     try:
         async with httpx.AsyncClient(timeout=_stt_timeout()) as c:
             r = await c.post(
                 url,
+                headers=headers,
                 files={"file": (filename or "audio.webm", payload,
                                 content_type or "application/octet-stream")},
-                data={"response_format": "json"},
+                data=data,
             )
         r.raise_for_status()
         text = (r.json().get("text") or "").strip()
         return text or None
     except Exception as exc:  # noqa: BLE001
-        logger.info("whisper.cpp unreachable: %s", exc)
+        logger.info("STT endpoint unreachable: %s", exc)
         return None

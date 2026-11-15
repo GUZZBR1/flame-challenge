@@ -24,6 +24,23 @@ async function probe<T>(url: string): Promise<T | null> {
 
 export type EngineStatus = 'checking' | 'cpp' | 'local'
 
+/**
+ * Fire-and-forget wake-up ping. Free-tier backends (Render/Koyeb) sleep
+ * on idle and take ~30-60 s to cold-start, so hit /health the moment the
+ * page loads — the request itself boots the container while the user is
+ * still on the hero. The tight-probe engineStatus() keeps reporting
+ * 'local' until the service is warm; every call site already falls back
+ * to the bundled physics mirror in the meantime.
+ */
+export function warmBackend(): void {
+  const base = apiUrl('/health')
+  try {
+    void fetch(base, { mode: 'cors', cache: 'no-store' }).catch(() => {})
+  } catch {
+    // offline / blocked — local fallback covers everything anyway
+  }
+}
+
 export async function engineStatus(): Promise<EngineStatus> {
   const health = await probe<{ engine?: string }>(apiUrl('/health'))
   return health?.engine === 'c++' ? 'cpp' : 'local'

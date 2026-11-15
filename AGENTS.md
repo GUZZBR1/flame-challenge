@@ -53,10 +53,12 @@ backend only — no client. See `docs/`.
   engine ignition pressure + `neighbors` 3 nearest PSI runs + `tactics`
   cards), then asks the local 9Router gateway (OpenAI-compatible, strict
   JSON schema → `briefing` / `recommended_action` / `ui_command`).
-  whisper.cpp does STT. Either service down → deterministic offline
-  fallback. Env via `backend/.env` (see `.env.example`):
-  `NINE_ROUTER_BASE_URL`, `NINE_ROUTER_API_KEY`, `NINE_ROUTER_MODEL`,
-  `WHISPER_CPP_URL`.
+  STT is any OpenAI-compatible `/audio/transcriptions` endpoint —
+  local whisper.cpp in dev, Groq `whisper-large-v3-turbo` in deploy.
+  Either service down → deterministic offline fallback. Env via
+  `backend/.env` (see `.env.example`): `NINE_ROUTER_BASE_URL`,
+  `NINE_ROUTER_API_KEY`, `NINE_ROUTER_MODEL`, `STT_BASE_URL` (alias
+  `WHISPER_CPP_URL`), `STT_API_KEY`, `STT_MODEL`.
 - `site/` — IGNIS dashboard (Vite + React 19 + Tailwind 4 + GSAP):
   editorial hero/challenge + `#dashboard` section (summarize · rank ·
   interpret pillars, theme-filtered investigation matrix, scenario risk
