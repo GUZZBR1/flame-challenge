@@ -81,7 +81,7 @@ export default function Dashboard() {
   )
 
   return (
-    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
+    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-clip overscroll-contain bg-bg">
       <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-32 sm:pt-40">
         <svg width="0" height="0" aria-hidden="true" className="absolute">
           <defs>

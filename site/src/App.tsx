@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import Challenge from './components/Challenge'
 import Crew from './components/Crew'
-import Dashboard from './components/Dashboard'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import PsiDataset from './components/PsiDataset'
 import Shipyard from './components/Shipyard'
-import SimDeck from './components/SimDeck'
 import Stars from './components/Stars'
+
+// overlay screens carry the heavy data tables — split them out of the
+// hero path so the landing bundle stays small, then prefetch the chunks
+// on idle so first navigation feels instant
+const PsiDataset = lazy(() => import('./components/PsiDataset'))
+const SimDeck = lazy(() => import('./components/SimDeck'))
+const Dashboard = lazy(() => import('./components/Dashboard'))
 import { getLenis, initScroll, isSimChild, scrollInner, scrollToSection } from './lib/scroll'
 
 type Theme = 'light' | 'dark'
@@ -88,6 +92,19 @@ export default function App() {
 
   useEffect(() => {
     initScroll()
+    // warm the lazy overlay chunks once the landing is up — judges get
+    // zero-spinner transitions without paying for the data tables upfront
+    const prefetch = () => {
+      void import('./components/PsiDataset')
+      void import('./components/SimDeck')
+      void import('./components/Dashboard')
+    }
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(prefetch, { timeout: 5000 })
+      return () => cancelIdleCallback(id)
+    }
+    const id = setTimeout(prefetch, 2500)
+    return () => clearTimeout(id)
   }, [])
 
   // broadcast the active view so loops on the page underneath
@@ -132,9 +149,11 @@ export default function App() {
       <Crew />
       <Shipyard />
       <Footer />
-      {view === 'psi' && <PsiDataset />}
-      {view === 'sim' && <SimDeck />}
-      {view === 'dashboard' && <Dashboard />}
+      <Suspense fallback={null}>
+        {view === 'psi' && <PsiDataset />}
+        {view === 'sim' && <SimDeck />}
+        {view === 'dashboard' && <Dashboard />}
+      </Suspense>
     </main>
   )
 }

@@ -41,8 +41,8 @@ describe('Composer component', () => {
       }),
     )
 
-    expect(html).toContain('g: 0.38g')
-    expect(html).toContain('O₂: 35%')
+    expect(html).toContain('canvas')
+    expect(html).toContain('placeholder="Message Ignis…"')
   })
 })
 

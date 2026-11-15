@@ -1,19 +1,49 @@
+import { useEffect, useState } from 'react'
 import type { AgentTurnModel } from '../lib/simConsole'
-import SimRunCard from './SimRunCard'
 import IgnisSprite from './IgnisSprite'
+
+/** rotating status quips while the copilot thinks — dry mission-log humor */
+const WORKING_QUIPS = [
+  'Ignis is working…',
+  'Calibrating oxygen sensors…',
+  'A module just broke. Logging it.',
+  'Querying NASA PSI archives…',
+  'Rechecking crew oxygen budget…',
+  'One astronaut misplaced. Found him.',
+  'Venting the wrong valve — fixing.',
+  'Re-running the burn simulation…',
+  'Flashover risk: arguing with physics…',
+  'Patching hull integrity (software side)…',
+  'Crew notified. Nobody panicked. Yet.',
+  'Duct-taping the O₂ generator…',
+  'Cool flame detected — it is being subtle.',
+  'Asking the engine nicely this time…',
+  'Saffire says hi. And fire.',
+  'Purging nitrogen. And doubts.',
+]
 
 export default function AgentTurn({
   turn,
-  live,
 }: {
   turn: AgentTurnModel
-  live: boolean
+  live?: boolean
 }) {
+  const [quip, setQuip] = useState(0)
+  useEffect(() => {
+    if (!turn.pending) return
+    setQuip(Math.floor(Math.random() * WORKING_QUIPS.length))
+    const timer = window.setInterval(
+      () => setQuip((q) => (q + 1 + Math.floor(Math.random() * 3)) % WORKING_QUIPS.length),
+      2200,
+    )
+    return () => window.clearInterval(timer)
+  }, [turn.pending])
+
   if (turn.pending) {
     return (
       <div className="flex items-center gap-3 py-1 text-sm text-ink/65">
         <IgnisSprite working size={68} />
-        <span>Ignis is working…</span>
+        <span key={quip} className="transition-opacity">{WORKING_QUIPS[quip]}</span>
       </div>
     )
   }
@@ -22,7 +52,7 @@ export default function AgentTurn({
     <div className="flex w-full flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2 text-sm text-ink/65">
         <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_0_3px_rgba(73,184,214,.12)]" />
-        <span className="font-semibold text-ink/80">Assistant</span>
+        <span className="font-semibold text-ink/80">Ignis</span>
         {turn.mode && <span>{turn.mode === 'llm' ? 'Connected' : 'Local response'}</span>}
       </div>
 
@@ -58,12 +88,13 @@ export default function AgentTurn({
         <p className="m-0 flex items-start gap-2 px-1 text-base leading-relaxed text-ink/70"><span className="font-semibold text-accent">Next</span>{turn.action}</p>
       )}
 
-      {turn.riskIndex != null && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-edge/70 bg-ink/[0.035] px-3 py-1.5 text-sm text-ink/70 dark:bg-white/[0.05]">Risk index</span>
-          <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 font-mono text-sm font-medium tabular-nums text-amber-800 dark:text-amber-200">
-            {turn.riskIndex.toFixed(4)}
+      {turn.riskIndex != null && !Number.isNaN(turn.riskIndex) && (
+        <div className="flex items-center gap-3 rounded-2xl border border-edge/70 bg-ink/[0.035] px-4 py-3 dark:bg-white/[0.05]">
+          <span className="font-display text-3xl font-bold tabular-nums leading-none tracking-tight text-amber-700 dark:text-amber-300">
+            {Math.round(turn.riskIndex * 100)}
+            <span className="text-lg font-semibold opacity-60">%</span>
           </span>
+          <span className="font-mono text-tiny uppercase tracking-label text-ink/60">risk index</span>
         </div>
       )}
 
@@ -82,7 +113,21 @@ export default function AgentTurn({
         </details>
       )}
 
-      {turn.run && <SimRunCard run={turn.run} live={live} />}
+      {turn.run && (
+        <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-accent/25 bg-accent/[0.06] px-4 py-3">
+          <div className="min-w-0 flex-1 text-sm text-ink/75">
+            Run queued{turn.run.presetId ? ` · ${turn.run.presetId}` : ''}
+            {turn.run.o2Pct != null ? ` · O₂ ${turn.run.o2Pct}%` : ''}
+            {turn.run.flowCms != null ? ` · ${turn.run.flowCms} cm/s` : ''}
+          </div>
+          <a
+            href="#dashboard"
+            className="flex-none rounded-full bg-[#1e3fae] px-4 py-2 font-mono text-xs font-semibold text-white transition-colors hover:bg-[#2a52d4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            view dashboards →
+          </a>
+        </div>
+      )}
     </div>
   )
 }

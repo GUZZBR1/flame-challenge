@@ -454,11 +454,14 @@ export default function MathematicalFlameField({
           const nx = x * ns
           const ny = y * ns
           const cx =
-            (fbm3(nx + simTime * 0.5, ny - simTime * 0.34) - 0.5) * 2 +
-            0.6 * Math.sin(nx * 6 + ny * 2 - simTime * 1.7)
+            (fbm3(nx + simTime * 0.5, ny - simTime * 0.34) - 0.5) * 2.4 +
+            0.9 * Math.sin(nx * 6 + ny * 2 - simTime * 1.7) +
+            0.5 * Math.sin(nx * 11 - ny * 4 + simTime * 2.6)
           const cy =
             (fbm3(nx - simTime * 0.28 + 47.3, ny + simTime * 0.44) - 0.5) * 2 +
-            0.4 * Math.sin(nx * 3 - ny * 5 + simTime * 1.3)
+            0.4 * Math.sin(nx * 3 - ny * 5 + simTime * 1.3) -
+            // shear grows with height so columns fan out into tongues
+            0.25 * Math.sin(nx * 8 + simTime * 2.1) * (y / Hg)
           const dx = x - gridPx
           const dy = y - gridPy
           const r2 = dx * dx + dy * dy + 16
@@ -466,7 +469,10 @@ export default function MathematicalFlameField({
           const gvx = pointerNear ? (pointer.vx / CELL) * 0.02 : 0
           const gvy = pointerNear ? (pointer.vy / CELL) * 0.02 : 0
           const thermal = temperature[i]
-          const buoy = thermal * buoyK * 2.6
+          // lift varies along the bar so neighbouring columns rise at
+          // different speeds → asymmetric 15–110px peaks instead of a slab
+          const buoyJit = 0.45 + 1.1 * fbm3(nx * 0.7 + 7.7, simTime * 0.32)
+          const buoy = thermal * buoyK * 2.6 * buoyJit
           // Microgravity: weak radial outflow from the bar centre instead of rise.
           const radial = micro * 0.25 * Math.max(0, thermal - 0.05)
           const rdx = x - bar.cx / CELL
@@ -507,7 +513,10 @@ export default function MathematicalFlameField({
             const cornerR = Math.exp(-((Math.hypot(px - crx, py - (bar.t + cr)) - cr) ** 2) / 18) * (px >= crx ? 1 : 0)
             const edge = Math.min(1, onTop + cornerL * 0.8 + cornerR * 0.8)
             const flick = 0.7 + 0.3 * fbm3(px * 0.02, simTime * 0.9)
-            emit = edge * o2Gain * flick * (1 - wSupp * 0.4)
+            // fuel is patchy along the edge — slow spatial noise gates
+            // which segments burn, so tongues separate instead of a slab
+            const patch = smooth(0.35, 0.75, fbm3(px * 0.045 + 91.3, simTime * 0.45))
+            emit = edge * o2Gain * flick * patch * (1 - wSupp * 0.4)
           }
           for (const p of pulses) {
             const age = simTime - p.at
@@ -522,11 +531,13 @@ export default function MathematicalFlameField({
           const o2inject = pointerNear
             ? Math.exp(-(dx * dx + dy * dy) / 320) * (0.4 + Math.min(1.2, pointerSpeed / 600))
             : 0
+          // tips cool faster than the base — thin ends pinch off into wisps
+          const tipCool = coolDecay * (1 + 1.6 * smooth(0.45, 1.2, temperature[i]))
           nextTemperature[i] = Math.max(
             0,
             Math.min(
               1.6,
-              advected + lap * diffuse * dt * 8 + (emit + o2inject * 0.5) * dt * 3.4 - coolDecay * dt,
+              advected + lap * diffuse * dt * 8 + (emit + o2inject * 0.5) * dt * 3.4 - tipCool * dt,
             ),
           )
         }
@@ -683,7 +694,7 @@ export default function MathematicalFlameField({
     >
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 h-full w-full blur-[1.5px]"
+        className="absolute inset-0 h-full w-full blur-[3px]"
         style={{ imageRendering: 'auto' }}
       />
       <canvas ref={emberCanvasRef} className="absolute inset-0 h-full w-full" />

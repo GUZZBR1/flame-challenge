@@ -542,17 +542,49 @@ def _llm_client() -> AsyncOpenAI | None:
     return _client
 
 
+def _compact_material(r: dict) -> dict:
+    """Slim resolved_material for the prompt — drops the Shapley block
+    (surfaced separately as risk_explain) and the conformal internals
+    the LLM is never asked to quote. ~55% smaller than the raw dict."""
+    u = r.get("uncertainty") or {}
+    return {
+        "materialId": r["materialId"],
+        "materialName": r["materialName"],
+        "o2Pct": r["o2Pct"],
+        "flowCms": r["flowCms"],
+        "gravity": r["gravity"],
+        "locPct": r["locPct"],
+        "margin": r["margin"],
+        "riskIndex": r["riskIndex"],
+        "level": r["level"],
+        "breakdown": r["breakdown"],
+        "flags": r["flags"],
+        "uncertainty": {
+            "lower": u.get("lower"),
+            "upper": u.get("upper"),
+            "regime": u.get("regime"),
+            "calibrationN": u.get("calibrationN"),
+        } if u else None,
+    }
+
+
 def _messages(message: str, state: ChamberState, packet: dict) -> list[dict]:
     exp = (packet["material"].get("explanation") or {}).get(
         "contributions") or []
     user = {
         "operator_message": message,
         "chamber_state": state.model_dump(exclude_none=True),
-        "resolved_material": packet["material"],
+        "resolved_material": _compact_material(packet["material"]),
         "engine_ignition_pressure": packet["ignitionPressure"],
         "engine_risk_index": packet["engineRiskIndex"],
         "nearest_psi_runs": packet["neighbors"],
-        "decision_options": packet["decisionOptions"],
+        # one best option per card is all the LLM needs to phrase the
+        # recommendation — the full option lattice costs ~2x tokens
+        "decision_options": [
+            {"card": c["card"], "context": c["context"],
+             "best": max(c["options"], key=lambda o: o["score"])}
+            for c in packet["decisionOptions"]
+        ],
         "risk_explain": [{"factor": c["label"], "share": c["share"]}
                          for c in exp[:4]],
     }
@@ -647,22 +679,38 @@ async def answer(message: str, state: ChamberState) -> dict:
 
 async def transcribe_audio(payload: bytes, filename: str | None = None,
                            content_type: str | None = None) -> str | None:
-    """Forward the clip to whisper.cpp; None means STT unavailable."""
+    """Forward the clip to the STT endpoint; None means STT unavailable.
+
+    Any OpenAI-compatible /audio/transcriptions route works: local
+    whisper.cpp (default), Groq (`STT_BASE_URL=https://api.groq.com/
+    openai/v1/audio/transcriptions`, `STT_API_KEY`, `STT_MODEL=
+    whisper-large-v3-turbo`), etc. Auth and model are only sent when
+    configured — whisper.cpp ignores neither being absent.
+    """
     if httpx is None or not payload:
         return None
-    url = _env("WHISPER_CPP_URL",
-               "http://localhost:8081/v1/audio/transcriptions")
+    url = _env("STT_BASE_URL",
+               _env("WHISPER_CPP_URL",
+                    "http://localhost:8081/v1/audio/transcriptions"))
+    api_key = os.environ.get("STT_API_KEY") or os.environ.get(
+        "WHISPER_CPP_API_KEY") or ""
+    model = os.environ.get("STT_MODEL") or ""
+    headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
+    data = {"response_format": "json"}
+    if model:
+        data["model"] = model
     try:
         async with httpx.AsyncClient(timeout=_stt_timeout()) as c:
             r = await c.post(
                 url,
+                headers=headers,
                 files={"file": (filename or "audio.webm", payload,
                                 content_type or "application/octet-stream")},
-                data={"response_format": "json"},
+                data=data,
             )
         r.raise_for_status()
         text = (r.json().get("text") or "").strip()
         return text or None
     except Exception as exc:  # noqa: BLE001
-        logger.info("whisper.cpp unreachable: %s", exc)
+        logger.info("STT endpoint unreachable: %s", exc)
         return None

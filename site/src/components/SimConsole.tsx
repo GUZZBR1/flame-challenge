@@ -3,15 +3,16 @@ import {
   siChat,
   siVoice,
   synthesizeLocalSiResponse,
+  type ChamberUiCommand,
   type SiChamberState,
   type SiResponse,
   type SiSimulationCommands,
 } from '../lib/api'
 import { emitSimulationCommands } from '../lib/simBus'
+import { navigate } from '../lib/scroll'
 import {
   GRAVITY_G,
   mergeChamberState,
-  presetToCommands,
   toolCallsFromCommands,
   type ChatMsg,
   type PresetCommandSource,
@@ -25,6 +26,7 @@ export interface SimPreset extends PresetCommandSource {
   title: string
   description: string
   outcomeStatus: string
+  prompt?: string
 }
 
 export default function SimConsole({ presets }: { presets: SimPreset[] }) {
@@ -86,7 +88,7 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 160
   }
 
-  const applyResponse = (res: SiResponse, turnId: number, ms: number) => {
+  const applyResponse = (res: SiResponse, turnId: number, ms: number, suppressNav = false) => {
     const sim = res.simulation_commands ?? null
     const { tools, run } = toolCallsFromCommands(sim)
     // emit before setMsgs: the lazy LiveChamber mount peeks the pending
@@ -114,6 +116,21 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
         : sim
       emitSimulationCommands(mergedSim, 'sim-console', nextChamber.investigationId ?? null)
       setChamber(nextChamber)
+    }
+    // when the copilot points somewhere (generated dashboards, a section),
+    // follow it — this is how answers surface the dashboards they produced
+    const section = res.navigation?.scroll_to_section
+    // preset-driven turns must never leave the deck — the operator just
+    // asked to simulate here, so a stray 'psi-dataset' hop is a bug
+    if (section && !suppressNav) {
+      // 'chamber' is the copilot's name for this console — the live-chamber
+      // video section no longer exists
+      const target = section === 'chamber' ? '#ignis-console' : section.startsWith('#') ? section : `#${section}`
+      if (target === '#ignis-console') {
+        document.getElementById('ignis-console')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      } else {
+        navigate(target)
+      }
     }
     setMsgs((ms2) =>
       ms2.map((m) =>
@@ -154,49 +171,50 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     ms: null,
   })
 
-  // deterministic preset chips — the selection path the envelopes lost.
-  // A chip also inserts a run-bearing turn so a SimRunCard mounts a
-  // LiveChamber even in an empty conversation (emit first: the lazy
-  // mount peeks the pending command, same ordering as applyResponse).
-  const [pickedPresetId, setPickedPresetId] = useState<string | null>(null)
-  const pickPreset = (preset: SimPreset) => {
-    const sim = presetToCommands(preset)
-    const nextChamber = mergeChamberState(chamberRef.current, sim)
-    setChamber(nextChamber)
-    setPickedPresetId(preset.id)
-    const { tools, run } = toolCallsFromCommands(sim)
-    emitSimulationCommands(sim, 'sim-console', preset.investigationId ?? null)
-    setMsgs((ms) => [
-      ...ms,
-      {
-        kind: 'agent',
-        id: nid(),
-        pending: false,
-        tools,
-        briefing: preset.description,
-        action: null,
-        run,
-        mode: 'preset',
-        model: null,
-        engine: null,
-        riskIndex: null,
-        evidence: [],
-        ms: null,
-      },
-    ])
-  }
+  const sendTextRef = useRef<((text: string, display?: string, opts?: { suppressNav?: boolean }) => Promise<void>) | null>(null)
+  // mission envelopes in the deck above announce picks on the chamber bus
+  // (__origin 'sim-deck'). Each pick becomes a real LLM turn: the preset's
+  // chamber context is applied first so the copilot answers under the
+  // mission's O₂/flow/gravity conditions.
+  useEffect(() => {
+    const onDeckCommand = (event: Event) => {
+      const cmd = (event as CustomEvent<ChamberUiCommand>).detail
+      if (!cmd || cmd.__origin !== 'sim-deck') return
+      const sim: SiSimulationCommands = {
+        load_preset: cmd.load_preset ?? undefined,
+        set_o2_percent: cmd.set_o2_percent ?? undefined,
+        set_airflow_cm_s: cmd.set_airflow_cm_s ?? undefined,
+        set_gravity_g: cmd.set_gravity_g ?? undefined,
+        trigger_containment: cmd.trigger_containment ?? undefined,
+      }
+      const nextChamber = mergeChamberState(chamberRef.current, sim)
+      setChamber(nextChamber)
+      const preset = presets.find(
+        (p) => p.investigationId === (cmd.__investigation ?? cmd.load_preset),
+      )
+      void sendTextRef.current?.(
+        preset?.prompt ?? `Analyze ${cmd.__investigation ?? cmd.load_preset ?? 'this mission'}.`,
+        preset ? `Explore mission — ${preset.title}` : undefined,
+        { suppressNav: true },
+      )
+    }
+    window.addEventListener('ignis:ui-command', onDeckCommand)
+    return () => window.removeEventListener('ignis:ui-command', onDeckCommand)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presets])
 
-  const sendText = async (text: string) => {
+  const sendText = async (text: string, display?: string, opts?: { suppressNav?: boolean }) => {
     const uid = nid()
     const tid = nid()
     stickRef.current = true
-    setMsgs((ms) => [...ms, { kind: 'user', id: uid, text }, pendingTurn(tid)])
+    setMsgs((ms) => [...ms, { kind: 'user', id: uid, text: display ?? text }, pendingTurn(tid)])
     const t0 = performance.now()
     const res =
       (await siChat(text, chamberRef.current)) ??
       synthesizeLocalSiResponse(text, chamberRef.current)
-    applyResponse(res, tid, performance.now() - t0)
+    applyResponse(res, tid, performance.now() - t0, opts?.suppressNav)
   }
+  sendTextRef.current = sendText
 
   const sendVoice = async (blob: Blob) => {
     const uid = nid()
@@ -269,6 +287,22 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
               <p className="mb-0 mt-3 max-w-xl font-chat-sans text-base font-normal leading-7 text-ink/75 sm:text-lg">
                 Ask Ignis about an experiment or describe what you want to test.
               </p>
+              <div className="mt-6 flex max-w-xl flex-wrap items-center justify-center gap-2">
+                {[
+                  'Run a SAFFIRE burn',
+                  'Is methanol safe at 24% O₂?',
+                  'Show me the riskiest scenario',
+                ].map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => sendText(s)}
+                    className="rounded-full border border-edge/70 bg-ink/[0.035] px-4 py-2 font-mono text-sm text-ink/80 transition-colors duration-200 hover:border-accent/60 hover:bg-accent/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent dark:bg-white/[0.05]"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -286,34 +320,6 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
           )}
         </div>
       </div>
-
-      {presets.length > 0 && (
-        <div
-          role="group"
-          aria-label="Mission presets"
-          className="mx-auto flex w-full max-w-3xl gap-2 overflow-x-auto pb-1 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {presets.slice(0, 8).map((p) => {
-            const isActive = pickedPresetId === p.id
-            return (
-              <button
-                key={p.id}
-                type="button"
-                aria-pressed={isActive}
-                disabled={busy}
-                onClick={() => pickPreset(p)}
-                className={`flex-none whitespace-nowrap rounded-full border px-3 py-1.5 font-mono text-tiny font-semibold lowercase tracking-label transition-[border-color,color,background-color,transform] duration-150 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-50 motion-reduce:transform-none ${
-                  isActive
-                    ? 'border-accent/70 bg-accent/10 text-accent'
-                    : 'border-edge/60 bg-white/50 text-ink/65 hover:border-edge hover:text-ink dark:bg-white/[0.04]'
-                }`}
-              >
-                {p.title.replace(/^(historical crisis|guided scenario|mission):\s*/i, '')}
-              </button>
-            )
-          })}
-        </div>
-      )}
 
       <div className="mx-auto w-full max-w-3xl pt-3">
         <Composer

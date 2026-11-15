@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '../lib/scroll'
 import { emitUiCommand } from '../lib/simBus'
+import { riskIndexLocal, riskLevel } from '../lib/risk'
 import { attachSmoothScroll } from '../lib/smoothOverlay'
 import KeyedFlame from './KeyedFlame'
 import Footer from './Footer'
@@ -277,8 +278,8 @@ export default function SimDeck() {
   }, [])
 
   // selecting an envelope marks it active and announces the pick on the
-  // chamber bus — a mounted chamber retunes to the preset (o₂/flow/grav);
-  // the run/report pipeline itself intentionally lives outside this view
+  // chamber bus — the console below turns each pick into a real run
+  // (chat turn + live chamber); scroll it into view so the operator sees it boot
   const loadMissionPreset = (preset: MissionPreset) => {
     setActiveMission(preset)
     emitUiCommand({
@@ -291,6 +292,7 @@ export default function SimDeck() {
       __origin: 'sim-deck',
       __run: false,
     })
+    document.getElementById('ignis-console')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const pickProps = (preset: MissionPreset) => ({
@@ -324,7 +326,7 @@ export default function SimDeck() {
     'h-full w-full object-cover grayscale contrast-110 transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0 group-focus-visible:grayscale-0'
 
   return (
-    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
+    <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-clip overscroll-contain bg-bg">
       <div className="relative mx-auto w-[min(92vw,96rem)] pb-28 pt-32 sm:pt-40">
         <KeyedFlame
           className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
@@ -525,8 +527,62 @@ export default function SimDeck() {
           </div>
         </section>
 
+        {/* ---- mission risk board — every preset scored by the local
+                engine mirror, macOS-widget minimal: one number per tile ---- */}
+        <section aria-label="Mission risk comparison" className="relative mt-24 sm:mt-32">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <h2 className="font-display text-2xl font-bold sm:text-3xl">
+              Mission risk board
+            </h2>
+            <span className="font-mono text-micro lowercase tracking-eyebrow opacity-50">
+              live engine · tap to simulate
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {[...MISSION_PRESETS]
+              .map((preset) => ({
+                preset,
+                risk: riskIndexLocal(
+                  preset.materialId,
+                  preset.o2Pct,
+                  preset.flowCms,
+                  preset.gravity,
+                ),
+              }))
+              .sort((a, b) => b.risk.riskIndex - a.risk.riskIndex)
+              .map(({ preset, risk: r }) => {
+              const pct = Math.round(r.riskIndex * 100)
+              const isActive = activeMission.id === preset.id
+              return (
+                <button
+                  key={preset.id}
+                  {...pickProps(preset)}
+                  className={`group rounded-card border p-5 text-left shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg sm:p-6 ${
+                    isActive ? 'border-accent/60 bg-accent/5' : 'border-edge panel-85'
+                  }`}
+                >
+                  <div
+                    className="font-display text-5xl font-bold leading-none tracking-tight sm:text-6xl"
+                    style={{ color: preset.accent }}
+                  >
+                    {pct}
+                    <span className="text-2xl font-semibold opacity-60">%</span>
+                  </div>
+                  <div className="mt-3 font-display text-base font-semibold leading-tight sm:text-lg">
+                    {splitTitle(preset).name}
+                  </div>
+                  <div className="mt-1 font-mono text-tiny lowercase tracking-label opacity-60">
+                    {riskLevel(r.riskIndex)}
+                    {isActive ? ' · ●' : ''}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+
         {/* ---- live console — chat + flame composer under the envelopes ---- */}
-        <section aria-label="Ignis console" className="relative mt-24 flex h-[85vh] min-h-[560px] flex-col sm:mt-32">
+        <section id="ignis-console" aria-label="Ignis console" className="relative mt-24 flex h-[85vh] min-h-[560px] flex-col scroll-mt-16 sm:mt-32">
           <SimConsole presets={MISSION_PRESETS} />
         </section>
       </div>

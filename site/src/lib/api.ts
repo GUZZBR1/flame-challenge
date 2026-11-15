@@ -24,6 +24,23 @@ async function probe<T>(url: string): Promise<T | null> {
 
 export type EngineStatus = 'checking' | 'cpp' | 'local'
 
+/**
+ * Fire-and-forget wake-up ping. Free-tier backends (Render/Koyeb) sleep
+ * on idle and take ~30-60 s to cold-start, so hit /health the moment the
+ * page loads — the request itself boots the container while the user is
+ * still on the hero. The tight-probe engineStatus() keeps reporting
+ * 'local' until the service is warm; every call site already falls back
+ * to the bundled physics mirror in the meantime.
+ */
+export function warmBackend(): void {
+  const base = apiUrl('/health')
+  try {
+    void fetch(base, { mode: 'cors', cache: 'no-store' }).catch(() => {})
+  } catch {
+    // offline / blocked — local fallback covers everything anyway
+  }
+}
+
 export async function engineStatus(): Promise<EngineStatus> {
   const health = await probe<{ engine?: string }>(apiUrl('/health'))
   return health?.engine === 'c++' ? 'cpp' : 'local'
@@ -142,11 +159,22 @@ export async function siVoice(audio: Blob, state: SiChamberState): Promise<SiRes
     const form = new FormData()
     form.append('audio', wav, 'clip.wav')
     form.append('state', JSON.stringify(state))
-    const controller = new AbortController()
-    const timeout = window.setTimeout(() => controller.abort(), 70000)
-    const response = await fetch(apiUrl('/api/si/voice-command'), { method: 'POST', body: form, signal: controller.signal })
-    window.clearTimeout(timeout)
-    if (response.ok) return (await response.json()) as SiResponse
+    // free-tier backends sleep — an abort/reset during cold boot gets one
+    // retry before we report the uplink unreachable
+    let response: Response | null = null
+    for (let attempt = 0; attempt < 2 && !response; attempt++) {
+      const controller = new AbortController()
+      const timeout = window.setTimeout(() => controller.abort(), 70000)
+      try {
+        response = await fetch(apiUrl('/api/si/voice-command'), { method: 'POST', body: form, signal: controller.signal })
+      } catch (err) {
+        if (attempt === 1) throw err
+        await new Promise((r) => setTimeout(r, 1500))
+      } finally {
+        window.clearTimeout(timeout)
+      }
+    }
+    if (response!.ok) return (await response!.json()) as SiResponse
     return {
       briefing: 'Voice command service is currently unavailable or speech could not be transcribed.',
       recommended_action: 'Use manual controls or retry voice input.',
