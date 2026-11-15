@@ -28,6 +28,7 @@ type PendingRun = {
   analysisScenario: SiChamberState
   scenario: SiChamberState
   engineGravityMode: string
+  navigation: SiResponse['navigation']
 }
 
 const cloneScenario = (scenario: SiChamberState): SiChamberState => ({ ...scenario })
@@ -144,6 +145,7 @@ export default function SimDeck() {
       const report = generateDashboard(current.prompt, reportResponse, frame, current.scenario, current.analysisScenario, current.engineGravityMode)
       setMessages((all) => all.map((message) => message.id === current.messageId ? { ...message, saved: true, dashboardId: report.id } : message))
       setNotice('Simulation complete. Its report is ready in Dashboard.')
+      applyNavigation(current.navigation)
       latestResponse.current = null
     }
     window.addEventListener('ignis:scroll-inner', onInner)
@@ -170,8 +172,7 @@ export default function SimDeck() {
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, busy])
 
-  const applyNavigation = (response: SiResponse) => {
-    const navigation = response.navigation
+  const applyNavigation = (navigation: SiResponse['navigation']) => {
     if (!navigation) return
     if (navigation.active_filter_tag) setFilterTag(navigation.active_filter_tag)
     const target = navigation.scroll_to_section
@@ -180,6 +181,11 @@ export default function SimDeck() {
       return
     }
     const section = target === 'mission-control' ? 'simulations' : target
+    if ((section === 'hero' || section === 'shipyard') && location.hash) {
+      navigateBack()
+      window.setTimeout(() => scrollToSection(section), 80)
+      return
+    }
     scrollToSection(section)
   }
 
@@ -221,13 +227,13 @@ export default function SimDeck() {
     const engineGravityMode = investigationSpecs[nextScenario.investigationId ?? '']?.partialGravity
       ? 'partial-gravity correction calibrated for the FLARE preset'
       : 'preset gravity mode; requested gravity applies to risk analysis only'
-    if (hasRunConditions) latestResponse.current = { prompt, response, messageId: assistantMessageId, analysisScenario: cloneScenario(analysisScenario), scenario: cloneScenario(nextScenario), engineGravityMode }
+    if (hasRunConditions) latestResponse.current = { prompt, response, messageId: assistantMessageId, analysisScenario: cloneScenario(analysisScenario), scenario: cloneScenario(nextScenario), engineGravityMode, navigation: response.navigation }
     emitSimulationCommands(commandSet, 'sim-chat', nextScenario.investigationId ?? null)
     setMessages((all) => [...all, {
       id: assistantMessageId, role: 'assistant', text: response.briefing, response, prompt, scenario: cloneScenario(analysisScenario),
       ...(invalidPreset ? { warning: `The copilot requested “${requestedPreset}”, which is not a calibrated chamber preset. The chamber settings were left unchanged and no run was started.` } : {}),
     }])
-    applyNavigation(response)
+    if (!hasRunConditions) applyNavigation(response.navigation)
     if (response.transcript) setNotice(`Heard: “${response.transcript}”`)
     else if (response.stt === 'offline') setNotice('Voice transcription is offline. You can still type to the copilot.')
     else if (gravityCommand) setNotice('Gravity was applied to risk analysis. Chamber physics use the selected preset gravity mode.')
