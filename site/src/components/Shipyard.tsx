@@ -8,6 +8,7 @@ interface Line {
   who: 'sci' | 'eng'
   pose: Pose
   text: string
+  tilt?: number
 }
 
 /** the comms transcript — real combustion physics, argued about. every claim
@@ -15,10 +16,10 @@ interface Line {
 const SCRIPT: Line[] = [
   { who: 'sci', pose: 'talk', text: 'fun fact: take away gravity and a flame closes into a sphere. no teardrop, no plume.' },
   { who: 'eng', pose: 'stern', text: 'a sphere. great. so a fuel leak on my ship burns in every direction at once.' },
-  { who: 'sci', pose: 'explain', text: 'diffusion-limited, technically. and below ~600 k it slips into cool-flame — almost invisible.' },
+  { who: 'sci', pose: 'explain', text: 'diffusion-limited, technically. and below ~600 K it slips into cool-flame — almost invisible.' },
   { who: 'eng', pose: 'panic', text: 'invisible fire. on my ship. love that for us.' },
   { who: 'sci', pose: 'mad', text: 'relax — the engine checks every material against real psi mission data.' },
-  { who: 'eng', pose: 'yell', text: 'then run the numbers. i am not signing anything until i watch it burn.' },
+  { who: 'eng', pose: 'yell', text: 'then run the numbers. I am not signing anything until I watch it burn.' },
 ]
 
 const WHO: Record<Line['who'], string> = {
@@ -27,7 +28,8 @@ const WHO: Record<Line['who'], string> = {
 }
 
 /** hand-placed feel — each speaker tag gets a small tilt + nudge so the
- *  feed reads like scribbled comms, not a centered column. */
+ *  feed reads like scribbled comms, not a centered column. tilt is stored
+ *  on the logged line so it stays put when older lines roll off the cap. */
 const TAG_TILTS = [
   { r: -0.9, x: 2 },
   { r: 0.6, x: -3 },
@@ -56,7 +58,7 @@ function scrollToSims() {
   navigate('#simulations')
 }
 
-/** The crew arguing combustion physics — typed comms transcript with pose
+/** the crew arguing combustion physics — typed comms transcript with pose
  *  swaps, auto-started when the section scrolls into view. `vision` nav
  *  target. */
 export default function Shipyard() {
@@ -86,7 +88,8 @@ export default function Shipyard() {
         }, 2600)
         return
       }
-      const { who, pose, text } = SCRIPT[idxRef.current]
+      const si = idxRef.current
+      const { who, pose, text } = SCRIPT[si]
       setPoses({ sci: 'idle', eng: 'idle', [who]: pose })
       let c = 0
       setTyping({ who, text: '' })
@@ -100,7 +103,7 @@ export default function Shipyard() {
           idxRef.current += 1
           timerRef.current = window.setTimeout(() => {
             setTyping(null)
-            setLog((l) => [...l.slice(-4), { who, pose, text }])
+            setLog((l) => [...l.slice(-4), { who, pose, text, tilt: si % TAG_TILTS.length }])
             play()
           }, 1500)
         }
@@ -164,7 +167,7 @@ export default function Shipyard() {
 
         <p className="mx-auto mt-5 max-w-2xl text-center font-mono text-[13px] leading-relaxed text-[var(--ink)] opacity-80">
           docked crews argue about combustion the way ground crews argue about
-          weather — because out here a flame can hide at 600 k and still be
+          weather — because out here a flame can hide at 600 K and still be
           alive. every burn is checked against the psi record: droplet d²-law
           rates, cool-flame thresholds, opposed-flow extinction.
         </p>
@@ -189,13 +192,13 @@ export default function Shipyard() {
         </div>
 
         {/* comms feed — typed transcript, rolling. sci on the left lane,
-            eng on the right (under their sprites), tags dropped in loose */}
+            eng on the right (under their sprites), tags loosely tilted */}
         <div className="mx-auto mt-8 max-w-3xl space-y-3 font-mono text-[12.5px] leading-relaxed sm:mt-10" aria-live="polite">
           {!started && (
             <p className="text-[var(--ink)] opacity-40">comms — idle · waiting for the crew</p>
           )}
           {log.map((l, i) => {
-            const t = TAG_TILTS[i % TAG_TILTS.length]
+            const t = TAG_TILTS[(l.tilt ?? i) % TAG_TILTS.length]
             const eng = l.who === 'eng'
             return (
               <div
@@ -215,7 +218,7 @@ export default function Shipyard() {
             )
           })}
           {typing && (() => {
-            const t = TAG_TILTS[log.length % TAG_TILTS.length]
+            const t = TAG_TILTS[idxRef.current % TAG_TILTS.length]
             const eng = typing.who === 'eng'
             return (
               <div
