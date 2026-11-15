@@ -196,31 +196,8 @@ const INDEX_MISSIONS = MISSION_PRESETS.filter(
   (p) => ![FEATURE.id, SIDE_A.id, SIDE_B.id, TERTIARY.id].includes(p.id),
 )
 
-/** real NASA imagery, pulled from the official image & video library
- *  (images.nasa.gov) — nasa ids kept for provenance:
- *    apollo1_crew → S66-30236      apollo 1 prime crew portrait
- *    apollo13_sm  → as13-59-8500   service module after jettison
- *    flex2_mdca   → iss035e017702  mdca reservoir swap for the flex-2 run
- *    saffire clip → saffire-v uv flight footage already in /assets */
-const MISSION_MEDIA = {
-  feature: { type: 'image', src: '/assets/nasa/apollo1_crew.jpg', alt: 'Apollo 1 prime crew — White, Grissom, Chaffee (NASA S66-30236)' },
-  sideA: { type: 'image', src: '/assets/nasa/apollo13_sm.jpg', alt: 'Damaged Apollo 13 service module after jettison (NASA as13-59-8500)' },
-  sideB: { type: 'image', src: '/assets/nasa/flex2_mdca.jpg', alt: 'MDCA reconfiguration for the FLEX-2 experiment aboard the ISS (NASA iss035e017702)' },
-  tertiary: { type: 'video', src: '/assets/saffire5_uv_sd.mp4', alt: 'SAFFIRE-V UV chemiluminescence flight footage' },
-} as const
-
 function ActiveMark() {
   return <span className="font-mono text-tiny font-semibold text-accent">● active</span>
-}
-
-/** quiet category eyebrow — crisis vs scenario stays legible at a
- *  glance without shouting over the mission name */
-function KindLine({ kind, className = '' }: { kind: string; className?: string }) {
-  return (
-    <p className={`font-mono text-mini uppercase tracking-label opacity-55 ${className}`}>
-      {kind}
-    </p>
-  )
 }
 
 /** orbital arc + diagonal tick — pure decoration behind the spread */
@@ -333,7 +310,7 @@ export default function SimDeck() {
           </p>
         </header>
 
-        {/* ---- asymmetric mission spread ---- */}
+        {/* ---- asymmetric mission spread — names only ---- */}
         <section className="mission-areas relative mt-16 sm:mt-24" aria-label="Mission envelopes">
           <OrbitDecor />
 
@@ -341,149 +318,92 @@ export default function SimDeck() {
           <button
             {...pickProps(FEATURE)}
             data-hero
-            className="feature-grid group relative [grid-area:feature] text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            className="group flex items-center border-t border-edge pt-7 [grid-area:feature] text-left lg:pt-0 lg:border-t-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
           >
-            <div className="[grid-area:head] lg:pr-16 xl:pr-20">
-              <KindLine kind={feature.kind} />
-              <h2 className="mt-3 font-display text-[clamp(3rem,5.8vw,4.5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent">
+            <span className="min-w-0">
+              <span
+                className="block font-display text-[clamp(3.2rem,6vw,5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                style={activeMission.id === FEATURE.id ? { color: FEATURE.accent } : undefined}
+              >
                 {feature.name}
-              </h2>
-              <p className="mt-3 font-mono text-caption font-semibold" style={{ color: FEATURE.accent }}>
-                {FEATURE.tag}
-              </p>
-            </div>
-
-            <div className="[grid-area:media] relative min-h-[260px] sm:min-h-[340px] lg:-ml-16 lg:min-h-[420px] xl:-ml-20">
-              <div className="clip-diag-l absolute inset-0 overflow-hidden">
-                <img
-                  src={MISSION_MEDIA.feature.src}
-                  alt={MISSION_MEDIA.feature.alt}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-bg/60 via-bg/5 to-transparent" />
-              </div>
-            </div>
-
-            <div className="[grid-area:body] flex flex-col lg:pr-16 xl:pr-20">
-              <p className="max-w-md text-body leading-[1.8] opacity-80">{FEATURE.description}</p>
-              <span className="mt-8 font-mono text-tiny font-semibold text-accent">
-                {activeMission.id === FEATURE.id ? '● active envelope' : 'explore →'}
               </span>
-            </div>
+              {activeMission.id === FEATURE.id && (
+                <span className="mt-4 block"><ActiveMark /></span>
+              )}
+            </span>
           </button>
 
           {/* secondary rail — apollo 13 + flex-2 */}
           {([
-            [SIDE_A, sideA, MISSION_MEDIA.sideA],
-            [SIDE_B, sideB, MISSION_MEDIA.sideB],
-          ] as const).map(([preset, t, media], i) => (
-            <button
-              key={preset.id}
-              {...pickProps(preset)}
-              data-hero
-              className={`group border-t border-edge pt-7 text-left lg:border-l lg:pl-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
-                i === 0 ? '[grid-area:side-a]' : '[grid-area:side-b] sm:border-l sm:pl-6 lg:pl-10'
-              }`}
-            >
-              <KindLine kind={t.kind} />
-              <h2 className="mt-2 font-display text-[clamp(1.7rem,3vw,2.4rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent">
-                {t.name}
-              </h2>
-              <div className="clip-para mt-4 h-32 overflow-hidden bg-black sm:h-36">
-                <img
-                  src={media.src}
-                  alt={media.alt}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
-                />
-              </div>
-              <p className="mt-4 line-clamp-2 max-w-md text-caption leading-relaxed opacity-75">
-                {preset.description}
-              </p>
-              <div className="mt-5 flex items-baseline justify-between gap-4">
-                <span className="truncate font-mono text-tiny font-semibold" style={{ color: preset.accent }}>
-                  {preset.tag}
+            [SIDE_A, sideA],
+            [SIDE_B, sideB],
+          ] as const).map(([preset, t], i) => {
+            const isActive = activeMission.id === preset.id
+            return (
+              <button
+                key={preset.id}
+                {...pickProps(preset)}
+                data-hero
+                className={`group border-t border-edge pt-7 text-left lg:border-l lg:pl-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
+                  i === 0 ? '[grid-area:side-a]' : '[grid-area:side-b] sm:border-l sm:pl-6 lg:pl-10'
+                }`}
+              >
+                <span
+                  className="block font-display text-[clamp(1.8rem,3.2vw,2.6rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                  style={isActive ? { color: preset.accent } : undefined}
+                >
+                  {t.name}
                 </span>
-                <span className="shrink-0 font-mono text-tiny font-semibold text-accent">
-                  {activeMission.id === preset.id ? '● active' : 'explore →'}
-                </span>
-              </div>
-            </button>
-          ))}
+                {isActive && <span className="mt-3 block"><ActiveMark /></span>}
+              </button>
+            )
+          })}
 
           {/* tertiary band — saffire */}
           <button
             {...pickProps(TERTIARY)}
             data-reveal
-            className="group grid items-center gap-8 [grid-area:tertiary] border-t border-edge pt-10 text-left sm:grid-cols-[minmax(0,9fr)_minmax(0,11fr)] lg:gap-14 lg:pt-14 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            className="group flex items-baseline justify-between gap-6 border-t border-edge pt-8 text-left [grid-area:tertiary] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
           >
-            <div className="clip-diag-r relative min-h-[220px] overflow-hidden bg-black lg:min-h-[280px]">
-              <video
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                src={MISSION_MEDIA.tertiary.src}
-                aria-label={MISSION_MEDIA.tertiary.alt}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-              />
-              <div className="absolute inset-0 bg-gradient-to-l from-bg/40 via-transparent to-transparent" />
-            </div>
-            <div>
-              <KindLine kind={tertiary.kind} />
-              <h2 className="mt-2 font-display text-[clamp(1.9rem,3.6vw,3rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent">
-                {tertiary.name}
-              </h2>
-              <p className="mt-4 max-w-lg text-caption leading-relaxed opacity-75">{TERTIARY.description}</p>
-              <div className="mt-6 flex flex-wrap items-baseline justify-between gap-4">
-                <span className="font-mono text-tiny font-semibold" style={{ color: TERTIARY.accent }}>
-                  {TERTIARY.tag}
-                </span>
-                <span className="font-mono text-tiny font-semibold text-accent">
-                  {activeMission.id === TERTIARY.id ? '● active' : 'explore →'}
-                </span>
-              </div>
-            </div>
+            <span
+              className="font-display text-[clamp(2rem,3.8vw,3.2rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+              style={activeMission.id === TERTIARY.id ? { color: TERTIARY.accent } : undefined}
+            >
+              {tertiary.name}
+            </span>
+            {activeMission.id === TERTIARY.id && <ActiveMark />}
           </button>
         </section>
 
         {/* ---- full mission index — every remaining envelope, 1-click ---- */}
         <section className="mt-20 sm:mt-28" aria-label="Full mission index" data-reveal>
-          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-edge pb-4">
-            <div>
-              <span className="card-label">View All Missions</span>
-              <h2 className="mt-1 font-display text-xl font-bold sm:text-2xl">Full Mission Index</h2>
-            </div>
-            <span className="hidden font-mono text-tiny opacity-60 sm:inline">
-              {INDEX_MISSIONS.length} more envelopes — imagery · nasa archives
+          <div className="flex items-baseline justify-between gap-4 border-b border-edge pb-4">
+            <span className="card-label">All Missions</span>
+            <span className="font-mono text-tiny opacity-60">
+              {INDEX_MISSIONS.length} more envelopes
             </span>
           </div>
           <ul>
-            {INDEX_MISSIONS.map((preset, i) => {
+            {INDEX_MISSIONS.map((preset) => {
               const t = splitTitle(preset)
               const isActive = activeMission.id === preset.id
               return (
                 <li key={preset.id}>
                   <button
                     {...pickProps(preset)}
-                    className="row-hover group grid w-full grid-cols-[2rem_minmax(0,1fr)_auto] items-baseline gap-x-5 border-b border-edge py-5 text-left sm:grid-cols-[3rem_minmax(0,5fr)_minmax(0,6fr)_auto] sm:items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    className="row-hover group flex w-full items-baseline justify-between gap-6 border-b border-edge py-4 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
                   >
-                    <span className="font-mono text-tiny opacity-40">
-                      {String(i + 5).padStart(2, '0')}
-                    </span>
-                    <span className="min-w-0 truncate text-body font-bold transition-colors duration-300 group-hover:text-accent">
+                    <span
+                      className="min-w-0 truncate font-display text-lg font-bold transition-colors duration-300 group-hover:text-accent sm:text-xl"
+                      style={isActive ? { color: preset.accent } : undefined}
+                    >
                       {t.name}
                     </span>
-                    <span className="hidden min-w-0 truncate font-mono text-tiny opacity-55 sm:block">
-                      {preset.tag}
-                    </span>
-                    <span className="justify-self-end font-mono text-tiny font-semibold">
+                    <span className="shrink-0 font-mono text-tiny font-semibold">
                       {isActive ? (
                         <ActiveMark />
                       ) : (
-                        <span className="opacity-50 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100">
+                        <span className="opacity-40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:text-accent group-hover:opacity-100">
                           select →
                         </span>
                       )}

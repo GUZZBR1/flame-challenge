@@ -553,29 +553,3 @@ button.pill:active { transform: translateY(0) scale(.96); }
       "tertiary tertiary";
   }
 }
-
-/* featured mission internals — headline block left, archival media
-   plate right (it pulls left over the text column so the diagonal cut
-   tucks under the title), specs + cta bottom-left */
-.feature-grid {
-  display: grid;
-  gap: 1.75rem;
-  grid-template-areas: "head" "media" "body";
-}
-@media (min-width: 1024px) {
-  .feature-grid {
-    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
-    grid-template-rows: auto 1fr;
-    grid-template-areas:
-      "head media"
-      "body media";
-    column-gap: 0;
-    row-gap: 2rem;
-  }
-}
-
-/* geometric cuts — diagonal leading edge on the feature plate, angled
-   trailing edge on the tertiary band, parallelogram on rail figures */
-.clip-diag-l { clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%); }
-.clip-diag-r { clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
-.clip-para   { clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%); }
