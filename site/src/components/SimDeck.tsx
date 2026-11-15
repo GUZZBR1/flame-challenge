@@ -275,12 +275,27 @@ export default function SimDeck() {
           </svg>
           <OrbitDecor />
 
+          <div
+            aria-hidden="true"
+            className="relative mb-12 grid h-3 gap-x-[clamp(3rem,7vw,9rem)] sm:mb-16 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]"
+          >
+            <span className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-ink/35 via-ink/15 to-transparent" />
+            <span className="absolute left-0 top-0 h-3 w-px bg-ink/45" />
+            <span className="relative hidden lg:col-start-2 lg:block">
+              <span className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[2px] h-2 w-px bg-ink/30" />
+              <span className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e5202e]" />
+            </span>
+          </div>
+
           <div className="relative grid gap-x-[clamp(3rem,7vw,9rem)] gap-y-24 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             {/* featured — apollo 1: giant name across the block, copy + plate below */}
             <article data-hero className="flex min-w-0 flex-col">
-              <span className="inline-block self-start bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
-                Historical Crisis
-              </span>
+              <div className="flex items-center gap-5">
+                <span className="inline-block shrink-0 bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
+                  Historical Crisis
+                </span>
+                <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-[#e5202e]/60 to-transparent" />
+              </div>
               <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3rem,7.6vw,7rem)] font-bold leading-[0.92] tracking-tight">
                 {feature.name}
               </h2>
@@ -335,7 +350,22 @@ export default function SimDeck() {
             </article>
 
             {/* rail — two identical panels sharing the feature's height */}
-            <div className="flex flex-col gap-10">
+            <div className="relative flex flex-col gap-10">
+              <span
+                aria-hidden="true"
+                className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[6%] hidden h-[88%] w-px bg-gradient-to-b from-transparent via-ink/30 to-transparent lg:block"
+              />
+              <svg
+                aria-hidden="true"
+                className="absolute -left-[calc(clamp(1.5rem,3.5vw,4.5rem)+32px)] top-[46%] hidden text-ink lg:block"
+                width="64"
+                height="64"
+                viewBox="0 0 64 64"
+                fill="none"
+              >
+                <line x1="4" y1="60" x2="60" y2="4" stroke="currentColor" strokeOpacity="0.35" strokeWidth="1" />
+                <circle cx="32" cy="32" r="3" fill="#e5202e" />
+              </svg>
               {rail.map(([preset, t, media, n, shape]) => {
                 const isActive = activeMission.id === preset.id
                 return (
@@ -379,7 +409,8 @@ export default function SimDeck() {
           </div>
 
           {/* band — challenger + columbia, media bleeding to the screen edges */}
-          <div className="mission-bleed relative mt-24 border-t border-edge pt-16 sm:mt-32">
+          <div className="mission-bleed relative mt-24 pt-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-ink/35 before:via-ink/20 before:to-transparent sm:mt-32">
+            <span aria-hidden="true" className="absolute left-[var(--gut)] top-0 h-[3px] w-14 -translate-y-px bg-[#1e3fae]" />
             <div className="grid gap-24 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-[clamp(4rem,8vw,10rem)]">
               {band.map(([preset, t, media, n, shape], i) => {
                 const isActive = activeMission.id === preset.id
@@ -389,8 +420,14 @@ export default function SimDeck() {
                     key={preset.id}
                     {...pickProps(preset)}
                     data-hero
-                    className="group flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
+                    className="group relative flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
                   >
+                    {!imageLeft && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute -left-[clamp(2rem,4vw,5rem)] top-[10%] hidden h-[80%] w-px bg-gradient-to-b from-transparent via-ink/30 to-transparent lg:block"
+                      />
+                    )}
                     <span
                       className={`${shape} block h-48 overflow-hidden bg-black sm:h-60 sm:w-[48%] sm:shrink-0 ${
                         imageLeft ? 'bleed-l' : 'bleed-r sm:order-2'
