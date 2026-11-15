@@ -403,7 +403,7 @@ export default function SimDeck() {
                   )}
                 </div>
                 <div className="relative min-w-0">
-                  <div data-hover-media className="group/feat cut-hero relative h-[300px] overflow-hidden bg-black sm:h-[420px] lg:h-[500px] xl:h-[560px]">
+                  <div data-hover-media className="group/feat cut-hero relative origin-center transition-transform duration-500 ease-out hover:scale-[1.04] motion-reduce:transform-none h-[300px] overflow-hidden bg-black sm:h-[420px] lg:h-[500px] xl:h-[560px]">
                     <HoverVideo
                       src={MISSION_MEDIA.feature.src}
                       poster={MISSION_MEDIA.feature.poster}
@@ -425,7 +425,7 @@ export default function SimDeck() {
                     key={preset.id}
                     {...pickProps(preset)}
                     data-hero
-                    data-hover-media className="group flex flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    data-hover-media className="group flex flex-1 origin-center text-left transition-transform duration-500 ease-out hover:scale-[1.04] focus-visible:scale-[1.04] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-reduce:transform-none"
                   >
                     <span className="cut-panel grid w-full grid-cols-[minmax(0,1fr)_46%] items-center gap-3 bg-ink/[0.09] dark:bg-ink/[0.07] py-10 pl-12 pr-8 transition-colors duration-300 group-hover:bg-ink/[0.13] dark:group-hover:bg-ink/[0.1]">
                       <span className="flex h-full min-w-0 flex-col justify-between gap-6">
