@@ -430,6 +430,13 @@ int main() {
         CHECK(MaterialRisk::riskIndex(*hep, 16.0, 20.0, "earth")
               < MaterialRisk::riskIndex(*hep, 16.0, 20.0, "microgravity"),
               "earth gravity must reduce the index");
+        // 'mars' is the client-side preset label for the martian regime
+        CHECK(std::fabs(MaterialRisk::riskIndex(*hep, 16.0, 20.0, "mars")
+                        - bd.riskIndex) > 1e-9,
+              "mars alias must differ from the lunar index");
+        CHECK(std::fabs(MaterialRisk::riskBreakdown(*hep, 16.0, 20.0, "mars")
+                            .gravityFactor - 0.95) < 1e-9,
+              "mars must alias the martian gravity factor");
         // unknown material / unknown gravity degrade safely, not crash
         Material ghost;
         ghost.locPct = 15.0;
