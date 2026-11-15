@@ -277,8 +277,8 @@ export default function SimDeck() {
   }, [])
 
   // selecting an envelope marks it active and announces the pick on the
-  // chamber bus — a mounted chamber retunes to the preset (o₂/flow/grav);
-  // the run/report pipeline itself intentionally lives outside this view
+  // chamber bus — the console below turns each pick into a real run
+  // (chat turn + live chamber); scroll it into view so the operator sees it boot
   const loadMissionPreset = (preset: MissionPreset) => {
     setActiveMission(preset)
     emitUiCommand({
@@ -291,6 +291,7 @@ export default function SimDeck() {
       __origin: 'sim-deck',
       __run: false,
     })
+    document.getElementById('ignis-console')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   const pickProps = (preset: MissionPreset) => ({
@@ -526,7 +527,7 @@ export default function SimDeck() {
         </section>
 
         {/* ---- live console — chat + flame composer under the envelopes ---- */}
-        <section aria-label="Ignis console" className="relative mt-24 flex h-[85vh] min-h-[560px] flex-col sm:mt-32">
+        <section id="ignis-console" aria-label="Ignis console" className="relative mt-24 flex h-[85vh] min-h-[560px] flex-col scroll-mt-16 sm:mt-32">
           <SimConsole presets={MISSION_PRESETS} />
         </section>
       </div>

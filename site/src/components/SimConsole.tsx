@@ -3,6 +3,7 @@ import {
   siChat,
   siVoice,
   synthesizeLocalSiResponse,
+  type ChamberUiCommand,
   type SiChamberState,
   type SiResponse,
   type SiSimulationCommands,
@@ -11,7 +12,6 @@ import { emitSimulationCommands } from '../lib/simBus'
 import {
   GRAVITY_G,
   mergeChamberState,
-  presetToCommands,
   toolCallsFromCommands,
   type ChatMsg,
   type PresetCommandSource,
@@ -154,37 +154,54 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     ms: null,
   })
 
-  // deterministic preset chips — the selection path the envelopes lost.
-  // A chip also inserts a run-bearing turn so a SimRunCard mounts a
-  // LiveChamber even in an empty conversation (emit first: the lazy
-  // mount peeks the pending command, same ordering as applyResponse).
-  const [pickedPresetId, setPickedPresetId] = useState<string | null>(null)
-  const pickPreset = (preset: SimPreset) => {
-    const sim = presetToCommands(preset)
-    const nextChamber = mergeChamberState(chamberRef.current, sim)
-    setChamber(nextChamber)
-    setPickedPresetId(preset.id)
-    const { tools, run } = toolCallsFromCommands(sim)
-    emitSimulationCommands(sim, 'sim-console', preset.investigationId ?? null)
-    setMsgs((ms) => [
-      ...ms,
-      {
-        kind: 'agent',
-        id: nid(),
-        pending: false,
-        tools,
-        briefing: preset.description,
-        action: null,
-        run,
-        mode: 'preset',
-        model: null,
-        engine: null,
-        riskIndex: null,
-        evidence: [],
-        ms: null,
-      },
-    ])
-  }
+  // mission envelopes in the deck above announce picks on the chamber bus
+  // (__origin 'sim-deck'). Land each pick as a run-bearing turn so a
+  // SimRunCard mounts a LiveChamber even in an empty conversation — emit
+  // first: the lazy mount peeks the pending command (2.5 s window).
+  useEffect(() => {
+    const onDeckCommand = (event: Event) => {
+      const cmd = (event as CustomEvent<ChamberUiCommand>).detail
+      if (!cmd || cmd.__origin !== 'sim-deck') return
+      const sim: SiSimulationCommands = {
+        load_preset: cmd.load_preset ?? undefined,
+        set_o2_percent: cmd.set_o2_percent ?? undefined,
+        set_airflow_cm_s: cmd.set_airflow_cm_s ?? undefined,
+        set_gravity_g: cmd.set_gravity_g ?? undefined,
+        trigger_containment: cmd.trigger_containment ?? undefined,
+      }
+      const nextChamber = mergeChamberState(chamberRef.current, sim)
+      setChamber(nextChamber)
+      const { tools, run } = toolCallsFromCommands(sim)
+      // re-emit as 'sim-console' so this listener doesn't consume its own
+      // echo (emitSimulationCommands fans back out on the same event name)
+      emitSimulationCommands(sim, 'sim-console', nextChamber.investigationId ?? null)
+      const preset = presets.find(
+        (p) => p.investigationId === (cmd.__investigation ?? cmd.load_preset),
+      )
+      setMsgs((ms) => [
+        ...ms,
+        {
+          kind: 'agent',
+          id: nid(),
+          pending: false,
+          tools,
+          briefing: preset?.description ?? '',
+          action: null,
+          run,
+          mode: 'preset',
+          model: null,
+          engine: null,
+          riskIndex: null,
+          evidence: [],
+          ms: null,
+        },
+      ])
+      stickRef.current = true
+    }
+    window.addEventListener('ignis:ui-command', onDeckCommand)
+    return () => window.removeEventListener('ignis:ui-command', onDeckCommand)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presets])
 
   const sendText = async (text: string) => {
     const uid = nid()
@@ -286,34 +303,6 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
           )}
         </div>
       </div>
-
-      {presets.length > 0 && (
-        <div
-          role="group"
-          aria-label="Mission presets"
-          className="mx-auto flex w-full max-w-3xl gap-2 overflow-x-auto pb-1 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {presets.slice(0, 8).map((p) => {
-            const isActive = pickedPresetId === p.id
-            return (
-              <button
-                key={p.id}
-                type="button"
-                aria-pressed={isActive}
-                disabled={busy}
-                onClick={() => pickPreset(p)}
-                className={`flex-none whitespace-nowrap rounded-full border px-3 py-1.5 font-mono text-tiny font-semibold lowercase tracking-label transition-[border-color,color,background-color,transform] duration-150 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-50 motion-reduce:transform-none ${
-                  isActive
-                    ? 'border-accent/70 bg-accent/10 text-accent'
-                    : 'border-edge/60 bg-white/50 text-ink/65 hover:border-edge hover:text-ink dark:bg-white/[0.04]'
-                }`}
-              >
-                {p.title.replace(/^(historical crisis|guided scenario|mission):\s*/i, '')}
-              </button>
-            )
-          })}
-        </div>
-      )}
 
       <div className="mx-auto w-full max-w-3xl pt-3">
         <Composer

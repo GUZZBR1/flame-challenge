@@ -96,4 +96,26 @@ describe('AgentTurn and IgnisSprite integration', () => {
     expect(html).toContain('PSI-TEST-1')
     expect(html).not.toContain('Ignis is working…')
   })
+
+  it('omits risk badge when turn.riskIndex is NaN', () => {
+    const nanTurn: AgentTurnModel = {
+      kind: 'agent',
+      id: 3,
+      pending: false,
+      tools: [],
+      briefing: 'Ignition check',
+      action: null,
+      run: null,
+      mode: 'llm',
+      model: 'qwen',
+      engine: 'c++',
+      riskIndex: NaN,
+      evidence: [],
+      ms: 100,
+    }
+
+    const html = renderToString(React.createElement(AgentTurn, { turn: nanTurn, live: false }))
+    expect(html).not.toContain('Risk index')
+    expect(html).not.toContain('NaN')
+  })
 })

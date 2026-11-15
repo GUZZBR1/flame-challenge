@@ -58,7 +58,7 @@ export default function AgentTurn({
         <p className="m-0 flex items-start gap-2 px-1 text-base leading-relaxed text-ink/70"><span className="font-semibold text-accent">Next</span>{turn.action}</p>
       )}
 
-      {turn.riskIndex != null && (
+      {turn.riskIndex != null && !Number.isNaN(turn.riskIndex) && (
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full border border-edge/70 bg-ink/[0.035] px-3 py-1.5 text-sm text-ink/70 dark:bg-white/[0.05]">Risk index</span>
           <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 font-mono text-sm font-medium tabular-nums text-amber-800 dark:text-amber-200">
