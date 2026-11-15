@@ -4,16 +4,51 @@
 
 @theme {
   --color-void: #05070d;
-  --color-panel: #0b1220;
-  --color-edge: #cbd5e1;
   --color-flame: #ff6b35;
   --color-ember: #f59e0b;
   --color-ice: #49b8d6;
   --color-mist: #7d8a99;
   --color-paper: #f3f2ed;
-  --color-ink: #17212b;
+
+  /* theme-bound tokens — utilities like `text-ink` / `border-edge` /
+     `bg-panel` resolve through the :root vars, so they follow the
+     light/dark data-theme switch automatically */
+  --color-ink: var(--ink);
+  --color-panel: var(--panel);
+  --color-edge: var(--edge);
+  --color-accent: var(--accent);
+  --color-link: var(--link);
+  --color-bg: var(--bg);
+  --color-track: var(--track);
+  /* fixed ink for always-dark surfaces (footer, void panels) */
+  --color-ink-inverse: #edf4fa;
+
   --font-sans: 'IBM Plex Mono', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: 'Space Mono', 'Courier Prime', monospace;
+
+  /* editorial mono type scale — replaces ad-hoc 9–13px literals */
+  --text-micro: 10px;
+  --text-mini: 11px;
+  --text-tiny: 12px;
+  --text-caption: 13px;
+  --text-body: clamp(13px, 1.15vw, 15px);
+
+  /* letter-spacing tiers */
+  --tracking-micro: 0.08em;
+  --tracking-label: 0.12em;
+  --tracking-card: 0.16em;
+  --tracking-eyebrow: 0.2em;
+  --tracking-spread: 0.28em;
+
+  /* leading tiers */
+  --leading-display: 1.06;
+  --leading-copy: 1.75;
+
+  /* panel radii — soft card (28) vs full deck shell (32);
+     smaller elements stay on the stock xl/2xl scale */
+  --radius-card: 28px;
+  --radius-shell: 32px;
 }
 
 :root {
@@ -25,6 +60,7 @@
   --accent: #49b8d6;
   --link: #92400e;
   --olive: #9e9a82;
+  --track: #eceae4;
   --font-ui: 'IBM Plex Mono', 'Courier Prime', monospace;
   --font-display: 'Space Mono', 'Courier Prime', monospace;
 }
@@ -37,6 +73,7 @@
   --edge: #cbd5e13d;
   --accent: #49b8d6;
   --link: #f59e0b;
+  --track: rgb(255 255 255 / 0.1);
 }
 
 html.lenis, html.lenis body { height: auto; }
@@ -442,6 +479,44 @@ button.pill:active { transform: translateY(0) scale(.96); }
     radial-gradient(ellipse at 50% 48%, #0005 0%, transparent 58%),
     linear-gradient(#0005, transparent 35%, transparent 62%, var(--bg));
 }
+
+/* ---- shared type + surface recipes — single source for the repeated
+   kicker/label/panel/shell patterns so components stop re-declaring the
+   same literal values ---- */
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: lowercase;
+  color: var(--ink);
+}
+.card-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: var(--tracking-card);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+/* translucent deck panel — 75% tint by default, -60/-85 variants */
+.panel {
+  border: 1px solid var(--edge);
+  background: color-mix(in srgb, var(--panel) 75%, transparent);
+}
+.panel-60 { background: color-mix(in srgb, var(--panel) 60%, transparent); }
+.panel-85 { background: color-mix(in srgb, var(--panel) 85%, transparent); }
+/* standard page shell — centered column, 8px-grid gutters
+   (24px mobile → 40px sm → 64px lg) */
+.shell {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1.5rem;
+}
+@media (min-width: 640px) { .shell { padding-inline: 2.5rem; } }
+@media (min-width: 1024px) { .shell { padding-inline: 4rem; } }
+/* accent-tinted row hover used by data tables and dl rows */
+.row-hover { transition: background-color .3s; }
+.row-hover:hover { background-color: color-mix(in srgb, var(--accent) 7%, transparent); }
 
 @media (prefers-reduced-motion: reduce) {
   .caret, .caret-blink, .clock-blink, .ship-drift, .rise-in, .loc-dot { animation: none; }

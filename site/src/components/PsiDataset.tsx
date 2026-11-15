@@ -97,12 +97,12 @@ export default function PsiDataset() {
     <div
       ref={rootRef}
       data-lenis-prevent
-      className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-[var(--bg)]"
+      className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg"
     >
       <section
         id="psi-dataset"
         aria-labelledby="psi-dataset-title"
-        className="relative mx-auto max-w-6xl px-5 pb-28 pt-24 sm:px-10 sm:pt-28 lg:px-16"
+        className="shell relative pb-28 pt-24 sm:pt-28"
       >
         {/* saffire-vi pmma burn — keyed footage bleeding behind the head */}
         <video
@@ -141,7 +141,7 @@ export default function PsiDataset() {
         <div className="relative">
           <div
             data-hero
-            className="flex items-baseline justify-between gap-6 font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70"
+            className="eyebrow flex items-baseline justify-between gap-6 opacity-70"
           >
             <Button asChild variant="glass" size="sm" className="lowercase">
               <a
@@ -155,7 +155,7 @@ export default function PsiDataset() {
                 back
               </a>
             </Button>
-            <span className="hidden cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100 sm:inline">
+            <span className="hidden cursor-default transition-colors duration-300 hover:text-accent hover:opacity-100 sm:inline">
               nasa physical sciences informatics
             </span>
           </div>
@@ -163,17 +163,17 @@ export default function PsiDataset() {
           <h2
             id="psi-dataset-title"
             data-hero
-            className="m-0 mt-6 cursor-default font-[family-name:var(--font-display)] text-[clamp(2.4rem,6vw,4.6rem)] font-bold leading-[1.02] tracking-[-0.03em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
+            className="m-0 mt-6 cursor-default font-display text-[clamp(2.4rem,6vw,4.6rem)] font-bold leading-display tracking-tight text-ink transition-colors duration-300 hover:text-accent"
           >
             psi dataset
           </h2>
           <p
             data-hero
-            className="mt-5 max-w-2xl text-[clamp(13px,1.15vw,15px)] leading-[1.75] text-[var(--ink)] opacity-80"
+            className="mt-6 max-w-2xl text-body leading-copy text-ink opacity-80"
           >
             experiment telemetry pulled from the nasa physical sciences
             informatics repo, normalized to csv, and frozen into{' '}
-            <span className="font-mono text-[var(--ink)] opacity-90">
+            <span className="font-mono text-ink opacity-90">
               shared/calibrated-data/*.json
             </span>{' '}
             — the engine only reads verified records. burning behind the
@@ -181,20 +181,20 @@ export default function PsiDataset() {
             vehicle after departure — the scenario this engine replays.
           </p>
 
-          <div data-hero className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <span className="font-mono text-[10.5px] lowercase tracking-[0.16em] text-[var(--ink)] opacity-60">
+          <div data-hero className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <span className="font-mono text-micro lowercase tracking-card text-ink opacity-60">
               {DATASET_STATS.investigations} investigations ·{' '}
               {DATASET_STATS.psiRuns} parsed runs ·{' '}
               {DATASET_STATS.verified} pipeline-verified
             </span>
-            <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 font-mono text-[11px] lowercase tracking-[0.16em]">
+            <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-2 p-0 font-mono text-mini lowercase tracking-card">
               {SOURCES.map((s) => (
                 <li key={s.label}>
                   <a
                     href={s.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
+                    className="text-link underline-offset-4 transition-colors duration-300 hover:text-accent hover:underline"
                   >
                     {s.label} ↗
                   </a>
@@ -205,7 +205,7 @@ export default function PsiDataset() {
                   href="https://images.nasa.gov/details/Saf-VI%20S8C3%2BC4%201-sided%20PMMA_unmapped_jpeg-20x%20no%20text"
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
+                  className="text-link underline-offset-4 transition-colors duration-300 hover:text-accent hover:underline"
                 >
                   saffire-vi footage ↗
                 </a>
@@ -220,17 +220,17 @@ export default function PsiDataset() {
             data-reveal
             className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
           >
-            <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
+            <div className="eyebrow opacity-70">
               summarize — the psi investigation matrix
             </div>
-            <div className="font-mono text-[10.5px] lowercase tracking-[0.16em] text-[var(--ink)] opacity-60">
+            <div className="font-mono text-micro lowercase tracking-card text-ink opacity-60">
               {filtered.length} of {DATASET_STATS.investigations}{' '}
               investigations
             </div>
           </div>
 
           {/* theme filter — the names the brief calls out */}
-          <div data-reveal className="dataset-filters mt-5">
+          <div data-reveal className="dataset-filters mt-6">
             {['all', ...ALL_THEMES].map((t) => (
               <Button
                 key={t}
@@ -249,18 +249,18 @@ export default function PsiDataset() {
             role="region"
             aria-label="Scrollable NASA PSI investigation table"
             tabIndex={0}
-            className="mt-4 overflow-x-auto rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+            className="mt-4 overflow-x-auto rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <table className="w-full min-w-[760px] border-collapse text-left">
               <thead>
-                <tr className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--ink)] opacity-50">
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">investigation</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">theme</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">fuels / samples</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">o₂</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">flow cm/s</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">runs</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">verified</th>
+                <tr className="font-mono text-micro lowercase tracking-eyebrow text-ink opacity-50">
+                  <th className="border-b border-edge px-2 py-2 font-medium">investigation</th>
+                  <th className="border-b border-edge px-2 py-2 font-medium">theme</th>
+                  <th className="border-b border-edge px-2 py-2 font-medium">fuels / samples</th>
+                  <th className="border-b border-edge px-2 py-2 font-medium">o₂</th>
+                  <th className="border-b border-edge px-2 py-2 font-medium">flow cm/s</th>
+                  <th className="border-b border-edge px-2 py-2 font-medium">runs</th>
+                  <th className="border-b border-edge px-2 py-2 font-medium">verified</th>
                 </tr>
               </thead>
               <tbody>
@@ -269,41 +269,41 @@ export default function PsiDataset() {
                   return [
                     <tr
                       key={inv.id}
-                      className="transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)]"
+                      className="row-hover"
                     >
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[12px] font-medium lowercase tracking-[0.1em] text-[var(--ink)]">
+                      <td className="border-b border-edge px-2 py-2.5 font-mono text-tiny font-medium lowercase tracking-label text-ink">
                         <Button
                           type="button"
                           variant="row"
                           size="sm"
                           aria-expanded={expanded}
                           onClick={() => setOpen(expanded ? null : inv.id)}
-                          className="dataset-expand justify-start gap-2 text-left font-mono text-[12px] font-medium lowercase tracking-[0.1em]"
+                          className="dataset-expand justify-start gap-2 text-left font-mono text-tiny font-medium lowercase tracking-label"
                         >
-                          <span className="inline-block w-3 text-[var(--accent)]">
+                          <span className="inline-block w-3 text-accent">
                             {expanded ? '−' : '+'}
                           </span>
                           {inv.name.toLowerCase()}
                         </Button>
                       </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[10px] lowercase tracking-[0.12em] text-[var(--ink)] opacity-70">
+                      <td className="border-b border-edge px-2 py-2.5 font-mono text-micro lowercase tracking-label text-ink opacity-70">
                         {inv.themes.map((t) => THEME_LABELS[t] ?? t).join(' · ')}
                       </td>
-                      <td className="max-w-[220px] truncate border-b border-[var(--edge)] px-2 py-2.5 text-[11.5px] lowercase text-[var(--ink)] opacity-75">
+                      <td className="max-w-[220px] truncate border-b border-edge px-2 py-2.5 text-mini lowercase text-ink opacity-75">
                         {inv.fuels.join(', ')}
                       </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px] text-[var(--ink)] opacity-75">
+                      <td className="border-b border-edge px-2 py-2.5 font-mono text-mini text-ink opacity-75">
                         {fmtO2(inv)}
                       </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px] text-[var(--ink)] opacity-75">
+                      <td className="border-b border-edge px-2 py-2.5 font-mono text-mini text-ink opacity-75">
                         {fmtFlow(inv)}
                       </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px] text-[var(--ink)] opacity-75">
+                      <td className="border-b border-edge px-2 py-2.5 font-mono text-mini text-ink opacity-75">
                         {inv.psiRuns ?? '—'}
                       </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px]">
+                      <td className="border-b border-edge px-2 py-2.5 font-mono text-mini">
                         <span
-                          className={inv.verified ? 'text-[var(--accent)]' : 'text-[var(--ink)] opacity-40'}
+                          className={inv.verified ? 'text-accent' : 'text-ink opacity-40'}
                           title={inv.verified ? 'pipeline-ingested psi data' : 'curated from public literature'}
                         >
                           {inv.verified ? 'psi' : 'lit'}
@@ -312,44 +312,44 @@ export default function PsiDataset() {
                     </tr>,
                     expanded ? (
                       <tr key={`${inv.id}-detail`} className="bg-[color-mix(in_srgb,var(--accent)_4%,transparent)]">
-                        <td colSpan={7} className="border-b border-[var(--edge)] px-2 py-4">
+                        <td colSpan={7} className="border-b border-edge px-2 py-4">
                           <div className="grid gap-4 pl-7 sm:grid-cols-2 lg:grid-cols-3">
                             <div>
-                              <div className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
+                              <div className="font-mono text-micro lowercase tracking-eyebrow text-accent">
                                 objectives
                               </div>
-                              <ul className="m-0 mt-1.5 list-none space-y-1 p-0 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
+                              <ul className="m-0 mt-1.5 list-none space-y-1 p-0 text-mini leading-relaxed text-ink opacity-80">
                                 {inv.objectives.map((o) => (
                                   <li key={o.slice(0, 32)}>· {o}</li>
                                 ))}
                               </ul>
                             </div>
                             <div>
-                              <div className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
+                              <div className="font-mono text-micro lowercase tracking-eyebrow text-accent">
                                 rig &amp; sensors
                               </div>
-                              <p className="m-0 mt-1.5 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
+                              <p className="m-0 mt-1.5 text-mini leading-relaxed text-ink opacity-80">
                                 {inv.apparatus}
                               </p>
-                              <ul className="m-0 mt-1.5 list-none space-y-1 p-0 text-[11px] leading-relaxed text-[var(--ink)] opacity-70">
+                              <ul className="m-0 mt-1.5 list-none space-y-1 p-0 text-mini leading-relaxed text-ink opacity-70">
                                 {inv.sensors.map((s) => (
                                   <li key={s}>· {s}</li>
                                 ))}
                               </ul>
                             </div>
                             <div className="sm:col-span-2 lg:col-span-1">
-                              <div className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
+                              <div className="font-mono text-micro lowercase tracking-eyebrow text-accent">
                                 within-investigation variation
                               </div>
-                              <p className="m-0 mt-1.5 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
+                              <p className="m-0 mt-1.5 text-mini leading-relaxed text-ink opacity-80">
                                 <span className="opacity-60">held:</span>{' '}
                                 {inv.testVariables.held.join(' · ')}
                               </p>
-                              <p className="m-0 mt-1 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
+                              <p className="m-0 mt-1 text-mini leading-relaxed text-ink opacity-80">
                                 <span className="opacity-60">varied:</span>{' '}
                                 {inv.testVariables.varied.join(' · ')}
                               </p>
-                              <p className="m-0 mt-2 font-mono text-[10px] lowercase tracking-[0.1em] text-[var(--ink)] opacity-50">
+                              <p className="m-0 mt-2 font-mono text-micro lowercase tracking-label text-ink opacity-50">
                                 {inv.platform}
                                 {inv.facility ? ` · ${inv.facility}` : ''} · {inv.years}
                               </p>
