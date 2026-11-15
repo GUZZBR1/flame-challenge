@@ -62,14 +62,14 @@ export default function CounterfactualTrackCard({
   }
 
   return (
-    <div className="rounded-[28px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_85%,transparent)] p-5 shadow-xl backdrop-blur-xl sm:p-7">
+    <div className="rounded-card panel-85 p-6 shadow-xl backdrop-blur-xl sm:p-8">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--edge)] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge pb-4">
         <div>
-          <span className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)]">
+          <span className="card-label">
             Counterfactual Recovery Decision Track
           </span>
-          <h3 className="mt-1 font-[family-name:var(--font-display)] text-xl font-bold sm:text-2xl">
+          <h3 className="mt-1 font-display text-xl font-bold sm:text-2xl">
             {scenarioTitle} — Causal Outcome Contrast
           </h3>
           <p className="mt-0.5 text-xs opacity-70">
@@ -92,11 +92,11 @@ export default function CounterfactualTrackCard({
               [ORIGINAL HUMAN ERROR] {originalAction}
             </span>
             <span className="font-mono font-bold text-rose-400">
-              {originalIntegrityPct}% Integridade · {originalCasualties}
+              {originalIntegrityPct}% Integrity · {originalCasualties}
             </span>
           </div>
-          {/* Track Bar with #ECEAE4 background */}
-          <div className="relative h-4 w-full overflow-hidden rounded-full bg-[#eceae4] dark:bg-white/10">
+          {/* Track Bar — --track token (light gray / dark white-10%) */}
+          <div className="relative h-4 w-full overflow-hidden rounded-full bg-track">
             <div
               className="h-full rounded-full bg-gradient-to-r from-rose-600 to-rose-400 transition-all duration-700"
               style={{ width: `${originalIntegrityPct}%` }}
@@ -111,11 +111,11 @@ export default function CounterfactualTrackCard({
               [SI PROTOCOL DOCTRINE] {siProtocolAction}
             </span>
             <span className="font-mono font-bold text-emerald-400">
-              {siProtocolIntegrityPct}% Integridade · {siProtocolCasualties}
+              {siProtocolIntegrityPct}% Integrity · {siProtocolCasualties}
             </span>
           </div>
-          {/* Track Bar with #ECEAE4 background */}
-          <div className="relative h-4 w-full overflow-hidden rounded-full bg-[#eceae4] dark:bg-white/10">
+          {/* Track Bar — --track token (light gray / dark white-10%) */}
+          <div className="relative h-4 w-full overflow-hidden rounded-full bg-track">
             <div
               className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-700"
               style={{ width: `${siProtocolIntegrityPct}%` }}
@@ -125,10 +125,10 @@ export default function CounterfactualTrackCard({
       </div>
 
       {/* Action Execution Button */}
-      <div className="mt-7 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--edge)] pt-4">
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-4">
         <p className="text-xs leading-relaxed opacity-75 max-w-xl">
-          A aplicação imediata do protocolo NASA PSI zera o suprimento convectivo de oxigênio (V_flow &rarr; 0 cm/s),
-          forçando a frente de chama a entrar em extinção radiativa espontânea.
+          Immediate application of the NASA PSI protocol cuts the convective oxygen supply (V_flow &rarr; 0 cm/s),
+          forcing the flame front into spontaneous radiative extinction.
         </p>
         <Button
           variant={dispatched ? 'glass' : 'primary'}

@@ -151,14 +151,14 @@ export default function MissionWaffleMatrix() {
   }, [])
 
   return (
-    <div className="rounded-[28px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_85%,transparent)] p-5 shadow-xl backdrop-blur-xl sm:p-7">
+    <div className="rounded-card panel-85 p-6 shadow-xl backdrop-blur-xl sm:p-8">
       {/* Header & Filter Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--edge)] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
         <div>
-          <span className="font-mono text-xs uppercase tracking-[0.16em] text-[var(--accent)]">
+          <span className="card-label">
             Corpus Population Matrix (Simile Waffle Matrix)
           </span>
-          <h3 className="mt-1 font-[family-name:var(--font-display)] text-xl font-bold sm:text-2xl">
+          <h3 className="mt-1 font-display text-xl font-bold sm:text-2xl">
             1,000+ NASA PSI Runs &amp; Human Factor Catalog
           </h3>
           <p className="mt-0.5 text-xs opacity-70">
@@ -183,8 +183,8 @@ export default function MissionWaffleMatrix() {
               onClick={() => setFilter(item.key)}
               className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
                 filter === item.key
-                  ? 'bg-[var(--accent)] text-black'
-                  : 'border border-[var(--edge)] bg-white/30 text-[var(--ink)] hover:bg-white/50 dark:bg-white/[0.04]'
+                  ? 'bg-accent text-black'
+                  : 'border border-edge bg-white/30 text-ink hover:bg-white/50 dark:bg-white/[0.04]'
               }`}
             >
               {item.label}
@@ -216,7 +216,7 @@ export default function MissionWaffleMatrix() {
                   onClick={() => setSelectedRun(run)}
                   title={`${run.code} · ${run.investigation} · ${run.category}`}
                   className={`aspect-square w-full rounded-md border transition-all ${cellColor} ${
-                    isSelected ? 'ring-2 ring-[var(--accent)] scale-110 z-10' : 'opacity-85 hover:opacity-100 hover:scale-105'
+                    isSelected ? 'ring-2 ring-accent scale-110 z-10' : 'opacity-85 hover:opacity-100 hover:scale-105'
                   }`}
                 />
               )
@@ -224,7 +224,7 @@ export default function MissionWaffleMatrix() {
           </div>
 
           {/* Legend */}
-          <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-[var(--edge)] pt-3 font-mono text-xs opacity-75">
+          <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-edge pt-3 font-mono text-xs opacity-75">
             <span className="flex items-center gap-1.5">
               <span className="size-2.5 rounded-sm bg-emerald-500/50 border border-emerald-500" /> Contained / Nominal
             </span>
@@ -243,15 +243,15 @@ export default function MissionWaffleMatrix() {
         {/* Right: Inspector Detail Panel */}
         <div className="lg:col-span-5">
           {selectedRun ? (
-            <div className="flex h-full flex-col justify-between rounded-2xl border border-[var(--edge)] bg-white/40 p-5 backdrop-blur-md dark:bg-white/[0.03]">
+            <div className="flex h-full flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 backdrop-blur-md dark:bg-white/[0.03]">
               <div>
-                <div className="flex items-center justify-between border-b border-[var(--edge)] pb-3">
+                <div className="flex items-center justify-between border-b border-edge pb-3">
                   <div>
-                    <span className="font-mono text-xs font-bold text-[var(--accent)]">{selectedRun.code}</span>
+                    <span className="font-mono text-xs font-bold text-accent">{selectedRun.code}</span>
                     <h4 className="font-bold text-base">{selectedRun.investigation} · {selectedRun.fuel}</h4>
                   </div>
                   <span
-                    className={`rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                    className={`rounded-full px-2.5 py-0.5 font-mono text-micro font-bold uppercase ${
                       selectedRun.missionStatus === 'COMPLETED'
                         ? 'bg-emerald-500/20 text-emerald-400'
                         : selectedRun.missionStatus === 'EMERGENCY CONTAINED'
@@ -270,12 +270,12 @@ export default function MissionWaffleMatrix() {
                   </div>
                   <div className="flex justify-between font-mono">
                     <span className="opacity-60">Risk Index:</span>
-                    <strong className="text-[var(--accent)]">{selectedRun.riskIndex}% Composite</strong>
+                    <strong className="text-accent">{selectedRun.riskIndex}% Composite</strong>
                   </div>
 
                   {/* Crew Life & Human Factor Box */}
-                  <div className="mt-4 rounded-xl border border-[var(--edge)] bg-black/10 p-3 dark:bg-black/25">
-                    <div className="flex items-center justify-between font-mono text-[11px] text-[var(--accent)]">
+                  <div className="mt-4 rounded-xl border border-edge bg-black/10 p-3 dark:bg-black/25">
+                    <div className="flex items-center justify-between font-mono text-mini text-accent">
                       <span>HUMAN FACTOR &amp; CREW STATUS</span>
                       <span className="rounded bg-white/10 px-1.5 py-0.5 font-bold uppercase">
                         {selectedRun.crewState}
@@ -291,7 +291,7 @@ export default function MissionWaffleMatrix() {
                 </div>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-[var(--edge)]">
+              <div className="mt-6 pt-3 border-t border-edge">
                 <Button
                   variant="primary"
                   size="sm"
@@ -303,7 +303,7 @@ export default function MissionWaffleMatrix() {
               </div>
             </div>
           ) : (
-            <div className="grid h-full place-items-center rounded-2xl border border-dashed border-[var(--edge)] p-6 text-center text-xs opacity-60">
+            <div className="grid h-full place-items-center rounded-2xl border border-dashed border-edge p-6 text-center text-xs opacity-60">
               Select any cell in the waffle matrix to inspect the mission and human error details.
             </div>
           )}

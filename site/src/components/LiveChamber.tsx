@@ -406,16 +406,16 @@ export default function LiveChamber({
   const isCoolFlame = frame?.coolFlame || (frame?.model === 'droplet' && frame?.regime === 2)
 
   return (
-    <section id="chamber" className={`relative scroll-mt-24 ${stage ? '' : 'px-5 pb-28 pt-6 sm:px-10 lg:px-16'}`}>
+    <section id="chamber" className={`relative scroll-mt-24 ${stage ? '' : 'px-6 pb-28 pt-6 sm:px-10 lg:px-16'}`}>
       {/* Top telemetry bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 font-mono text-xs lowercase tracking-[0.1em] text-[var(--ink)] opacity-70">
+      <div className="flex flex-wrap items-center justify-between gap-4 font-mono text-xs lowercase tracking-label text-ink opacity-70">
         <span>live chamber — compiled c++20 core (xorshift-seeded)</span>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <span>{status === 'offline' ? 'engine offline' : `ws · 30 hz · ${status}`}</span>
           <button
             type="button"
             onClick={run}
-            className="rounded border border-[var(--edge)] bg-white/10 px-2 py-0.5 text-[11px] font-semibold hover:bg-white/20"
+            className="rounded border border-edge bg-white/10 px-2 py-1 text-mini font-semibold hover:bg-white/20"
           >
             re-fire
           </button>
@@ -424,10 +424,10 @@ export default function LiveChamber({
 
       {!stage && (
         <>
-          <h2 className="m-0 mt-4 font-[family-name:var(--font-display)] text-[clamp(1.6rem,3.2vw,2.6rem)] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--ink)]">
+          <h2 className="m-0 mt-4 font-display text-[clamp(1.6rem,3.2vw,2.6rem)] font-bold leading-display tracking-tight text-ink">
             The engine, running.
           </h2>
-          <p className="m-0 mt-1 max-w-3xl text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-75">
+          <p className="m-0 mt-2 max-w-3xl text-caption lowercase leading-relaxed text-ink opacity-75">
             compiled c++ physics streamed frame by frame — seal the cabin to watch the flame consume its own oxygen and die on the loc boundary.
           </p>
         </>
@@ -437,14 +437,14 @@ export default function LiveChamber({
       {isCoolFlame && (
         <div
           role="alert"
-          className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-500/40 bg-amber-500/15 p-4 text-amber-300 shadow-lg backdrop-blur-xl animate-pulse"
+          className="mt-4 flex items-start gap-4 rounded-2xl border border-amber-500/40 bg-amber-500/15 p-4 text-amber-300 shadow-lg backdrop-blur-xl animate-pulse"
         >
-          <span className="text-xl">⚠️</span>
+          <span className="text-xl">⚠</span>
           <div className="text-xs leading-relaxed">
-            <strong className="font-mono uppercase font-bold tracking-wider">
+            <strong className="font-mono uppercase font-bold tracking-label">
               Anomaly Detected: Radiative Quenching — Cool Flame Active
             </strong>
-            <p className="mt-1 font-mono text-[11px] opacity-90">
+            <p className="mt-1 font-mono text-mini opacity-90">
               Visible emission: 0%. Droplet consumption continues via low-temperature kinetics (T ≈ 720 K).
               Extreme risk of sudden explosive re-ignition upon forced airflow resumption.
             </p>
@@ -452,18 +452,18 @@ export default function LiveChamber({
         </div>
       )}
 
-      <div className="mt-5">
+      <div className="mt-6">
         {/* Controls HUD: Split-Screen & Sensor Mode */}
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] bg-black/10 px-4 py-2.5 backdrop-blur-lg">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-edge bg-black/10 px-4 py-2 backdrop-blur-lg">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs uppercase tracking-wider opacity-60">View Mode:</span>
+            <span className="font-mono text-xs uppercase tracking-micro opacity-60">View Mode:</span>
             <button
               type="button"
               onClick={() => setSplitScreen(false)}
               className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
                 !splitScreen
-                  ? 'bg-[var(--accent)] text-black'
-                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+                  ? 'bg-accent text-black'
+                  : 'bg-white/10 text-ink hover:bg-white/20'
               }`}
             >
               Flight µg
@@ -473,8 +473,8 @@ export default function LiveChamber({
               onClick={() => setSplitScreen(true)}
               className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
                 splitScreen
-                  ? 'bg-[var(--accent)] text-black'
-                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+                  ? 'bg-accent text-black'
+                  : 'bg-white/10 text-ink hover:bg-white/20'
               }`}
             >
               Split-Screen (Earth 1g vs µg)
@@ -482,14 +482,14 @@ export default function LiveChamber({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs uppercase tracking-wider opacity-60">Sensor:</span>
+            <span className="font-mono text-xs uppercase tracking-micro opacity-60">Sensor:</span>
             <button
               type="button"
               onClick={() => setSensorMode('visible')}
               className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
                 sensorMode === 'visible'
                   ? 'bg-amber-400 text-black'
-                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+                  : 'bg-white/10 text-ink hover:bg-white/20'
               }`}
             >
               Visible Spectrum (Eye)
@@ -500,7 +500,7 @@ export default function LiveChamber({
               className={`rounded-full px-3 py-1 font-mono text-xs font-semibold transition ${
                 sensorMode === 'uv'
                   ? 'bg-cyan-400 text-black'
-                  : 'bg-white/10 text-[var(--ink)] hover:bg-white/20'
+                  : 'bg-white/10 text-ink hover:bg-white/20'
               }`}
             >
               UV / Radiometric (310nm OH*)
@@ -536,8 +536,8 @@ export default function LiveChamber({
         )}
 
         {stage && (
-          <div className="mb-4 font-mono text-sm lowercase tracking-[0.08em] text-[var(--ink)] opacity-85">
-            <span className="text-[var(--accent)]">▸</span> {invLabel} · o₂ {o2}%
+          <div className="mb-4 font-mono text-sm lowercase tracking-micro text-ink opacity-85">
+            <span className="text-accent">▸</span> {invLabel} · o₂ {o2}%
             {flow != null ? ` · ${flow} cm/s` : ''}
             {sealed ? ' · sealed cabin' : ''}
           </div>
@@ -548,9 +548,9 @@ export default function LiveChamber({
         <canvas ref={canvasRef} className="h-72 w-full rounded-3xl sm:h-80 bg-black/20" />
 
         {frame && (
-          <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-sm lowercase text-[var(--ink)] opacity-85">
+          <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-sm lowercase text-ink opacity-85">
             <span>t {frame.tSec.toFixed(1)}s</span>
-            <span className="font-semibold text-[var(--accent)]">{regime}</span>
+            <span className="font-semibold text-accent">{regime}</span>
             <span>o₂ {frame.o2Pct.toFixed(1)}%</span>
             {sealed && <span>o₂eff {frame.o2EffPct.toFixed(1)}%</span>}
             {frame.heatReleaseW != null && <span>{frame.heatReleaseW.toFixed(2)} w</span>}
@@ -560,7 +560,7 @@ export default function LiveChamber({
         )}
 
         {log.length > 0 && (
-          <div className="mt-2 font-mono text-[10px] lowercase tracking-[0.14em] text-[var(--ink)] opacity-60">
+          <div className="mt-2 font-mono text-micro lowercase tracking-card text-ink opacity-60">
             {log.map((e, i) => (
               <span key={i} className="mr-4">
                 → {e}

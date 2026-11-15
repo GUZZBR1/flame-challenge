@@ -178,23 +178,23 @@ export default function Shipyard() {
       ref={root}
       id="vision"
       aria-labelledby="shipyard-title"
-      className="relative scroll-mt-24 overflow-x-clip px-5 pb-24 pt-6 sm:px-10 lg:px-16"
+      className="relative scroll-mt-24 overflow-x-clip px-6 pb-24 pt-6 sm:px-10 lg:px-16"
     >
       <div className="mx-auto max-w-5xl">
-        <div className="text-center font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-          <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
+        <div className="eyebrow text-center opacity-70">
+          <span className="cursor-default transition-colors duration-300 hover:text-accent hover:opacity-100">
             day by day in the shipyard — live feed
           </span>
         </div>
 
         <h2
           id="shipyard-title"
-          className="mt-4 cursor-default text-center font-[family-name:var(--font-display)] text-[clamp(26px,4.5vw,40px)] font-bold leading-[1.08] tracking-[-0.02em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
+          className="mt-4 cursor-default text-center font-display text-[clamp(26px,4.5vw,40px)] font-bold leading-display tracking-tight text-ink transition-colors duration-300 hover:text-accent"
         >
           The Station Where The Numbers Live
         </h2>
 
-        <p className="mx-auto mt-5 max-w-2xl text-center font-mono text-[13px] leading-relaxed text-[var(--ink)] opacity-80">
+        <p className="mx-auto mt-6 max-w-2xl text-center font-mono text-caption leading-relaxed text-ink opacity-80">
           docked crews argue about combustion the way ground crews argue about
           weather — because out here a flame can hide at 600 k and still be
           alive. every burn is checked against the psi record: droplet d²-law
@@ -222,9 +222,9 @@ export default function Shipyard() {
 
         {/* comms feed — typed transcript, rolling. sci on the left lane,
             eng on the right (under their sprites), tags dropped in loose */}
-        <div className="mx-auto mt-8 max-w-3xl space-y-3 font-mono text-[12.5px] leading-relaxed sm:mt-10" aria-live="polite">
+        <div className="mx-auto mt-8 max-w-3xl space-y-3 font-mono text-tiny leading-relaxed sm:mt-10" aria-live="polite">
           {!started && (
-            <p className="text-[var(--ink)] opacity-40">comms — idle · waiting for the crew</p>
+            <p className="text-ink opacity-40">comms — idle · waiting for the crew</p>
           )}
           {log.map((l, i) => {
             const t = TAG_TILTS[i % TAG_TILTS.length]
@@ -232,12 +232,12 @@ export default function Shipyard() {
             return (
               <div
                 key={i}
-                className={`max-w-[86%] text-[var(--ink)] opacity-75 sm:max-w-[76%] ${
+                className={`max-w-[86%] text-ink opacity-75 sm:max-w-[76%] ${
                   eng ? 'ml-auto text-right' : 'mr-auto'
                 }`}
               >
                 <span
-                  className="mb-0.5 inline-block text-[10px] lowercase tracking-[0.22em] text-[var(--accent)]"
+                  className="mb-0.5 inline-block text-micro lowercase tracking-eyebrow text-accent"
                   style={{ transform: `rotate(${t.r}deg) translateX(${eng ? -t.x : t.x}px)` }}
                 >
                   {WHO[l.who]}
@@ -251,19 +251,19 @@ export default function Shipyard() {
             const eng = typing.who === 'eng'
             return (
               <div
-                className={`max-w-[86%] text-[var(--ink)] sm:max-w-[76%] ${
+                className={`max-w-[86%] text-ink sm:max-w-[76%] ${
                   eng ? 'ml-auto text-right' : 'mr-auto'
                 }`}
               >
                 <span
-                  className="mb-0.5 inline-block text-[10px] lowercase tracking-[0.22em] text-[var(--accent)]"
+                  className="mb-0.5 inline-block text-micro lowercase tracking-eyebrow text-accent"
                   style={{ transform: `rotate(${t.r}deg) translateX(${eng ? -t.x : t.x}px)` }}
                 >
                   {WHO[typing.who]}
                 </span>
                 <span className="block">
                   {typing.text}
-                  <span className="caret-blink text-[var(--accent)]">▍</span>
+                  <span className="caret-blink text-accent">▍</span>
                 </span>
               </div>
             )
@@ -280,7 +280,7 @@ export default function Shipyard() {
             onClick={scrollToSims}
             variant="accent"
             size="xl"
-            className="w-full max-w-full whitespace-normal text-center font-mono lowercase tracking-[0.1em] sm:w-auto sm:tracking-[0.12em]"
+            className="w-full max-w-full whitespace-normal text-center font-mono lowercase tracking-label sm:w-auto"
           >
             run the numbers — simulations ↑
           </Button>

@@ -127,7 +127,7 @@ export default function Hero() {
             id="ignis-title"
             ref={titleRef}
             aria-label={TITLE}
-            className="m-0 font-[family-name:var(--font-display)] text-[clamp(4.5rem,13vw,10.5rem)] font-bold leading-none tracking-[-0.04em]"
+            className="m-0 font-display text-[clamp(4.5rem,13vw,10.5rem)] font-bold leading-none tracking-tighter"
           />
         </div>
       </div>

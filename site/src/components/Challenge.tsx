@@ -141,18 +141,18 @@ export default function Challenge() {
       id="challenge"
       ref={rootRef}
       aria-labelledby="challenge-title"
-      className="relative scroll-mt-24 px-5 pb-28 pt-10 sm:px-10 lg:px-16"
+      className="relative scroll-mt-24 px-6 pb-28 pt-10 sm:px-10 lg:px-16"
     >
       <div className="mx-auto max-w-6xl">
         {/* section marker */}
         <div
           data-reveal
-          className="flex items-baseline gap-6 font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70 sm:gap-8"
+          className="eyebrow flex items-baseline gap-6 opacity-70 sm:gap-8"
         >
-          <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
+          <span className="cursor-default transition-colors duration-300 hover:text-accent hover:opacity-100">
             the challenge
           </span>
-          <span className="hidden cursor-default font-semibold transition-colors duration-300 hover:text-[var(--accent)] sm:inline">
+          <span className="hidden cursor-default font-semibold transition-colors duration-300 hover:text-accent sm:inline">
             nasa space apps 2026 · flame in freefall
           </span>
         </div>
@@ -192,11 +192,11 @@ export default function Challenge() {
           <div data-dock-text className="lg:col-start-1 lg:row-start-1">
             <h2
               id="challenge-title"
-              className="m-0 cursor-default font-[family-name:var(--font-display)] text-[clamp(2rem,4.4vw,3.6rem)] font-bold leading-[1.04] tracking-[-0.03em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
+              className="m-0 cursor-default font-display text-[clamp(2rem,4.4vw,3.6rem)] font-bold leading-display tracking-tight text-ink transition-colors duration-300 hover:text-accent"
             >
               combustion without buoyancy
             </h2>
-            <p className="mt-6 text-[clamp(13px,1.15vw,15px)] leading-[1.75] text-[var(--ink)] opacity-80">
+            <p className="mt-6 text-body leading-copy text-ink opacity-80">
               on earth, buoyancy stretches a flame upward. in orbit there is no
               “up” — a droplet flame closes into a sphere, feeds only by
               diffusion, and can survive as a{' '}
@@ -204,14 +204,14 @@ export default function Challenge() {
                 href="https://images.nasa.gov/details/SoFIE-GEL"
                 target="_blank"
                 rel="noreferrer"
-                className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
+                className="text-link underline-offset-4 transition-colors duration-300 hover:text-accent hover:underline"
               >
                 cool flame
               </a>
               : nearly invisible, ~600 k, no soot. hidden fire in a crewed
               cabin is the failure mode ignis exists to simulate.
             </p>
-            <p className="mt-4 text-[clamp(13px,1.15vw,15px)] leading-[1.75] text-[var(--ink)] opacity-80">
+            <p className="mt-4 text-body leading-copy text-ink opacity-80">
               the engine is a compiled c++20 core calibrated against iss
               experiment telemetry — not a scripted animation. ignis models
               fire where crews live: cabins, habitats, stations, crewed
@@ -223,14 +223,14 @@ export default function Challenge() {
         </div>
 
         <div data-reveal className="mt-3 lg:grid lg:grid-cols-2 lg:gap-14">
-          <p className="m-0 flex flex-wrap items-baseline justify-between gap-2 font-mono text-[10.5px] lowercase tracking-[0.16em] text-[var(--ink)] opacity-60 lg:col-start-2">
+          <p className="m-0 flex flex-wrap items-baseline justify-between gap-2 font-mono text-micro lowercase tracking-card text-ink opacity-60 lg:col-start-2">
 
           <span>sofie-gel / iss — flame spinning itself into extinction</span>
           <a
             href="https://images.nasa.gov/details/SoFIE-GEL"
             target="_blank"
             rel="noreferrer"
-            className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
+            className="text-link underline-offset-4 transition-colors duration-300 hover:text-accent hover:underline"
           >
             nasa image &amp; video library ↗
           </a>
@@ -241,9 +241,9 @@ export default function Challenge() {
         <div id="solver-regimes" className="scroll-mt-28 pt-16">
           <div
             data-reveal
-            className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70"
+            className="eyebrow opacity-70"
           >
-            <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
+            <span className="cursor-default transition-colors duration-300 hover:text-accent hover:opacity-100">
               solver regimes — implemented in core/
             </span>
           </div>
@@ -252,22 +252,22 @@ export default function Challenge() {
               <div
                 key={r.tag}
                 data-reveal
-                className="grid grid-cols-[5.5rem_1fr] items-baseline gap-x-4 rounded-md px-2 py-3 transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)] sm:grid-cols-[7rem_9rem_1fr] sm:gap-x-8"
+                className="row-hover grid grid-cols-[5.5rem_1fr] items-baseline gap-x-4 rounded-md px-2 py-3 sm:grid-cols-[7rem_9rem_1fr] sm:gap-x-8"
               >
-                <dt className="font-mono text-[13px] font-medium lowercase tracking-[0.14em]">
+                <dt className="font-mono text-caption font-medium lowercase tracking-card">
                   <a
                     href={r.href}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
+                    className="text-link underline-offset-4 transition-colors duration-300 hover:text-accent hover:underline"
                   >
                     {r.tag}
                   </a>
                 </dt>
-                <dd className="m-0 hidden font-mono text-[11px] lowercase tracking-[0.18em] text-[var(--ink)] opacity-50 sm:block">
+                <dd className="m-0 hidden font-mono text-mini lowercase tracking-card text-ink opacity-50 sm:block">
                   {r.platform}
                 </dd>
-                <dd className="m-0 text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-80">
+                <dd className="m-0 text-tiny lowercase leading-relaxed text-ink opacity-80">
                   {r.models}
                 </dd>
               </div>

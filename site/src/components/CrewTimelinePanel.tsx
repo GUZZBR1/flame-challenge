@@ -132,13 +132,13 @@ export default function CrewTimelinePanel({
       : 'bg-rose-500/15 text-rose-400 border-rose-500/30'
 
   return (
-    <div className="rounded-[28px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_75%,transparent)] p-5 shadow-xl backdrop-blur-2xl sm:p-7">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--edge)] pb-5">
+    <div className="rounded-card panel p-6 shadow-xl backdrop-blur-2xl sm:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
         <div>
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+          <span className="card-label">
             Human Factors &amp; Mission Casualty Tracker
           </span>
-          <h3 className="mt-1 font-[family-name:var(--font-display)] text-xl font-bold sm:text-2xl">
+          <h3 className="mt-1 font-display text-xl font-bold sm:text-2xl">
             {missionTitle}
           </h3>
         </div>
@@ -166,10 +166,10 @@ export default function CrewTimelinePanel({
                     ? 'border-rose-500/40 bg-rose-500/10'
                     : isWarning
                     ? 'border-amber-500/40 bg-amber-500/10'
-                    : 'border-[var(--edge)] bg-white/40 dark:bg-white/[0.03]'
+                    : 'border-edge bg-white/40 dark:bg-white/[0.03]'
                 }`}
               >
-                <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-[var(--edge)] bg-black/20">
+                <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-edge bg-black/20">
                   <img
                     src={member.avatar}
                     alt={member.name}
@@ -180,7 +180,7 @@ export default function CrewTimelinePanel({
                   <div className="flex items-center justify-between gap-2">
                     <span className="truncate text-sm font-semibold">{member.name}</span>
                     <span
-                      className={`shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                      className={`shrink-0 rounded px-1.5 py-0.5 font-mono text-micro font-bold uppercase ${
                         currentStatus === 'Safe' || currentStatus === 'Nominal'
                           ? 'bg-emerald-500/20 text-emerald-400'
                           : isInjured
@@ -192,7 +192,7 @@ export default function CrewTimelinePanel({
                     </span>
                   </div>
                   <div className="text-xs opacity-60">{member.role}</div>
-                  <div className="mt-1 line-clamp-1 text-[11px] opacity-75">
+                  <div className="mt-1 line-clamp-1 text-mini opacity-75">
                     {counterfactualApplied ? 'Evacuated to safe bay; zero exposure.' : member.statusDetail}
                   </div>
                 </div>
@@ -205,7 +205,7 @@ export default function CrewTimelinePanel({
       {/* Causal Event Log */}
       <div className="mt-6">
         <h4 className="text-xs font-semibold uppercase tracking-wider opacity-60">Human Error &amp; Event Sequence</h4>
-        <div className="mt-3 space-y-2 rounded-2xl border border-[var(--edge)] bg-black/10 p-3 sm:p-4">
+        <div className="mt-3 space-y-2 rounded-2xl border border-edge bg-black/10 p-3 sm:p-4">
           {(counterfactualApplied
             ? [
                 { time: 'T+00:00', actor: 'Hab Module B', action: 'Thermal short detected in wiring channel.', severity: 'info' as const },
@@ -216,7 +216,7 @@ export default function CrewTimelinePanel({
             : causalLog
           ).map((item, idx) => (
             <div key={idx} className="flex items-start gap-3 text-xs leading-5">
-              <span className="shrink-0 font-mono text-[11px] text-[var(--accent)]">{item.time}</span>
+              <span className="shrink-0 font-mono text-mini text-accent">{item.time}</span>
               <span className="shrink-0 font-mono font-semibold opacity-85">[{item.actor}]</span>
               <span className="opacity-75">{item.action}</span>
             </div>
@@ -225,7 +225,7 @@ export default function CrewTimelinePanel({
       </div>
 
       {/* Counterfactual Action Card */}
-      <div className="mt-6 rounded-2xl border border-cyan-500/30 bg-cyan-500/5 p-4 sm:p-5">
+      <div className="mt-6 rounded-2xl border border-cyan-500/30 bg-cyan-500/5 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">

@@ -61,10 +61,10 @@ export default function SafetyEnvelopeChart({
   ]
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_60%,transparent)] p-5 backdrop-blur-xl">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--edge)] pb-3">
+    <div className="relative overflow-hidden rounded-2xl panel-60 p-6 backdrop-blur-xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge pb-3">
         <div>
-          <h4 className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
+          <h4 className="card-label font-semibold">
             NASA Safety Envelope Matrix
           </h4>
           <p className="mt-0.5 text-sm font-medium opacity-85">

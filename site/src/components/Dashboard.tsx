@@ -39,15 +39,15 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
   return (
     <article
       id={`dashboard-${item.id}`}
-      className="dashboard-result scroll-mt-28 space-y-9 rounded-[32px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_85%,transparent)] p-6 shadow-[0_24px_70px_-42px_rgba(16,35,60,.5)] backdrop-blur-2xl sm:p-10"
+      className="dashboard-result scroll-mt-28 space-y-8 rounded-shell panel-85 p-6 shadow-[0_24px_70px_-42px_rgba(16,35,60,.5)] backdrop-blur-2xl sm:p-10"
     >
       {/* Top Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--edge)] pb-5">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
         <div className="flex flex-wrap items-center gap-2.5">
-          <span className="rounded-full border border-[var(--edge)] bg-white/40 px-3.5 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-[var(--accent)] dark:bg-white/[0.05]">
+          <span className="rounded-full border border-edge bg-white/40 px-3.5 py-1 font-mono text-xs font-semibold uppercase tracking-label text-accent dark:bg-white/[0.05]">
             {spec.missionTag}
           </span>
-          <span className="rounded-full border border-[var(--edge)] px-3 py-1 font-mono text-xs opacity-70">
+          <span className="rounded-full border border-edge px-3 py-1 font-mono text-xs opacity-70">
             {item.run ? 'Simulation Verified (C++20 Core)' : 'Copilot Grounded Analytical Head'}
           </span>
         </div>
@@ -68,7 +68,7 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
 
       {/* Main Title & Executive Abstract */}
       <div>
-        <h2 className="max-w-4xl font-[family-name:var(--font-display)] text-2xl font-bold leading-tight tracking-[-0.03em] sm:text-4xl">
+        <h2 className="max-w-4xl font-display text-2xl font-bold leading-tight tracking-tight sm:text-4xl">
           {spec.title}
         </h2>
         <p className="mt-4 max-w-4xl text-base leading-relaxed opacity-85 sm:text-lg">
@@ -88,21 +88,21 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
 
       {/* 2. NASA RUBRIC PILLARS: Summarize · Rank · Interpret */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-[var(--accent)] opacity-80">
+        <div className="card-label flex items-center gap-2 opacity-80">
           <span>NASA Evaluation Rubric</span>
           <span>·</span>
           <span>Summarize · Rank · Interpret</span>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-3">
           {/* Pillar 1: SUMMARIZE */}
-          <div className="flex flex-col justify-between rounded-2xl border border-[var(--edge)] bg-white/40 p-5 dark:bg-white/[0.03]">
+          <div className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-400">
                   1. Summarize
                 </span>
-                <span className="font-mono text-[11px] opacity-60">PSI Data Ingestion</span>
+                <span className="font-mono text-mini opacity-60">PSI Data Ingestion</span>
               </div>
               <h3 className="mt-2 text-base font-semibold">Microgravity Regimes</h3>
               <p className="mt-2 text-xs leading-relaxed opacity-75">
@@ -112,13 +112,13 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
                 <strong className="font-mono font-medium">{rubric.summarize.flowCms} cm/s</strong> forced airflow.
               </p>
             </div>
-            <div className="mt-4 border-t border-[var(--edge)] pt-3">
-              <div className="text-[11px] font-semibold uppercase tracking-wider opacity-60">NASA PSI Evidence IDs</div>
+            <div className="mt-4 border-t border-edge pt-3">
+              <div className="text-mini font-semibold uppercase tracking-wider opacity-60">NASA PSI Evidence IDs</div>
               <div className="mt-1 flex flex-wrap gap-1.5">
                 {rubric.summarize.psiAccessions.slice(0, 3).map((acc) => (
                   <span
                     key={acc}
-                    className="rounded bg-black/10 px-2 py-0.5 font-mono text-[10px] dark:bg-white/10"
+                    className="rounded bg-black/10 px-2 py-0.5 font-mono text-micro dark:bg-white/10"
                   >
                     {acc}
                   </span>
@@ -128,16 +128,16 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
           </div>
 
           {/* Pillar 2: RANK */}
-          <div className="flex flex-col justify-between rounded-2xl border border-[var(--edge)] bg-white/40 p-5 dark:bg-white/[0.03]">
+          <div className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-400">
                   2. Rank
                 </span>
-                <span className="font-mono text-[11px] opacity-60">Conformal Risk Head</span>
+                <span className="font-mono text-mini opacity-60">Conformal Risk Head</span>
               </div>
               <div className="mt-2 flex items-baseline gap-3">
-                <span className="font-[family-name:var(--font-display)] text-4xl font-bold tabular-nums">
+                <span className="font-display text-4xl font-bold tabular-nums">
                   {risk ?? `${rubric.rank.compositeRisk}%`}
                 </span>
                 <span className="font-mono text-xs uppercase font-semibold text-rose-400">
@@ -150,13 +150,13 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
                   : 'Conformal bounds: uncalibrated'}
               </div>
             </div>
-            <div className="mt-4 border-t border-[var(--edge)] pt-3">
-              <div className="text-[11px] font-semibold uppercase tracking-wider opacity-60">Top SHAP Attribution</div>
+            <div className="mt-4 border-t border-edge pt-3">
+              <div className="text-mini font-semibold uppercase tracking-wider opacity-60">Top SHAP Attribution</div>
               <div className="mt-1.5 space-y-1">
                 {rubric.rank.shapDrivers.slice(0, 2).map((driver, idx) => (
-                  <div key={idx} className="flex justify-between text-[11px]">
+                  <div key={idx} className="flex justify-between text-mini">
                     <span className="opacity-75">{driver.factor}</span>
-                    <span className="font-mono font-bold text-[var(--accent)]">{driver.delta}</span>
+                    <span className="font-mono font-bold text-accent">{driver.delta}</span>
                   </div>
                 ))}
               </div>
@@ -164,22 +164,22 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
           </div>
 
           {/* Pillar 3: INTERPRET */}
-          <div className="flex flex-col justify-between rounded-2xl border border-[var(--edge)] bg-white/40 p-5 dark:bg-white/[0.03]">
+          <div className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
                   3. Interpret
                 </span>
-                <span className="font-mono text-[11px] opacity-60">Actionable Safety</span>
+                <span className="font-mono text-mini opacity-60">Actionable Safety</span>
               </div>
               <h3 className="mt-2 text-base font-semibold">Operational Containment</h3>
               <p className="mt-2 text-xs leading-relaxed opacity-75">
                 {rubric.interpret.actionableGuidance}
               </p>
             </div>
-            <div className="mt-4 border-t border-[var(--edge)] pt-3">
-              <div className="text-[11px] font-semibold uppercase tracking-wider opacity-60">Sensor Advisory</div>
-              <div className="mt-1 text-[11px] opacity-75">
+            <div className="mt-4 border-t border-edge pt-3">
+              <div className="text-mini font-semibold uppercase tracking-wider opacity-60">Sensor Advisory</div>
+              <div className="mt-1 text-mini opacity-75">
                 {rubric.interpret.sensorAdvisory}
               </div>
             </div>
@@ -227,13 +227,13 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
 
       {/* Source Records from PSI */}
       {evidence.length > 0 && (
-        <div className="border-t border-[var(--edge)] pt-5">
+        <div className="border-t border-edge pt-6">
           <h4 className="text-sm font-semibold">Closest Corroborating NASA PSI Records</h4>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {evidence.slice(0, 4).map((source) => (
               <li key={`${item.id}-${source.runId}`}>
                 <a
-                  className="inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] px-4 text-xs transition-colors hover:bg-white/50 dark:hover:bg-white/10"
+                  className="inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-edge px-4 text-xs transition-colors hover:bg-white/50 dark:hover:bg-white/10"
                   href={source.sourceUrl || '#psi-dataset'}
                   target={source.sourceUrl ? '_blank' : undefined}
                   rel="noreferrer"
@@ -252,7 +252,7 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
       )}
 
       {/* Footer Actions */}
-      <div className="flex flex-wrap gap-3 border-t border-[var(--edge)] pt-5">
+      <div className="flex flex-wrap gap-3 border-t border-edge pt-6">
         <Button asChild variant="glass" size="default">
           <a
             href="#simulations"
@@ -292,19 +292,19 @@ export default function Dashboard() {
   }, [items])
 
   return (
-    <div data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-[var(--bg)]">
-      <div className="mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-10 lg:px-16">
+    <div data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-bg">
+      <div className="shell pb-24 pt-28">
         <Button variant="glass" size="default" onClick={navigateBack}>
           <IconArrowLeft size={16} /> Back to Overview
         </Button>
 
         {/* Dashboard Title & Introduction */}
-        <div className="mt-12 flex flex-wrap items-end justify-between gap-5">
+        <div className="mt-12 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
+            <p className="font-mono text-xs font-semibold uppercase tracking-eyebrow text-accent">
               IGNIS · NASA PSI Flight Safety Intelligence
             </p>
-            <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl font-bold tracking-[-0.04em] sm:text-6xl">
+            <h1 className="mt-3 font-display text-4xl font-bold tracking-tighter sm:text-6xl">
               Mission Safety Dashboard
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 opacity-75 sm:text-lg">
@@ -318,13 +318,13 @@ export default function Dashboard() {
         </div>
 
         {/* SECTION: 5 Headline Exploration Findings */}
-        <section className="mt-12 rounded-[28px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_60%,transparent)] p-6 backdrop-blur-xl sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--edge)] pb-4">
+        <section className="mt-12 rounded-card panel-60 p-6 backdrop-blur-xl sm:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge pb-4">
             <div>
-              <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent)]">
+              <span className="card-label">
                 Corpus Core Discoveries
               </span>
-              <h2 className="mt-1 font-[family-name:var(--font-display)] text-xl font-bold sm:text-2xl">
+              <h2 className="mt-1 font-display text-xl font-bold sm:text-2xl">
                 The 5 Headline Exploration Findings
               </h2>
             </div>
@@ -371,19 +371,19 @@ export default function Dashboard() {
             ].map((f) => (
               <div
                 key={f.num}
-                className="flex flex-col justify-between rounded-2xl border border-[var(--edge)] bg-white/40 p-4 transition-all hover:border-[var(--accent)]/50 dark:bg-white/[0.03]"
+                className="flex flex-col justify-between rounded-2xl border border-edge bg-white/40 p-4 transition-all hover:border-accent/50 dark:bg-white/[0.03]"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-[var(--accent)]">{f.num}</span>
-                    <span className="rounded bg-black/10 px-2 py-0.5 font-mono text-[10px] uppercase font-semibold dark:bg-white/10">
+                    <span className="font-mono text-xs font-bold text-accent">{f.num}</span>
+                    <span className="rounded bg-black/10 px-2 py-0.5 font-mono text-micro uppercase font-semibold dark:bg-white/10">
                       {f.tag}
                     </span>
                   </div>
                   <h3 className="mt-2 text-sm font-bold">{f.title}</h3>
                   <p className="mt-2 text-xs leading-relaxed opacity-75">{f.desc}</p>
                 </div>
-                <div className="mt-4 border-t border-[var(--edge)] pt-2.5 font-mono text-[10px] text-[var(--accent)] opacity-80">
+                <div className="mt-4 border-t border-edge pt-2.5 font-mono text-micro text-accent opacity-80">
                   Evidence: {f.evidence}
                 </div>
               </div>
@@ -399,7 +399,7 @@ export default function Dashboard() {
         {/* Generated Reports List */}
         <div className="mt-14 space-y-10">
           <div className="flex items-baseline justify-between">
-            <h2 className="font-[family-name:var(--font-display)] text-2xl font-bold sm:text-3xl">
+            <h2 className="font-display text-2xl font-bold sm:text-3xl">
               Interactive Mission Briefs ({items.length})
             </h2>
             <span className="font-mono text-xs opacity-60">Pre-Seeded &amp; Live Simulation Reports</span>

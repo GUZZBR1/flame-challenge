@@ -295,29 +295,29 @@ export default function InteractiveEquationCanvas({
   }
 
   return (
-    <div className="rounded-[28px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_85%,transparent)] p-5 shadow-xl backdrop-blur-xl sm:p-7">
+    <div className="rounded-card panel-85 p-6 shadow-xl backdrop-blur-xl sm:p-8">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--edge)] pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
         <div>
-          <span className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
+          <span className="card-label font-semibold">
             Interactive Mathematical Physics Core
           </span>
-          <h3 className="mt-1 font-[family-name:var(--font-display)] text-xl font-bold sm:text-2xl">
+          <h3 className="mt-1 font-display text-xl font-bold sm:text-2xl">
             {isDroplet ? 'FLEX Droplet d²-Law & Cool Flame Decay' : 'SAFFIRE Solid Surface Spread Rate Envelope'}
           </h3>
-          <p className="mt-0.5 text-xs opacity-70">
+          <p className="mt-1 text-xs opacity-70">
             {materialName} · {o2Pct}% O₂ · {flowCms} cm/s forced flow · Microgravity Physical Regime
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded-full border border-[var(--edge)] bg-white/40 px-3 py-1 font-mono text-xs opacity-80 dark:bg-white/[0.04]">
+          <span className="rounded-full border border-edge bg-white/40 px-3 py-1 font-mono text-xs opacity-80 dark:bg-white/[0.04]">
             Cursor Crosshair Active
           </span>
         </div>
       </div>
 
       {/* Main Interactive Canvas Area */}
-      <div className="relative mt-5">
+      <div className="relative mt-6">
         <canvas
           ref={canvasRef}
           onMouseMove={handleMouseMove}
@@ -326,10 +326,10 @@ export default function InteractiveEquationCanvas({
         />
 
         {/* Dynamic Telemetry HUD over Canvas */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--edge)] bg-white/50 px-4 py-2.5 font-mono text-xs backdrop-blur-md dark:bg-white/[0.03]">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-edge bg-white/50 px-4 py-2 font-mono text-xs backdrop-blur-md dark:bg-white/[0.03]">
           <div>
             <span className="opacity-60">Regime: </span>
-            <strong className="text-[var(--accent)] font-semibold">
+            <strong className="text-accent font-semibold">
               {hoverData ? hoverData.regimeLabel : 'Move cursor over curve to inspect dynamic coordinates'}
             </strong>
           </div>
@@ -352,20 +352,20 @@ export default function InteractiveEquationCanvas({
       </div>
 
       {/* Dynamic Mathematical Substitution Box */}
-      <div className="mt-5 rounded-2xl border border-[var(--accent)]/30 bg-[var(--accent)]/5 p-4 font-mono text-xs leading-relaxed">
-        <div className="flex items-center justify-between border-b border-[var(--accent)]/20 pb-2">
-          <span className="font-bold uppercase tracking-wider text-[var(--accent)]">
+      <div className="mt-6 rounded-2xl border border-accent/30 bg-accent/5 p-4 font-mono text-xs leading-relaxed">
+        <div className="flex items-center justify-between border-b border-accent/20 pb-2">
+          <span className="font-bold uppercase tracking-card text-accent">
             Analytical Governing Equation
           </span>
           <span className="opacity-60">Substituted in Real-Time</span>
         </div>
-        <div className="mt-3 overflow-x-auto text-sm">
+        <div className="mt-4 overflow-x-auto text-sm">
           {isDroplet ? (
             <div className="space-y-1">
               <div>
                 Formula: <code className="font-bold">d²(t) = d₀² - K_hot·t - K_cool·(t - t_cool)</code>
               </div>
-              <div className="text-[var(--accent)]">
+              <div className="text-accent">
                 Evaluation: d²({hoverData ? hoverData.xVal.toFixed(1) + 's' : 't'}) ={' '}
                 {d0Sq.toFixed(2)} - {kHot.toFixed(2)}·({hoverData ? Math.min(tCool, hoverData.xVal).toFixed(1) : '2.4'}) ={' '}
                 <strong>{hoverData ? hoverData.yVal.toFixed(2) + ' mm²' : '0.42 mm²'}</strong>
@@ -381,7 +381,7 @@ export default function InteractiveEquationCanvas({
               <div>
                 Formula: <code className="font-bold">V_f(U_g) = V_0 · (Y_O2 / Y_O2,0)^1.35 · (1 + α·U_g)</code>
               </div>
-              <div className="text-[var(--accent)]">
+              <div className="text-accent">
                 Evaluation: V_f({hoverData ? hoverData.xVal.toFixed(1) + ' cm/s' : '15 cm/s'}) = {baseVf.toFixed(2)} · (
                 {(o2Pct / 21).toFixed(2)})^1.35 · (1 + 0.082·{hoverData ? hoverData.xVal.toFixed(1) : '15'}) ={' '}
                 <strong>{hoverData ? hoverData.yVal.toFixed(2) + ' cm/s' : '0.74 cm/s'}</strong>
@@ -394,12 +394,12 @@ export default function InteractiveEquationCanvas({
       {/* 3-Pillar Physical Proof Block (C++20 + ML + SI Synthesis) */}
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         {/* Pillar 1: C++20 Core */}
-        <div className="rounded-2xl border border-[var(--edge)] bg-white/40 p-4 dark:bg-white/[0.03]">
+        <div className="rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs font-bold uppercase text-cyan-400">1. C++20 Physics Solver</span>
-            <span className="font-mono text-[10px] opacity-60">Deterministic Core</span>
+            <span className="font-mono text-micro opacity-60">Deterministic Core</span>
           </div>
-          <div className="mt-3 space-y-2 text-xs">
+          <div className="mt-4 space-y-2 text-xs">
             <div className="flex justify-between">
               <span className="opacity-70">Burning Rate K_hot:</span>
               <strong className="font-mono">{kHot.toFixed(3)} mm²/s</strong>
@@ -420,12 +420,12 @@ export default function InteractiveEquationCanvas({
         </div>
 
         {/* Pillar 2: ML Statistical Conformal Audit */}
-        <div className="rounded-2xl border border-[var(--edge)] bg-white/40 p-4 dark:bg-white/[0.03]">
+        <div className="rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs font-bold uppercase text-amber-400">2. ML Conformal Validation</span>
-            <span className="font-mono text-[10px] opacity-60">MAPIE Bounds</span>
+            <span className="font-mono text-micro opacity-60">MAPIE Bounds</span>
           </div>
-          <div className="mt-3 space-y-2 text-xs">
+          <div className="mt-4 space-y-2 text-xs">
             <div className="flex justify-between">
               <span className="opacity-70">Conformal Confidence:</span>
               <strong className="font-mono">95.2% Empirical</strong>
@@ -446,12 +446,12 @@ export default function InteractiveEquationCanvas({
         </div>
 
         {/* Pillar 3: SI Interpretive Synthesis */}
-        <div className="rounded-2xl border border-[var(--edge)] bg-white/40 p-4 dark:bg-white/[0.03]">
+        <div className="rounded-2xl border border-edge bg-white/40 p-4 dark:bg-white/[0.03]">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs font-bold uppercase text-emerald-400">3. SI Spaceflight Synthesis</span>
-            <span className="font-mono text-[10px] opacity-60">Why 0g differs from 1g</span>
+            <span className="font-mono text-micro opacity-60">Why 0g differs from 1g</span>
           </div>
-          <p className="mt-3 text-xs leading-relaxed opacity-80">
+          <p className="mt-4 text-xs leading-relaxed opacity-80">
             In microgravity, buoyant Grashof flow drops to zero. Oxygen transport shifts from buoyant convection to
             pure spherical Stefan diffusion. Radiative heat losses to the ambient environment exceed convective
             replenishment, triggering low-temperature cool-flame chemistry (~700 K) that burns invisibly.
