@@ -223,7 +223,7 @@ export default function SimDeck() {
           <h1 data-hero className="mt-8 font-display text-[clamp(2.4rem,6vw,4.6rem)] font-bold leading-display tracking-tight">
             Simulations
           </h1>
-          <p data-hero className="mt-10 max-w-lg text-body leading-[1.85] opacity-80">
+          <p data-hero className="mt-10 max-w-2xl text-body leading-[1.85] opacity-80">
             Test real-world mission atmospheres, partial-gravity regimes, and historical fire crises. The copilot
             cross-references 30 years of NASA PSI data and streams physical combustion runs in real time.
           </p>
