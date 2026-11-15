@@ -551,3 +551,8 @@ button.pill:active { transform: translateY(0) scale(.96); }
       "feature side-b";
   }
 }
+
+/* geometric cuts on the mission media plates — diagonal leading edge
+   on the feature, parallelogram on the rail strips */
+.clip-diag-l { clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%); }
+.clip-para   { clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }

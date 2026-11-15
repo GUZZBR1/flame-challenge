@@ -80,6 +80,29 @@ const FEATURE = MISSION_PRESETS[0] // apollo 1
 const SIDE_A = MISSION_PRESETS[1] // apollo 13
 const SIDE_B = MISSION_PRESETS[2] // mir 1997
 
+/** official NASA media — images-api.nasa.gov. Apollo 1 flew no mission
+ *  (the crew died in a pad test), so the archival CSM photo leads; the
+ *  Apollo 13 loop is cut from the real 1970 launch footage; Mir has no
+ *  video in the library, so the STS-63 flyaround photo stands in */
+const MISSION_MEDIA = {
+  feature: {
+    type: 'image',
+    src: '/assets/nasa/apollo1_csm.jpg',
+    alt: 'Apollo 1 (AS-204) Command/Service Module — NASA S67-15704',
+  },
+  sideA: {
+    type: 'video',
+    src: '/assets/nasa/apollo13_launch_loop.mp4',
+    poster: '/assets/nasa/apollo13_poster.jpg',
+    alt: 'Apollo 13 Saturn V ignition and liftoff — NASA KSC-19700411',
+  },
+  sideB: {
+    type: 'image',
+    src: '/assets/nasa/mir_sts63.jpg',
+    alt: 'Mir space station as seen from STS-63 — NASA sts063-708-095',
+  },
+} as const
+
 function ActiveMark() {
   return <span className="font-mono text-tiny font-semibold text-accent">● active</span>
 }
@@ -197,26 +220,32 @@ export default function SimDeck() {
             <button
               {...pickProps(FEATURE)}
               data-hero
-              className="group flex items-center text-left [grid-area:feature] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+              className="group flex flex-col text-left [grid-area:feature] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
             >
-              <span className="min-w-0">
-                <span
-                  className="block font-display text-[clamp(3.2rem,6vw,5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                  style={activeMission.id === FEATURE.id ? { color: FEATURE.accent } : undefined}
-                >
-                  {feature.name}
-                </span>
-                {activeMission.id === FEATURE.id && (
-                  <span className="mt-4 block"><ActiveMark /></span>
-                )}
+              <span
+                className="block font-display text-[clamp(3.2rem,6vw,5rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                style={activeMission.id === FEATURE.id ? { color: FEATURE.accent } : undefined}
+              >
+                {feature.name}
+              </span>
+              {activeMission.id === FEATURE.id && (
+                <span className="mt-4 block"><ActiveMark /></span>
+              )}
+              <span className="clip-diag-l relative mt-8 block min-h-[220px] flex-1 overflow-hidden sm:min-h-[300px]">
+                <img
+                  src={MISSION_MEDIA.feature.src}
+                  alt={MISSION_MEDIA.feature.alt}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
               </span>
             </button>
 
             {/* rail — apollo 13 + mir 1997 */}
             {([
-              [SIDE_A, sideA],
-              [SIDE_B, sideB],
-            ] as const).map(([preset, t], i) => {
+              [SIDE_A, sideA, MISSION_MEDIA.sideA],
+              [SIDE_B, sideB, MISSION_MEDIA.sideB],
+            ] as const).map(([preset, t, media], i) => {
               const isActive = activeMission.id === preset.id
               return (
                 <button
@@ -234,6 +263,28 @@ export default function SimDeck() {
                     {t.name}
                   </span>
                   {isActive && <span className="mt-3 block"><ActiveMark /></span>}
+                  <span className="clip-para mt-4 block h-28 overflow-hidden sm:h-32">
+                    {media.type === 'video' ? (
+                      <video
+                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        src={media.src}
+                        poster={media.poster}
+                        aria-label={media.alt}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                      />
+                    ) : (
+                      <img
+                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        src={media.src}
+                        alt={media.alt}
+                        loading="lazy"
+                      />
+                    )}
+                  </span>
                 </button>
               )
             })}
