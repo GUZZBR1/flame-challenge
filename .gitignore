@@ -53,3 +53,6 @@ build/
 
 # Agent scratch
 .agents/
+.superpowers/
+.taste-skill/
+skills-lock.json
