@@ -349,6 +349,31 @@ async def si_voice(audio: UploadFile = File(...),
     return {"transcript": transcript, "stt": "whisper.cpp", "response": resp}
 
 
+@app.post("/api/si/voice-command")
+async def si_voice_command(audio: UploadFile = File(...),
+                           state: str = Form("{}")):
+    """Voice-first mission control: WAV PCM16 16kHz in -> flat command
+    envelope out ({transcript, briefing, navigation,
+    simulation_commands, …}). Same factual packet + 9Router pipeline as
+    /api/si/voice, deterministic offline degradation on every hop."""
+    try:
+        chamber = si_copilot.ChamberState.model_validate(json.loads(state))
+    except (json.JSONDecodeError, ValidationError, TypeError):
+        return JSONResponse(status_code=422,
+                            content={"detail": "invalid state payload"})
+    payload = await audio.read(_SI_MAX_AUDIO + 1)
+    if len(payload) > _SI_MAX_AUDIO:
+        return JSONResponse(status_code=413,
+                            content={"detail": "audio too large"})
+    transcript = await si_copilot.transcribe_audio(
+        payload, audio.filename, audio.content_type)
+    if transcript is None:
+        resp = await si_copilot.answer("(voice uplink offline)", chamber)
+        return {"transcript": None, "stt": "offline", **resp}
+    resp = await si_copilot.answer(transcript, chamber)
+    return {"transcript": transcript, "stt": "whisper.cpp", **resp}
+
+
 @app.websocket("/ws/chamber")
 async def chamber_ws(ws: WebSocket) -> None:
     """Stream a live chamber run at ~30 Hz until the run finishes or 60 s cap."""

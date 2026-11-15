@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   decisionCards,
+  gravityRegime,
   materialsIndex,
   riskIndex,
   siChat,
-  siVoice,
   type DecisionPayload,
   type InvestigationSpec,
   type SiChamberState,
   type SiResponse,
-  type SiUiCommand,
+  type SiUiCommandEvent,
 } from '../lib/api'
 import type { RiskResult } from '../lib/risk'
+import { applyNavigation } from '../lib/scroll'
+import { useMissionVoiceControl } from '../hooks/useMissionVoiceControl'
 
 /* recommended_action → which card + option actions it maps to */
 const ACTION_MAP: Record<string, { card: string; options: string[] }> = {
@@ -76,14 +78,10 @@ export default function SiConsole() {
   ])
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
-  const [recording, setRecording] = useState(false)
   const [voiceOn, setVoiceOn] = useState(false)
 
   const logRef = useRef<HTMLDivElement>(null)
   const appliedTimer = useRef(0)
-  const recorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
-  const streamRef = useRef<MediaStream | null>(null)
 
   const mat = specs[inv]?.materialId ?? 'cotton'
   const chamberState = useCallback(
@@ -127,7 +125,6 @@ export default function SiConsole() {
   useEffect(
     () => () => {
       window.clearTimeout(appliedTimer.current)
-      streamRef.current?.getTracks().forEach((t) => t.stop())
       window.speechSynthesis?.cancel()
     },
     [],
@@ -147,9 +144,11 @@ export default function SiConsole() {
   }, [])
 
   /** apply a ui_command from the copilot to the live chamber state and
-   *  broadcast it so any engine/scene subscriber can react too */
+   *  broadcast it so any engine/scene subscriber can react too.
+   *  broadcast=false when the command arrived over the bus already —
+   *  rebroadcasting would loop it back to every other subscriber. */
   const applyUiCommand = useCallback(
-    (cmd: SiUiCommand) => {
+    (cmd: SiUiCommandEvent, broadcast = true) => {
       const did: string[] = []
       if (cmd.load_preset && specs[cmd.load_preset]) {
         const spec = specs[cmd.load_preset]
@@ -168,19 +167,30 @@ export default function SiConsole() {
         setFlow(v)
         did.push(`airflow → ${v} cm/s`)
       }
+      if (cmd.set_gravity && GRAVITIES.includes(cmd.set_gravity)) {
+        setGravity(cmd.set_gravity)
+        did.push(`gravity → ${cmd.set_gravity}`)
+      }
       if (cmd.focus_module) {
         setFocusModule(cmd.focus_module)
         did.push(`focus → ${cmd.focus_module}`)
       }
-      // carry the console's experiment so subscribers retune the SAME
-      // investigation this answer was computed for, not whichever
-      // preset they happen to hold — oxygen-only commands otherwise
-      // restart the wrong run
-      window.dispatchEvent(
-        new CustomEvent('ignis:ui-command', {
-          detail: { ...cmd, __investigation: cmd.load_preset ?? inv },
-        }),
-      )
+      if (cmd.trigger_containment) setHighlight(cmd.trigger_containment)
+      if (broadcast) {
+        // carry the console's experiment so subscribers retune the SAME
+        // investigation this answer was computed for, not whichever
+        // preset they happen to hold — oxygen-only commands otherwise
+        // restart the wrong run
+        window.dispatchEvent(
+          new CustomEvent('ignis:ui-command', {
+            detail: {
+              ...cmd,
+              __investigation: cmd.__investigation ?? cmd.load_preset ?? inv,
+              __origin: 'console',
+            },
+          }),
+        )
+      }
       if (did.length) {
         setApplied(`applied · ${did.join(' · ')}`)
         window.clearTimeout(appliedTimer.current)
@@ -189,6 +199,29 @@ export default function SiConsole() {
     },
     [specs, inv],
   )
+
+  // external ui_commands (the global voice HUD) retune this console too
+  useEffect(() => {
+    const onCmd = (e: Event) => {
+      const d = (e as CustomEvent<SiUiCommandEvent>).detail
+      if (!d || d.__origin === 'console') return
+      applyUiCommand(d, false)
+    }
+    window.addEventListener('ignis:ui-command', onCmd)
+    return () => window.removeEventListener('ignis:ui-command', onCmd)
+  }, [applyUiCommand])
+
+  // voice uplink state probe — the HUD asks, the console reports what
+  // the operator is actually looking at
+  useEffect(() => {
+    const onReq = () => {
+      window.dispatchEvent(
+        new CustomEvent('ignis:voice-state', { detail: chamberState() }),
+      )
+    }
+    window.addEventListener('ignis:voice-state-request', onReq)
+    return () => window.removeEventListener('ignis:voice-state-request', onReq)
+  }, [chamberState])
 
   const handleResponse = useCallback(
     (resp: SiResponse) => {
@@ -210,6 +243,9 @@ export default function SiConsole() {
         const resp = await siChat(text, chamberState())
         push({ role: 'ignis', text: resp.briefing, resp })
         handleResponse(resp)
+        applyNavigation(resp.navigation)
+        const g = resp.simulation_commands?.set_gravity_g
+        if (g != null) applyUiCommand({ set_gravity: gravityRegime(g) })
       } finally {
         setBusy(false)
       }
@@ -217,62 +253,29 @@ export default function SiConsole() {
     [busy, chamberState, handleResponse, push],
   )
 
-  /* ---------- push-to-talk ---------- */
+  /* ---------- push-to-talk — WAV PCM16 16kHz → /api/si/voice-command ---------- */
 
-  const releaseMic = useCallback(() => {
-    streamRef.current?.getTracks().forEach((t) => t.stop())
-    streamRef.current = null
-  }, [])
-
-  const stopRecording = useCallback(() => {
-    const rec = recorderRef.current
-    if (rec && rec.state !== 'inactive') rec.stop()
-    recorderRef.current = null
-    releaseMic()
-    setRecording(false)
-  }, [releaseMic])
-
-  const startRecording = useCallback(async () => {
-    if (busy || recording) return
-    try {
-      // fresh stream per clip — tracks are released on stop, not cached
-      streamRef.current = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      })
-      const rec = new MediaRecorder(streamRef.current)
-      chunksRef.current = []
-      rec.ondataavailable = (e) => {
-        if (e.data.size) chunksRef.current.push(e.data)
+  const voice = useMissionVoiceControl({
+    chamberState,
+    onResult: (r) => {
+      if (r.transcript) {
+        push({ role: 'you', text: `voice › ${r.transcript}` })
+      } else {
+        push({
+          role: 'sys',
+          text: 'stt offline (whisper.cpp down) — answer below is from chamber state.',
+        })
       }
-      rec.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: rec.mimeType })
-        if (blob.size > 400) {
-          setBusy(true)
-          void siVoice(blob, chamberState())
-            .then((r) => {
-              if (!r) {
-                push({ role: 'sys', text: 'voice uplink unreachable — try text.' })
-                return
-              }
-              if (r.transcript) {
-                push({ role: 'you', text: `voice › ${r.transcript}` })
-              } else {
-                push({ role: 'sys', text: 'stt offline (whisper.cpp down) — answer below is from chamber state.' })
-              }
-              push({ role: 'ignis', text: r.response.briefing, resp: r.response })
-              handleResponse(r.response)
-            })
-            .finally(() => setBusy(false))
-        }
-      }
-      recorderRef.current = rec
-      rec.start()
-      setRecording(true)
-    } catch {
-      releaseMic()
-      push({ role: 'sys', text: 'microphone unavailable — check browser permission.' })
-    }
-  }, [busy, recording, chamberState, handleResponse, push, releaseMic])
+      push({ role: 'ignis', text: r.briefing, resp: r })
+      handleResponse(r)
+      applyNavigation(r.navigation)
+      // voice-only surface: gravity commands ride simulation_commands,
+      // not the legacy ui_command
+      const g = r.simulation_commands?.set_gravity_g
+      if (g != null) applyUiCommand({ set_gravity: gravityRegime(g) })
+    },
+    onError: (msg) => push({ role: 'sys', text: msg }),
+  })
 
   const hi = highlight ? ACTION_MAP[highlight] : null
   const cardHighlighted = (id: string) => hi?.card === id
@@ -519,23 +522,17 @@ export default function SiConsole() {
               />
               <button
                 type="button"
-                aria-label={recording ? 'release to send voice' : 'hold to talk'}
-                onPointerDown={() => void startRecording()}
-                onPointerUp={stopRecording}
-                onPointerLeave={stopRecording}
-                onKeyDown={(e) => {
-                  if (e.key === ' ' || e.key === 'Enter') void startRecording()
-                }}
-                onKeyUp={(e) => {
-                  if (e.key === ' ' || e.key === 'Enter') stopRecording()
-                }}
+                aria-label={voice.recording ? 'release to send voice' : 'hold to talk'}
+                onPointerDown={() => void voice.start()}
+                onPointerUp={voice.stop}
+                onPointerLeave={voice.stop}
                 className={`w-14 cursor-pointer border-l border-[var(--edge)] font-mono text-[15px] transition-colors duration-150 ${
-                  recording
+                  voice.recording
                     ? 'bg-[var(--accent)] text-[var(--bg)]'
                     : 'text-[var(--ink)] hover:bg-[color-mix(in_srgb,var(--accent)_14%,transparent)] hover:text-[var(--accent)]'
                 }`}
               >
-                {recording ? '●' : '◉'}
+                {voice.recording ? '●' : '◉'}
               </button>
               <button
                 type="submit"

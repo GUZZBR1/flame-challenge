@@ -21,6 +21,7 @@ server (WHISPER_CPP_URL); the transcript re-enters this same pipeline.
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -84,8 +85,79 @@ ACTION_CODES = (
     "SUPPRESS_LOCAL",
 )
 
+# voice-command navigation vocabulary — the site maps these section names
+# to real DOM ids (hero→#top, shipyard→#vision, …)
+SECTION_CODES = (
+    "hero",
+    "simulations",
+    "psi-dataset",
+    "dashboard",
+    "chamber",
+    "shipyard",
+    "mission-control",
+)
+
+# dashboard investigation-matrix themes (site/src/lib/dashboard.ts)
+FILTER_TAGS = (
+    "detection",
+    "suppression",
+    "duct-flow",
+    "partial-gravity",
+    "large-scale",
+    "spread",
+    "flammability",
+)
+
+# spoken/display aliases → real investigationIds in calibration.json.
+# MIR_1997 / APOLLO_1 are historical scenarios, not runnable chamber
+# presets — they stay in the enum for the LLM but resolve to None.
+PRESET_ALIASES = {
+    "FLEX": "flex-2",
+    "FLEX-2": "flex-2",
+    "FLEX_2": "flex-2",
+    "SAFFIRE": "saffire",
+    "SAME_R": "same",
+    "SAME-R": "same",
+    "SAME": "same",
+    "ACME": "acme",
+    "ACME_EFIELD": "acme",
+    "ACME_E-FIELD": "acme",
+    "BASS-II": "bass-ii",
+    "BASS_II": "bass-ii",
+    "SOFIE-GEL": "sofie-gel",
+    "SOFIE_GEL": "sofie-gel",
+    "CONFINED-COMBUSTION": "confined-combustion",
+    "FLARE": "flare",
+    "MIR_1997": None,
+    "APOLLO_1": None,
+}
+
 _O2 = {"ge": 0.0, "le": 100.0, "allow_inf_nan": False}
 _FLOW = {"ge": 0.0, "le": 300.0, "allow_inf_nan": False}
+_G = {"ge": 0.0, "le": 1.5, "allow_inf_nan": False}
+
+
+def resolve_preset(raw: str | None) -> str | None:
+    """Voice/LLM preset name → real investigationId (None when the alias
+    is a historical scenario or the name is unknown)."""
+    if not raw:
+        return None
+    key = raw.strip().upper().replace(" ", "_")
+    if key in PRESET_ALIASES:
+        return PRESET_ALIASES[key]
+    low = raw.strip().lower()
+    return low if low in eb.investigation_map() else None
+
+
+def gravity_regime(g: float) -> str:
+    """set_gravity_g (m/s² fraction of earth g) → nearest regime label."""
+    if g <= 0.02:
+        return "microgravity"
+    if g < 0.3:
+        return "lunar"
+    if g < 0.7:
+        return "martian"
+    return "earth"
 
 
 class ChamberState(BaseModel):
@@ -120,12 +192,68 @@ class UiCommand(BaseModel):
     focus_module: str | None = None
 
 
+class NavigationCommand(BaseModel):
+    """Where the voice command should take the operator."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    scroll_to_section: str | None = None
+    active_filter_tag: str | None = None
+
+    @field_validator("scroll_to_section")
+    @classmethod
+    def _section_known(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        code = v.strip().lower()
+        return code if code in SECTION_CODES else None
+
+
+class SimulationCommands(BaseModel):
+    """Executable chamber/voice command set — superset of UiCommand."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    load_preset: str | None = None
+    set_o2_percent: float | None = Field(default=None, **_O2)
+    set_airflow_cm_s: float | None = Field(default=None, **_FLOW)
+    set_gravity_g: float | None = Field(default=None, **_G)
+    trigger_containment: str | None = None
+
+    @field_validator("load_preset")
+    @classmethod
+    def _preset_resolve(cls, v: str | None) -> str | None:
+        return resolve_preset(v)
+
+    @field_validator("trigger_containment")
+    @classmethod
+    def _containment_known(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        code = v.strip().upper()
+        if code not in ACTION_CODES:
+            raise ValueError(f"unknown containment code {v!r}")
+        return code
+
+    def to_ui_command(self) -> UiCommand | None:
+        """Drop the voice-only fields and hand the console something it
+        already knows how to apply."""
+        ui = UiCommand(
+            set_o2_percent=self.set_o2_percent,
+            set_airflow_cm_s=self.set_airflow_cm_s,
+            load_preset=self.load_preset,
+        )
+        return ui if ui.model_dump(exclude_none=True) else None
+
+
 class CopilotResponse(BaseModel):
     """The strict shape the LLM must return — nothing else."""
 
     briefing: str = Field(min_length=1, max_length=2000)
     recommended_action: str
     ui_command: UiCommand | None = None
+    navigation: NavigationCommand | None = None
+    simulation_commands: SimulationCommands | None = None
 
     @field_validator("recommended_action")
     @classmethod
@@ -134,6 +262,23 @@ class CopilotResponse(BaseModel):
         if code not in ACTION_CODES:
             raise ValueError(f"unknown action code {v!r}")
         return code
+
+    def normalize(self) -> "CopilotResponse":
+        """Reconcile the two command surfaces: simulation_commands is the
+        voice-first contract, ui_command the legacy console one — derive
+        whichever side the model left empty."""
+        if self.simulation_commands is None and self.ui_command is not None:
+            self.simulation_commands = SimulationCommands(
+                load_preset=self.ui_command.load_preset,
+                set_o2_percent=self.ui_command.set_o2_percent,
+                set_airflow_cm_s=self.ui_command.set_airflow_cm_s,
+                # an emitted ui_command means the policy already decided
+                # to act on the sim — containment mirrors the action
+                trigger_containment=self.recommended_action,
+            )
+        if self.ui_command is None and self.simulation_commands is not None:
+            self.ui_command = self.simulation_commands.to_ui_command()
+        return self
 
 
 # OpenAI structured-outputs schema (strict). Gateways that reject it get a
@@ -167,8 +312,52 @@ _RESPONSE_SCHEMA = {
                     {"type": "null"},
                 ],
             },
+            "navigation": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "scroll_to_section": {
+                                "type": ["string", "null"],
+                                "enum": [*SECTION_CODES, None],
+                            },
+                            "active_filter_tag": {
+                                "type": ["string", "null"],
+                                "enum": [*FILTER_TAGS, None],
+                            },
+                        },
+                        "required": ["scroll_to_section",
+                                     "active_filter_tag"],
+                    },
+                    {"type": "null"},
+                ],
+            },
+            "simulation_commands": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "load_preset": {"type": ["string", "null"]},
+                            "set_o2_percent": {"type": ["number", "null"]},
+                            "set_airflow_cm_s": {"type": ["number", "null"]},
+                            "set_gravity_g": {"type": ["number", "null"]},
+                            "trigger_containment": {
+                                "type": ["string", "null"],
+                                "enum": [*ACTION_CODES, None],
+                            },
+                        },
+                        "required": ["load_preset", "set_o2_percent",
+                                     "set_airflow_cm_s", "set_gravity_g",
+                                     "trigger_containment"],
+                    },
+                    {"type": "null"},
+                ],
+            },
         },
-        "required": ["briefing", "recommended_action", "ui_command"],
+        "required": ["briefing", "recommended_action", "ui_command",
+                     "navigation", "simulation_commands"],
     },
 }
 
@@ -183,7 +372,11 @@ Answer with ONE JSON object — no markdown, no extra keys:
   "briefing": "1-3 technical sentences for the crew",
   "recommended_action": "CUT_VENTILATION | REDUCE_O2 | COOL_AND_ISOLATE | SUPPRESS_LOCAL",
   "ui_command": null | { "set_o2_percent": number, "set_airflow_cm_s": number,
-                         "load_preset": string, "focus_module": string }
+                         "load_preset": string, "focus_module": string },
+  "navigation": null | { "scroll_to_section": string, "active_filter_tag": string },
+  "simulation_commands": null | { "load_preset": string, "set_o2_percent": number,
+     "set_airflow_cm_s": number, "set_gravity_g": number,
+     "trigger_containment": "CUT_VENTILATION | REDUCE_O2 | COOL_AND_ISOLATE | SUPPRESS_LOCAL" }
 }
 
 Rules:
@@ -193,6 +386,22 @@ Rules:
 - ui_command: emit only when it physically helps the situation
   (e.g. CUT_VENTILATION -> set_airflow_cm_s 0; REDUCE_O2 ->
   set_o2_percent at/below the target). Otherwise null.
+- navigation.scroll_to_section is one of: hero, simulations, psi-dataset,
+  dashboard, chamber, shipyard, mission-control. Emit it only when the
+  operator asks to see/go somewhere or a preset clearly belongs on
+  screen (loading a preset -> "chamber"). active_filter_tag is one of:
+  detection, suppression, duct-flow, partial-gravity, large-scale,
+  spread, flammability — emit only when the operator asks to filter the
+  investigation matrix by theme.
+- simulation_commands.load_preset accepts these names: saffire, flex-2,
+  bass-ii, acme, same, sofie-gel, confined-combustion, flare — spoken
+  aliases like FLEX, SAFFIRE, SAME_R or ACME_EFIELD resolve to the same
+  rigs. set_gravity_g is a fraction of earth gravity (0 = microgravity,
+  ~0.17 lunar, ~0.38 martian, 1 earth).
+- When the operator gives an explicit order ("cut the ventilation",
+  "run saffire", "drop oxygen to 18"), mirror it in BOTH ui_command and
+  simulation_commands, and set trigger_containment to the matching
+  action code. For pure questions leave both null.
 - `resolved_material.uncertainty` is a 90% conformal interval fitted
   on labeled PSI runs — quote it as the empirical margin. When its
   `regime` is "extrapolation" the operating point is outside the PSI
@@ -271,8 +480,20 @@ def _offline_response(state: ChamberState, packet: dict) -> CopilotResponse:
         if u["regime"] == "extrapolation":
             briefing += (" Operating point is outside the calibrated "
                          "PSI envelope — extrapolation regime.")
+    # the voice contract: when the policy decided to act on the sim the
+    # command is executable, so containment mirrors the action
+    sim = None
+    if ui is not None:
+        sim = SimulationCommands(
+            load_preset=ui.load_preset,
+            set_o2_percent=ui.set_o2_percent,
+            set_airflow_cm_s=ui.set_airflow_cm_s,
+            trigger_containment=action,
+        )
+    nav = NavigationCommand(scroll_to_section="chamber") if sim else None
     return CopilotResponse(briefing=briefing, recommended_action=action,
-                           ui_command=ui)
+                           ui_command=ui, navigation=nav,
+                           simulation_commands=sim)
 
 
 # ---------------- 9Router LLM call ----------------
@@ -356,12 +577,15 @@ async def _llm_response(message: str, state: ChamberState,
 
 async def answer(message: str, state: ChamberState) -> dict:
     """Structured copilot reply grounded on the factual packet."""
-    packet = factual_packet(state)
+    # the packet walks the model + CSV + card scoring — keep the event
+    # loop free while it runs
+    packet = await asyncio.to_thread(factual_packet, state)
     resp = await _llm_response(message, state, packet)
     mode = "llm"
     if resp is None:
-        resp = _offline_response(state, packet)
+        resp = await asyncio.to_thread(_offline_response, state, packet)
         mode = "offline-fallback"
+    resp = resp.normalize()
     return {
         **resp.model_dump(),
         "mode": mode,

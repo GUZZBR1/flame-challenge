@@ -50,6 +50,26 @@ export default function Insights() {
   const [topMaterial, setTopMaterial] = useState('pmma')
   const [diffIdx, setDiffIdx] = useState(0)
 
+  // voice-command bus: 'ignis:filter' drives the matrix theme filter,
+  // 'ignis:ui-command' gravity retunes the rank scenario
+  useEffect(() => {
+    const onFilter = (e: Event) => {
+      const tag = (e as CustomEvent<{ tag?: string }>).detail?.tag
+      if (tag && (tag === 'all' || ALL_THEMES.includes(tag))) setTheme(tag)
+    }
+    const onCmd = (e: Event) => {
+      const g = (e as CustomEvent<{ set_gravity?: string | null }>).detail
+        ?.set_gravity
+      if (g) setScenario((s) => ({ ...s, gravity: g }))
+    }
+    window.addEventListener('ignis:filter', onFilter)
+    window.addEventListener('ignis:ui-command', onCmd)
+    return () => {
+      window.removeEventListener('ignis:filter', onFilter)
+      window.removeEventListener('ignis:ui-command', onCmd)
+    }
+  }, [])
+
   // rank + interpret follow the scenario; live api wins when reachable,
   // the bundled mirror (same formula) keeps the demo working offline
   useEffect(() => {

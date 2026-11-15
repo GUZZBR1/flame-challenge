@@ -42,7 +42,13 @@ backend only — no client. See `docs/`.
   `/api/investigations/matrix` (dashboard attribute feed),
   `/api/insights`, `/api/runs`, `/api/diff`, `/api/diffs`,
   `/api/decision-cards`, `/api/neighbors`, `POST /api/si/chat`,
-  `POST /api/si/voice` (multipart `audio` + `state`)
+  `POST /api/si/voice` (multipart `audio` + `state`),
+  `POST /api/si/voice-command` (flat voice-first envelope:
+  `transcript` + `briefing` + `navigation.scroll_to_section`/
+  `active_filter_tag` + `simulation_commands.load_preset`/
+  `set_o2_percent`/`set_airflow_cm_s`/`set_gravity_g`/
+  `trigger_containment`; preset aliases FLEX/SAFFIRE/SAME_R/
+  ACME_EFIELD resolve to real investigationIds)
 - SI copilot: every answer first builds a factual packet (risk model +
   engine ignition pressure + `neighbors` 3 nearest PSI runs + `tactics`
   cards), then asks the local 9Router gateway (OpenAI-compatible, strict
@@ -57,7 +63,12 @@ backend only — no client. See `docs/`.
   ranking, tactical cards, investigation diff) + `#mission-control`
   SiConsole (chat + push-to-talk voice via MediaRecorder, applies
   `ui_command` to chamber state, highlights decision card,
-  speechSynthesis readback). Offline fallback mirrors
+  speechSynthesis readback) + global `VoiceHud` (hold-Space PTT
+  anywhere; `lib/voice.ts` transcodes to WAV PCM16 16kHz in-browser;
+  `ignis:ui-command` / `ignis:filter` / `ignis:voice-state` CustomEvents
+  fan commands out to LiveChamber/SiConsole/Insights;
+  `hooks/useMissionVoiceControl.ts` owns the recorder/uplink).
+  Offline fallback mirrors
   the same fitted model via `src/lib/risk.ts` + `src/lib/dashboard.ts`;
   live mode proxies `/api` to :8000 (see `vite.config.ts`).
 - `docs/` — challenge brief, ARCHITECTURE.md, NASA_PSI_REFERENCES.md,

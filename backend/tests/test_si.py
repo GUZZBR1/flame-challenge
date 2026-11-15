@@ -108,6 +108,108 @@ def test_voice_bad_state_422():
     assert r.status_code == 422
 
 
+# ---------- /api/si/voice-command — flat voice-first envelope ----------
+
+def test_voice_command_offline_flat_contract():
+    """whisper.cpp down → deterministic answer in the flat voice-command
+    envelope — navigation + simulation_commands always present keys."""
+    r = client.post(
+        "/api/si/voice-command",
+        files={"audio": ("clip.wav", io.BytesIO(b"fake-wav"), "audio/wav")},
+        data={"state": json.dumps(STATE)})
+    assert r.status_code == 200
+    j = r.json()
+    assert j["stt"] == "offline"
+    assert j["transcript"] is None
+    assert j["recommended_action"] in si.ACTION_CODES
+    # flat envelope — the keys the HUD binds to
+    assert "briefing" in j and "navigation" in j
+    assert "simulation_commands" in j and "ui_command" in j
+    assert j["mode"] == "offline-fallback"
+
+
+def test_voice_command_containment_mirrors_action():
+    """High-flow high-O2 state → the offline policy cuts ventilation; the
+    voice contract must expose it as an executable containment command."""
+    r = client.post(
+        "/api/si/voice-command",
+        files={"audio": ("clip.wav", io.BytesIO(b"fake-wav"), "audio/wav")},
+        data={"state": json.dumps(STATE)})  # 30% o2 · 20 cm/s
+    j = r.json()
+    assert j["recommended_action"] == "CUT_VENTILATION"
+    assert j["ui_command"]["set_airflow_cm_s"] == 0.0
+    sim = j["simulation_commands"]
+    assert sim is not None
+    assert sim["trigger_containment"] == "CUT_VENTILATION"
+    assert sim["set_airflow_cm_s"] == 0.0
+    # offline policy that acts on the sim navigates to the chamber
+    assert j["navigation"]["scroll_to_section"] == "chamber"
+
+
+def test_voice_command_bad_state_422():
+    r = client.post(
+        "/api/si/voice-command",
+        files={"audio": ("clip.wav", io.BytesIO(b"x"), "audio/wav")},
+        data={"state": "{oops"})
+    assert r.status_code == 422
+
+
+def test_normalize_llm_simulation_commands_fills_ui():
+    """An LLM that only emits the voice surface still produces a working
+    ui_command for the console."""
+    resp = si.CopilotResponse(
+        briefing="cut flow now",
+        recommended_action="CUT_VENTILATION",
+        simulation_commands={
+            "set_airflow_cm_s": 0.0,
+            "trigger_containment": "CUT_VENTILATION",
+        },
+    ).normalize()
+    assert resp.ui_command is not None
+    assert resp.ui_command.set_airflow_cm_s == 0.0
+
+
+def test_normalize_ui_command_fills_simulation():
+    """Legacy ui_command-only answers (LLM ignores the new keys) still
+    surface the executable voice contract."""
+    resp = si.CopilotResponse(
+        briefing="drop o2",
+        recommended_action="REDUCE_O2",
+        ui_command={"set_o2_percent": 18.0},
+    ).normalize()
+    sim = resp.simulation_commands
+    assert sim is not None
+    assert sim.set_o2_percent == 18.0
+    assert sim.trigger_containment == "REDUCE_O2"
+
+
+def test_preset_alias_resolution():
+    assert si.resolve_preset("FLEX") == "flex-2"
+    assert si.resolve_preset("saffire") == "saffire"
+    assert si.resolve_preset("ACME_EFIELD") == "acme"
+    assert si.resolve_preset("SAME_R") == "same"
+    # historical scenarios are not chamber rigs
+    assert si.resolve_preset("MIR_1997") is None
+    assert si.resolve_preset("APOLLO_1") is None
+    assert si.resolve_preset("not-a-rig") is None
+
+
+def test_simulation_commands_validators():
+    sim = si.SimulationCommands(load_preset="FLEX",
+                                trigger_containment="reduce_o2")
+    assert sim.load_preset == "flex-2"
+    assert sim.trigger_containment == "REDUCE_O2"
+    with pytest.raises(Exception):
+        si.SimulationCommands(trigger_containment="VENT_EVERYTHING")
+
+
+def test_gravity_regime_mapping():
+    assert si.gravity_regime(0.0) == "microgravity"
+    assert si.gravity_regime(0.17) == "lunar"
+    assert si.gravity_regime(0.38) == "martian"
+    assert si.gravity_regime(1.0) == "earth"
+
+
 def test_llm_malformed_json_falls_back(monkeypatch):
     """A reachable gateway returning garbage must not reach the client."""
     class _Msg:

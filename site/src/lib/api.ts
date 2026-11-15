@@ -75,6 +75,15 @@ export interface SiUiCommand {
   focus_module?: string | null
 }
 
+/** 'ignis:ui-command' CustomEvent payload — SiUiCommand plus the
+ *  voice-command extras and dispatch bookkeeping fields. */
+export interface SiUiCommandEvent extends SiUiCommand {
+  set_gravity?: string | null
+  trigger_containment?: string | null
+  __investigation?: string | null
+  __origin?: string
+}
+
 export interface SiEvidence {
   runId: string
   accession: string
@@ -90,6 +99,8 @@ export interface SiResponse {
   briefing: string
   recommended_action: string
   ui_command: SiUiCommand | null
+  navigation?: SiNavigation | null
+  simulation_commands?: SiSimulationCommands | null
   mode: 'llm' | 'offline-fallback' | 'local-fallback'
   model: string
   engine?: string
@@ -193,6 +204,53 @@ export async function siVoice(
   fd.append('audio', audio, 'clip.webm')
   fd.append('state', JSON.stringify(state))
   return post<SiVoiceResult>('/api/si/voice', fd, SI_TIMEOUT_MS + 25000)
+}
+
+/* ---------- voice-first mission control (/api/si/voice-command) ---------- */
+
+export interface SiNavigation {
+  scroll_to_section?: string | null
+  active_filter_tag?: string | null
+}
+
+export interface SiSimulationCommands {
+  load_preset?: string | null
+  set_o2_percent?: number | null
+  set_airflow_cm_s?: number | null
+  set_gravity_g?: number | null
+  trigger_containment?: string | null
+}
+
+/** Flat command envelope — the copilot response fields plus the
+ *  voice-command surface (transcript/stt + required nav/sim keys). */
+export interface SiVoiceCommandResult extends SiResponse {
+  transcript: string | null
+  stt: 'whisper.cpp' | 'offline'
+  navigation: SiNavigation | null
+  simulation_commands: SiSimulationCommands | null
+}
+
+export async function siVoiceCommand(
+  wav: Blob,
+  state: SiChamberState,
+): Promise<SiVoiceCommandResult | null> {
+  const fd = new FormData()
+  fd.append('audio', wav, 'clip.wav')
+  fd.append('state', JSON.stringify(state))
+  // backend worst case ≈ STT timeout (45 s) + LLM timeout (12 s)
+  return post<SiVoiceCommandResult>(
+    '/api/si/voice-command',
+    fd,
+    SI_TIMEOUT_MS + 50000,
+  )
+}
+
+/** mirror of services/si_copilot.gravity_regime — g fraction -> label */
+export function gravityRegime(g: number): string {
+  if (g <= 0.02) return 'microgravity'
+  if (g < 0.3) return 'lunar'
+  if (g < 0.7) return 'martian'
+  return 'earth'
 }
 
 /* ---------- materials index ---------- */

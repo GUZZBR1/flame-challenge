@@ -206,7 +206,7 @@ export default function Dashboard() {
 
   return (
     <section
-      id="dashboard"
+      id="leaderboard"
       ref={rootRef}
       aria-labelledby="dashboard-title"
       className="relative px-5 pb-28 pt-6 sm:px-10 lg:px-16"
