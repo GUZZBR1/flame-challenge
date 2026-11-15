@@ -284,6 +284,12 @@ export default function SimDeck() {
             })}
           </div>
         </section>
+
+        <div className="relative mt-8 flex justify-end">
+          <Button variant="glass" onClick={navigateBack}>
+            Back to overview <IconArrowLeft size={16} />
+          </Button>
+        </div>
       </div>
     </div>
   )
