@@ -554,7 +554,13 @@ button.pill:active { transform: translateY(0) scale(.96); }
   }
 }
 
-/* geometric cuts on the mission media plates — diagonal leading edge
-   on the feature, parallelogram on the rail strips */
-.clip-diag-l { clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%); }
-.clip-para   { clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
+/* dissolve-in masks — mission media floats loose on the page instead
+   of sitting inside a clipped rectangle */
+.mask-oval {
+  -webkit-mask-image: radial-gradient(82% 78% at 50% 50%, black 55%, transparent 100%);
+  mask-image: radial-gradient(82% 78% at 50% 50%, black 55%, transparent 100%);
+}
+.mask-oval-wide {
+  -webkit-mask-image: radial-gradient(105% 115% at 50% 50%, black 52%, transparent 100%);
+  mask-image: radial-gradient(105% 115% at 50% 50%, black 52%, transparent 100%);
+}

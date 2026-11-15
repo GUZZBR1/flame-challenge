@@ -276,12 +276,12 @@ export default function SimDeck() {
               {activeMission.id === FEATURE.id && (
                 <span className="mt-4 block"><ActiveMark /></span>
               )}
-              <span className="clip-diag-l relative mt-8 block min-h-[220px] flex-1 overflow-hidden sm:min-h-[300px]">
+              <span className="relative mt-8 block min-h-[220px] flex-1 sm:min-h-[300px]">
                 <img
                   src={MISSION_MEDIA.feature.src}
                   alt={MISSION_MEDIA.feature.alt}
                   loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  className="mask-oval absolute inset-0 h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 />
               </span>
             </button>
@@ -303,10 +303,10 @@ export default function SimDeck() {
                     {t.name}
                   </span>
                   {isActive && <span className="mt-3 block"><ActiveMark /></span>}
-                  <span className="clip-para mt-4 block h-28 overflow-hidden sm:h-32">
+                  <span className="mt-4 block h-28 sm:h-32">
                     {media.type === 'video' ? (
                       <video
-                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        className="mask-oval-wide h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         src={media.src}
                         poster={media.poster}
                         aria-label={media.alt}
@@ -318,7 +318,7 @@ export default function SimDeck() {
                       />
                     ) : (
                       <img
-                        className="h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                        className="mask-oval-wide h-full w-full object-cover saturate-[.9] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         src={media.src}
                         alt={media.alt}
                         loading="lazy"
