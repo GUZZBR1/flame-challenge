@@ -9,16 +9,8 @@ import { cn } from '../lib/cn'
 import { IconArrowUpRight } from './Icons'
 import KeyedFlame from './KeyedFlame'
 import { HoverVideo } from './SimDeck'
-import MissionWaffleMatrix, { type MatrixFocus } from './MissionWaffleMatrix'
+import MissionReportsPanel from './MissionReportsPanel'
 import Footer from './Footer'
-
-/** findings that map onto a field the run matrix actually carries */
-const FINDING_FOCUS: Record<string, MatrixFocus> = {
-  'finding-loc-persistence': { label: 'flame persists below Earth LOC — runs under 21% O₂', test: (r) => r.o2Pct < 21 },
-  'finding-cool-flames': { label: 'silent cool-flame post-flameout — cool-flame runs', test: (r) => r.category === 'cool-flame' },
-  'finding-exploration-atmospheres': { label: '34% O₂ exploration atmospheres — runs at 34% O₂', test: (r) => r.o2Pct >= 34 },
-  'finding-partial-gravity': { label: 'lunar & martian partial-g — partial-gravity runs', test: (r) => r.gravity === 'lunar' || r.gravity === 'mars' },
-}
 
 /** one official NASA clip per finding, in HEADLINE_EXPLORATION_FINDINGS order */
 const FINDING_MEDIA = [
@@ -63,7 +55,6 @@ function SectionHead({ id, title }: { id: string; title: string }) {
 export default function Dashboard() {
   const rootRef = useRef<HTMLDivElement>(null)
   const [finding, setFinding] = useState(0)
-  const [focusId, setFocusId] = useState<string | null>(null)
 
   useEffect(() => {
     const root = rootRef.current
@@ -80,12 +71,6 @@ export default function Dashboard() {
   }, [])
 
   const f = HEADLINE_EXPLORATION_FINDINGS[finding]
-  const focus = focusId ? FINDING_FOCUS[focusId] : null
-  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  const traceFinding = () => {
-    setFocusId(f.id)
-    scrollTo('run-matrix')
-  }
   const stats = useMemo(
     () => [
       [DATASET_STATS.investigations, 'investigations'],
@@ -117,7 +102,7 @@ export default function Dashboard() {
         />
 
         {/* ---- masthead ---- */}
-        <header className="relative sm:pl-[clamp(1rem,6vw,7rem)]">
+        <header className="relative">
           <div className="grid items-end gap-x-[clamp(3rem,7vw,9rem)] gap-y-8 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             <div>
               <p data-hero className="card-label !text-[color-mix(in_srgb,var(--accent)_55%,var(--ink))] dark:!text-[color-mix(in_srgb,var(--accent)_55%,var(--ink))] dark:text-accent">
@@ -169,11 +154,6 @@ export default function Dashboard() {
                 <div className="min-w-0">
                   <p className="m-0 text-body leading-[1.8] opacity-95 dark:opacity-85">{f.finding}</p>
                   <p className="mt-4 font-mono text-micro opacity-75 dark:opacity-60">{f.code} · {f.psiProof}</p>
-                  {FINDING_FOCUS[f.id] && (
-                    <button type="button" onClick={traceFinding} className={cn(blueBtn, 'mt-5')}>
-                      Trace in run matrix <span aria-hidden="true">↓</span>
-                    </button>
-                  )}
                 </div>
                 <div data-hover-media className="min-w-0">
                   <div
@@ -261,12 +241,9 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* ---- 02 run matrix ---- */}
-        <section className="relative mt-16 sm:mt-20" aria-label="Run matrix">
-          <SectionHead id="run-matrix" title="Every run, one square" />
-          <div className="mt-8">
-            <MissionWaffleMatrix focus={focus} onClearFocus={() => setFocusId(null)} />
-          </div>
+        {/* ---- 02 generated mission reports ---- */}
+        <section className="relative mt-16 sm:mt-20" aria-label="Generated mission reports">
+          <MissionReportsPanel />
         </section>
       </div>
       <Footer />
