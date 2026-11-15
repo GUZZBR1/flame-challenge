@@ -78,7 +78,7 @@ const MISSION_PRESETS: MissionPreset[] = [
     o2Pct: 34,
     flowCms: 1.5,
     gravity: 'lunar',
-    investigationId: 'saffire-4',
+    investigationId: 'flare',
     materialId: 'pmma',
     description: 'Enriched Exploration Atmosphere in lunar habitat conduit. Severe accelerated flashover risk.',
     prompt: 'Simulate Artemis Lunar Airlock: 34% O2 with 1.5 cm/s flow under 0.16g Moon gravity.',
@@ -92,7 +92,7 @@ const MISSION_PRESETS: MissionPreset[] = [
     o2Pct: 21,
     flowCms: 20.0,
     gravity: 'microgravity',
-    investigationId: 'saffire-4',
+    investigationId: 'saffire',
     materialId: 'cotton',
     description: 'Full-scale fabric burn in Cygnus cargo vehicle driven by forced ventilation airflow.',
     prompt: 'Simulate Cygnus SAFFIRE uncrewed burn: 21% O2 with 20 cm/s forced ventilation.',
@@ -120,7 +120,7 @@ const MISSION_PRESETS: MissionPreset[] = [
     o2Pct: 21,
     flowCms: 0.0,
     gravity: 'microgravity',
-    investigationId: 'sofie',
+    investigationId: 'sofie-gel',
     materialId: 'pmma',
     description: 'Stagnant unventilated module pocket. Flammable vapor buildup without buoyant dissipation.',
     prompt: 'Simulate Mars Transit module with stagnant 0 cm/s airflow in microgravity.',
@@ -134,7 +134,7 @@ const MISSION_PRESETS: MissionPreset[] = [
     o2Pct: 28,
     flowCms: 8.0,
     gravity: 'microgravity',
-    investigationId: 'saffire-4',
+    investigationId: 'sofie-gel',
     materialId: 'pmma',
     description: 'Solid oxygen generator (Vika) canister breach spewing blowtorch flame in microgravity.',
     prompt: 'Analyze Mir 1997 fire: 28% O2 with 8 cm/s ventilation from chemical oxygen canister breach.',
@@ -148,7 +148,7 @@ const MISSION_PRESETS: MissionPreset[] = [
     o2Pct: 40,
     flowCms: 5.0,
     gravity: 'earth',
-    investigationId: 'saffire-4',
+    investigationId: 'flare',
     materialId: 'pmma',
     description: 'Pure high-pressure oxygen atmosphere resulting in catastrophic rapid flashover.',
     prompt: 'Analyze Apollo 1 pure oxygen risk conditions with high oxidizer fraction.',
@@ -557,6 +557,11 @@ export default function SimDeck() {
 
   const save = (message: Message): string | undefined => {
     if (!message.response || !message.prompt) return
+    if (message.dashboardId) return message.dashboardId
+    if (latestResponse.current?.messageId === message.id) {
+      setNotice('Simulation is still running in the chamber. Report will compile automatically on completion.')
+      return
+    }
     const scenario = cloneScenario(message.scenario ?? chamberRef.current)
     const report = generateDashboard(message.prompt, message.response, undefined, scenario, scenario)
     setMessages((all) =>

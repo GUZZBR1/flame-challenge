@@ -250,14 +250,14 @@ export default function CrewTimelinePanel({
               </>
             ) : (
               <>
-                <IconRotateCcw size={14} /> [Counterfactual: O que deveriam ter feito]
+                <IconRotateCcw size={14} /> [Counterfactual: Apply Recovery Protocol]
               </>
             )}
           </Button>
         </div>
         {counterfactualApplied && (
           <div className="mt-3 border-t border-cyan-500/20 pt-3 text-xs font-medium text-cyan-300">
-            ✓ Delta apurado: {counterfactual.outcomeDelta} ({counterfactual.riskReductionPct}% de redução de risco comprovada pelo solver C++20).
+            ✓ Measured Delta: {counterfactual.outcomeDelta} ({counterfactual.riskReductionPct}% risk reduction validated by C++20 physics solver).
           </div>
         )}
       </div>

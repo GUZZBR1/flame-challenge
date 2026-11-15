@@ -145,7 +145,9 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
                 </span>
               </div>
               <div className="mt-1 font-mono text-xs opacity-65">
-                95% Conformal Confidence: [{rubric.rank.uncertaintyBand.low}%, {rubric.rank.uncertaintyBand.high}%]
+                {rubric.rank.uncertaintyBand
+                  ? `${Math.round((rubric.rank.uncertaintyBand.level ?? 0.9) * 100)}% Conformal Confidence: [${rubric.rank.uncertaintyBand.low}%, ${rubric.rank.uncertaintyBand.high}%]`
+                  : 'Conformal bounds: uncalibrated'}
               </div>
             </div>
             <div className="mt-4 border-t border-[var(--edge)] pt-3">
@@ -200,14 +202,15 @@ function ReportCard({ item }: { item: GeneratedDashboard }) {
       <div>
         <CounterfactualTrackCard
           scenarioTitle={spec.title}
-          originalAction={spec.crewImpact.causalLog[2]?.action ?? 'Manter exaustão forçada sem isolamento térmico'}
+          originalAction={spec.crewImpact.causalLog[2]?.action ?? 'Maintain forced ventilation without thermal isolation'}
           originalIntegrityPct={rubric.rank.level === 'critical' ? 18 : 28}
-          originalCasualties={rubric.rank.level === 'critical' ? '1 Baixa Grave / Compartimento Brechado' : 'Intoxicação por Fumaça'}
+          originalCasualties={rubric.rank.level === 'critical' ? '1 Severe Casualty / Compartment Breached' : 'Smoke Inhalation Incident'}
           siProtocolAction={rubric.interpret.containmentDoctrine}
           siProtocolIntegrityPct={88}
-          siProtocolCasualties="Zero Baixas · Módulo Preservado a 100%"
+          siProtocolCasualties="Zero Casualties · Module 100% Preserved"
           recommendedFlowCms={0.0}
           investigationId={rubric.summarize.investigationId}
+          baselineO2={rubric.summarize.o2Pct}
         />
       </div>
 

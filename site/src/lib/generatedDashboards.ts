@@ -1,6 +1,8 @@
 import type { ChamberState } from './live'
 import type { SiChamberState, SiResponse } from './api'
 import type { CrewMember, CausalEvent, CounterfactualDoctrine, MissionOutcomeStatus } from '../components/CrewTimelinePanel'
+import { riskIndexLocal } from './risk'
+import type { RiskUncertainty } from './risk'
 
 export interface HeadlineFinding {
   id: string
@@ -85,7 +87,7 @@ export interface MissionReportSpec {
     rank: {
       compositeRisk: number
       level: 'low' | 'moderate' | 'high' | 'critical'
-      uncertaintyBand: { low: number; high: number }
+      uncertaintyBand?: { low: number; high: number; level?: number } | null
       components: {
         flammability: number
         hiddenHazard: number
@@ -145,7 +147,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
     prompt: 'ARTEMIS-01 // Lunar Habitat Airlock (34% O₂, 8.2 psia, 0.16g)',
     engineGravityMode: 'Lunar 0.16g surface gravity coupled with Artemis 8.2 psia atmosphere',
     scenario: {
-      investigationId: 'saffire-4',
+      investigationId: 'flare',
       materialId: 'pmma',
       o2Pct: 34,
       flowCms: 1.5,
@@ -153,7 +155,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
       sealed: false,
     },
     analysisScenario: {
-      investigationId: 'saffire-4',
+      investigationId: 'flare',
       materialId: 'pmma',
       o2Pct: 34,
       flowCms: 1.5,
@@ -177,28 +179,28 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
       },
       evidence: [
         {
-          runId: 'psi-saffire4-012',
-          accession: 'PSI-SAFFIRE-IV-012',
-          investigationId: 'saffire-4',
-          fuel: 'PMMA/Nomex Blend',
+          runId: 'psi-flare-012',
+          accession: 'PSI-FLARE-012',
+          investigationId: 'flare',
+          fuel: 'PMMA Solid Slab',
           outcome: 'rapid forward spread',
           similarity: 96,
-          verified: true,
+          verified: false,
           sourceUrl: 'https://psi.nasa.gov/physci/repo',
         },
         {
           runId: 'psi-sofie-044',
           accession: 'PSI-SoFIE-GEL-044',
-          investigationId: 'sofie',
+          investigationId: 'sofie-gel',
           fuel: 'PMMA Solid Slab',
           outcome: 'boundary persistence',
           similarity: 91,
-          verified: true,
+          verified: false,
           sourceUrl: 'https://psi.nasa.gov/physci/repo',
         },
       ],
       simulation_commands: {
-        load_preset: 'saffire-4',
+        load_preset: 'flare',
         set_o2_percent: 34,
         set_airflow_cm_s: 1.5,
       },
@@ -225,12 +227,12 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
       missionTag: 'Artemis Base Camp · Lunar Surface (0.16g)',
       rubric: {
         summarize: {
-          investigationId: 'saffire-4',
+          investigationId: 'flare',
           materialId: 'PMMA / Spacecraft Wiring Duct',
           abstract:
-            'Evaluates the severe acceleration of flame spread inside an Artemis airlock conduit operating under Exploration Atmosphere (34.0% O₂, 56.5 kPa, 0.16g). Saffire-IV flight data confirms high-speed upward and cross-duct flashover.',
-          psiAccessions: ['PSI-SAFFIRE-IV-012', 'PSI-SoFIE-GEL-044', 'NTRS-20220014881'],
-          paperCitations: ['NASA TP-2021-00234: Saffire Spacecraft Fire Safety Demonstration', 'AIAA 2023-1892'],
+            'Evaluates the severe acceleration of flame spread inside an Artemis airlock conduit operating under Exploration Atmosphere (34.0% O₂, 56.5 kPa, 0.16g). NASA FLARE and SoFIE data confirm partial-gravity buoyant chimney flow.',
+          psiAccessions: ['PSI-FLARE-012', 'PSI-SoFIE-GEL-044', 'NTRS-20220014881'],
+          paperCitations: ['NASA TP-2021-00234: Flame Design Spacecraft Fire Safety Demonstration', 'AIAA 2023-1892'],
           pressureKpa: 56.5,
           gravityRegime: 'Lunar 0.16g',
           o2Pct: 34.0,
@@ -239,7 +241,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
         rank: {
           compositeRisk: 84,
           level: 'critical',
-          uncertaintyBand: { low: 79, high: 88 },
+          uncertaintyBand: { low: 79, high: 88, level: 0.95 },
           components: {
             flammability: 92,
             hiddenHazard: 74,
@@ -363,7 +365,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
           fuel: 'n-Heptane Droplet',
           outcome: 'cool flame sustained 4.8s',
           similarity: 99,
-          verified: true,
+          verified: false,
           sourceUrl: 'https://psi.nasa.gov/physci/repo',
         },
         {
@@ -373,7 +375,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
           fuel: 'n-Octane / Heptane',
           outcome: 'second-stage extinction',
           similarity: 94,
-          verified: true,
+          verified: false,
           sourceUrl: 'https://psi.nasa.gov/physci/repo',
         },
       ],
@@ -419,7 +421,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
         rank: {
           compositeRisk: 62,
           level: 'high',
-          uncertaintyBand: { low: 57, high: 66 },
+          uncertaintyBand: { low: 57, high: 66, level: 0.95 },
           components: {
             flammability: 54,
             hiddenHazard: 96,
@@ -504,7 +506,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
     prompt: 'CYGNUS-SAF-04 // Forced-Flow Solid Spread & Crew Containment',
     engineGravityMode: 'Microgravity (0g) inside uncrewed Cygnus Pressurized Cargo Module',
     scenario: {
-      investigationId: 'saffire-4',
+      investigationId: 'saffire',
       materialId: 'cotton',
       o2Pct: 21,
       flowCms: 20.0,
@@ -512,7 +514,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
       sealed: false,
     },
     analysisScenario: {
-      investigationId: 'saffire-4',
+      investigationId: 'saffire',
       materialId: 'cotton',
       o2Pct: 21,
       flowCms: 20.0,
@@ -538,16 +540,16 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
         {
           runId: 'psi-saffire-iv-004',
           accession: 'PSI-SAFFIRE-IV-004',
-          investigationId: 'saffire-4',
+          investigationId: 'saffire',
           fuel: 'SIBAL Fabric (Cotton/Fiberglass)',
           outcome: 'sustained flame spread 28 cm',
           similarity: 98,
-          verified: true,
+          verified: false,
           sourceUrl: 'https://psi.nasa.gov/physci/repo',
         },
       ],
       simulation_commands: {
-        load_preset: 'saffire-4',
+        load_preset: 'saffire',
         set_o2_percent: 21,
         set_airflow_cm_s: 20.0,
       },
@@ -574,7 +576,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
       missionTag: 'Cygnus PCM · Uncrewed Post-Departure Test (0g)',
       rubric: {
         summarize: {
-          investigationId: 'saffire-4',
+          investigationId: 'saffire',
           materialId: 'SIBAL Spacecraft Cotton / Fiberglass Blend',
           abstract:
             'Demonstrates how continuous ventilation in microgravity sustains flame spread on meter-scale fabrics that would otherwise self-extinguish in stagnant 0g conditions. Proves that ventilation velocity is the primary driver of spacecraft structural fire hazard.',
@@ -588,7 +590,7 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
         rank: {
           compositeRisk: 77,
           level: 'critical',
-          uncertaintyBand: { low: 73, high: 82 },
+          uncertaintyBand: { low: 73, high: 82, level: 0.95 },
           components: {
             flammability: 88,
             hiddenHazard: 68,
@@ -673,8 +675,41 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
 function read(): GeneratedDashboard[] {
   try {
     const raw = localStorage.getItem(STORE_KEY)
-    const parsed = raw ? (JSON.parse(raw) as GeneratedDashboard[]) : []
-    const userReports = Array.isArray(parsed) ? parsed : []
+    let userReports: GeneratedDashboard[] = []
+    if (raw) {
+      const parsed = JSON.parse(raw) as GeneratedDashboard[]
+      if (Array.isArray(parsed)) userReports = parsed
+    } else {
+      // Migrate v1 generated dashboards if present
+      const rawV1 = localStorage.getItem('ignis-generated-dashboards-v1')
+      if (rawV1) {
+        try {
+          const parsedV1 = JSON.parse(rawV1)
+          if (Array.isArray(parsedV1)) {
+            userReports = parsedV1.map((item: any) => {
+              if (item.spec) return item as GeneratedDashboard
+              const spec = compileMissionReportSpec(
+                item.prompt || 'Migrated Mission Report',
+                item.response || {
+                  briefing: '',
+                  recommended_action: '',
+                  evidence: [],
+                  mode: 'local-fallback',
+                  model: 'v1-migration',
+                },
+                item.run,
+                item.scenario || item.analysisScenario,
+                item.engineGravityMode,
+              )
+              return { ...item, spec } as GeneratedDashboard
+            })
+            localStorage.setItem(STORE_KEY, JSON.stringify(userReports.slice(0, MAX_ITEMS)))
+          }
+        } catch {
+          // ignore v1 migration parse error
+        }
+      }
+    }
     const seedIds = new Set(SEED_REPORTS.map((s) => s.id))
     const filteredUserReports = userReports.filter((r) => !seedIds.has(r.id))
     const combined = [...filteredUserReports, ...SEED_REPORTS].slice(0, MAX_ITEMS)
@@ -705,6 +740,18 @@ export function compileMissionReportSpec(
   const level: 'low' | 'moderate' | 'high' | 'critical' =
     riskPct >= 75 ? 'critical' : riskPct >= 50 ? 'high' : riskPct >= 30 ? 'moderate' : 'low'
 
+  const rawUncertainty = response.chamber?.uncertainty as RiskUncertainty | undefined
+  const calculatedUncertainty =
+    rawUncertainty ??
+    riskIndexLocal(material, o2, flow, scenario?.gravity ?? 'microgravity').uncertainty
+  const uncertaintyBand = calculatedUncertainty
+    ? {
+        low: Math.round(calculatedUncertainty.lower * 100),
+        high: Math.round(calculatedUncertainty.upper * 100),
+        level: calculatedUncertainty.level,
+      }
+    : null
+
   const zone: 'safe' | 'amber' | 'runaway' =
     o2 <= 13.5 ? 'safe' : o2 > 25 || flow > 12 ? 'runaway' : 'amber'
 
@@ -733,7 +780,7 @@ export function compileMissionReportSpec(
       rank: {
         compositeRisk: riskPct,
         level,
-        uncertaintyBand: { low: Math.max(0, riskPct - 5), high: Math.min(100, riskPct + 5) },
+        uncertaintyBand,
         components: {
           flammability: Math.round(riskPct * 1.05),
           hiddenHazard: run?.coolFlame ? 92 : Math.round(riskPct * 0.9),
@@ -862,7 +909,7 @@ export function exportReportMarkdown(report: GeneratedDashboard): void {
 
 ## 1. RUBRICA NASA: SUMMARIZE · RANK · INTERPRET
 
-### A. SUMMARIZE (SÍNTESE DOS DADOS NASA PSI)
+### A. SUMMARIZE (NASA PSI DATA SYNTHESIS)
 - **Investigation / Model:** ${spec.rubric.summarize.investigationId} (${spec.rubric.summarize.gravityRegime})
 - **Material Tested:** ${spec.rubric.summarize.materialId}
 - **Atmosphere Parameters:** ${spec.rubric.summarize.o2Pct}% O₂ · ${spec.rubric.summarize.flowCms} cm/s Flow · ${spec.rubric.summarize.pressureKpa} kPa
@@ -871,9 +918,13 @@ export function exportReportMarkdown(report: GeneratedDashboard): void {
 - **Corroborating NASA PSI Accessions:**
 ${spec.rubric.summarize.psiAccessions.map((acc) => `  - \`${acc}\``).join('\n') || '  - NASA PSI Microgravity Repository'}
 
-### B. RANK (ÍNDICE DE RISCO C++20 & INCERTEZA CONFORMAL)
+### B. RANK (C++20 RISK INDEX & CONFORMAL UNCERTAINTY)
 - **Composite Risk Index:** **${spec.rubric.rank.compositeRisk}%** (${spec.rubric.rank.level.toUpperCase()})
-- **Conformal Uncertainty Range (95% CI):** [${spec.rubric.rank.uncertaintyBand.low}%, ${spec.rubric.rank.uncertaintyBand.high}%]
+${
+  spec.rubric.rank.uncertaintyBand
+    ? `- **Conformal Uncertainty Range (${Math.round((spec.rubric.rank.uncertaintyBand.level ?? 0.9) * 100)}% CI):** [${spec.rubric.rank.uncertaintyBand.low}%, ${spec.rubric.rank.uncertaintyBand.high}%]`
+    : '- **Conformal Uncertainty Range:** Unavailable (uncalibrated bounds)'
+}
 - **Risk Dimension Breakdown:**
   - Flammability Potential: ${spec.rubric.rank.components.flammability}%
   - Hidden / Cool-Flame Hazard: ${spec.rubric.rank.components.hiddenHazard}%
@@ -882,7 +933,7 @@ ${spec.rubric.summarize.psiAccessions.map((acc) => `  - \`${acc}\``).join('\n') 
 - **Key SHAP Attribution Drivers:**
 ${spec.rubric.rank.shapDrivers.map((d) => `  - **${d.factor}**: ${d.delta} (${d.rationale})`).join('\n')}
 
-### C. INTERPRET (RECOMENDAÇÕES OPERACIONAIS & MITIGAÇÃO)
+### C. INTERPRET (OPERATIONAL GUIDANCE & MITIGATION)
 - **Actionable Guidance:** ${spec.rubric.interpret.actionableGuidance}
 - **Containment Doctrine:** ${spec.rubric.interpret.containmentDoctrine}
 - **Sensor & Detection Advisory:** ${spec.rubric.interpret.sensorAdvisory}

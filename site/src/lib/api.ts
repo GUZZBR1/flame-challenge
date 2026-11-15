@@ -5,6 +5,7 @@
  */
 import { riskCurveLocal, riskIndexLocal, type RiskResult, type RiskUncertainty } from './risk'
 import { blobToWavPcm16 } from './voice'
+import { apiUrl } from './apiBase'
 import snapshot from '../data/psi_snapshot.json'
 
 const TIMEOUT_MS = 1200
@@ -24,7 +25,7 @@ async function probe<T>(url: string): Promise<T | null> {
 export type EngineStatus = 'checking' | 'cpp' | 'local'
 
 export async function engineStatus(): Promise<EngineStatus> {
-  const health = await probe<{ engine?: string }>('/health')
+  const health = await probe<{ engine?: string }>(apiUrl('/health'))
   return health?.engine === 'c++' ? 'cpp' : 'local'
 }
 
@@ -35,7 +36,7 @@ export async function riskIndex(
   gravity: string,
 ): Promise<RiskResult> {
   const live = await probe<RiskResult>(
-    `/api/risk?materialId=${materialId}&o2Pct=${o2Pct}&flowCms=${flowCms}&gravity=${gravity}`,
+    apiUrl(`/api/risk?materialId=${materialId}&o2Pct=${o2Pct}&flowCms=${flowCms}&gravity=${gravity}`),
   )
   return live ?? riskIndexLocal(materialId, o2Pct, flowCms, gravity)
 }
@@ -52,7 +53,7 @@ export async function riskCurve(
   gravity: string,
 ): Promise<CurvePoint[]> {
   const live = await probe<{ points: CurvePoint[] }>(
-    `/api/risk/curve?materialId=${materialId}&flowCms=${flowCms}&gravity=${gravity}&o2Min=8&o2Max=40&step=0.5`,
+    apiUrl(`/api/risk/curve?materialId=${materialId}&flowCms=${flowCms}&gravity=${gravity}&o2Min=8&o2Max=40&step=0.5`),
   )
   return live?.points ?? riskCurveLocal(materialId, flowCms, gravity)
 }
@@ -120,8 +121,8 @@ export interface SiResponse {
 export async function siChat(message: string, state: SiChamberState): Promise<SiResponse | null> {
   try {
     const controller = new AbortController()
-    const timeout = window.setTimeout(() => controller.abort(), 8000)
-    const response = await fetch('/api/si/chat', {
+    const timeout = window.setTimeout(() => controller.abort(), 25000)
+    const response = await fetch(apiUrl('/api/si/chat'), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ message, current_chamber_state: state }),
@@ -142,13 +143,33 @@ export async function siVoice(audio: Blob, state: SiChamberState): Promise<SiRes
     form.append('audio', wav, 'clip.wav')
     form.append('state', JSON.stringify(state))
     const controller = new AbortController()
-    const timeout = window.setTimeout(() => controller.abort(), 8000)
-    const response = await fetch('/api/si/voice-command', { method: 'POST', body: form, signal: controller.signal })
+    const timeout = window.setTimeout(() => controller.abort(), 70000)
+    const response = await fetch(apiUrl('/api/si/voice-command'), { method: 'POST', body: form, signal: controller.signal })
     window.clearTimeout(timeout)
     if (response.ok) return (await response.json()) as SiResponse
-    return synthesizeLocalSiResponse('Voice scenario', state)
+    return {
+      briefing: 'Voice command service is currently unavailable or speech could not be transcribed.',
+      recommended_action: 'Use manual controls or retry voice input.',
+      ui_command: null,
+      simulation_commands: null,
+      mode: 'offline-fallback',
+      model: 'none',
+      evidence: [],
+      transcript: null,
+      stt: 'offline',
+    }
   } catch {
-    return synthesizeLocalSiResponse('Voice scenario', state)
+    return {
+      briefing: 'Voice command service is currently unreachable.',
+      recommended_action: 'Check backend connection or use manual controls.',
+      ui_command: null,
+      simulation_commands: null,
+      mode: 'offline-fallback',
+      model: 'none',
+      evidence: [],
+      transcript: null,
+      stt: 'offline',
+    }
   }
 }
 
@@ -162,19 +183,21 @@ export function synthesizeLocalSiResponse(message: string, state: SiChamberState
   let briefing = ''
   let action = ''
 
-  if (q.includes('18%') || q.includes('oxygen drops') || q.includes('drops to')) {
-    o2Pct = 18
-    invId = 'sofie'
+  const o2Match = q.match(/(\d+(?:\.\d+)?)\s*%/i)
+  const requestedO2 = o2Match ? parseFloat(o2Match[1]) : null
+
+  if (requestedO2 !== null || q.includes('oxygen drops') || q.includes('drops to') || q.includes('o2 drops')) {
+    o2Pct = requestedO2 ?? 18
+    invId = 'sofie-gel'
     materialId = 'pmma'
-    briefing =
-      'LOCAL ENGINE GROUNDED ANALYSIS (NASA PSI SoFIE-GEL): Dropping atmospheric oxygen from 21% to 18% shifts PMMA solid combustion closer to the microgravity Limiting Oxygen Concentration (LOC ≈ 12.5%). Flame spread rate decreases by approximately 45%, but the flame continues to propagate via low-speed diffusion without extinguishing.'
-    action = 'Throttle cabin ventilation to < 1 cm/s to induce radiative extinction below 15% O₂.'
+    briefing = `LOCAL ENGINE GROUNDED ANALYSIS (NASA PSI SoFIE-GEL): Modulating atmospheric oxygen to ${o2Pct}% O₂ shifts PMMA solid combustion relative to the microgravity Limiting Oxygen Concentration (LOC ≈ 15.0%). Flame spread rate scales with oxidizer availability while sustaining low-speed diffusion kinetics.`
+    action = 'Throttle cabin ventilation to < 1 cm/s to induce radiative extinction below LOC.'
   } else if (q.includes('cotton') || q.includes('compare cotton') || q.includes('earth gravity')) {
-    invId = 'saffire-4'
+    invId = 'saffire'
     materialId = 'cotton'
     flowCms = 20.0
     briefing =
-      'LOCAL ENGINE GROUNDED ANALYSIS (NASA SAFFIRE-IV vs Earth 1g): In Earth 1g, natural buoyancy causes rapid vertical convective flame acceleration with a tall teardrop plume. In microgravity, buoyancy is absent; however, forced cabin airflow at 20 cm/s continuously sweeps oxidizer across the SIBAL cotton fabric, creating sustained steady spread with thick char formation.'
+      'LOCAL ENGINE GROUNDED ANALYSIS (NASA SAFFIRE vs Earth 1g): In Earth 1g, natural buoyancy causes rapid vertical convective flame acceleration with a tall teardrop plume. In microgravity, buoyancy is absent; however, forced cabin airflow at 20 cm/s continuously sweeps oxidizer across the SIBAL cotton fabric, creating sustained steady spread with thick char formation.'
     action = 'Isolate compartment air ducts immediately to cut forced convective flow.'
   } else if (q.includes('hidden flame') || q.includes('cool flame') || q.includes('incidents')) {
     invId = 'flex-2'
@@ -194,12 +217,12 @@ export function synthesizeLocalSiResponse(message: string, state: SiChamberState
   const evidence: SiEvidence[] = [
     {
       runId: `psi-${invId}-local`,
-      accession: `PSI-${invId.toUpperCase()}-VERIFIED`,
+      accession: `PSI-${invId.toUpperCase()}-SYNTH`,
       investigationId: invId,
       fuel: materialId,
-      outcome: 'grounded physical solver match',
-      similarity: 94,
-      verified: true,
+      outcome: 'grounded physical solver calculation',
+      similarity: 88,
+      verified: false,
       sourceUrl: 'https://psi.nasa.gov/physci/repo',
       o2Pct,
       flowCms,
@@ -228,6 +251,7 @@ export function synthesizeLocalSiResponse(message: string, state: SiChamberState
       o2Pct,
       flowCms,
       gravity,
+      uncertainty: riskRes.uncertainty,
     },
     evidence,
   }
@@ -258,7 +282,7 @@ export function investigationDefaultFlow(id: string, specs: Record<string, Inves
 }
 
 export async function materialsIndex(): Promise<Record<string, InvestigationSpec>> {
-  const live = await probe<{ investigations: Record<string, InvestigationSpec> }>('/api/materials')
+  const live = await probe<{ investigations: Record<string, InvestigationSpec> }>(apiUrl('/api/materials'))
   return live?.investigations ?? FALLBACK_INVESTIGATIONS
 }
 
@@ -277,7 +301,7 @@ export const FALLBACK_INVESTIGATIONS: Record<string, InvestigationSpec> = {
 
 export async function siNeighbors(materialId: string, o2Pct: number, flowCms: number): Promise<SiEvidence[] | null> {
   const live = await probe<{ neighbors: SiEvidence[] }>(
-    `/api/neighbors?materialId=${encodeURIComponent(materialId)}&o2Pct=${o2Pct}&flowCms=${flowCms}&k=3`,
+    apiUrl(`/api/neighbors?materialId=${encodeURIComponent(materialId)}&o2Pct=${o2Pct}&flowCms=${flowCms}&k=3`),
   )
   return live?.neighbors ?? null
 }
@@ -291,7 +315,7 @@ export async function riskRank(
   top = 8,
 ): Promise<{ ranked: RiskResult[]; engine: string } | null> {
   const live = await probe<{ ranked?: RiskResult[]; engine?: string }>(
-    `/api/risk/rank?o2Pct=${o2Pct}&flowCms=${flowCms}&gravity=${gravity}&top=${top}`,
+    apiUrl(`/api/risk/rank?o2Pct=${o2Pct}&flowCms=${flowCms}&gravity=${gravity}&top=${top}`),
   )
   return live?.ranked
     ? { ranked: live.ranked, engine: live.engine ?? 'api' }
@@ -342,7 +366,7 @@ export async function decisionCards(
   gravity: string,
 ): Promise<DecisionPayload | null> {
   return probe<DecisionPayload>(
-    `/api/decision-cards?materialId=${materialId}&o2Pct=${o2Pct}&flowCms=${flowCms}&gravity=${gravity}`,
+    apiUrl(`/api/decision-cards?materialId=${materialId}&o2Pct=${o2Pct}&flowCms=${flowCms}&gravity=${gravity}`),
   )
 }
 
@@ -421,7 +445,7 @@ export async function investigations(): Promise<{
   live: boolean
 }> {
   const live = await probe<{ weights: Record<string, number>; items: InvestigationCard[] }>(
-    '/api/investigations',
+    apiUrl('/api/investigations'),
   )
   return live ? { ...live, live: true } : { ...snap.leaderboard, live: false }
 }
@@ -429,7 +453,7 @@ export async function investigations(): Promise<{
 export async function investigationDetail(
   id: string,
 ): Promise<InvestigationDetail | null> {
-  const live = await probe<InvestigationDetail>(`/api/investigations/${id}`)
+  const live = await probe<InvestigationDetail>(apiUrl(`/api/investigations/${id}`))
   return live ?? snap.details[id] ?? null
 }
 
@@ -438,6 +462,6 @@ export async function insights(): Promise<{
   items: Insight[]
   live: boolean
 }> {
-  const live = await probe<{ labeledRuns: number; items: Insight[] }>('/api/insights')
+  const live = await probe<{ labeledRuns: number; items: Insight[] }>(apiUrl('/api/insights'))
   return live ? { ...live, live: true } : { ...snap.insights, live: false }
 }

@@ -122,11 +122,11 @@ export default function MissionWaffleMatrix() {
   const handleSimulate = (run: WaffleRun) => {
     const invMap: Record<string, string> = {
       'FLEX-2': 'flex-2',
-      'SAFFIRE-IV': 'saffire-4',
-      'SAME-R': 'same-r',
-      'BASS-II': 'bass-2',
+      'SAFFIRE-IV': 'saffire',
+      'SAME-R': 'same',
+      'BASS-II': 'bass-ii',
       'ACME': 'acme',
-      'SoFIE': 'sofie',
+      'SoFIE': 'sofie-gel',
     }
     const presetId = invMap[run.investigation] ?? 'flex-2'
     const commandSet = {

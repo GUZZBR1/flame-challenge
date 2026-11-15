@@ -124,13 +124,21 @@ export default function LiveChamber({
 
   useEffect(() => stop, [stop])
 
+  const bootedRef = useRef(false)
+  const runRef = useRef(run)
+  useEffect(() => {
+    runRef.current = run
+  }, [run])
+
   // Auto-seed boot run on mount
   useEffect(() => {
+    if (bootedRef.current) return
+    bootedRef.current = true
     const timer = setTimeout(() => {
-      run()
+      runRef.current()
     }, 250)
     return () => clearTimeout(timer)
-  }, [run])
+  }, [])
 
   const invRef = useRef(inv)
   useEffect(() => {
@@ -167,6 +175,9 @@ export default function LiveChamber({
       }
       if (cmd.trigger_containment) {
         setSealed(true)
+        if (typeof cmd.set_o2_percent !== 'number') {
+          setO2(11.5)
+        }
         touched = true
       }
       if (touched && cmd.__run) setRetuneTick((tick) => tick + 1)
@@ -223,7 +234,7 @@ export default function LiveChamber({
       return
     }
 
-    const isCool = f.coolFlame || f.regime === 2
+    const isCool = f.coolFlame || (f.model === 'droplet' && f.regime === 2)
     const showInvisible = isCool && sensor === 'visible'
 
     // Helper to draw Microgravity Flame
@@ -391,7 +402,7 @@ export default function LiveChamber({
     : '—'
 
   const invLabel = CHAMBER_INVESTIGATIONS.find((i) => i.id === inv)?.label ?? inv
-  const isCoolFlame = frame?.coolFlame || frame?.regime === 2
+  const isCoolFlame = frame?.coolFlame || (frame?.model === 'droplet' && frame?.regime === 2)
 
   return (
     <section id="chamber" className={`relative scroll-mt-24 ${stage ? '' : 'px-5 pb-28 pt-6 sm:px-10 lg:px-16'}`}>

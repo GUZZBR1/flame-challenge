@@ -14,6 +14,7 @@ interface CounterfactualTrackCardProps {
   siProtocolCasualties?: string
   recommendedFlowCms?: number
   investigationId?: string
+  baselineO2?: number
 }
 
 /**
@@ -24,14 +25,15 @@ interface CounterfactualTrackCardProps {
  */
 export default function CounterfactualTrackCard({
   scenarioTitle = 'Artemis Airlock Smolder Incident',
-  originalAction = 'Manter exaustão a 20 cm/s tentando limpar fumaça & inspeção visual',
+  originalAction = 'Maintain 20 cm/s ventilation attempting smoke clearance & visual inspection',
   originalIntegrityPct = 19,
-  originalCasualties = '1 Baixa Grave (Intoxicação/Queimadura)',
-  siProtocolAction = 'Corte imediato de ventilação (V_flow = 0 cm/s) + Inertização N₂ + varredura térmica UV',
+  originalCasualties = '1 Severe Casualty (Smoke Inhalation / Flash Burn)',
+  siProtocolAction = 'Immediate ventilation cutoff (V_flow = 0 cm/s) + N₂ inerting + UV thermal radiometric scan',
   siProtocolIntegrityPct = 86,
-  siProtocolCasualties = 'Zero Baixas · Módulo Preservado',
+  siProtocolCasualties = 'Zero Casualties · Module Preserved',
   recommendedFlowCms = 0.0,
-  investigationId = 'saffire-4',
+  investigationId = 'saffire',
+  baselineO2,
 }: CounterfactualTrackCardProps) {
   const [dispatched, setDispatched] = useState(false)
 
@@ -42,6 +44,7 @@ export default function CounterfactualTrackCard({
       trigger_containment: 'cabin_seal_n2_purge',
       __investigation: investigationId,
       __run: true,
+      ...(typeof baselineO2 === 'number' ? { set_o2_percent: baselineO2 } : {}),
     }
     emitSimulationCommands(commandSet, 'counterfactual-track', investigationId)
     window.dispatchEvent(
@@ -51,6 +54,7 @@ export default function CounterfactualTrackCard({
           set_airflow_cm_s: recommendedFlowCms,
           trigger_containment: 'cabin_seal_n2_purge',
           __run: true,
+          ...(typeof baselineO2 === 'number' ? { set_o2_percent: baselineO2 } : {}),
         },
       }),
     )
