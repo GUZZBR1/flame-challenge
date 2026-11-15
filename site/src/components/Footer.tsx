@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { getLenis } from '../lib/scroll'
+import { navigate } from '../lib/scroll'
 
 const LINKS = [
   { label: 'challenge', href: '#challenge' },
@@ -21,16 +21,7 @@ const SOURCES = [
  *  brand + tagline, nav and data-source columns, credit bar. */
 export default function Footer() {
   const go = useCallback((href: string) => {
-    const lenis = getLenis()
-    if (lenis) {
-      lenis.scrollTo(href === '#top' ? 0 : href, { offset: -96 })
-      return
-    }
-    if (href === '#top') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
-    }
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
+    navigate(href)
   }, [])
 
   return (

@@ -47,3 +47,6 @@ build/
 
 # TS incremental build info
 *.tsbuildinfo
+
+# Agent scratch
+.agents/

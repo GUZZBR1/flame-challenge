@@ -35,12 +35,6 @@ const REGIMES: Regime[] = [
   },
 ]
 
-const SOURCES = [
-  { label: 'psi repo', href: 'https://psi.nasa.gov/physci/repo' },
-  { label: 'images.nasa.gov', href: 'https://images.nasa.gov/' },
-  { label: 'ntrs', href: 'https://ntrs.nasa.gov/' },
-]
-
 /** The challenge — a technical ledger: why µg combustion is different,
  *  real NASA footage of the regime, and the experiment matrix the
  *  solver is calibrated against. */
@@ -290,7 +284,7 @@ export default function Challenge() {
         </div>
 
         {/* experiment ledger — what the solver implements */}
-        <div id="simulations" className="scroll-mt-28 pt-16">
+        <div id="solver-regimes" className="scroll-mt-28 pt-16">
           <div
             data-reveal
             className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70"
@@ -325,44 +319,6 @@ export default function Challenge() {
               </div>
             ))}
           </dl>
-        </div>
-
-        {/* dataset provenance */}
-        <div id="psi-dataset" className="scroll-mt-28 pt-14">
-          <div
-            data-reveal
-            className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
-          >
-            <div>
-              <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-                <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
-                  psi dataset — provenance
-                </span>
-              </div>
-              <p className="m-0 mt-3 max-w-2xl text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-75">
-                experiment telemetry is pulled from the nasa physical sciences
-                informatics repo, normalized to csv, and frozen into{' '}
-                <span className="font-mono text-[var(--ink)] opacity-90">
-                  shared/calibrated-data/*.json
-                </span>{' '}
-                — the engine only reads verified records.
-              </p>
-            </div>
-            <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 font-mono text-[11px] lowercase tracking-[0.16em]">
-              {SOURCES.map((s) => (
-                <li key={s.label}>
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
-                  >
-                    {s.label} ↗
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
 import { startTransition, useEffect, useRef, useState } from 'react'
 import { getLenis, gsap, ScrollTrigger } from '../lib/scroll'
+import Button from './ui/Button'
 
 type Pose = 'idle' | 'talk' | 'explain' | 'mad' | 'stern' | 'panic' | 'yell'
 
@@ -201,13 +202,15 @@ export default function Shipyard() {
             started ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
           }`}
         >
-          <button
+          <Button
             type="button"
             onClick={scrollToSims}
-            className="cursor-pointer border-2 border-[var(--ink)] bg-[var(--panel)] px-6 py-3 font-mono text-[12px] lowercase tracking-[0.18em] text-[var(--ink)] shadow-[4px_4px_0_0_color-mix(in_srgb,var(--ink)_30%,transparent)] transition-colors duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+            variant="accent"
+            size="xl"
+            className="font-mono lowercase tracking-[0.12em]"
           >
             run the numbers — simulations ↑
-          </button>
+          </Button>
         </div>
       </div>
     </section>

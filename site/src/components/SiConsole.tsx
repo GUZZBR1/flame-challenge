@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   decisionCards,
-  gravityRegime,
   materialsIndex,
   riskIndex,
   siChat,
@@ -12,8 +11,18 @@ import {
   type SiUiCommandEvent,
 } from '../lib/api'
 import type { RiskResult } from '../lib/risk'
+import { ACTION_LABEL, cleanBriefing, modeLabel } from '../lib/format'
 import { applyNavigation } from '../lib/scroll'
+import {
+  emitSiEntry,
+  emitSimulationCommands,
+  emitUiCommand,
+  peekPendingUiCmd,
+} from '../lib/simBus'
+import TypedText from './TypedText'
+import { IconMic, IconSend } from './Icons'
 import { useMissionVoiceControl } from '../hooks/useMissionVoiceControl'
+import Button from './ui/Button'
 
 /* recommended_action → which card + option actions it maps to */
 const ACTION_MAP: Record<string, { card: string; options: string[] }> = {
@@ -21,13 +30,6 @@ const ACTION_MAP: Record<string, { card: string; options: string[] }> = {
   REDUCE_O2: { card: 'atmosphere', options: ['reduce-o2', 'below-loc'] },
   COOL_AND_ISOLATE: { card: 'suppression', options: ['water-mist'] },
   SUPPRESS_LOCAL: { card: 'suppression', options: ['inert-gas'] },
-}
-
-const ACTION_LABEL: Record<string, string> = {
-  CUT_VENTILATION: 'cut ventilation',
-  REDUCE_O2: 'reduce o₂',
-  COOL_AND_ISOLATE: 'cool & isolate',
-  SUPPRESS_LOCAL: 'suppress local',
 }
 
 const MODULES = ['lab', 'fab', 'dock', 'hab']
@@ -55,8 +57,11 @@ const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v
 
 /** Mission Control SI Console — chat + push-to-talk voice against the
  *  /api/si copilot. Applies returned ui_command live to the chamber
- *  state, re-scores risk, and highlights the matching decision card. */
-export default function SiConsole() {
+ *  state, re-scores risk, and highlights the matching decision card.
+ *  slim=true (inside the simulations deck) hides the chamber-state
+ *  panel — the live chamber owns physical controls there — while the
+ *  state itself stays live for the copilot's reasoning. */
+export default function SiConsole({ slim = false }: { slim?: boolean }) {
   const [specs, setSpecs] = useState<Record<string, InvestigationSpec>>({})
   const [inv, setInv] = useState('saffire')
   const [o2, setO2] = useState(24)
@@ -79,6 +84,9 @@ export default function SiConsole() {
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [voiceOn, setVoiceOn] = useState(false)
+  // entries mounted with the console render full; only answers that
+  // arrive while you're watching get the typewriter treatment
+  const [typedIds] = useState(() => new Set(log.map((e) => e.id)))
 
   const logRef = useRef<HTMLDivElement>(null)
   const appliedTimer = useRef(0)
@@ -136,6 +144,15 @@ export default function SiConsole() {
     const u = new SpeechSynthesisUtterance(text)
     u.rate = 1.04
     u.pitch = 0.92
+    u.onstart = () => {
+      window.dispatchEvent(new CustomEvent('ignis:si-state', { detail: { state: 'speaking' } }))
+    }
+    u.onend = () => {
+      window.dispatchEvent(new CustomEvent('ignis:si-state', { detail: { state: 'idle' } }))
+    }
+    u.onerror = () => {
+      window.dispatchEvent(new CustomEvent('ignis:si-state', { detail: { state: 'idle' } }))
+    }
     window.speechSynthesis.speak(u)
   }, [])
 
@@ -187,17 +204,13 @@ export default function SiConsole() {
           cmd.set_o2_percent != null ||
           cmd.set_airflow_cm_s != null ||
           cmd.load_preset != null
-        window.dispatchEvent(
-          new CustomEvent('ignis:ui-command', {
-            detail: {
-              ...cmd,
-              __investigation: tunes
-                ? (cmd.__investigation ?? cmd.load_preset ?? inv)
-                : null,
-              __origin: 'console',
-            },
-          }),
-        )
+        emitUiCommand({
+          ...cmd,
+          __investigation: tunes
+            ? (cmd.__investigation ?? cmd.load_preset ?? inv)
+            : null,
+          __origin: 'console',
+        })
       }
       if (did.length) {
         setApplied(`applied · ${did.join(' · ')}`)
@@ -216,8 +229,22 @@ export default function SiConsole() {
       applyUiCommand(d, false)
     }
     window.addEventListener('ignis:ui-command', onCmd)
+    // a fresh command that landed while the deck was closed seeds this
+    // mount — the console syncs to whatever the voice already ordered
+    const pending = peekPendingUiCmd()
+    if (pending && pending.__origin !== 'console') {
+      applyUiCommand(pending, false)
+    }
     return () => window.removeEventListener('ignis:ui-command', onCmd)
   }, [applyUiCommand])
+
+  // keep the HUD posted on what the operator is looking at — it mounts
+  // before this console does (the console now lives inside the deck)
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('ignis:voice-state', { detail: chamberState() }),
+    )
+  }, [chamberState])
 
   // voice uplink state probe — the HUD asks, the console reports what
   // the operator is actually looking at
@@ -250,11 +277,13 @@ export default function SiConsole() {
       try {
         const resp = await siChat(text, chamberState())
         push({ role: 'ignis', text: resp.briefing, resp })
+        emitSiEntry(text, resp, 'console-chat')
         handleResponse(resp)
         // typed chat keeps the operator in the console — navigation is a
-        // voice-command surface (hands-free), not an answer side effect
-        const g = resp.simulation_commands?.set_gravity_g
-        if (g != null) applyUiCommand({ set_gravity: gravityRegime(g) })
+        // voice-command surface (hands-free), but simulation commands are
+        // the point here: typing "run saffire at 19%" retunes and relights
+        // the chamber through the same bus as the voice paths
+        emitSimulationCommands(resp.simulation_commands, 'console-chat', inv)
       } finally {
         setBusy(false)
       }
@@ -276,15 +305,27 @@ export default function SiConsole() {
         })
       }
       push({ role: 'ignis', text: r.briefing, resp: r })
+      emitSiEntry(r.transcript, r, 'console-voice')
       handleResponse(r)
       applyNavigation(r.navigation)
-      // voice-only surface: gravity commands ride simulation_commands,
-      // not the legacy ui_command
-      const g = r.simulation_commands?.set_gravity_g
-      if (g != null) applyUiCommand({ set_gravity: gravityRegime(g) })
+      // the console's own mic must relight the chamber too — same
+      // flattened sim-command mapping the global HUD uses
+      emitSimulationCommands(r.simulation_commands, 'console-voice', inv)
     },
     onError: (msg) => push({ role: 'sys', text: msg }),
   })
+
+  useEffect(() => {
+    if (busy) {
+      window.dispatchEvent(new CustomEvent('ignis:si-state', { detail: { state: 'thinking' } }))
+    } else if (voice.recording) {
+      window.dispatchEvent(new CustomEvent('ignis:si-state', { detail: { state: 'listening' } }))
+    } else if (voice.busy) {
+      window.dispatchEvent(new CustomEvent('ignis:si-state', { detail: { state: 'thinking' } }))
+    } else if (!window.speechSynthesis?.speaking) {
+      window.dispatchEvent(new CustomEvent('ignis:si-state', { detail: { state: 'idle' } }))
+    }
+  }, [busy, voice.recording, voice.busy])
 
   const hi = highlight ? ACTION_MAP[highlight] : null
   const cardHighlighted = (id: string) => hi?.card === id
@@ -295,28 +336,37 @@ export default function SiConsole() {
     <section
       id="mission-control"
       aria-labelledby="si-title"
-      className="relative scroll-mt-24 px-5 pb-24 pt-4 sm:px-10 lg:px-16"
+      className={`relative scroll-mt-24 ${
+        slim ? 'pt-2' : 'px-5 pb-24 pt-4 sm:px-10 lg:px-16'
+      }`}
     >
-      <div className="mx-auto max-w-6xl">
-        <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-          <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
-            mission control — si console
-          </span>
-        </div>
-        <h2
-          id="si-title"
-          className="mt-4 cursor-default font-[family-name:var(--font-display)] text-[clamp(26px,4.5vw,40px)] font-bold leading-[1.08] tracking-[-0.02em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
-        >
-          talk to the shipyard
-        </h2>
-        <p className="mt-5 max-w-2xl font-mono text-[13px] leading-relaxed text-[var(--ink)] opacity-80">
-          a synthetic-intelligence copilot wired into the engine. every answer
-          is built on the psi record first — the 3 nearest real test runs are
-          attached as evidence, and its commands can retune the chamber live.
-        </p>
+      <div className={slim ? '' : 'mx-auto max-w-6xl'}>
+        {!slim && (
+          <>
+            <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
+              <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
+                mission control — si console
+              </span>
+            </div>
+            <h2
+              id="si-title"
+              className="mt-4 cursor-default font-[family-name:var(--font-display)] text-[clamp(26px,4.5vw,40px)] font-bold leading-[1.08] tracking-[-0.02em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
+            >
+              talk to the shipyard
+            </h2>
+            <p className="mt-5 max-w-2xl font-mono text-[13px] leading-relaxed text-[var(--ink)] opacity-80">
+              a synthetic-intelligence copilot wired into the engine. every
+              answer is built on the psi record first — the 3 nearest real
+              test runs are attached as evidence, and its commands can retune
+              the chamber live.
+            </p>
+          </>
+        )}
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-[19rem_1fr]">
-          {/* chamber state — what the copilot reasons over */}
+        <div className={`grid gap-6 ${slim ? '' : 'mt-10 lg:grid-cols-[19rem_1fr]'}`}>
+          {/* chamber state — what the copilot reasons over (hidden in
+              the slim deck variant: the live chamber owns controls) */}
+          {!slim && (
           <div className="border-2 border-[var(--ink)] bg-[var(--panel)] p-4 font-mono shadow-[4px_4px_0_0_color-mix(in_srgb,var(--ink)_30%,transparent)]">
             <div className="text-[10px] lowercase tracking-[0.2em] opacity-60">
               chamber state
@@ -396,18 +446,15 @@ export default function SiConsole() {
                 ? [...MODULES, focusModule]
                 : MODULES
               ).map((m) => (
-                <button
+                <Button
                   key={m}
                   type="button"
                   onClick={() => setFocusModule(focusModule === m ? null : m)}
-                  className={`cursor-pointer border px-2 py-0.5 text-[11px] lowercase tracking-[0.12em] transition-colors duration-200 ${
-                    focusModule === m
-                      ? 'border-[var(--accent)] bg-[color-mix(in_srgb,var(--accent)_14%,transparent)] text-[var(--accent)]'
-                      : 'border-[var(--edge)] text-[var(--ink)] opacity-70 hover:border-[var(--accent)] hover:opacity-100'
-                  }`}
+                  aria-pressed={focusModule === m}
+                  variant="chip"
                 >
                   {m}
-                </button>
+                </Button>
               ))}
             </div>
 
@@ -434,11 +481,26 @@ export default function SiConsole() {
               </div>
             )}
           </div>
+          )}
 
-          {/* console — comms log + input + ptt */}
-          <div className="border-2 border-[var(--ink)] bg-[var(--panel)] shadow-[4px_4px_0_0_color-mix(in_srgb,var(--ink)_30%,transparent)]">
-            <div className="flex items-center justify-between border-b border-[var(--edge)] px-4 py-2 font-mono text-[10px] lowercase tracking-[0.2em]">
+          {/* console — comms log + input + ptt. in the slim deck it's
+              frameless: no box, the conversation just lives on the page */}
+          <div className={slim ? '' : 'border-2 border-[var(--ink)] bg-[var(--panel)] shadow-[4px_4px_0_0_color-mix(in_srgb,var(--ink)_30%,transparent)]'}>
+            <div className={`flex items-center justify-between font-mono lowercase tracking-[0.2em] ${slim ? 'py-1 text-[11.5px]' : 'border-b border-[var(--edge)] px-4 py-2 text-[10px]'}`}>
               <span className="opacity-60">comms · ignis copilot</span>
+              {slim && risk && (
+                <span className={`flex items-baseline gap-2 ${LEVEL_TONE[risk.level] ?? ''}`}>
+                  <span className="text-[11px] tracking-[0.16em] opacity-60">
+                    risk
+                  </span>
+                  <span className="text-[20px] font-bold tracking-[-0.02em] text-[var(--accent)]">
+                    {Math.round(risk.riskIndex * 100)}%
+                  </span>
+                  <span className={`pill ${risk.level === 'critical' || risk.level === 'high' ? 'pill-amber' : 'pill-slate'}`}>
+                    {risk.level}
+                  </span>
+                </span>
+              )}
               <label className="flex cursor-pointer items-center gap-1.5 opacity-80">
                 <input
                   type="checkbox"
@@ -456,28 +518,36 @@ export default function SiConsole() {
             <div
               ref={logRef}
               aria-live="polite"
-              className="h-72 space-y-3 overflow-y-auto px-4 py-3 font-mono text-[12.5px] leading-relaxed sm:h-80"
+              className={`overflow-y-auto leading-relaxed ${slim ? 'max-h-96 space-y-5 px-0 py-3 text-[15px]' : 'h-72 space-y-3 px-4 py-3 font-mono text-[12.5px] sm:h-80'}`}
             >
               {log.map((e) =>
                 e.role === 'ignis' ? (
                   <div key={e.id} className="bubble-in">
                     <p className="text-[var(--ink)]">
-                      <span className="text-[var(--accent)]">ignis:</span> {e.text}
+                      <span className="font-mono text-[0.8em] text-[var(--accent)]">ignis:</span>{' '}
+                      <TypedText
+                        text={cleanBriefing(e.text).text}
+                        instant={typedIds.has(e.id)}
+                      />
                     </p>
                     {e.resp && (
-                      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] lowercase tracking-[0.12em]">
-                        <span className="border border-[var(--accent)] px-1.5 py-0.5 text-[var(--accent)]">
+                      <div className={`mt-1.5 flex flex-wrap items-center lowercase tracking-[0.1em] ${slim ? 'gap-x-3 gap-y-1.5 text-[11.5px]' : 'gap-x-3 gap-y-1 font-mono text-[10.5px] tracking-[0.12em]'}`}>
+                        <span className={slim ? 'pill pill-blue' : 'border border-[var(--accent)] px-1.5 py-0.5 text-[var(--accent)]'}>
                           {ACTION_LABEL[e.resp.recommended_action] ??
                             e.resp.recommended_action.toLowerCase()}
                         </span>
-                        <span className="opacity-50">{e.resp.mode}</span>
+                        {e.resp.mode !== 'llm' && (
+                          <span className={slim ? 'pill pill-slate opacity-80' : 'border border-[var(--edge)] px-1.5 py-0.5 opacity-60'}>
+                            {modeLabel(e.resp.mode)}
+                          </span>
+                        )}
                         {e.resp.evidence.slice(0, 2).map((ev) => (
                           <a
                             key={ev.runId}
                             href={ev.sourceUrl || undefined}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-[var(--link)] underline-offset-4 hover:underline"
+                            className="font-mono text-[var(--link)] underline-offset-4 hover:underline"
                           >
                             psi {ev.accession} · {ev.runId} · {ev.similarity}%
                           </a>
@@ -490,11 +560,13 @@ export default function SiConsole() {
                     key={e.id}
                     className={`bubble-in ${
                       e.role === 'you'
-                        ? 'text-[var(--ink)]'
-                        : 'text-[var(--ink)] opacity-50'
+                        ? slim
+                          ? 'ml-auto w-fit max-w-[88%] rounded-2xl bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] px-4 py-2.5 text-[var(--ink)]'
+                          : 'text-[var(--ink)]'
+                        : `text-[var(--ink)] ${slim ? 'text-[0.85em] opacity-50' : 'opacity-50'}`
                     }`}
                   >
-                    <span className="text-[var(--accent)]">
+                    <span className="font-mono text-[0.8em] text-[var(--accent)]">
                       {e.role === 'you' ? 'you' : 'sys'}:
                     </span>{' '}
                     {e.text}
@@ -510,13 +582,13 @@ export default function SiConsole() {
             </div>
 
             {applied && (
-              <div className="border-t border-[var(--edge)] px-4 py-1.5 font-mono text-[10.5px] lowercase tracking-[0.14em] text-[var(--accent)]">
+              <div className={`font-mono text-[10.5px] lowercase tracking-[0.14em] text-[var(--accent)] ${slim ? 'py-1' : 'border-t border-[var(--edge)] px-4 py-1.5'}`}>
                 {applied}
               </div>
             )}
 
             <form
-              className="flex items-stretch border-t border-[var(--edge)]"
+              className={`flex ${slim ? 'mt-5 items-center rounded-full border border-[var(--edge)] bg-[color-mix(in_srgb,#ffffff_72%,var(--bg))] py-1.5 pl-5 pr-1.5 shadow-[0_10px_30px_rgb(23_33_43/0.08),inset_0_1px_0_rgb(255_255_255/0.55)] backdrop-blur transition-all duration-200 focus-within:border-[var(--accent)] focus-within:shadow-[0_0_0_4px_color-mix(in_srgb,var(--accent)_16%,transparent),0_10px_30px_rgb(23_33_43/0.1)]' : 'items-center gap-2 border-t border-[var(--edge)] px-2 py-2'}`}
               onSubmit={(e) => {
                 e.preventDefault()
                 void send(input)
@@ -527,11 +599,12 @@ export default function SiConsole() {
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="ask ignis — e.g. what kills this flame fastest?"
                 aria-label="message the copilot"
-                className="min-w-0 flex-1 bg-transparent px-4 py-3 font-mono text-[12.5px] text-[var(--ink)] outline-none placeholder:lowercase placeholder:opacity-40"
+                className={`min-w-0 flex-1 bg-transparent font-mono text-[var(--ink)] outline-none placeholder:lowercase placeholder:opacity-40 ${slim ? 'px-0 py-2 text-[14.5px]' : 'px-2 py-2 text-[12.5px]'}`}
               />
-              <button
+              <Button
                 type="button"
                 aria-label={voice.recording ? 'release to send voice' : 'hold to talk'}
+                aria-pressed={voice.recording}
                 onPointerDown={() => void voice.start()}
                 onPointerUp={voice.stop}
                 onPointerLeave={voice.stop}
@@ -544,26 +617,28 @@ export default function SiConsole() {
                 onKeyUp={(e) => {
                   if (e.key === ' ' || e.key === 'Enter') voice.stop()
                 }}
-                className={`w-14 cursor-pointer border-l border-[var(--edge)] font-mono text-[15px] transition-colors duration-150 ${
-                  voice.recording
-                    ? 'bg-[var(--accent)] text-[var(--bg)]'
-                    : 'text-[var(--ink)] hover:bg-[color-mix(in_srgb,var(--accent)_14%,transparent)] hover:text-[var(--accent)]'
-                }`}
+                variant={voice.recording ? 'recording' : 'glass'}
+                size={slim ? 'icon' : 'icon-sm'}
               >
-                {voice.recording ? '●' : '◉'}
-              </button>
-              <button
+                <IconMic size={slim ? 17 : 15} />
+              </Button>
+              <Button
                 type="submit"
                 disabled={busy}
-                className="w-16 cursor-pointer border-l border-[var(--edge)] font-mono text-[11px] lowercase tracking-[0.14em] text-[var(--ink)] transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--accent)_14%,transparent)] hover:text-[var(--accent)] disabled:opacity-40"
+                aria-label="send message"
+                variant={slim ? 'accent' : 'primary'}
+                size={slim ? 'icon' : 'default'}
               >
-                send
-              </button>
+                {slim ? <IconSend size={17} /> : 'send'}
+              </Button>
             </form>
           </div>
         </div>
 
-        {/* decision cards — the recommended action's card lights up */}
+        {/* decision cards — the recommended action's card lights up
+            (hidden in the slim deck variant: the dashboard owns the
+            countermeasure surface, the comms log carries the answer) */}
+        {!slim && (
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {(cards?.cards ?? []).map((c) => (
             <div
@@ -616,6 +691,7 @@ export default function SiConsole() {
             </div>
           )}
         </div>
+        )}
       </div>
     </section>
   )

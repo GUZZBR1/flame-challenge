@@ -1,17 +1,23 @@
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
-import { getLenis, gsap, ScrollTrigger } from '../lib/scroll'
+import { gsap, navigate, ScrollTrigger } from '../lib/scroll'
+import Button from './ui/Button'
+import { IconMoon, IconSun } from './Icons'
 
 interface Props {
   dark: boolean
   onToggleTheme: () => void
+  /** overlay screens (psi dataset, simulations) pin the brand visible —
+   *  it's the way back home from a deck, and the main-page scroll scrub
+   *  that normally reveals it is frozen underneath the overlay */
+  brandVisible?: boolean
 }
 
 const NAV: { label: string; href: string; className?: string }[] = [
   { label: 'vision', href: '#vision', className: 'max-lg:hidden' },
-  { label: 'simulations', href: '#simulations' },
-  { label: 'dashboard', href: '#dashboard' },
-  { label: 'psi-dataset', href: '#psi-dataset', className: 'max-[560px]:hidden' },
-  { label: 'si console', href: '#mission-control' },
+  { label: 'simulations', href: '#simulations', className: 'max-[520px]:hidden' },
+  { label: 'dashboard', href: '#dashboard', className: 'max-[700px]:hidden' },
+  { label: 'psi-dataset', href: '#psi-dataset', className: 'max-[640px]:hidden' },
+  { label: 'si console', href: '#si-console' },
 ]
 
 
@@ -27,7 +33,7 @@ const clockFmt = new Intl.DateTimeFormat('en-GB', {
 
 /** Floating glass header — bare monospace text over the hero, then a
  *  blurred, glowing pill materializes behind the nav as you scroll. */
-export default function Header({ dark, onToggleTheme }: Props) {
+export default function Header({ dark, onToggleTheme, brandVisible = false }: Props) {
   const glassRef = useRef<HTMLSpanElement>(null)
   const brandRef = useRef<HTMLAnchorElement>(null)
   const [clock, setClock] = useState(() => clockFmt.format(new Date()))
@@ -72,17 +78,21 @@ export default function Header({ dark, onToggleTheme }: Props) {
     return () => ctx.revert()
   }, [])
 
+  // overlays pin the brand; returning to the main page re-syncs it to
+  // wherever the scroll scrub would have left it (hidden at the hero
+  // top, solid once you've scrolled)
+  useEffect(() => {
+    const brand = brandRef.current
+    if (!brand) return
+    gsap.set(brand, {
+      opacity: brandVisible
+        ? 1
+        : Math.min(1, window.scrollY / (window.innerHeight * 0.58)),
+    })
+  }, [brandVisible])
+
   const go = useCallback((href: string) => {
-    const lenis = getLenis()
-    if (lenis) {
-      lenis.scrollTo(href === '#top' ? 0 : href, { offset: -96 })
-      return
-    }
-    if (href === '#top') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
-    }
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
+    navigate(href)
   }, [])
 
   return (
@@ -146,17 +156,18 @@ export default function Header({ dark, onToggleTheme }: Props) {
             ))}
             <span className="opacity-60"> utc-3</span>
           </span>
-          <button
+          <Button
             type="button"
             onClick={onToggleTheme}
             aria-pressed={dark}
             aria-label={dark ? 'Switch to light theme' : 'Switch to dark theme'}
-            className="rounded-full border-2 border-[var(--olive)] p-[3px] transition-colors hover:border-[var(--ink)]"
+            variant="glass"
+            size="sm"
+            className="lowercase"
           >
-            <span className="block rounded-full border border-[var(--olive)]/50 px-1.5 py-0.5 font-mono text-[8px] font-medium lowercase tracking-[0.14em] text-[var(--ink)] sm:px-3 sm:py-1 sm:text-[10px] sm:tracking-[0.18em]">
-              {dark ? 'dark' : 'light'}
-            </span>
-          </button>
+            {dark ? <IconMoon size={13} /> : <IconSun size={13} />}
+            {dark ? 'dark' : 'light'}
+          </Button>
         </div>
       </div>
     </header>
