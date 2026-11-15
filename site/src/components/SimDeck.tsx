@@ -269,7 +269,7 @@ export default function SimDeck() {
           <p
             data-hero
             aria-hidden="true"
-            className="absolute right-0 top-28 hidden border-r border-ink/40 pr-4 text-right font-mono text-tiny uppercase leading-[1.9] tracking-label opacity-70 lg:block"
+            className="absolute bottom-1 right-0 hidden border-r border-ink/40 pr-4 text-right font-mono text-tiny uppercase leading-[1.9] tracking-label opacity-70 lg:block"
           >
             Fire<br />Combustion<br />Microgravity
           </p>
