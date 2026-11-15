@@ -90,6 +90,15 @@ export default function App() {
     initScroll()
   }, [])
 
+  // broadcast the active view so loops on the page underneath
+  // (hero mesh, keyed flames, shipyard feed) can sleep while an
+  // overlay screen covers them — they resume when it's dismissed
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('ignis:view', { detail: { view } }),
+    )
+  }, [view])
+
   const toggleTheme = useCallback(
     () => setTheme((t) => (t === 'dark' ? 'light' : 'dark')),
     [],

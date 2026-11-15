@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { gsap } from '../lib/scroll'
 import { attachKeyedFlame } from '../lib/keyedFlame'
+import { gsap } from '../lib/scroll'
 
 interface Regime {
   tag: string
@@ -55,7 +55,9 @@ export default function Challenge() {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    return attachKeyedFlame(v, c)
+    // loop only the lit phase — after ~15s the flame dies to a dark
+    // smudge (the extinction regime)
+    return attachKeyedFlame(v, c, { start: 0.4, end: 15.5 })
   }, [])
 
   // reveal rows once, on entry — skipped entirely under reduced motion
@@ -173,19 +175,6 @@ export default function Challenge() {
                 muted
                 playsInline
                 preload="metadata"
-                onLoadedMetadata={(e) => {
-                  e.currentTarget.currentTime = 0.4
-                }}
-                onTimeUpdate={(e) => {
-                  // loop only the lit phase — after ~15s the flame dies
-                  // to a dark smudge (the extinction regime)
-                  if (e.currentTarget.currentTime >= 15.5)
-                    e.currentTarget.currentTime = 0.4
-                }}
-                onEnded={(e) => {
-                  e.currentTarget.currentTime = 0.4
-                  void e.currentTarget.play()
-                }}
                 aria-hidden="true"
               >
                 <source src="/assets/sofie_flame_hd.mp4" media="(min-width: 768px)" />

@@ -5,8 +5,8 @@ import {
   INVESTIGATIONS,
   THEME_LABELS,
 } from '../lib/dashboard'
-import { getFilterTag, gsap, navigateBack, setFilterTag } from '../lib/scroll'
 import { attachKeyedFlame } from '../lib/keyedFlame'
+import { getFilterTag, gsap, navigateBack, setFilterTag } from '../lib/scroll'
 import { IconArrowLeft } from './Icons'
 import Button from './ui/Button'
 
