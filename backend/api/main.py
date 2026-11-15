@@ -9,8 +9,10 @@ import asyncio
 import json
 import math
 import time
+from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
+from fastapi import (FastAPI, File, Form, HTTPException, Query, Request,
+                     UploadFile, WebSocket, WebSocketDisconnect)
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,7 +20,8 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, ValidationError
 
 from backend.services import engine_bridge as eb
-from backend.services import investigations, neighbors, rag, risk, tactics
+from backend.services import (diff, investigations, neighbors, rag, risk,
+                              si_copilot, tactics)
 
 app = FastAPI(title="Freefall Foundry Engine API", version="0.1.0")
 app.add_middleware(
@@ -179,12 +182,26 @@ def api_investigations() -> dict:
     return investigations.leaderboard()
 
 
+_BUNDLE = Path(__file__).resolve().parents[2] / "data" / "bundle"
+
+
+@app.get("/api/investigations/matrix")
+def api_investigation_matrix() -> dict:
+    """Summarize feed — the full investigation matrix served to the
+    dashboard (objectives, fuels, conditions, variation, sensors)."""
+    path = _BUNDLE / "investigations.json"
+    if not path.exists():
+        return {"investigations": []}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 @app.get("/api/investigations/{inv_id}")
 def api_investigation_detail(inv_id: str) -> dict:
     card = investigations.detail(inv_id)
     if card is None:
-        known = ", ".join(
-            sorted(investigations.DISPLAY_NAME)) or "<none>"
+        known = ", ".join(sorted(
+            set(investigations.DISPLAY_NAME)
+            | set(investigations.CHILD_TO_PARENT))) or "<none>"
         raise HTTPException(
             status_code=404,
             detail=f"unknown investigationId {inv_id!r} (known: {known})")
@@ -196,6 +213,55 @@ def api_insights() -> dict:
     """Corpus-level interpreted findings — the 'interpret' deliverable.
     Every claim cites its run counts and source investigations."""
     return investigations.insights()
+
+
+# ---------- SI layer: summarize feed + run diff ----------
+
+@app.get("/api/risk/rank")
+def api_risk_rank(o2Pct: float = Query(21.0, ge=0.0, le=100.0,
+                                       allow_inf_nan=False),
+                  flowCms: float = Query(0.0, ge=0.0, le=300.0,
+                                         allow_inf_nan=False),
+                  gravity: str = "microgravity",
+                  top: int = Query(10, ge=1, le=20)) -> dict:
+    """Rank — every calibrated material sorted by risk index at the
+    requested operating point, worst first."""
+    ranked = sorted(
+        (risk.risk_index(m["id"], o2Pct, flowCms, gravity)
+         for m in risk.materials()),
+        key=lambda r: (-r["riskIndex"], r["materialId"]))
+    return {"o2Pct": o2Pct, "flowCms": flowCms, "gravity": gravity,
+            "engine": eb.ENGINE, "ranked": ranked[:top]}
+
+
+# ---------- investigation diff: what changed vs what held ----------
+
+@app.get("/api/diffs")
+def api_curated_diffs() -> dict:
+    """Curated diff cards — pairs of real runs isolating one variable."""
+    return {"cards": diff.curated()}
+
+
+@app.get("/api/runs")
+def api_runs(investigation: str | None = None,
+             accession: str | None = None,
+             limit: int = Query(100, ge=1, le=200)) -> dict:
+    """Run picker — normalized PSI runs, filterable by the umbrella
+    investigation id or the real PSI accession (PSI-22, PSI-26…)."""
+    return {"runs": diff.runs(investigation, accession, limit)}
+
+
+@app.get("/api/diff")
+def api_diff(a: str, b: str):
+    """Field-level diff between two run ids — changed vs held."""
+    d = diff.diff_runs(a, b)
+    if d is None:
+        known = ", ".join(sorted(diff._load())[:40])
+        return JSONResponse(
+            status_code=404,
+            content={"detail": f"unknown run id in pair ({a!r}, {b!r}) — "
+                               f"run ids look like: {known}…"})
+    return d
 
 
 # ---------- SI layer: KNN lookup + deterministic tactical synthesis ----------
@@ -238,6 +304,49 @@ def api_decision_cards(materialId: str = "pmma",
         },
         **payload,
     }
+
+
+# ---------- SI layer: conversational + voice copilot ----------
+
+class SiChatReq(BaseModel):
+    message: str = Field(min_length=1, max_length=4000)
+    current_chamber_state: si_copilot.ChamberState = Field(
+        default_factory=si_copilot.ChamberState)
+
+
+@app.post("/api/si/chat")
+async def si_chat(req: SiChatReq) -> dict:
+    """Structured copilot answer grounded on the engine + PSI packet."""
+    return await si_copilot.answer(req.message, req.current_chamber_state)
+
+
+# ~25 MB cap — enough for minutes of webm/opus PTT audio
+_SI_MAX_AUDIO = 25 * 1024 * 1024
+
+
+@app.post("/api/si/voice")
+async def si_voice(audio: UploadFile = File(...),
+                   state: str = Form("{}")):
+    """whisper.cpp STT → same copilot pipeline. Deterministic offline
+    fallback when either local service is down."""
+    try:
+        chamber = si_copilot.ChamberState.model_validate(json.loads(state))
+    except (json.JSONDecodeError, ValidationError, TypeError):
+        return JSONResponse(status_code=422,
+                            content={"detail": "invalid state payload"})
+    payload = await audio.read(_SI_MAX_AUDIO + 1)
+    if len(payload) > _SI_MAX_AUDIO:
+        return JSONResponse(status_code=413,
+                            content={"detail": "audio too large"})
+    transcript = await si_copilot.transcribe_audio(
+        payload, audio.filename, audio.content_type)
+    if transcript is None:
+        # STT offline — still answer from the state so the console has a
+        # deterministic degradation path instead of a dead endpoint
+        resp = await si_copilot.answer("(voice uplink offline)", chamber)
+        return {"transcript": None, "stt": "offline", "response": resp}
+    resp = await si_copilot.answer(transcript, chamber)
+    return {"transcript": transcript, "stt": "whisper.cpp", "response": resp}
 
 
 @app.websocket("/ws/chamber")

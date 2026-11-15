@@ -29,13 +29,20 @@ human space exploration**.
 | Investigation | Focus | Why it matters for fire safety |
 |---|---|---|
 | SoFIE / SoFIE-GEL | Solid fuel ignition/extinction, flame spread limits | Flame persists below Earth flammability limits in µg |
-| BASS / BASS-II | Burning & suppression of solids | Extinction regimes; elevated-O₂ hazard |
-| FLEX / FLEX-2 | Droplet combustion | Cool flames burn invisibly after flameout |
-| ACME | Laminar coflow flames, soot, BRE | Soot/soot transport; material test emulation |
+| BASS / BASS-II | Burning & suppression of solids (MSG duct) | Extinction regimes; elevated-O₂ hazard |
+| SPICE / SLICE | MSG coflow jet flames — smoke point & liftoff | Soot inception; flame attachment in ducts |
+| FLEX / FLEX-2 | Droplet combustion + CO₂/He/N₂ dilution | Cool flames burn invisibly after flameout; suppressant efficacy |
+| ACME (incl. E-FIELD, CFI-G, Flame Design) | Laminar coflow flames, soot, BRE | Soot/soot transport; E-field as partial-g analog |
 | Saffire I–VI | Large-scale fires in Cygnus | Real-scale spread rates; post-fire atmosphere |
-| SAME | Smoke aerosol measurement | µg smoke particles defeat Earth-calibrated detectors |
+| SAME / SAME-R (PSI-102/101) | Smoke aerosol measurement + reflight | µg smoke particles defeat Earth-calibrated detectors |
 | Confined Combustion | Flame spread in confined volumes | Rack/duct geometries; exploration atmospheres |
 | FLARE (JAXA) | Flammability at 0.17 g / 0.38 g | Direct Moon/Mars gravity fire data |
+
+## Explicitly out of scope
+
+Rocket-motor and propellant combustion: at engine speeds combustion is
+gravity-independent. All modeling targets **cabins, habitats, stations
+and crewed vehicles** — ISS, Gateway, lunar surface, Mars transit.
 
 ## What this repo builds
 

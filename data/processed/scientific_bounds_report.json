@@ -1,0 +1,219 @@
+{
+  "generated": "validate_scientific_bounds.py",
+  "cantera": {
+    "skipped": false,
+    "mechanism": "gri30.yaml",
+    "canteraVersion": "3.2.0",
+    "conditions": "phi=1, 300 K, 1 atm \u2014 equilibrium (HP)",
+    "locVsFlameTemperature": [
+      {
+        "material": "ethylene",
+        "species": "C2H4",
+        "locPct": 11.0,
+        "locSource": "calibration",
+        "tadAtLocK": 1659.5,
+        "flameLimitWindowK": [
+          1400.0,
+          1700.0
+        ],
+        "locInLimitWindow": true,
+        "tadCrosses1500KAtO2Pct": 9.5,
+        "modelVsCrossingDeltaPct": 1.5
+      },
+      {
+        "material": "methane",
+        "species": "CH4",
+        "locPct": 12.0,
+        "locSource": "calibration",
+        "tadAtLocK": 1621.0,
+        "flameLimitWindowK": [
+          1400.0,
+          1700.0
+        ],
+        "locInLimitWindow": true,
+        "tadCrosses1500KAtO2Pct": 11.0,
+        "modelVsCrossingDeltaPct": 1.0
+      },
+      {
+        "material": "methanol",
+        "species": "CH3OH",
+        "locPct": 12.0,
+        "locSource": "psi-data",
+        "tadAtLocK": 1674.7,
+        "flameLimitWindowK": [
+          1400.0,
+          1700.0
+        ],
+        "locInLimitWindow": true,
+        "tadCrosses1500KAtO2Pct": 10.0,
+        "modelVsCrossingDeltaPct": 2.0
+      },
+      {
+        "material": "propane",
+        "species": "C3H8",
+        "locPct": 11.5,
+        "locSource": "calibration",
+        "tadAtLocK": 1609.5,
+        "flameLimitWindowK": [
+          1400.0,
+          1700.0
+        ],
+        "locInLimitWindow": true,
+        "tadCrosses1500KAtO2Pct": 10.5,
+        "modelVsCrossingDeltaPct": 1.0
+      }
+    ],
+    "diluentSuppression": [
+      {
+        "material": "ethylene",
+        "species": "C2H4",
+        "diluent": "CO2",
+        "diluentSpecies": "CO2",
+        "deltaTadKPer10Pct": 67.4
+      },
+      {
+        "material": "ethylene",
+        "species": "C2H4",
+        "diluent": "N2",
+        "diluentSpecies": "N2",
+        "deltaTadKPer10Pct": 0.0
+      },
+      {
+        "material": "ethylene",
+        "species": "C2H4",
+        "diluent": "HE",
+        "diluentSpecies": "AR",
+        "deltaTadKPer10Pct": -27.0
+      },
+      {
+        "material": "methane",
+        "species": "CH4",
+        "diluent": "CO2",
+        "diluentSpecies": "CO2",
+        "deltaTadKPer10Pct": 63.1
+      },
+      {
+        "material": "methane",
+        "species": "CH4",
+        "diluent": "N2",
+        "diluentSpecies": "N2",
+        "deltaTadKPer10Pct": 0.0
+      },
+      {
+        "material": "methane",
+        "species": "CH4",
+        "diluent": "HE",
+        "diluentSpecies": "AR",
+        "deltaTadKPer10Pct": -28.9
+      },
+      {
+        "material": "methanol",
+        "species": "CH3OH",
+        "diluent": "CO2",
+        "diluentSpecies": "CO2",
+        "deltaTadKPer10Pct": 54.2
+      },
+      {
+        "material": "methanol",
+        "species": "CH3OH",
+        "diluent": "N2",
+        "diluentSpecies": "N2",
+        "deltaTadKPer10Pct": 0.0
+      },
+      {
+        "material": "methanol",
+        "species": "CH3OH",
+        "diluent": "HE",
+        "diluentSpecies": "AR",
+        "deltaTadKPer10Pct": -24.9
+      },
+      {
+        "material": "propane",
+        "species": "C3H8",
+        "diluent": "CO2",
+        "diluentSpecies": "CO2",
+        "deltaTadKPer10Pct": 64.3
+      },
+      {
+        "material": "propane",
+        "species": "C3H8",
+        "diluent": "N2",
+        "diluentSpecies": "N2",
+        "deltaTadKPer10Pct": 0.0
+      },
+      {
+        "material": "propane",
+        "species": "C3H8",
+        "diluent": "HE",
+        "diluentSpecies": "AR",
+        "deltaTadKPer10Pct": -28.5
+      }
+    ],
+    "diluentOrdering": {
+      "ethylene": [
+        "CO2",
+        "N2",
+        "HE"
+      ],
+      "methane": [
+        "CO2",
+        "N2",
+        "HE"
+      ],
+      "methanol": [
+        "CO2",
+        "N2",
+        "HE"
+      ],
+      "propane": [
+        "CO2",
+        "N2",
+        "HE"
+      ]
+    },
+    "expectedPhysicalOrder": [
+      "CO2",
+      "N2",
+      "HE"
+    ]
+  },
+  "shapCrossCheck": {
+    "skipped": false,
+    "library": "shap.ExactExplainer",
+    "shapVersion": "0.54.1",
+    "factorGameMaxAbsError": 2.220446049250313e-16,
+    "physicalGameMaxAbsError": 2.220446049250313e-16,
+    "tolerance": 1e-09,
+    "pass": true
+  },
+  "conformal": {
+    "method": "cross-fit (CV+) conformal: 5-fold sha1(run_id) split, ignition logits refit per fold, closed-form finite-sample quantile over out-of-fold residuals",
+    "labeledRows": 378,
+    "global": {
+      "0.80": 0.5078,
+      "0.90": 0.7244,
+      "0.95": 0.8389
+    },
+    "empiricalCoverage": {
+      "0.80": 0.8042,
+      "0.90": 0.9021,
+      "0.95": 0.9577
+    }
+  },
+  "notes": [
+    "decanol: no GRI-Mech species (C10H21OH, NC10H22) \u2014 outside the mechanism's C1-C4 scope",
+    "heptane: no GRI-Mech species (NC7H16, C7H16) \u2014 outside the mechanism's C1-C4 scope",
+    "iso-octane: no GRI-Mech species (IC8H18, C8H18) \u2014 outside the mechanism's C1-C4 scope",
+    "jp8: no GRI-Mech species (NC10H22, C10H22) \u2014 outside the mechanism's C1-C4 scope",
+    "fitted \u00b5g LOCs land ~60-75 K above the canonical 1-g 1400-1600 K limit window \u2014 a systematic offset, not noise; it is a consistency bound, not a refit target",
+    "diluent order CO2 > N2 > He follows molar heat capacity (FLEX suppression matrix; He is nearly inert chemically) \u2014 He evaluated via Ar, the exact thermodynamic surrogate"
+  ],
+  "summary": {
+    "fuelsChecked": 4,
+    "locInFlameLimitWindow": 4,
+    "meanAbsLocVs1500KCrossingPct": 1.38,
+    "canteraPass": true,
+    "shapAuditPass": true,
+    "pass": true
+  }
+}

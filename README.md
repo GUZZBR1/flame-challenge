@@ -57,10 +57,17 @@ core/      C++20 physics: droplet d²-law (FLEX), SAFFIRE spread,
 data/      NASA PSI/NTRS ETL → experiments.csv, search index, risk model
            (+ data/bundle/: merged dataset & generated JSON artifacts)
 backend/   FastAPI bridge: /api/chamber/preview, WS /ws/chamber,
-           /api/search, /api/ask, /api/risk(+curve/materials)
+           /api/search, /api/ask, /api/risk(+curve/materials/rank),
+           /api/investigations, /api/runs, /api/diff, /api/diffs,
+           /api/decision-cards, /api/neighbors
+site/      IGNIS dashboard (Vite/React): summarize·rank·interpret over
+           the PSI corpus + investigation diff cards
 docs/      ARCHITECTURE.md, DATA_PIPELINE.md,
            NASA_PSI_REFERENCES.md, challenge brief
 ```
+
+Scope: cabin, habitat and crewed-vehicle fire safety only — rocket-motor
+and propellant combustion is out of scope per the challenge brief.
 
 ## Data layer — real NASA records
 
@@ -76,6 +83,8 @@ and builds a deterministic retrieval corpus — no external ML service.
 ./.venv/bin/python data/pipelines/normalize_experiments.py
 ./.venv/bin/python data/pipelines/build_index.py
 ./.venv/bin/python data/pipelines/fit_risk_model.py
+./.venv/bin/python data/pipelines/build_master_sheet.py        # auditable CSV + JSON
+./.venv/bin/python data/pipelines/build_investigation_diffs.py # diff cards
 ```
 
 Then `uvicorn` exposes `/api/search`, `/api/ask` (BM25 + DuckDB SQL-RAG

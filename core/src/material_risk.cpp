@@ -74,6 +74,43 @@ double MaterialRisk::flowFactor(double flowCms) {
     return g_flowAnchors.back().second;
 }
 
+double MaterialRisk::hiddenFactor(const Material& m) {
+    // same composite as fit_risk_model.py hiddenFactor
+    return 1.0 + 0.25 * (m.coolFlameCapable ? 1.0 : 0.0)
+              + 0.15 * (m.smoldering ? 1.0 : 0.0)
+              + 0.10 * m.sootIndex;
+}
+
+double MaterialRisk::gravityFactor(const std::string& gravity) {
+    std::string g;
+    g.reserve(gravity.size());
+    for (unsigned char c : gravity) g += static_cast<char>(std::tolower(c));
+    // services/risk.py GRAVITY_FACTOR — µg reference = 1.0 (worst case)
+    if (g == "lunar") return 0.92;
+    if (g == "martian") return 0.95;
+    if (g == "partial-gravity") return 0.94;
+    if (g == "earth") return 0.85;
+    return 1.0;
+}
+
+RiskBreakdown MaterialRisk::riskBreakdown(const Material& m, double o2Pct,
+                                          double flowCms,
+                                          const std::string& gravity) {
+    RiskBreakdown d;
+    d.ignitionPressure = ignitionPressure(m, o2Pct);
+    d.flowFactor = flowFactor(flowCms);
+    d.hiddenFactor = hiddenFactor(m);
+    d.gravityFactor = gravityFactor(gravity);
+    d.riskIndex = std::clamp(d.ignitionPressure * d.flowFactor
+                             * d.hiddenFactor * d.gravityFactor, 0.0, 1.0);
+    return d;
+}
+
+double MaterialRisk::riskIndex(const Material& m, double o2Pct,
+                               double flowCms, const std::string& gravity) {
+    return riskBreakdown(m, o2Pct, flowCms, gravity).riskIndex;
+}
+
 // ---- minimal JSON reader (no external deps) ----
 // expects: {"materials":[{...},...]} with flat scalar fields.
 // Only tolerant parsing needed for our own calibration output.

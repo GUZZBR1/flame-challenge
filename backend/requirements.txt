@@ -4,3 +4,6 @@ pybind11>=2.13
 pydantic>=2.8
 duckdb>=1.1
 httpx2>=0.28  # starlette>=1.10 TestClient transport (backend/tests)
+openai>=1.54          # SI copilot → 9Router (OpenAI-compatible gateway)
+python-multipart>=0.0.20  # FastAPI UploadFile/Form (POST /api/si/voice)
+python-dotenv>=1.0    # backend/.env → si_copilot env vars

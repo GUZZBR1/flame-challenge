@@ -44,6 +44,9 @@ COLUMNS = [
     "cool_flame", "smolder", "soot_index", "hidden_factor",
     "psi_runs", "psi_cool_flame_runs",
     "verified", "source", "source_url", "notes",
+    # dashboard attributes (investigation rows) — the challenge asks for
+    # objectives, test conditions, intra-experiment variation and sensors
+    "themes", "objectives", "apparatus", "sensors", "test_variables",
 ]
 
 PSI_REPO = "https://psi.nasa.gov/physci/repo"
@@ -105,6 +108,16 @@ def investigation_rows(inp: dict) -> list[dict]:
         r["source"] = "NASA PSI" if psi else inv["agencies"][0]
         r["source_url"] = (psi or {}).get("psi_url") or inv["data"].get("psiUrl") or PSI_REPO
         r["notes"] = _clip(inv["keyFindings"][0] if inv["keyFindings"] else inv["title"])
+        r["themes"] = "; ".join(inv.get("themes") or [])
+        r["objectives"] = _clip("; ".join(inv.get("objectives") or []), 400)
+        r["apparatus"] = inv.get("apparatus") or ""
+        r["sensors"] = "; ".join(inv.get("sensors") or [])
+        tv = inv.get("testVariables") or {}
+        held = "; ".join(tv.get("held") or [])
+        varied = "; ".join(tv.get("varied") or [])
+        r["test_variables"] = (
+            (f"held: {held} | varied: {varied}") if (held or varied) else ""
+        )
         rows.append(r)
     return rows
 

@@ -28,6 +28,13 @@ PYBIND11_MODULE(freefall_engine, m) {
         .def_readonly("ignitionLogitB", &Material::ignitionLogitB)
         .def_readonly("ignitionFitN", &Material::ignitionFitN);
 
+    py::class_<RiskBreakdown>(m, "RiskBreakdown")
+        .def_readonly("ignitionPressure", &RiskBreakdown::ignitionPressure)
+        .def_readonly("flowFactor", &RiskBreakdown::flowFactor)
+        .def_readonly("hiddenFactor", &RiskBreakdown::hiddenFactor)
+        .def_readonly("gravityFactor", &RiskBreakdown::gravityFactor)
+        .def_readonly("riskIndex", &RiskBreakdown::riskIndex);
+
     py::class_<MaterialRisk>(m, "MaterialRisk")
         .def(py::init<>())
         .def("load_json", &MaterialRisk::loadJson)
@@ -36,6 +43,19 @@ PYBIND11_MODULE(freefall_engine, m) {
                                      const std::string& id, double o2) {
             const Material* m = self.get(id);
             return m ? MaterialRisk::ignitionPressure(*m, o2) : -1.0;
+        })
+        .def("risk_index", [](const MaterialRisk& self,
+                              const std::string& id, double o2,
+                              double flow, const std::string& gravity) {
+            const Material* m = self.get(id);
+            return m ? MaterialRisk::riskIndex(*m, o2, flow, gravity) : -1.0;
+        })
+        .def("risk_breakdown", [](const MaterialRisk& self,
+                                  const std::string& id, double o2,
+                                  double flow, const std::string& gravity) {
+            const Material* m = self.get(id);
+            return m ? MaterialRisk::riskBreakdown(*m, o2, flow, gravity)
+                     : RiskBreakdown{};
         })
         .def("coflow_outcome", [](const MaterialRisk& self,
                                   const std::string& fuel, double o2Pct,

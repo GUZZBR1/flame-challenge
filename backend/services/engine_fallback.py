@@ -90,6 +90,18 @@ def flow_factor(flow_cms: float,
     return a[-1][1]
 
 
+# MaterialRisk::gravityFactor — µg is the reference worst case (1.0);
+# partial-g and Earth are protective discounts
+_GRAVITY_FACTOR = {"microgravity": 1.0, "lunar": 0.92, "martian": 0.95,
+                   "partial-gravity": 0.94, "earth": 0.85}
+
+
+def _hidden_factor(m: Material) -> float:
+    """MaterialRisk::hiddenFactor — cool-flame/smolder/soot composite."""
+    return (1.0 + 0.25 * float(m.coolFlameCapable)
+            + 0.15 * float(m.smoldering) + 0.10 * m.sootIndex)
+
+
 class MaterialRisk:
     """ACME-style flammability matrix (material_risk.cpp)."""
 
@@ -151,6 +163,35 @@ class MaterialRisk:
     def ignition_pressure(self, material_id: str, o2_pct: float) -> float:
         m = self.table.get(material_id)
         return _ignition_pressure(m, float(o2_pct)) if m else -1.0
+
+    def risk_index(self, material_id: str, o2_pct: float,
+                   flow_cms: float = 0.0,
+                   gravity: str = "microgravity") -> float:
+        """MaterialRisk::riskIndex — clamp01(P·F·H·G) composite."""
+        m = self.table.get(material_id)
+        if not m:
+            return -1.0
+        g = _GRAVITY_FACTOR.get(str(gravity).lower(), 1.0)
+        return max(0.0, min(1.0, _ignition_pressure(m, float(o2_pct))
+                            * flow_factor(flow_cms)
+                            * _hidden_factor(m) * g))
+
+    def risk_breakdown(self, material_id: str, o2_pct: float,
+                       flow_cms: float = 0.0,
+                       gravity: str = "microgravity") -> dict:
+        """MaterialRisk::riskBreakdown — factor-by-factor decomposition."""
+        m = self.table.get(material_id)
+        if not m:
+            return {"ignitionPressure": 0.0, "flowFactor": 0.0,
+                    "hiddenFactor": 1.0, "gravityFactor": 1.0,
+                    "riskIndex": 0.0}
+        p = _ignition_pressure(m, float(o2_pct))
+        f = flow_factor(flow_cms)
+        h = _hidden_factor(m)
+        g = _GRAVITY_FACTOR.get(str(gravity).lower(), 1.0)
+        return {"ignitionPressure": p, "flowFactor": f, "hiddenFactor": h,
+                "gravityFactor": g,
+                "riskIndex": max(0.0, min(1.0, p * f * h * g))}
 
     def coflow_outcome(self, fuel: str, o2_pct: float, o2_end_pct: float,
                        mf_lo: float, mf_hi: float,

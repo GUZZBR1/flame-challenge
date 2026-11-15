@@ -38,10 +38,6 @@ def _pct(x: float) -> int:
     return max(0, min(100, round(x)))
 
 
-def _safe_index(mat: str, o2: float, flow: float, g: str) -> float:
-    return risk.risk_index(mat, o2, flow, g)["riskIndex"]
-
-
 def _regime_clause(r: dict, flow_cms: float) -> str:
     """One physics sentence keyed on the dominant regime flags."""
     f = r["flags"]
@@ -115,13 +111,17 @@ def decision_cards(
     def opt(label: str, why: str, o2m: float, flowm: float,
             action: str, score: float | None = None) -> dict:
         # no explicit score → efficacy = 1 - risk at the counterfactual point
-        s = score if score is not None else (
-            1 - _safe_index(mat, o2m, flowm, gravity)) * 100
+        ri = risk.risk_index(mat, o2m, flowm, gravity)
+        s = score if score is not None else (1 - ri["riskIndex"]) * 100
         return {
             "label": label,
             "why": why,
             "score": _pct(s),
             "action": action,
+            # conformal band only rides scores derived from the burn
+            # model — suppression efficacy comes from fixed priors and
+            # must not borrow the risk predictor's interval
+            "uncertainty": ri.get("uncertainty") if score is None else None,
             "model": {"materialId": mat, "o2Pct": round(o2m, 2),
                       "flowCms": round(flowm, 2), "gravity": gravity},
         }

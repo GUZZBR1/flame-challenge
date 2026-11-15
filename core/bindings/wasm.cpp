@@ -17,6 +17,18 @@ double riskIgnitionPressure(const MaterialRisk& self, const std::string& id,
     const Material* m = self.get(id);
     return m ? MaterialRisk::ignitionPressure(*m, o2) : -1.0;
 }
+double riskIndexFn(const MaterialRisk& self, const std::string& id,
+                   double o2, double flow, const std::string& gravity) {
+    const Material* m = self.get(id);
+    return m ? MaterialRisk::riskIndex(*m, o2, flow, gravity) : -1.0;
+}
+RiskBreakdown riskBreakdownFn(const MaterialRisk& self, const std::string& id,
+                              double o2, double flow,
+                              const std::string& gravity) {
+    const Material* m = self.get(id);
+    return m ? MaterialRisk::riskBreakdown(*m, o2, flow, gravity)
+             : RiskBreakdown{};
+}
 }  // namespace
 
 EMSCRIPTEN_BINDINGS(freefall_engine) {
@@ -42,11 +54,20 @@ EMSCRIPTEN_BINDINGS(freefall_engine) {
     register_vector<Material>("MaterialVector");
     register_vector<std::string>("StringVector");
 
+    value_object<RiskBreakdown>("RiskBreakdown")
+        .field("ignitionPressure", &RiskBreakdown::ignitionPressure)
+        .field("flowFactor", &RiskBreakdown::flowFactor)
+        .field("hiddenFactor", &RiskBreakdown::hiddenFactor)
+        .field("gravityFactor", &RiskBreakdown::gravityFactor)
+        .field("riskIndex", &RiskBreakdown::riskIndex);
+
     class_<MaterialRisk>("MaterialRisk")
         .constructor<>()
         .function("loadJson", &MaterialRisk::loadJson)
         .function("all", &MaterialRisk::all)
-        .function("ignitionPressure", &riskIgnitionPressure);
+        .function("ignitionPressure", &riskIgnitionPressure)
+        .function("riskIndex", &riskIndexFn)
+        .function("riskBreakdown", &riskBreakdownFn);
 
     value_object<Chamber::Config>("ChamberConfig")
         .field("investigationId", &Chamber::Config::investigationId)

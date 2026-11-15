@@ -59,6 +59,14 @@ def ignition_pressure(material_id: str, o2_pct: float) -> float:
     return max(0.0, _risks.ignition_pressure(material_id, float(o2_pct)))
 
 
+def risk_index(material_id: str, o2_pct: float, flow_cms: float = 0.0,
+               gravity: str = "microgravity") -> float:
+    """MaterialRisk::riskIndex — the full composite evaluated inside the
+    compiled engine (-1.0 for unknown materials; callers clamp at 0)."""
+    return max(0.0, _risks.risk_index(material_id, float(o2_pct),
+                                      float(flow_cms), str(gravity)))
+
+
 def coflow_outcome(fuel: str, o2_pct: float = -1.0,
                    o2_end_pct: float = -1.0, mf_lo: float = -1.0,
                    mf_hi: float = -1.0, burn_time_s: float = -1.0) -> int:

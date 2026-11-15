@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { SiUiCommand } from '../lib/api'
 import {
   streamChamber,
   type ChamberState,
@@ -28,6 +29,9 @@ export default function LiveChamber() {
   const wsRef = useRef<WebSocket | null>(null)
   const [inv, setInv] = useState<string>('flex-2')
   const [o2, setO2] = useState(21)
+  // null = let the engine pick the investigation's mid-range flow;
+  // only an explicit copilot airflow command pins a value
+  const [flow, setFlow] = useState<number | null>(null)
   const [sealed, setSealed] = useState(false)
   const [frame, setFrame] = useState<ChamberState | null>(null)
   const [status, setStatus] = useState<Status>('idle')
@@ -46,6 +50,7 @@ export default function LiveChamber() {
     const req = {
       investigationId: inv,
       o2Pct: o2,
+      ...(flow != null ? { flowCms: flow } : {}),
       seed: 1,
       ...(sealed
         ? { volumeLiters: 50, ambientO2Pct: o2, ventPerSec: 0.0005 }
@@ -63,9 +68,63 @@ export default function LiveChamber() {
       () => setStatus('offline'),
     )
     if (!wsRef.current) setStatus('offline')
-  }, [inv, o2, sealed, stop])
+  }, [inv, o2, flow, sealed, stop])
 
   useEffect(() => stop, [stop])
+
+  // copilot commands retune the live chamber — SiConsole broadcasts
+  // 'ignis:ui-command' after each SI answer, carrying __investigation =
+  // the console's experiment. Auto-restart only when we can actually
+  // synchronize that investigation; a SAME-scoped O₂ answer must not
+  // respawn a FLEX heptane run under new numbers.
+  const retune = useRef(false)
+  // mirror of inv for the command handler — its effect closes over
+  // state once, so comparisons need the ref
+  const invRef = useRef(inv)
+  useEffect(() => { invRef.current = inv }, [inv])
+  useEffect(() => {
+    const onCmd = (e: Event) => {
+      const cmd = (e as CustomEvent<SiUiCommand & {
+        __investigation?: string | null
+      }>).detail ?? {}
+      let touched = false
+      const srcInv = cmd.__investigation ?? cmd.load_preset
+      const runnable = srcInv != null
+        && INVESTIGATIONS.some((i) => i.id === srcInv)
+      const af = cmd.set_airflow_cm_s
+      const hasFlow = typeof af === 'number'
+      if (runnable) {
+        // only a *different* investigation invalidates a pinned flow —
+        // oxygen-only follow-ups on the same experiment keep it
+        if (srcInv !== invRef.current && !hasFlow) setFlow(null)
+        setInv(srcInv)
+        touched = true
+      }
+      if (typeof cmd.set_o2_percent === 'number') {
+        setO2(Math.round(
+          Math.min(Math.max(cmd.set_o2_percent, 0), 40) * 10) / 10)
+        touched = true
+      }
+      if (hasFlow) {
+        setFlow(Math.round(Math.min(Math.max(af, 0), 40) * 10) / 10)
+        touched = true
+      }
+      // restart only when the chamber runs the investigation the answer
+      // was scoped to — otherwise the state lands for the next manual
+      // run without spawning a misleading experiment
+      if (touched && runnable) retune.current = true
+    }
+    window.addEventListener('ignis:ui-command', onCmd)
+    return () => window.removeEventListener('ignis:ui-command', onCmd)
+  }, [])
+
+  // re-stream once the new parameters have landed in state
+  useEffect(() => {
+    if (retune.current) {
+      retune.current = false
+      run()
+    }
+  }, [run, inv, o2, flow])
 
   // ---------- canvas ----------
   useEffect(() => {
@@ -212,7 +271,10 @@ export default function LiveChamber() {
           <label className="opacity-70">investigation</label>
           <select
             value={inv}
-            onChange={(e) => setInv(e.target.value)}
+            onChange={(e) => {
+              setInv(e.target.value)
+              setFlow(null)
+            }}
             className="rounded border border-[color-mix(in_srgb,var(--ink)_25%,transparent)] bg-transparent px-2 py-1.5 font-mono text-[11px] lowercase text-[var(--ink)]"
           >
             {INVESTIGATIONS.map((i) => (

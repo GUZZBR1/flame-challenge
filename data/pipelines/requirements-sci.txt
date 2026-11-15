@@ -1,0 +1,8 @@
+# Optional scientific-validation layer for data/pipelines.
+# Only needed for fit_uncertainty.py and validate_scientific_bounds.py —
+# the backend, C++ engine and site run without any of these.
+# Install: ./.venv/bin/pip install -r data/pipelines/requirements-sci.txt
+mapie>=1.6          # split-conformal intervals -> risk_model.json["uncertainty"]
+scikit-learn>=1.5   # adapter interface MAPIE wraps around the analytical model
+shap>=0.45          # ExactExplainer: certifies the closed-form Shapley attribution
+cantera>=3.0        # GRI-Mech 3.0 equilibrium bounds (T_ad, diluent ordering)
