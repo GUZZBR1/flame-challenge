@@ -229,7 +229,7 @@ export default function SimDeck() {
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
-      <div className="shell relative pb-24 pt-28 sm:pt-32">
+      <div className="relative mx-auto w-[min(92vw,112rem)] pb-40 pt-40 sm:pt-48">
         <KeyedFlame
           className="-top-24 left-1/2 h-[min(72vh,640px)] w-screen -translate-x-1/2"
           strength={0.3}
@@ -259,11 +259,11 @@ export default function SimDeck() {
           <p data-hero className="card-label mt-12 sm:mt-16">Guided Scenarios &amp; Historical Crises</p>
           <h1
             data-hero
-            className="mt-4 font-display text-[clamp(2.75rem,6.5vw,4rem)] font-bold leading-display tracking-tight"
+            className="mt-4 font-display text-[clamp(2.75rem,5.6vw,5.5rem)] font-bold leading-display tracking-tight"
           >
             1-Click Mission Envelopes
           </h1>
-          <p data-hero className="mt-8 max-w-xl text-body leading-[1.85] opacity-80">
+          <p data-hero className="mt-10 max-w-2xl text-body leading-[1.85] opacity-80">
             Explore historical fire crises from NASA research — one click previews the mission.
           </p>
           <p
@@ -276,7 +276,7 @@ export default function SimDeck() {
         </header>
 
         {/* ---- missions — historical crises ---- */}
-        <section className="relative mt-14 sm:mt-20" aria-label="Historical missions">
+        <section className="relative mt-28 sm:mt-40" aria-label="Historical missions">
           <svg width="0" height="0" aria-hidden="true" className="absolute">
             <defs>
               <clipPath id="cut-hero" clipPathUnits="objectBoundingBox">
@@ -295,16 +295,16 @@ export default function SimDeck() {
           </svg>
           <OrbitDecor />
 
-          <div className="relative grid gap-x-14 gap-y-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+          <div className="relative grid gap-x-[clamp(3rem,7vw,9rem)] gap-y-24 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             {/* featured — apollo 1: giant name across the block, copy + plate below */}
             <article data-hero className="flex min-w-0 flex-col">
               <span className="inline-block self-start bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
                 Historical Crisis
               </span>
-              <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3.5rem,8.4vw,6.75rem)] font-bold leading-[0.92] tracking-tight">
+              <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3.5rem,9vw,9rem)] font-bold leading-[0.92] tracking-tight">
                 {feature.name}
               </h2>
-              <div className="mt-8 grid flex-1 items-center gap-8 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+              <div className="mt-14 grid flex-1 items-center gap-x-[clamp(2.5rem,5vw,6rem)] gap-y-12 sm:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
                 <div className="min-w-0">
                   <p className="font-mono text-[clamp(1rem,1.6vw,1.2rem)] font-semibold text-[#e5202e]">
                     {FEATURE.tag}
@@ -342,7 +342,7 @@ export default function SimDeck() {
                   >
                     <line x1="34" y1="4" x2="2" y2="64" stroke="#e5202e" strokeWidth="1" vectorEffect="non-scaling-stroke" />
                   </svg>
-                  <div className="cut-hero relative h-[320px] overflow-hidden bg-black sm:h-[420px] lg:h-[460px]">
+                  <div className="cut-hero relative h-[340px] overflow-hidden bg-black sm:h-[480px] lg:h-[560px] xl:h-[640px]">
                     <img
                       src={MISSION_MEDIA.feature.src}
                       alt={MISSION_MEDIA.feature.alt}
@@ -355,7 +355,7 @@ export default function SimDeck() {
             </article>
 
             {/* rail — two identical panels sharing the feature's height */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-10">
               {rail.map(([preset, t, media, n, shape]) => {
                 const isActive = activeMission.id === preset.id
                 return (
@@ -365,14 +365,14 @@ export default function SimDeck() {
                     data-hero
                     className="group flex flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                   >
-                    <span className="cut-panel grid w-full grid-cols-[minmax(0,1fr)_46%] items-center gap-3 bg-ink/[0.07] py-7 pl-9 pr-5 transition-colors duration-300 group-hover:bg-ink/[0.1]">
+                    <span className="cut-panel grid w-full grid-cols-[minmax(0,1fr)_46%] items-center gap-3 bg-ink/[0.07] py-10 pl-12 pr-8 transition-colors duration-300 group-hover:bg-ink/[0.1]">
                       <span className="flex h-full min-w-0 flex-col justify-between gap-6">
                         <span className="block">
                           <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
                             {n} / Historical Crisis
                           </span>
                           <span
-                            className="mt-2 block font-display text-[clamp(1.7rem,2.6vw,2.3rem)] font-bold leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-accent"
+                            className="mt-2 block font-display text-[clamp(1.8rem,2.8vw,3rem)] font-bold leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-accent"
                             style={isActive ? { color: preset.accent } : undefined}
                           >
                             {t.name}
@@ -388,7 +388,7 @@ export default function SimDeck() {
                           →
                         </span>
                       </span>
-                      <span className={`${shape} block h-52 overflow-hidden bg-black sm:h-60`}>
+                      <span className={`${shape} block h-56 overflow-hidden bg-black sm:h-72`}>
                         {renderMedia(media, mediaCls)}
                       </span>
                     </span>
@@ -399,8 +399,8 @@ export default function SimDeck() {
           </div>
 
           {/* band — challenger + columbia, media bleeding to the screen edges */}
-          <div className="mission-bleed relative mt-24 border-t border-edge pt-12 sm:mt-28">
-            <div className="grid gap-14 lg:grid-cols-2 lg:gap-16">
+          <div className="mission-bleed relative mt-36 border-t border-edge pt-20 sm:mt-48">
+            <div className="grid gap-24 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-[clamp(4rem,8vw,10rem)]">
               {band.map(([preset, t, media, n, shape], i) => {
                 const isActive = activeMission.id === preset.id
                 const imageLeft = i === 0
@@ -412,7 +412,7 @@ export default function SimDeck() {
                     className="group flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
                   >
                     <span
-                      className={`${shape} block h-44 overflow-hidden bg-black sm:h-48 sm:w-[46%] sm:shrink-0 ${
+                      className={`${shape} block h-52 overflow-hidden bg-black sm:h-72 sm:w-[48%] sm:shrink-0 ${
                         imageLeft ? 'bleed-l' : 'bleed-r sm:order-2'
                       }`}
                     >
@@ -456,7 +456,7 @@ export default function SimDeck() {
           </div>
         </section>
 
-        <div className="relative mt-12 flex justify-end">
+        <div className="relative mt-24 flex justify-end">
           <Button variant="glass" onClick={navigateBack}>
             Back to overview <IconArrowLeft size={16} />
           </Button>

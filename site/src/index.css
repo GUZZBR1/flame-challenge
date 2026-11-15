@@ -529,12 +529,10 @@ button.pill:active { transform: translateY(0) scale(.96); }
    inset so type stays on the editorial column while media bleeds to the
    screen edge and dissolves inward (no boxes, no clips). */
 .mission-bleed {
-  --gut: 1.5rem;
+  --gut: calc(50vw - min(46vw, 56rem));
   margin-inline: calc(50% - 50vw);
   padding-inline: var(--gut);
 }
-@media (min-width: 640px) { .mission-bleed { --gut: calc(2.5rem + max(0px, (100vw - 72rem) / 2)); } }
-@media (min-width: 1024px) { .mission-bleed { --gut: calc(4rem + max(0px, (100vw - 72rem) / 2)); } }
 .bleed-l { margin-left: calc(-1 * var(--gut)); }
 .bleed-r { margin-right: calc(-1 * var(--gut)); }
 @media (max-width: 639.98px) { .bleed-l, .bleed-r { margin-inline: calc(-1 * var(--gut)); } }
