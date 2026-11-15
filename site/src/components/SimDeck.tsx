@@ -106,9 +106,9 @@ function splitTitle(preset: MissionPreset) {
  *  leads left, two stack in the rail, and the shuttle losses close the
  *  spread as a bottom band */
 const FEATURE = MISSION_PRESETS[0] // apollo 1
-const SIDE_A = MISSION_PRESETS[1] // apollo 13
+const SIDE_A = MISSION_PRESETS[3] // challenger 51-l
 const SIDE_B = MISSION_PRESETS[2] // mir 1997
-const BAND_A = MISSION_PRESETS[3] // challenger 51-l
+const BAND_A = MISSION_PRESETS[1] // apollo 13
 const BAND_B = MISSION_PRESETS[4] // columbia sts-107
 
 /** official NASA media — images-api.nasa.gov. Apollo 1 flew no mission
@@ -144,20 +144,19 @@ const MISSION_MEDIA = {
   },
 } as const
 
-/** orbital arcs + crosshair — pure decoration behind the spread */
+/** large orbital arc sweeping across the spread + crosshair */
 function OrbitDecor() {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute -right-24 -top-28 hidden h-[720px] w-[900px] text-ink opacity-[0.13] lg:block"
-      viewBox="0 0 900 720"
+      className="pointer-events-none absolute -right-40 -top-72 hidden h-[1000px] w-[1100px] text-ink opacity-[0.14] lg:block"
+      viewBox="0 0 1100 1000"
       fill="none"
     >
-      <circle cx="560" cy="330" r="340" stroke="currentColor" strokeWidth="1" />
-      <circle cx="560" cy="330" r="250" stroke="currentColor" strokeWidth="0.75" strokeDasharray="3 7" />
-      <path d="M40 520 L330 250" stroke="currentColor" strokeWidth="0.75" />
-      <path d="M96 40 V70 M81 55 H111" stroke="currentColor" strokeWidth="1" />
-      <circle cx="823" cy="205" r="4" fill="currentColor" />
+      <circle cx="1020" cy="140" r="640" stroke="currentColor" strokeWidth="1" />
+      <circle cx="1020" cy="140" r="520" stroke="currentColor" strokeWidth="0.75" strokeDasharray="3 8" opacity="0.7" />
+      <path d="M690 296 V326 M675 311 H705" stroke="currentColor" strokeWidth="1" />
+      <circle cx="560" cy="702" r="3.5" fill="currentColor" />
     </svg>
   )
 }
@@ -201,11 +200,11 @@ export default function SimDeck() {
   const feature = splitTitle(FEATURE)
   const [detailsOpen, setDetailsOpen] = useState(false)
   const rail = [
-    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.sideA, '02', 'cut-trap'],
-    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '03', 'cut-lozenge'],
+    [SIDE_A, splitTitle(SIDE_A), MISSION_MEDIA.bandA, '02', 'cut-slant'],
+    [SIDE_B, splitTitle(SIDE_B), MISSION_MEDIA.sideB, '03', 'cut-slant'],
   ] as const
   const band = [
-    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.bandA, '04', 'cut-rail'],
+    [BAND_A, splitTitle(BAND_A), MISSION_MEDIA.sideA, '04', 'cut-rail'],
     [BAND_B, splitTitle(BAND_B), MISSION_MEDIA.bandB, '05', 'cut-slant'],
   ] as const
 
@@ -282,14 +281,11 @@ export default function SimDeck() {
               <clipPath id="cut-hero" clipPathUnits="objectBoundingBox">
                 <path d="M0.3,0 L0.97,0 Q1,0 1,0.04 L1,0.62 Q1,0.68 0.975,0.74 L0.92,0.95 Q0.905,1 0.87,1 L0.04,1 Q0,1 0.014,0.95 L0.28,0.04 Q0.29,0 0.3,0 Z" />
               </clipPath>
-              <clipPath id="cut-trap" clipPathUnits="objectBoundingBox">
-                <path d="M0.1,0.02 Q0.11,0 0.14,0 L0.86,0 Q0.89,0 0.9,0.02 L0.995,0.9 Q1,1 0.96,1 L0.04,1 Q0,1 0.005,0.9 Z" />
-              </clipPath>
-              <clipPath id="cut-lozenge" clipPathUnits="objectBoundingBox">
-                <path d="M0.14,0.04 Q0.15,0 0.19,0 L0.81,0 Q0.85,0 0.86,0.04 L0.995,0.46 Q1,0.5 0.995,0.54 L0.86,0.96 Q0.85,1 0.81,1 L0.19,1 Q0.15,1 0.14,0.96 L0.005,0.54 Q0,0.5 0.005,0.46 Z" />
-              </clipPath>
               <clipPath id="cut-slant" clipPathUnits="objectBoundingBox">
                 <path d="M0.2,0 L0.96,0 Q1,0 1,0.06 L1,0.94 Q1,1 0.96,1 L0.03,1 Q0,1 0.01,0.94 L0.19,0.03 Q0.195,0 0.2,0 Z" />
+              </clipPath>
+              <clipPath id="cut-panel" clipPathUnits="objectBoundingBox">
+                <path d="M0.07,0.03 Q0.075,0 0.1,0 L0.975,0 Q1,0 1,0.05 L1,0.95 Q1,1 0.975,1 L0.03,1 Q0,1 0.006,0.95 Z" />
               </clipPath>
               <clipPath id="cut-rail" clipPathUnits="objectBoundingBox">
                 <path d="M0.1,0 L0.97,0 Q1,0 0.99,0.05 L0.93,0.95 Q0.92,1 0.89,1 L0.03,1 Q0,1 0.01,0.95 L0.07,0.05 Q0.08,0 0.1,0 Z" />
@@ -355,41 +351,81 @@ export default function SimDeck() {
               </div>
             </article>
 
-            {/* rail — apollo 13 + mir 1997 */}
-            <div className="flex flex-col gap-14">
-              {rail.map(([preset, t, media, n, shape]) => {
+            {/* rail — challenger (text) over mir 1997 (panel) */}
+            <div className="flex flex-col gap-8 lg:pt-8">
+              {rail.map(([preset, t, media, n, shape], idx) => {
                 const isActive = activeMission.id === preset.id
+                const arrow = (
+                  <span
+                    aria-hidden="true"
+                    className="grid size-10 shrink-0 place-items-center rounded-full border border-[#1e3fae] font-mono text-caption text-[#1e3fae] transition-colors duration-300 group-hover:bg-[#1e3fae] group-hover:text-white"
+                  >
+                    →
+                  </span>
+                )
+                const label = (
+                  <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
+                    {n} / Historical Crisis
+                  </span>
+                )
+                const name = (
+                  <span
+                    className="mt-1 block font-display text-[clamp(2rem,3.2vw,2.75rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
+                    style={isActive ? { color: preset.accent } : undefined}
+                  >
+                    {t.name}
+                  </span>
+                )
+                const tag = (
+                  <span className="mt-2 block font-mono text-tiny font-semibold text-[#e5202e]">
+                    {isActive ? '● active' : preset.tag}
+                  </span>
+                )
+                const desc = (
+                  <span className="mt-3 line-clamp-2 block max-w-[17rem] text-caption leading-relaxed opacity-75">
+                    {preset.description}
+                  </span>
+                )
+                if (idx === 0)
+                  return (
+                    <div key={preset.id} className="space-y-8">
+                      <button
+                        {...pickProps(preset)}
+                        data-hero
+                        className="group relative flex w-full items-start justify-between gap-4 pl-10 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                      >
+                        <span aria-hidden="true" className="absolute left-0 top-1 h-24 w-px bg-ink/35" />
+                        <span className="min-w-0">
+                          {label}
+                          {name}
+                          {tag}
+                          {desc}
+                        </span>
+                        {arrow}
+                      </button>
+                      <svg aria-hidden="true" className="h-4 w-full text-ink opacity-25" viewBox="0 0 400 16" preserveAspectRatio="none" fill="none">
+                        <path d="M0 16 Q0 0 28 0 H400" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+                      </svg>
+                    </div>
+                  )
                 return (
                   <button
                     key={preset.id}
                     {...pickProps(preset)}
                     data-hero
-                    className="group block text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    className="group block w-full text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                   >
-                    <span className="flex items-start justify-between gap-4">
-                      <span className="min-w-0">
-                        <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
-                          {n} / Historical Crisis
-                        </span>
-                        <span
-                          className="mt-1 block font-display text-[clamp(2rem,3.2vw,2.75rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                          style={isActive ? { color: preset.accent } : undefined}
-                        >
-                          {t.name}
-                        </span>
-                        <span className="mt-2 block font-mono text-tiny font-semibold text-[#e5202e]">
-                          {isActive ? '● active' : preset.tag}
-                        </span>
+                    <span className="cut-panel grid min-h-[230px] grid-cols-[minmax(0,1fr)_44%] items-center gap-2 bg-ink/[0.07] py-5 pl-9 pr-4">
+                      <span className="flex min-w-0 flex-col items-start">
+                        {label}
+                        {name}
+                        {tag}
+                        {desc}
+                        <span className="mt-4">{arrow}</span>
                       </span>
-                      <span
-                        aria-hidden="true"
-                        className="mt-2 grid size-10 shrink-0 place-items-center rounded-full border border-[#1e3fae] font-mono text-caption text-[#1e3fae] transition-colors duration-300 group-hover:bg-[#1e3fae] group-hover:text-white"
-                      >
-                        →
+                      <span className={`${shape} block h-44 overflow-hidden bg-black sm:h-48`}>
+                        {renderMedia(media, mediaCls)}
                       </span>
-                    </span>
-                    <span className={`${shape} mt-5 block h-40 overflow-hidden bg-black sm:h-48`}>
-                      {renderMedia(media, mediaCls)}
                     </span>
                   </button>
                 )
@@ -428,8 +464,11 @@ export default function SimDeck() {
                         >
                           {t.name}
                         </span>
-                        <span className="mt-2 block font-mono text-tiny font-semibold text-[#e5202e]">
+                        <span className="mt-2 block font-mono text-tiny font-semibold text-[#1e3fae]">
                           {isActive ? '● active' : preset.tag}
+                        </span>
+                        <span className="mt-3 line-clamp-2 block max-w-[17rem] text-caption leading-relaxed opacity-75">
+                          {preset.description}
                         </span>
                       </span>
                       <span
@@ -442,6 +481,12 @@ export default function SimDeck() {
                   </button>
                 )
               })}
+            </div>
+            <div aria-hidden="true" className="mt-10 flex gap-1.5">
+              <span className="h-[3px] w-8 bg-[#1e3fae]" />
+              <span className="h-[3px] w-8 bg-ink/20" />
+              <span className="h-[3px] w-8 bg-ink/20" />
+              <span className="h-[3px] w-8 bg-ink/20" />
             </div>
           </div>
         </section>
