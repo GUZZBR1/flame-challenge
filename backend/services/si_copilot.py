@@ -52,8 +52,11 @@ except ImportError:  # gateway client optional — offline fallback still works
 
 try:
     import httpx
-except ImportError:  # pragma: no cover - httpx is a hard dep via httpx2
-    httpx = None  # type: ignore[assignment]
+except ImportError:  # fresh installs: openai no longer pulls httpx —
+    try:            # requirements carry httpx2, a same-API fork
+        import httpx2 as httpx  # type: ignore[no-redef]
+    except ImportError:
+        httpx = None  # type: ignore[assignment]
 
 
 # ---------------- config ----------------

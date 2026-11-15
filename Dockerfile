@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN git clone --depth 1 --branch ${WHISPER_REF} \
         https://github.com/ggml-org/whisper.cpp /opt/whisper.cpp \
     && cmake -S /opt/whisper.cpp -B /opt/whisper.cpp/build \
-        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
     && cmake --build /opt/whisper.cpp/build -j --target whisper-server
 # lightweight multilingual base model (~148 MB) — override via build-arg
 ARG WHISPER_MODEL_URL=https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin
@@ -54,7 +54,10 @@ COPY scripts/start_prod.sh scripts/start_prod.sh
 COPY --from=core-build /src/core/build/freefall_engine.*.so core/build/
 COPY --from=whisper-build /opt/whisper.cpp/build/bin/whisper-server /opt/whisper/whisper-server
 COPY --from=whisper-build /opt/whisper.cpp/models/ggml-base.bin /opt/whisper/models/ggml-base.bin
-RUN chmod +x scripts/start_prod.sh /opt/whisper/whisper-server
+# normalize line endings — build contexts produced on Windows can carry
+# CRLF into the shell entrypoint
+RUN sed -i 's/\r$//' scripts/start_prod.sh \
+    && chmod +x scripts/start_prod.sh /opt/whisper/whisper-server
 
 EXPOSE 7860
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s \
