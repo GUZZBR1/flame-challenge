@@ -55,7 +55,9 @@ export default function Challenge() {
     const v = videoRef.current
     const c = canvasRef.current
     if (!v || !c) return
-    return attachKeyedFlame(v, c)
+    // loop only the lit phase — after ~15s the flame dies to a dark
+    // smudge (the extinction regime)
+    return attachKeyedFlame(v, c, { start: 0.4, end: 15.5 })
   }, [])
 
   // reveal rows once, on entry — skipped entirely under reduced motion
