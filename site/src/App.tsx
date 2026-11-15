@@ -90,6 +90,15 @@ export default function App() {
     initScroll()
   }, [])
 
+  // broadcast the active view so loops on the page underneath
+  // (hero mesh, keyed flames, shipyard feed) can sleep while an
+  // overlay screen covers them — they resume when it's dismissed
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('ignis:view', { detail: { view } }),
+    )
+  }, [view])
+
   // the overlay screens scroll inside their own fixed container —
   // freeze the page behind them so the root scrollbar doesn't render
   // a second track next to the overlay's own

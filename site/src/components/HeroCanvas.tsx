@@ -68,6 +68,10 @@ export default function HeroCanvas() {
     let pixelRatio = 1
     let frame = 0
     let waveTime = 0
+    // the mesh only draws while the hero is actually on screen and no
+    // overlay view (psi / sim / dashboard) covers the page
+    let onScreen = true
+    let covered = false
 
     // mesh rect in canvas pixels (CSS px after DPR transform)
     let meshW = 0
@@ -102,10 +106,6 @@ export default function HeroCanvas() {
       pointer.sx = e.clientX - rect.left
       pointer.sy = e.clientY - rect.top
       hasPointer = true
-    }
-
-    function project(x: number, y: number, z: number): [number, number] {
-      return [meshCX + (x - y) * kx, cyBase + (x + y) * ky - z * kz]
     }
 
     function drawStars() {
@@ -162,8 +162,10 @@ export default function HeroCanvas() {
       }
 
       // 2) cells back→front, flat-shaded quads with thermal color.
-      //    fills need per-cell colors; the hairline grid is one Path2D
-      //    stroked once at the end (was: 2,432 stroke() calls/frame)
+      //    zero per-cell allocation: the four projected corners go
+      //    straight into scalars; fills come from a LUT; the hairline
+      //    grid is one Path2D stroked once at the end
+      //    (was: 2,432 stroke() calls/frame + per-cell arrays)
       const stepX = STEP_X
       const stepY = STEP_Y
       const strokePath = new Path2D()
@@ -177,26 +179,32 @@ export default function HeroCanvas() {
         const z3 = zGrid[i0 + VW]
         const x0 = -EXTENT + cx * stepX
         const y0 = -EXTENT + cy * stepY
-        const p0 = project(x0, y0, z0)
-        const p1 = project(x0 + stepX, y0, z1)
-        const p2 = project(x0 + stepX, y0 + stepY, z2)
-        const p3 = project(x0, y0 + stepY, z3)
+        const x1 = x0 + stepX
+        const y1 = y0 + stepY
+        const p0x = meshCX + (x0 - y0) * kx
+        const p0y = cyBase + (x0 + y0) * ky - z0 * kz
+        const p1x = meshCX + (x1 - y0) * kx
+        const p1y = cyBase + (x1 + y0) * ky - z1 * kz
+        const p2x = meshCX + (x1 - y1) * kx
+        const p2y = cyBase + (x1 + y1) * ky - z2 * kz
+        const p3x = meshCX + (x0 - y1) * kx
+        const p3y = cyBase + (x0 + y1) * ky - z3 * kz
         const avgZ = (z0 + z1 + z2 + z3) / 4
         // map the wave field to the thermal ramp: crests ignite red,
         // troughs stay deep teal (matches the original hero.js mapping)
         const level = Math.max(0, Math.min(1, (avgZ + 1.05) / 2.1))
         wave.beginPath()
-        wave.moveTo(p0[0], p0[1])
-        wave.lineTo(p1[0], p1[1])
-        wave.lineTo(p2[0], p2[1])
-        wave.lineTo(p3[0], p3[1])
+        wave.moveTo(p0x, p0y)
+        wave.lineTo(p1x, p1y)
+        wave.lineTo(p2x, p2y)
+        wave.lineTo(p3x, p3y)
         wave.closePath()
         wave.fillStyle = FILL_LUT[(level * 256) | 0]
         wave.fill()
-        strokePath.moveTo(p0[0], p0[1])
-        strokePath.lineTo(p1[0], p1[1])
-        strokePath.lineTo(p2[0], p2[1])
-        strokePath.lineTo(p3[0], p3[1])
+        strokePath.moveTo(p0x, p0y)
+        strokePath.lineTo(p1x, p1y)
+        strokePath.lineTo(p2x, p2y)
+        strokePath.lineTo(p3x, p3y)
         strokePath.closePath()
       }
       wave.strokeStyle = 'rgba(235,255,244,.16)'
@@ -245,22 +253,33 @@ export default function HeroCanvas() {
 
     function start() {
       cancelAnimationFrame(frame)
+      if (!onScreen || covered) return
       if (reduced.matches) drawWave(waveTime)
-      else if (onScreen) frame = requestAnimationFrame(animate)
+      else frame = requestAnimationFrame(animate)
     }
 
-    // the hero only renders while the section is on screen — scrolling
-    // past it stops the wave loop entirely instead of drawing off-screen
-    let onScreen = true
+    // pause the mesh entirely while it's scrolled away or covered by an
+    // overlay view — the last drawn frame stays painted, so returning
+    // is seamless
+    const onVisibility = () => {
+      if (onScreen && !covered) start()
+      else cancelAnimationFrame(frame)
+    }
     const visibility = new IntersectionObserver(
       ([entry]) => {
         onScreen = entry.isIntersecting
-        if (onScreen) start()
-        else cancelAnimationFrame(frame)
+        onVisibility()
       },
       { threshold: 0 },
     )
     visibility.observe(host)
+    const onView = (e: Event) => {
+      covered =
+        ((e as CustomEvent<{ view?: string }>).detail?.view ?? 'main') !==
+        'main'
+      onVisibility()
+    }
+    window.addEventListener('ignis:view', onView)
 
     resize()
     start()
@@ -276,6 +295,7 @@ export default function HeroCanvas() {
     scope.addEventListener('pointerleave', onPointerLeave)
     return () => {
       visibility.disconnect()
+      window.removeEventListener('ignis:view', onView)
       observer.disconnect()
       reduced.removeEventListener('change', start)
       scope.removeEventListener('pointermove', onPointerMove)

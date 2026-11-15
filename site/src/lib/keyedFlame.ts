@@ -111,12 +111,16 @@ function initGL(canvas: HTMLCanvasElement): GLPipe | null {
 
 /**
  * Drive the keyed render loop between a hidden <video> and a canvas.
- * Handles visibility (pauses the video off-screen) and frame cadence
- * (requestVideoFrameCallback when available). Returns a cleanup.
+ * Handles visibility (pauses the video off-screen), frame cadence
+ * (requestVideoFrameCallback when available) and an optional loop
+ * window — `loop` seeks back to `start` whenever playback reaches
+ * `end` (or the clip ends), so a segment keeps cycling. Returns a
+ * cleanup.
  */
 export function attachKeyedFlame(
   video: VideoWithVFC,
   canvas: HTMLCanvasElement,
+  loop?: { start: number; end: number },
 ): () => void {
   // runtime feature-detect — the DOM types claim the methods always
   // exist, but older browsers genuinely lack them (rAF fallback below)
@@ -204,6 +208,28 @@ export function attachKeyedFlame(
   )
   obs.observe(canvas)
 
+  let onLoadedMetadata: (() => void) | undefined
+  let onTimeUpdate: (() => void) | undefined
+  let onEnded: (() => void) | undefined
+  if (loop) {
+    onLoadedMetadata = () => {
+      video.currentTime = loop.start
+    }
+    onTimeUpdate = () => {
+      if (video.currentTime >= loop.end) video.currentTime = loop.start
+    }
+    onEnded = () => {
+      video.currentTime = loop.start
+      void video.play().catch(() => {})
+    }
+    video.addEventListener('loadedmetadata', onLoadedMetadata)
+    video.addEventListener('timeupdate', onTimeUpdate)
+    video.addEventListener('ended', onEnded)
+    // metadata can already be in before attach runs — loadedmetadata
+    // only fires once, so apply the window start eagerly in that case
+    if (video.readyState >= 1) video.currentTime = loop.start
+  }
+
   if (vfc) vfch = vfc(pump)
   else raf = requestAnimationFrame(pump)
 
@@ -212,6 +238,11 @@ export function attachKeyedFlame(
     cancelAnimationFrame(raf)
     if (vfc && cvfc) cvfc(vfch)
     obs.disconnect()
+    if (onLoadedMetadata)
+      video.removeEventListener('loadedmetadata', onLoadedMetadata)
+    if (onTimeUpdate)
+      video.removeEventListener('timeupdate', onTimeUpdate)
+    if (onEnded) video.removeEventListener('ended', onEnded)
     if (pipe) {
       pipe.gl
         .getExtension('WEBGL_lose_context')
