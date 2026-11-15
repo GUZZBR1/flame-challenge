@@ -115,7 +115,7 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
                   e.preventDefault()
                   go(item.href)
                 }}
-                className={`nav-glass-link group relative inline-flex min-h-12 items-center whitespace-nowrap rounded-full px-4 font-mono text-[clamp(14px,1.15vw,16px)] font-semibold lowercase tracking-[0.06em] text-[var(--ink)] transition-[background,box-shadow,transform,color] duration-300 hover:-translate-y-px ${item.className ?? ''}`}
+                className={`nav-glass-link group relative inline-flex min-h-9 items-center whitespace-nowrap rounded-full px-4 font-mono text-[clamp(14px,1.15vw,16px)] font-semibold lowercase tracking-[0.06em] text-[var(--ink)] transition-[background,box-shadow,transform,color] duration-300 hover:-translate-y-px ${item.className ?? ''}`}
               >
                 {item.label}
                 <span

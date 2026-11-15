@@ -71,7 +71,7 @@ function Result({ item }: { item: GeneratedDashboard }) {
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {evidence.slice(0, 4).map((source) => (
               <li key={`${item.id}-${source.runId}`}>
-                <a className="inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] px-4 text-sm transition-colors hover:bg-white/50 dark:hover:bg-white/10" href={source.sourceUrl || '#psi-dataset'} target={source.sourceUrl ? '_blank' : undefined} rel="noreferrer">
+                <a className="inline-flex min-h-9 w-full items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] px-4 text-sm transition-colors hover:bg-white/50 dark:hover:bg-white/10" href={source.sourceUrl || '#psi-dataset'} target={source.sourceUrl ? '_blank' : undefined} rel="noreferrer">
                   <span className="truncate">{source.accession} · {source.fuel} · {source.outcome}</span>
                   <span className="shrink-0 tabular-nums opacity-65">{Math.round(source.similarity)}%</span>
                 </a>

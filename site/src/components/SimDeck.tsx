@@ -67,7 +67,7 @@ function ResultDetails({ response }: { response: SiResponse }) {
           <ul className="mt-2 grid gap-2 sm:grid-cols-2">
             {evidence.slice(0, 3).map((item) => (
               <li key={item.runId}>
-                <a className="flex min-h-12 items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] px-4 text-sm transition hover:bg-white/50 dark:hover:bg-white/10" href={item.sourceUrl || '#psi-dataset'} target={item.sourceUrl ? '_blank' : undefined} rel="noreferrer">
+                <a className="flex min-h-9 items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] px-4 text-sm transition hover:bg-white/50 dark:hover:bg-white/10" href={item.sourceUrl || '#psi-dataset'} target={item.sourceUrl ? '_blank' : undefined} rel="noreferrer">
                   <span className="truncate">{item.accession} · {item.fuel} · {item.outcome}</span>
                   <span className="shrink-0 tabular-nums opacity-65">{Math.round(item.similarity)}%</span>
                 </a>
@@ -331,7 +331,7 @@ export default function SimDeck() {
             {messages.length === 0 && <div className="mx-auto max-w-2xl py-6 text-center">
               <p className="text-lg leading-8 opacity-80">Start with a question like:</p>
               <div className="mt-5 flex flex-wrap justify-center gap-3">
-                {['What changes if oxygen drops to 18%?', 'Compare cotton spread in microgravity and Earth gravity', 'Search PSI records for hidden flame incidents'].map((example) => <button key={example} type="button" onClick={() => void send(example)} className="min-h-14 rounded-full border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,.92),rgba(222,238,248,.7))] px-6 py-4 text-left text-base font-medium shadow-[0_12px_28px_-18px_rgba(23,33,43,.38),inset_0_1px_0_white,inset_0_-1px_0_rgba(23,33,43,.12)] backdrop-blur-2xl transition hover:-translate-y-0.5 hover:shadow-[0_18px_34px_-17px_rgba(23,33,43,.4),0_0_0_4px_rgba(73,184,214,.14)] dark:border-white/25 dark:bg-[linear-gradient(180deg,rgba(221,239,255,.2),rgba(26,43,62,.72))] dark:hover:bg-white/15">{example}</button>)}
+                {['What changes if oxygen drops to 18%?', 'Compare cotton spread in microgravity and Earth gravity', 'Search PSI records for hidden flame incidents'].map((example) => <button key={example} type="button" onClick={() => void send(example)} className="min-h-9 rounded-full border border-white/90 bg-[linear-gradient(180deg,rgba(255,255,255,.92),rgba(222,238,248,.7))] px-5 py-3 text-left text-base font-medium shadow-[0_12px_28px_-18px_rgba(23,33,43,.38),inset_0_1px_0_white,inset_0_-1px_0_rgba(23,33,43,.12)] backdrop-blur-2xl transition hover:-translate-y-0.5 hover:shadow-[0_18px_34px_-17px_rgba(23,33,43,.4),0_0_0_4px_rgba(73,184,214,.14)] dark:border-white/25 dark:bg-[linear-gradient(180deg,rgba(221,239,255,.2),rgba(26,43,62,.72))] dark:hover:bg-white/15">{example}</button>)}
               </div>
             </div>}
             {messages.map((message) => <article key={message.id} className={`max-w-[94%] rounded-[26px] px-5 py-4 sm:max-w-[82%] sm:px-7 sm:py-6 ${message.role === 'user' ? 'ml-auto rounded-br-lg bg-[var(--ink)] text-[var(--bg)]' : 'mr-auto rounded-bl-lg border border-[var(--edge)] bg-white/45 shadow-sm backdrop-blur-xl dark:bg-white/[0.045]'}`}>
@@ -342,7 +342,7 @@ export default function SimDeck() {
                 {message.warning && <p role="status" className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm leading-6">{message.warning}</p>}
                 <div className="mt-5 flex flex-wrap items-center gap-3">
                   {responseRunsChamber(message.response, investigationSpecs) && !message.saved
-                    ? <span className="inline-flex min-h-12 items-center rounded-full border border-[var(--edge)] px-5 text-sm opacity-70">Dashboard report will appear when the chamber run finishes.</span>
+                    ? <span className="inline-flex min-h-9 items-center rounded-full border border-[var(--edge)] px-5 text-sm opacity-70">Dashboard report will appear when the chamber run finishes.</span>
                     : <Button asChild variant="glass" size="lg"><a href={message.dashboardId ? `#dashboard-${message.dashboardId}` : '#dashboard'} onClick={(event) => { event.preventDefault(); const id = message.dashboardId ?? save(message); navigate(id ? `#dashboard-${id}` : '#dashboard') }}>{message.saved ? 'Open generated dashboard' : 'Generate dashboard'} <IconArrowUpRight size={16} /></a></Button>}
                 </div>
               </>}
