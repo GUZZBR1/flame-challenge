@@ -4,10 +4,10 @@
  * Offline: the bundled mirror in lib/risk.ts (same formula, same JSON).
  */
 import { riskCurveLocal, riskIndexLocal, type RiskResult, type RiskUncertainty } from './risk'
+import { blobToWavPcm16 } from './voice'
 import snapshot from '../data/psi_snapshot.json'
 
 const TIMEOUT_MS = 1200
-const SI_TIMEOUT_MS = 20000 // llm gateway can be slow; fallback fires anyway
 
 async function probe<T>(url: string): Promise<T | null> {
   try {
@@ -57,7 +57,17 @@ export async function riskCurve(
   return live?.points ?? riskCurveLocal(materialId, flowCms, gravity)
 }
 
-/* ---------- SI copilot (conversational + voice) ---------- */
+/** Chamber settings shared by simulation and dashboard interactions. */
+export interface ChamberUiCommand {
+  set_o2_percent?: number | null
+  set_airflow_cm_s?: number | null
+  load_preset?: string | null
+  __investigation?: string | null
+  __origin?: string
+  __run?: boolean
+  set_gravity_g?: number | null
+  trigger_containment?: string | null
+}
 
 export interface SiChamberState {
   investigationId?: string | null
@@ -65,23 +75,8 @@ export interface SiChamberState {
   o2Pct: number
   flowCms: number
   gravity: string
+  sealed?: boolean
   module?: string | null
-}
-
-export interface SiUiCommand {
-  set_o2_percent?: number | null
-  set_airflow_cm_s?: number | null
-  load_preset?: string | null
-  focus_module?: string | null
-}
-
-/** 'ignis:ui-command' CustomEvent payload — SiUiCommand plus the
- *  voice-command extras and dispatch bookkeeping fields. */
-export interface SiUiCommandEvent extends SiUiCommand {
-  set_gravity?: string | null
-  trigger_containment?: string | null
-  __investigation?: string | null
-  __origin?: string
 }
 
 export interface SiEvidence {
@@ -93,124 +88,10 @@ export interface SiEvidence {
   similarity: number
   verified: boolean
   sourceUrl: string
-}
-
-export interface SiResponse {
-  briefing: string
-  recommended_action: string
-  ui_command: SiUiCommand | null
-  navigation?: SiNavigation | null
-  simulation_commands?: SiSimulationCommands | null
-  mode: 'llm' | 'offline-fallback' | 'local-fallback'
-  model: string
-  engine?: string
-  chamber?: Record<string, unknown>
-  evidence: SiEvidence[]
-}
-
-async function post<T>(url: string, body: BodyInit, timeout = SI_TIMEOUT_MS): Promise<T | null> {
-  try {
-    const ctrl = new AbortController()
-    const t = setTimeout(() => ctrl.abort(), timeout)
-    const res = await fetch(url, { method: 'POST', body, signal: ctrl.signal })
-    clearTimeout(t)
-    return res.ok ? ((await res.json()) as T) : null
-  } catch {
-    return null
-  }
-}
-
-/** Local mirror of the backend offline policy — same physics, computed
- *  from risk_model.json, for when the API itself is unreachable. */
-function siLocalFallback(state: SiChamberState): SiResponse {
-  const mat = state.materialId ?? 'pmma'
-  const r = riskIndexLocal(mat, state.o2Pct, state.flowCms, state.gravity)
-  let action: SiResponse['recommended_action'] = 'SUPPRESS_LOCAL'
-  let ui: SiUiCommand | null = null
-  if (r.flags.belowLoc || r.riskIndex < 0.25) {
-    ui = state.module ? { focus_module: state.module } : null
-  } else if (state.flowCms >= 8 && r.riskIndex >= 0.5) {
-    action = 'CUT_VENTILATION'
-    ui = { set_airflow_cm_s: 0 }
-  } else if (r.flags.smoldering && r.riskIndex >= 0.5) {
-    action = 'COOL_AND_ISOLATE'
-    ui = { set_airflow_cm_s: 0 }
-  } else if (r.margin > 3) {
-    action = 'REDUCE_O2'
-    ui = { set_o2_percent: Math.round(Math.max(0, Math.min(r.locPct + 1, state.o2Pct - 1)) * 10) / 10 }
-  }
-  const regime = r.flags.coolFlameCapable
-    ? 'cool-flame capable — an optical "out" is a monitoring window, not safety.'
-    : state.flowCms >= 8
-      ? 'forced flow is in the saffire propagation regime — ventilation is the lever.'
-      : 'ignition-pressure limited regime — the o₂ margin is the lever.'
-  const u = r.uncertainty
-  const band = u
-    ? ` Empirical band ${Math.round(u.lower * 100)}–${Math.round(u.upper * 100)}% (90% conformal, n=${u.calibrationN} psi runs).` +
-      (u.regime === 'extrapolation'
-        ? ' Operating point is outside the calibrated psi envelope — extrapolation regime.'
-        : '')
-    : ''
-  return {
-    briefing: `${r.materialName} at ${r.o2Pct}% o₂ / ${r.flowCms} cm/s (${r.gravity}): risk index ${Math.round(r.riskIndex * 100)}% (${r.level}) — margin ${r.margin} pt vs loc ${r.locPct}%. ${regime}${band} [local model — api offline, psi evidence unavailable]`,
-    recommended_action: action,
-    ui_command: ui,
-    mode: 'local-fallback',
-    model: 'deterministic',
-    chamber: { materialId: r.materialId, riskIndex: r.riskIndex, level: r.level },
-    evidence: [],
-  }
-}
-
-export async function siChat(
-  message: string,
-  state: SiChamberState,
-): Promise<SiResponse> {
-  const live = await postJson<SiResponse>('/api/si/chat', {
-    message,
-    current_chamber_state: state,
-  })
-  return live ?? siLocalFallback(state)
-}
-
-async function postJson<T>(url: string, payload: unknown): Promise<T | null> {
-  try {
-    const ctrl = new AbortController()
-    const t = setTimeout(() => ctrl.abort(), SI_TIMEOUT_MS)
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: ctrl.signal,
-    })
-    clearTimeout(t)
-    return res.ok ? ((await res.json()) as T) : null
-  } catch {
-    return null
-  }
-}
-
-export interface SiVoiceResult {
-  transcript: string | null
-  stt: 'whisper.cpp' | 'offline'
-  response: SiResponse
-}
-
-export async function siVoice(
-  audio: Blob,
-  state: SiChamberState,
-): Promise<SiVoiceResult | null> {
-  const fd = new FormData()
-  fd.append('audio', audio, 'clip.webm')
-  fd.append('state', JSON.stringify(state))
-  return post<SiVoiceResult>('/api/si/voice', fd, SI_TIMEOUT_MS + 25000)
-}
-
-/* ---------- voice-first mission control (/api/si/voice-command) ---------- */
-
-export interface SiNavigation {
-  scroll_to_section?: string | null
-  active_filter_tag?: string | null
+  o2Pct?: number | null
+  flowCms?: number | null
+  materialKey?: string | null
+  coolFlame?: boolean
 }
 
 export interface SiSimulationCommands {
@@ -221,31 +102,54 @@ export interface SiSimulationCommands {
   trigger_containment?: string | null
 }
 
-/** Flat command envelope — the copilot response fields plus the
- *  voice-command surface (transcript/stt + required nav/sim keys). */
-export interface SiVoiceCommandResult extends SiResponse {
-  transcript: string | null
-  stt: 'whisper.cpp' | 'offline'
-  navigation: SiNavigation | null
-  simulation_commands: SiSimulationCommands | null
+export interface SiResponse {
+  briefing: string
+  recommended_action: string
+  ui_command: ChamberUiCommand | null
+  navigation?: { scroll_to_section?: string | null; active_filter_tag?: string | null } | null
+  simulation_commands?: SiSimulationCommands | null
+  mode: 'llm' | 'offline-fallback' | 'local-fallback'
+  model: string
+  engine?: string
+  chamber?: Record<string, unknown>
+  evidence: SiEvidence[]
+  transcript?: string | null
+  stt?: 'whisper.cpp' | 'offline'
 }
 
-export async function siVoiceCommand(
-  wav: Blob,
-  state: SiChamberState,
-): Promise<SiVoiceCommandResult | null> {
-  const fd = new FormData()
-  fd.append('audio', wav, 'clip.wav')
-  fd.append('state', JSON.stringify(state))
-  // backend worst case ≈ STT timeout (45 s) + LLM timeout (12 s)
-  return post<SiVoiceCommandResult>(
-    '/api/si/voice-command',
-    fd,
-    SI_TIMEOUT_MS + 50000,
-  )
+export async function siChat(message: string, state: SiChamberState): Promise<SiResponse | null> {
+  try {
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), 25000)
+    const response = await fetch('/api/si/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ message, current_chamber_state: state }),
+      signal: controller.signal,
+    })
+    window.clearTimeout(timeout)
+    return response.ok ? await response.json() as SiResponse : null
+  } catch {
+    return null
+  }
 }
 
-/** mirror of services/si_copilot.gravity_regime — g fraction -> label */
+export async function siVoice(audio: Blob, state: SiChamberState): Promise<SiResponse | null> {
+  try {
+    const wav = await blobToWavPcm16(audio)
+    const form = new FormData()
+    form.append('audio', wav, 'clip.wav')
+    form.append('state', JSON.stringify(state))
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), 70000)
+    const response = await fetch('/api/si/voice-command', { method: 'POST', body: form, signal: controller.signal })
+    window.clearTimeout(timeout)
+    return response.ok ? await response.json() as SiResponse : null
+  } catch {
+    return null
+  }
+}
+
 export function gravityRegime(g: number): string {
   if (g <= 0.02) return 'microgravity'
   if (g < 0.3) return 'lunar'
@@ -262,6 +166,12 @@ export interface InvestigationSpec {
   flowRangeCms: [number, number]
   pressureKpa?: number
   loc?: number
+  partialGravity?: boolean
+}
+
+export function investigationDefaultFlow(id: string, specs: Record<string, InvestigationSpec> = FALLBACK_INVESTIGATIONS): number {
+  const range = specs[id]?.flowRangeCms ?? [0, 0]
+  return (range[0] + range[1]) / 2
 }
 
 export async function materialsIndex(): Promise<Record<string, InvestigationSpec>> {
@@ -271,7 +181,7 @@ export async function materialsIndex(): Promise<Record<string, InvestigationSpec
 
 /** Embedded copy of shared/calibrated-data/calibration.json investigation
  *  shells — used only when the API is unreachable so presets still load. */
-const FALLBACK_INVESTIGATIONS: Record<string, InvestigationSpec> = {
+export const FALLBACK_INVESTIGATIONS: Record<string, InvestigationSpec> = {
   'sofie-gel': { model: 'spread', materialId: 'pmma', o2Range: [15, 24], flowRangeCms: [0, 25], loc: 15 },
   'bass-ii': { model: 'spread', materialId: 'pmma-sphere', o2Range: [17, 40], flowRangeCms: [0, 20], loc: 17 },
   'flex-2': { model: 'droplet', materialId: 'heptane', o2Range: [12, 34], flowRangeCms: [0, 2.55] },
@@ -279,7 +189,14 @@ const FALLBACK_INVESTIGATIONS: Record<string, InvestigationSpec> = {
   saffire: { model: 'spread', materialId: 'cotton', o2Range: [21.5, 22.1], flowRangeCms: [20, 30] },
   same: { model: 'spread', materialId: 'teflon', o2Range: [21, 21], flowRangeCms: [0, 10] },
   'confined-combustion': { model: 'spread', materialId: 'thin-sheet', o2Range: [19, 40], flowRangeCms: [0, 15] },
-  flare: { model: 'spread', materialId: 'pmma', o2Range: [15, 40], flowRangeCms: [0, 30] },
+  flare: { model: 'spread', materialId: 'pmma', o2Range: [15, 40], flowRangeCms: [0, 30], partialGravity: true },
+}
+
+export async function siNeighbors(materialId: string, o2Pct: number, flowCms: number): Promise<SiEvidence[] | null> {
+  const live = await probe<{ neighbors: SiEvidence[] }>(
+    `/api/neighbors?materialId=${encodeURIComponent(materialId)}&o2Pct=${o2Pct}&flowCms=${flowCms}&k=3`,
+  )
+  return live?.neighbors ?? null
 }
 
 /** Rank pillar — /api/risk/rank when the backend is up (same model the

@@ -1,19 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { decisionCards, riskRank } from '../lib/api'
 import {
-  ALL_THEMES,
-  DATASET_STATS,
   DIFF_CARDS,
-  INVESTIGATIONS,
   localTactics,
   rankMaterials,
   SCENARIOS,
-  THEME_LABELS,
   type Scenario,
   type TacticCard,
 } from '../lib/dashboard'
 import { gsap } from '../lib/scroll'
 import type { RiskResult } from '../lib/risk'
+import Button from './ui/Button'
 
 const LEVEL_ORDER = ['minimal', 'low', 'moderate', 'high', 'critical']
 
@@ -24,24 +21,12 @@ function levelClass(level: string): string {
   return 'text-[var(--accent)] font-medium'
 }
 
-/** format helpers */
-const fmtO2 = (i: { conditions: { oxygenPct: [number, number] | null } }) =>
-  i.conditions.oxygenPct
-    ? i.conditions.oxygenPct[0] === i.conditions.oxygenPct[1]
-      ? `${i.conditions.oxygenPct[0]}%`
-      : `${i.conditions.oxygenPct[0]}–${i.conditions.oxygenPct[1]}%`
-    : '—'
-const fmtFlow = (i: { conditions: { flowCms: [number, number] | null } }) =>
-  i.conditions.flowCms ? `${i.conditions.flowCms[0]}–${i.conditions.flowCms[1]}` : '—'
-
-/** The dashboard — the three verbs the challenge asks for, each anchored
- *  to the PSI record: summarize (investigation matrix), rank (fitted
- *  risk model), interpret (counterfactual tactical cards), plus the
- *  investigation diff (what changed vs what held). */
+/** The dashboard — rank (fitted risk model) and interpret
+ *  (counterfactual tactical cards), plus the investigation diff (what
+ *  changed vs what held). The investigation matrix it used to open
+ *  with lives on its own screen now — #psi-dataset. */
 export default function Insights() {
   const rootRef = useRef<HTMLElement>(null)
-  const [theme, setTheme] = useState<string>('all')
-  const [open, setOpen] = useState<string | null>(null)
   const [scenario, setScenario] = useState<Scenario>(SCENARIOS[0])
   const [ranked, setRanked] = useState<(RiskResult & { rank: number })[]>([])
   const [engine, setEngine] = useState('local model')
@@ -50,24 +35,38 @@ export default function Insights() {
   const [topMaterial, setTopMaterial] = useState('pmma')
   const [diffIdx, setDiffIdx] = useState(0)
 
-  // voice-command bus: 'ignis:filter' drives the matrix theme filter,
-  // 'ignis:ui-command' gravity retunes the rank scenario
+  // simulation bus: 'ignis:ui-command' retunes the rank scenario so
+  // the dashboard mirrors the conditions from the latest chamber run.
   useEffect(() => {
-    const onFilter = (e: Event) => {
-      const tag = (e as CustomEvent<{ tag?: string }>).detail?.tag
-      if (tag && (tag === 'all' || ALL_THEMES.includes(tag))) setTheme(tag)
-    }
     const onCmd = (e: Event) => {
-      const g = (e as CustomEvent<{ set_gravity?: string | null }>).detail
-        ?.set_gravity
-      if (g) setScenario((s) => ({ ...s, gravity: g }))
+      const d = (e as CustomEvent<{
+        set_gravity?: string | null
+        set_o2_percent?: number | null
+        set_airflow_cm_s?: number | null
+      }>).detail ?? {}
+      if (
+        d.set_gravity == null &&
+        d.set_o2_percent == null &&
+        d.set_airflow_cm_s == null
+      )
+        return
+      setScenario((s) => ({
+        id: 'sim',
+        label: 'chamber echo',
+        o2Pct:
+          typeof d.set_o2_percent === 'number'
+            ? Math.min(40, Math.max(0, d.set_o2_percent))
+            : s.o2Pct,
+        flowCms:
+          typeof d.set_airflow_cm_s === 'number'
+            ? Math.min(40, Math.max(0, d.set_airflow_cm_s))
+            : s.flowCms,
+        gravity: d.set_gravity ?? s.gravity,
+        blurb: 'parameters echoed from the live chamber run',
+      }))
     }
-    window.addEventListener('ignis:filter', onFilter)
     window.addEventListener('ignis:ui-command', onCmd)
-    return () => {
-      window.removeEventListener('ignis:filter', onFilter)
-      window.removeEventListener('ignis:ui-command', onCmd)
-    }
+    return () => window.removeEventListener('ignis:ui-command', onCmd)
   }, [])
 
   // rank + interpret follow the scenario; live api wins when reachable,
@@ -137,10 +136,6 @@ export default function Insights() {
     return () => ctx.revert()
   }, [])
 
-  const filtered =
-    theme === 'all'
-      ? INVESTIGATIONS
-      : INVESTIGATIONS.filter((i) => i.themes.includes(theme))
   const card = DIFF_CARDS[diffIdx]
 
   return (
@@ -159,7 +154,7 @@ export default function Insights() {
             the dashboard
           </span>
           <span className="hidden cursor-default font-semibold transition-colors duration-300 hover:text-[var(--accent)] sm:inline">
-            summarize · rank · interpret — the three verbs of the brief
+            rank · interpret — the model on the corpus
           </span>
         </div>
 
@@ -168,169 +163,33 @@ export default function Insights() {
           data-reveal
           className="m-0 mt-4 cursor-default font-[family-name:var(--font-display)] text-[clamp(2rem,4.4vw,3.6rem)] font-bold leading-[1.04] tracking-[-0.03em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
         >
-          one dataset, three jobs
+          the model on the corpus
         </h2>
         <p
           data-reveal
           className="mt-6 max-w-2xl text-[clamp(13px,1.15vw,15px)] leading-[1.75] text-[var(--ink)] opacity-80"
         >
-          the brief asks for a dashboard that summarizes, ranks and
-          interprets the psi corpus. every number below is either a real
-          test run or the fitted model on top of it — nothing is invented
-          for the demo. offline? the bundled mirror of the same model
-          takes over seamlessly.
+          every number below is either a real test run or the fitted model
+          on top of it — nothing is invented for the demo. the raw corpus
+          itself lives on{' '}
+          <a
+            href="#psi-dataset"
+            className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
+          >
+            psi-dataset
+          </a>{' '}
+          — investigation matrix, provenance and sources. offline? the
+          bundled mirror of the same model takes over seamlessly.
         </p>
 
-        {/* ============ 01 · SUMMARIZE ============ */}
+        {/* ============ 01 · RANK ============ */}
         <div className="pt-16">
           <div
             data-reveal
             className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
           >
             <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-              <span className="text-[var(--accent)]">01</span> · summarize — the psi investigation matrix
-            </div>
-            <div className="font-mono text-[10.5px] lowercase tracking-[0.16em] text-[var(--ink)] opacity-60">
-              {DATASET_STATS.investigations} investigations · {DATASET_STATS.psiRuns} parsed runs ·{' '}
-              {DATASET_STATS.verified} pipeline-verified
-            </div>
-          </div>
-
-          {/* theme filter — the names the brief calls out */}
-          <div data-reveal className="mt-5 flex flex-wrap gap-2">
-            {['all', ...ALL_THEMES].map((t) => (
-              <button
-                key={t}
-                type="button"
-                onClick={() => setTheme(t)}
-                aria-pressed={theme === t}
-                className={`cursor-pointer rounded-full border px-3 py-1 font-mono text-[10.5px] lowercase tracking-[0.14em] transition-colors duration-200 ${
-                  theme === t
-                    ? 'border-[var(--accent)] text-[var(--accent)]'
-                    : 'border-[var(--edge)] text-[var(--ink)] opacity-70 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:opacity-100'
-                }`}
-              >
-                {t === 'all' ? 'all' : (THEME_LABELS[t] ?? t)}
-              </button>
-            ))}
-          </div>
-
-          <div data-reveal className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[760px] border-collapse text-left">
-              <thead>
-                <tr className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--ink)] opacity-50">
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">investigation</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">theme</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">fuels / samples</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">o₂</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">flow cm/s</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">runs</th>
-                  <th className="border-b border-[var(--edge)] px-2 py-2 font-medium">verified</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((inv) => {
-                  const expanded = open === inv.id
-                  return [
-                    <tr
-                      key={inv.id}
-                      onClick={() => setOpen(expanded ? null : inv.id)}
-                      aria-expanded={expanded}
-                      className="cursor-pointer transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)]"
-                    >
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[12px] font-medium lowercase tracking-[0.1em] text-[var(--ink)]">
-                        <span className="mr-2 inline-block w-3 text-[var(--accent)]">
-                          {expanded ? '−' : '+'}
-                        </span>
-                        {inv.name.toLowerCase()}
-                      </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[10px] lowercase tracking-[0.12em] text-[var(--ink)] opacity-70">
-                        {inv.themes.map((t) => THEME_LABELS[t] ?? t).join(' · ')}
-                      </td>
-                      <td className="max-w-[220px] truncate border-b border-[var(--edge)] px-2 py-2.5 text-[11.5px] lowercase text-[var(--ink)] opacity-75">
-                        {inv.fuels.join(', ')}
-                      </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px] text-[var(--ink)] opacity-75">
-                        {fmtO2(inv)}
-                      </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px] text-[var(--ink)] opacity-75">
-                        {fmtFlow(inv)}
-                      </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px] text-[var(--ink)] opacity-75">
-                        {inv.psiRuns ?? '—'}
-                      </td>
-                      <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[11px]">
-                        <span
-                          className={inv.verified ? 'text-[var(--accent)]' : 'text-[var(--ink)] opacity-40'}
-                          title={inv.verified ? 'pipeline-ingested psi data' : 'curated from public literature'}
-                        >
-                          {inv.verified ? 'psi' : 'lit'}
-                        </span>
-                      </td>
-                    </tr>,
-                    expanded ? (
-                      <tr key={`${inv.id}-detail`} className="bg-[color-mix(in_srgb,var(--accent)_4%,transparent)]">
-                        <td colSpan={7} className="border-b border-[var(--edge)] px-2 py-4">
-                          <div className="grid gap-4 pl-7 sm:grid-cols-2 lg:grid-cols-3">
-                            <div>
-                              <div className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
-                                objectives
-                              </div>
-                              <ul className="m-0 mt-1.5 list-none space-y-1 p-0 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
-                                {inv.objectives.map((o) => (
-                                  <li key={o.slice(0, 32)}>· {o}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div>
-                              <div className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
-                                rig &amp; sensors
-                              </div>
-                              <p className="m-0 mt-1.5 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
-                                {inv.apparatus}
-                              </p>
-                              <ul className="m-0 mt-1.5 list-none space-y-1 p-0 text-[11px] leading-relaxed text-[var(--ink)] opacity-70">
-                                {inv.sensors.map((s) => (
-                                  <li key={s}>· {s}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className="sm:col-span-2 lg:col-span-1">
-                              <div className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
-                                within-investigation variation
-                              </div>
-                              <p className="m-0 mt-1.5 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
-                                <span className="opacity-60">held:</span>{' '}
-                                {inv.testVariables.held.join(' · ')}
-                              </p>
-                              <p className="m-0 mt-1 text-[11.5px] leading-relaxed text-[var(--ink)] opacity-80">
-                                <span className="opacity-60">varied:</span>{' '}
-                                {inv.testVariables.varied.join(' · ')}
-                              </p>
-                              <p className="m-0 mt-2 font-mono text-[10px] lowercase tracking-[0.1em] text-[var(--ink)] opacity-50">
-                                {inv.platform}
-                                {inv.facility ? ` · ${inv.facility}` : ''} · {inv.years}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : null,
-                  ]
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* ============ 02 · RANK ============ */}
-        <div className="pt-16">
-          <div
-            data-reveal
-            className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
-          >
-            <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-              <span className="text-[var(--accent)]">02</span> · rank — flammability margin by scenario
+              <span className="text-[var(--accent)]">01</span> · rank — flammability margin by scenario
             </div>
             <div className="font-mono text-[10.5px] lowercase tracking-[0.16em] text-[var(--ink)] opacity-60">
               {engine}
@@ -338,21 +197,27 @@ export default function Insights() {
           </div>
 
           <div data-reveal className="mt-5 flex flex-wrap gap-2">
+            {scenario.id === 'sim' && (
+              <Button
+                type="button"
+                aria-pressed="true"
+                variant="chip"
+                title={scenario.blurb}
+              >
+                chamber echo
+              </Button>
+            )}
             {SCENARIOS.map((s) => (
-              <button
+              <Button
                 key={s.id}
                 type="button"
                 onClick={() => setScenario(s)}
                 aria-pressed={scenario.id === s.id}
-                className={`cursor-pointer rounded-full border px-3 py-1 font-mono text-[10.5px] lowercase tracking-[0.14em] transition-colors duration-200 ${
-                  scenario.id === s.id
-                    ? 'border-[var(--accent)] text-[var(--accent)]'
-                    : 'border-[var(--edge)] text-[var(--ink)] opacity-70 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:opacity-100'
-                }`}
+                variant="chip"
                 title={s.blurb}
               >
                 {s.label}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -364,7 +229,7 @@ export default function Insights() {
               {ranked.map((r) => (
                 <li
                   key={r.materialId}
-                  className="grid grid-cols-[2rem_9rem_1fr_5.5rem_4.5rem] items-center gap-x-3 rounded-md px-2 py-2 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)] sm:grid-cols-[2rem_11rem_1fr_6rem_6rem_4.5rem]"
+                  className="grid grid-cols-[1.5rem_minmax(0,1fr)_5.5rem] items-center gap-x-2 rounded-xl px-2 py-2 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)] sm:grid-cols-[2rem_11rem_minmax(0,1fr)_6rem_6rem_4.5rem] sm:gap-x-3"
                 >
                   <span className="font-mono text-[11px] text-[var(--ink)] opacity-50">
                     {String(r.rank).padStart(2, '0')}
@@ -457,14 +322,14 @@ export default function Insights() {
           </div>
         </div>
 
-        {/* ============ 03 · INTERPRET ============ */}
+        {/* ============ 02 · INTERPRET ============ */}
         <div className="pt-16">
           <div
             data-reveal
             className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
           >
             <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-              <span className="text-[var(--accent)]">03</span> · interpret — what the numbers say to do
+              <span className="text-[var(--accent)]">02</span> · interpret — what the numbers say to do
             </div>
           </div>
           <p
@@ -549,19 +414,15 @@ export default function Insights() {
 
           <div data-reveal className="mt-5 flex flex-wrap gap-2">
             {DIFF_CARDS.map((c, i) => (
-              <button
+              <Button
                 key={c.id}
                 type="button"
                 onClick={() => setDiffIdx(i)}
                 aria-pressed={diffIdx === i}
-                className={`cursor-pointer rounded-full border px-3 py-1 font-mono text-[10.5px] lowercase tracking-[0.12em] transition-colors duration-200 ${
-                  diffIdx === i
-                    ? 'border-[var(--accent)] text-[var(--accent)]'
-                    : 'border-[var(--edge)] text-[var(--ink)] opacity-70 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:opacity-100'
-                }`}
+                variant="chip"
               >
                 {c.hook}
-              </button>
+              </Button>
             ))}
           </div>
 
@@ -584,26 +445,26 @@ export default function Insights() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-[8rem_1fr_1fr] gap-x-3 sm:grid-cols-[10rem_1fr_1fr]">
+              <div className="mt-4 grid grid-cols-[5rem_minmax(0,1fr)_minmax(0,1fr)] gap-x-2 sm:grid-cols-[10rem_minmax(0,1fr)_minmax(0,1fr)] sm:gap-x-3">
                 <div className="border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--ink)] opacity-50">
                   field
                 </div>
-                <div className="border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
+                <div className="min-w-0 break-words border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.12em] text-[var(--accent)] sm:tracking-[0.2em]">
                   run {card.runA.runId}
                 </div>
-                <div className="border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
+                <div className="min-w-0 break-words border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.12em] text-[var(--accent)] sm:tracking-[0.2em]">
                   run {card.runB.runId}
                 </div>
 
                 {card.changed.map((f) => (
                   <div key={f.field} className="contents">
-                    <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] lowercase text-[var(--accent)]">
+                    <div className="min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] lowercase text-[var(--accent)]">
                       Δ {f.label}
                     </div>
-                    <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
+                    <div className="min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
                       {f.a || '—'}
                     </div>
-                    <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
+                    <div className="min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
                       {f.b || '—'}
                     </div>
                   </div>
@@ -613,7 +474,7 @@ export default function Insights() {
                     <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] lowercase text-[var(--ink)] opacity-50">
                       = {f.label}
                     </div>
-                    <div className="col-span-2 border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)] opacity-50">
+                    <div className="col-span-2 min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)] opacity-50">
                       {f.value}
                     </div>
                   </div>

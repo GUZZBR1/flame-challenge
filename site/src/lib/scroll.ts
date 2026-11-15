@@ -20,21 +20,62 @@ export function getLenis(): Lenis | null {
   return lenis
 }
 
-/** voice/navigation names -> real DOM ids (voice contract uses these
- *  friendly names; the sections carry different ids) */
+/** Friendly section names -> their DOM ids. */
 const SECTION_IDS: Record<string, string> = {
   hero: 'top',
-  simulations: 'simulations',
-  'psi-dataset': 'psi-dataset',
   dashboard: 'dashboard',
-  chamber: 'chamber',
   shipyard: 'vision',
-  'mission-control': 'mission-control',
+}
+
+/** sections that live inside the #simulations deck */
+const SIM_CHILDREN = new Set(['chamber'])
+
+export function isSimChild(name: string): boolean {
+  return SIM_CHILDREN.has(name)
+}
+
+let innerTarget: string | null = null
+
+/** land on a section inside the sim deck — the event reaches it when
+ *  already open; the stash survives mounting (StrictMode's simulated
+ *  remount included) and is cleared only once the scroll lands */
+export function scrollInner(name: string): void {
+  innerTarget = name
+  window.dispatchEvent(
+    new CustomEvent('ignis:scroll-inner', { detail: { id: name } }),
+  )
+}
+
+export function peekInnerTarget(): string | null {
+  return innerTarget
+}
+
+export function clearInnerTarget(): void {
+  innerTarget = null
 }
 
 /** smooth-scroll to a named section — Lenis when it's up, native
  *  scrollIntoView otherwise. Returns false for unknown names. */
 export function scrollToSection(name: string): boolean {
+  // the psi dataset and the simulations deck live on their own overlay
+  // screens — "scrolling" to them opens the view instead
+  if (name === 'psi-dataset') {
+    navigate('#psi-dataset')
+    return true
+  }
+  if (name === 'simulations') {
+    navigate('#simulations')
+    return true
+  }
+  if (name === 'dashboard') {
+    navigate('#dashboard')
+    return true
+  }
+  if (SIM_CHILDREN.has(name)) {
+    navigate('#simulations')
+    scrollInner(name)
+    return true
+  }
   const id = SECTION_IDS[name] ?? name
   const l = getLenis()
   if (id === 'top') {
@@ -49,21 +90,40 @@ export function scrollToSection(name: string): boolean {
   return true
 }
 
-/** apply the copilot's navigation block — scroll + matrix filter fan-out */
-export function applyNavigation(
-  nav: {
-    scroll_to_section?: string | null
-    active_filter_tag?: string | null
-  } | null | undefined,
-): void {
-  if (nav?.scroll_to_section) scrollToSection(nav.scroll_to_section)
-  if (nav?.active_filter_tag) {
-    window.dispatchEvent(
-      new CustomEvent('ignis:filter', {
-        detail: { tag: nav.active_filter_tag },
-      }),
-    )
+/** hash router — '#psi-dataset' opens the dataset screen, anything else
+ *  lands back on the main page and scrolls there. pushState keeps the
+ *  native anchor jump from fighting Lenis; 'ignis:route' + popstate are
+ *  the two signals App syncs on. */
+export function navigate(href: string): void {
+  if (location.hash === href) {
+    applyRoute()
+    return
   }
+  history.pushState(null, '', href)
+  applyRoute()
+}
+
+export function applyRoute(): void {
+  window.dispatchEvent(new CustomEvent('ignis:route'))
+}
+
+/** leave the psi screen — drop the hash without touching the main
+ *  page's scroll position (the overlay is fixed; the page underneath
+ *  never moved). */
+export function navigateBack(): void {
+  history.pushState(null, '', location.pathname + location.search)
+  applyRoute()
+}
+
+/** Keep the dataset's selected theme across overlay open/close cycles. */
+let filterTag: string | null = null
+
+export function getFilterTag(): string | null {
+  return filterTag
+}
+
+export function setFilterTag(tag: string | null): void {
+  filterTag = tag
 }
 
 export { gsap, ScrollTrigger }
