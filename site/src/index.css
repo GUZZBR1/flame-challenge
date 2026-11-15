@@ -524,8 +524,29 @@ button.pill:active { transform: translateY(0) scale(.96); }
   .heat-surface { animation: none; opacity: .85; }
 }
 
-/* ---- simulations deck — rounded diagonal cuts for the mission media.
-   Shapes are defined as objectBoundingBox clipPaths in SimDeck so they
-   scale with whatever box they are applied to. */
-.cut-hero { clip-path: url(#cut-hero); }
-.cut-rail { clip-path: url(#cut-rail); }
+/* ---- simulations deck — free-floating spread. The section breaks out
+   of the 72rem shell to the viewport width; --gut is the shell's content
+   inset so type stays on the editorial column while media bleeds to the
+   screen edge and dissolves inward (no boxes, no clips). */
+.mission-bleed {
+  --gut: 1.5rem;
+  margin-inline: calc(50% - 50vw);
+  padding-inline: var(--gut);
+}
+@media (min-width: 640px) { .mission-bleed { --gut: calc(2.5rem + max(0px, (100vw - 72rem) / 2)); } }
+@media (min-width: 1024px) { .mission-bleed { --gut: calc(4rem + max(0px, (100vw - 72rem) / 2)); } }
+.bleed-l { margin-left: calc(-1 * var(--gut)); }
+.bleed-r { margin-right: calc(-1 * var(--gut)); }
+@media (max-width: 639.98px) { .bleed-l, .bleed-r { margin-inline: calc(-1 * var(--gut)); } }
+.fade-to-l, .fade-to-r {
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+.fade-to-l {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
+}
+.fade-to-r {
+  -webkit-mask-image: linear-gradient(to left, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(to left, transparent 0, #000 38%), linear-gradient(to bottom, transparent 0, #000 18%, #000 82%, transparent 100%);
+}
