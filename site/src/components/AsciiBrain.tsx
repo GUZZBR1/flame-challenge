@@ -5,33 +5,33 @@ import { navigate } from '../lib/scroll'
 import { IconArrowLeft } from './Icons'
 import Button from './ui/Button'
 
-/** 3D ASCII Cortex — the copilot's living brain.
- *  A rotating 3D ASCII point cloud and neural lattice with distinct cortical lobes:
- *  - Frontal Lobe (Flammability reasoning)
- *  - Parietal Lobe (Fire spread mapping)
- *  - Temporal Lobe (Auditory & flame detection)
- *  - Occipital Lobe (Suppression & extinction)
- *  - Cerebellum & Brainstem (Duct-flow & partial-gravity dynamics)
- *
- *  Dynamically illuminates and pulses in real time according to SI states:
- *  - IDLE: Calm isometric rotation, slow synaptic respiration, emerald/cyan phosphor.
- *  - LISTENING: Front-facing focus, temporal/auditory lobe acoustic wave harmonics.
- *  - THINKING: High-frequency synaptic discharges, accelerated stochastic rotation, technical glyph flares.
- *  - SPEAKING: Rhythmic expansion, Broca/speech center ember shockwaves radiating through the tissue.
+/** 3D Professional ASCII Cortex — anatomical human brain rendering.
+ *  Generates an anatomical 3D cerebral point-cloud with:
+ *  - Left and right cerebral hemispheres divided by the longitudinal fissure
+ *  - Multi-octave cortical gyri and sulci (convoluted folds)
+ *  - Anatomical lobes: Frontal, Parietal, Temporal (with Sylvian fissure undercut), Occipital, Cerebellum, Brainstem
+ *  - 3D Lambertian diffuse + Blinn-Phong specular + Fresnel rim lighting for true depth perception
+ *  - Interactive 3D drag-to-orbit, hover/click neuron inspection
+ *  - Zero background box: completely transparent canvas that blends into the page
  */
 
 export type SiState = 'idle' | 'listening' | 'thinking' | 'speaking'
 
 const TAU = Math.PI * 2
-const RAMP = ' .·:;=+*x%#@'
+// Gradient from subtle shadow to intense specular glare
+const RAMP = ' .·:;=+*x#%@'
 const GLYPHS_THINK = ' .·:;/\\*+x%&#@'
 
 interface Point3D {
   x: number
   y: number
   z: number
+  nx: number
+  ny: number
+  nz: number
   region: string
   isSurface: boolean
+  isFissure: boolean
   lobeWeight: number
 }
 
@@ -46,23 +46,23 @@ interface LobeDef {
 }
 
 const LOBES: Record<string, LobeDef> = {
-  flammability: { name: 'flammability', label: 'Frontal (Flammability)', cx: 0, cy: 0.22, cz: 0.52, r: 0.44, color: '#ff8a50' },
-  spread: { name: 'spread', label: 'Parietal (Spread Dynamics)', cx: 0, cy: 0.38, cz: -0.12, r: 0.42, color: '#49b8d6' },
-  detection: { name: 'detection', label: 'Temporal (Acoustics & Detection)', cx: 0.58, cy: -0.16, cz: 0.08, r: 0.38, color: '#7fe3ff' },
-  suppression: { name: 'suppression', label: 'Occipital (Suppression)', cx: 0, cy: 0.05, cz: -0.62, r: 0.38, color: '#a580ff' },
-  'duct-flow': { name: 'duct-flow', label: 'Cerebellum (Duct Flow)', cx: 0, cy: -0.48, cz: -0.46, r: 0.34, color: '#52d9a6' },
-  'partial-gravity': { name: 'partial-gravity', label: 'Brainstem (Partial Gravity)', cx: 0, cy: -0.82, cz: -0.28, r: 0.25, color: '#e6c86e' },
+  flammability: { name: 'flammability', label: 'Frontal Lobe (Flammability)', cx: 0, cy: 0.2, cz: 0.54, r: 0.45, color: '#ff8a50' },
+  spread: { name: 'spread', label: 'Parietal Lobe (Fire Spread)', cx: 0, cy: 0.38, cz: -0.1, r: 0.44, color: '#49b8d6' },
+  detection: { name: 'detection', label: 'Temporal Lobe (Acoustics & Sensors)', cx: 0.6, cy: -0.18, cz: 0.08, r: 0.38, color: '#68e2fa' },
+  suppression: { name: 'suppression', label: 'Occipital Lobe (Extinction)', cx: 0, cy: 0.04, cz: -0.65, r: 0.38, color: '#a580ff' },
+  'duct-flow': { name: 'duct-flow', label: 'Cerebellum (Duct Flow)', cx: 0, cy: -0.48, cz: -0.48, r: 0.35, color: '#52d9a6' },
+  'partial-gravity': { name: 'partial-gravity', label: 'Brainstem (Partial Gravity)', cx: 0, cy: -0.84, cz: -0.26, r: 0.24, color: '#e6c86e' },
   default: { name: 'default', label: 'Cerebral Cortex', cx: 0, cy: 0.1, cz: 0, r: 0.55, color: '#49b8d6' },
 }
 
 function classifyLobe(x: number, y: number, z: number): string {
   if (y < -0.42) {
-    if (Math.abs(x) < 0.22 && y < -0.62) return 'partial-gravity'
+    if (Math.abs(x) < 0.22 && y < -0.6) return 'partial-gravity'
     return 'duct-flow'
   }
   if (z > 0.22 && y > -0.22) return 'flammability'
-  if (z <= 0.22 && z > -0.35 && y > 0.08) return 'spread'
-  if (z <= -0.35 && y > -0.28) return 'suppression'
+  if (z <= 0.22 && z > -0.36 && y > 0.08) return 'spread'
+  if (z <= -0.36 && y > -0.28) return 'suppression'
   if (Math.abs(x) > 0.35 && y <= 0.12 && z > -0.38) return 'detection'
   return 'default'
 }
@@ -76,107 +76,162 @@ function hashStr(s: string): number {
   return h >>> 0
 }
 
-/** Generate a dense 3D anatomical brain point cloud with cortical folds and hemispheres */
-function generateBrainModel(): Point3D[] {
+/** Multi-octave cortical fold displacement simulating true anatomical gyri & sulci */
+function corticalDisplacement(x: number, y: number, z: number): { disp: number; nx: number; ny: number; nz: number } {
+  // Gyral frequency harmonics
+  const f1 = Math.sin(7.5 * x + 1.2 * Math.sin(8.0 * z)) * Math.cos(7.5 * y + 1.2 * Math.cos(8.0 * x))
+  const f2 = Math.sin(14.0 * y + 3.0 * Math.sin(12.0 * x)) * Math.sin(14.0 * z)
+  const folds = Math.abs(f1) * 0.075 + f2 * 0.035
+
+  // Finite-difference surface normal perturbation
+  const eps = 0.015
+  const df1 = Math.sin(7.5 * (x + eps)) - Math.sin(7.5 * (x - eps))
+  const df2 = Math.cos(7.5 * (y + eps)) - Math.cos(7.5 * (y - eps))
+  const df3 = Math.sin(14.0 * (z + eps)) - Math.sin(14.0 * (z - eps))
+
+  const len = Math.hypot(x + df1, y + df2, z + df3) || 1
+  return {
+    disp: folds,
+    nx: (x + df1) / len,
+    ny: (y + df2) / len,
+    nz: (z + df3) / len,
+  }
+}
+
+/** Generate a realistic, high-fidelity 3D anatomical brain point cloud */
+function generateRealisticBrainModel(): Point3D[] {
   const points: Point3D[] = []
 
-  // 1. Cerebral hemispheres (left & right)
-  const stepsLat = 28
-  const stepsLon = 38
+  // 1. Dual Cerebral Hemispheres (Left & Right)
+  const latSteps = 34
+  const lonSteps = 44
 
-  for (let hemi of [-1, 1]) {
-    for (let i = 0; i <= stepsLat; i++) {
-      const v = (i / stepsLat) * Math.PI - Math.PI / 2
-      for (let j = 0; j < stepsLon; j++) {
-        const u = (j / stepsLon) * Math.PI
+  for (const hemi of [-1, 1]) {
+    for (let i = 0; i <= latSteps; i++) {
+      const v = (i / latSteps) * Math.PI - Math.PI / 2
+      for (let j = 0; j < lonSteps; j++) {
+        const u = (j / lonSteps) * Math.PI
         const su = Math.sin(u)
         const cv = Math.cos(v)
         const sv = Math.sin(v)
 
-        // Base ellipsoid dimensions
-        let rx = 0.58
-        let ry = 0.52
-        let rz = 0.78
+        let rx = 0.62
+        let ry = 0.54
+        let rz = 0.82
 
-        // Taper frontal and occipital poles
-        if (cv * su < -0.3) {
-          rx *= 0.88
+        // Occipital pole taper & frontal lift
+        if (cv * su < -0.28) {
+          rx *= 0.86
           ry *= 0.92
         }
 
-        let bx = hemi * (0.09 + Math.abs(su * cv) * rx)
+        // Parametric ellipsoid coordinates
+        let bx = hemi * (0.095 + Math.abs(su * cv) * rx)
         let by = sv * ry + 0.12 * Math.cos(u) * cv
         let bz = cv * su * rz
 
-        // Longitudinal fissure depression
-        const fissure = Math.exp(-Math.pow(bx / 0.15, 2)) * 0.08
-        by -= fissure
+        // Longitudinal fissure depression between hemispheres
+        const fissureWeight = Math.exp(-Math.pow(bx / 0.14, 2))
+        by -= fissureWeight * 0.11
 
-        // Sylvian / temporal fissure indentation
-        if (by < 0.05 && by > -0.35 && bz > -0.2 && bz < 0.4) {
-          bx *= 1.08
-          by -= 0.06
+        // Sylvian fissure undercut (temporal lobe separation)
+        if (by < 0.06 && by > -0.32 && bz > -0.22 && bz < 0.42) {
+          bx *= 1.1
+          by -= 0.075
         }
 
-        // Cortical folds / sulci ripple
-        const folds =
-          0.055 * Math.sin(8 * bx) * Math.cos(8 * by + 4 * bz) +
-          0.035 * Math.sin(14 * by) * Math.sin(14 * bz)
-
-        bx += bx * folds
-        by += by * folds
-        bz += bz * folds
+        // Cortical folds / sulci displacement
+        const fold = corticalDisplacement(bx, by, bz)
+        bx += bx * fold.disp
+        by += by * fold.disp
+        bz += bz * fold.disp
 
         const region = classifyLobe(bx, by, bz)
-        points.push({ x: bx, y: by, z: bz, region, isSurface: true, lobeWeight: 1 })
+        points.push({
+          x: bx,
+          y: by,
+          z: bz,
+          nx: fold.nx * hemi,
+          ny: fold.ny,
+          nz: fold.nz,
+          region,
+          isSurface: true,
+          isFissure: fissureWeight > 0.4,
+          lobeWeight: 1,
+        })
       }
     }
   }
 
-  // 2. Cerebellum (posterior-inferior double mass)
-  const cSteps = 16
-  for (let ci = 0; ci < cSteps; ci++) {
-    const v = (ci / cSteps) * Math.PI - Math.PI / 2
-    for (let cj = 0; cj < cSteps * 2; cj++) {
-      const u = (cj / (cSteps * 2)) * TAU
-      const bx = 0.36 * Math.cos(u) * Math.cos(v)
-      const by = -0.52 + 0.18 * Math.sin(v) + 0.03 * Math.sin(20 * v) // horizontal folia bands
-      const bz = -0.48 + 0.28 * Math.sin(u) * Math.cos(v)
-      points.push({ x: bx, y: by, z: bz, region: 'duct-flow', isSurface: true, lobeWeight: 0.9 })
+  // 2. Cerebellar Hemispheres (Dual posterior masses with fine horizontal folia)
+  for (const chemi of [-1, 1]) {
+    const cSteps = 20
+    for (let ci = 0; ci <= cSteps; ci++) {
+      const v = (ci / cSteps) * Math.PI - Math.PI / 2
+      for (let cj = 0; cj < cSteps * 2; cj++) {
+        const u = (cj / (cSteps * 2)) * TAU
+        const folia = 0.038 * Math.sin(24 * v) // Fine cerebellar striations
+        const bx = chemi * (0.12 + Math.abs(Math.cos(u) * Math.cos(v)) * 0.32)
+        const by = -0.52 + 0.19 * Math.sin(v) + folia
+        const bz = -0.48 + 0.29 * Math.sin(u) * Math.cos(v)
+        const len = Math.hypot(bx, by + 0.52, bz + 0.48) || 1
+        points.push({
+          x: bx,
+          y: by,
+          z: bz,
+          nx: bx / len,
+          ny: (by + 0.52) / len,
+          nz: (bz + 0.48) / len,
+          region: 'duct-flow',
+          isSurface: true,
+          isFissure: false,
+          lobeWeight: 0.9,
+        })
+      }
     }
   }
 
-  // 3. Brainstem column
-  for (let bi = 0; bi < 12; bi++) {
-    const yVal = -0.55 - (bi / 12) * 0.38
-    const rad = 0.12 - (bi / 12) * 0.04
-    for (let bj = 0; bj < 10; bj++) {
-      const ang = (bj / 10) * TAU
+  // 3. Brainstem column (Central descending trunk)
+  for (let bi = 0; bi < 16; bi++) {
+    const yVal = -0.54 - (bi / 16) * 0.42
+    const rad = 0.13 - (bi / 16) * 0.04
+    for (let bj = 0; bj < 12; bj++) {
+      const ang = (bj / 12) * TAU
+      const bx = rad * Math.cos(ang)
+      const bz = -0.27 + rad * Math.sin(ang)
       points.push({
-        x: rad * Math.cos(ang),
+        x: bx,
         y: yVal,
-        z: -0.26 + rad * Math.sin(ang),
+        z: bz,
+        nx: Math.cos(ang),
+        ny: 0,
+        nz: Math.sin(ang),
         region: 'partial-gravity',
         isSurface: true,
+        isFissure: false,
         lobeWeight: 0.85,
       })
     }
   }
 
-  // 4. Deep white matter / internal nuclei lattice
-  for (let k = 0; k < 180; k++) {
-    const r = Math.pow(Math.random(), 0.6) * 0.42
+  // 4. Corpus Callosum & Deep Synaptic Lattice
+  for (let k = 0; k < 220; k++) {
+    const r = Math.pow(Math.random(), 0.65) * 0.44
     const theta = Math.random() * TAU
     const phi = (Math.random() - 0.5) * Math.PI
-    const x = r * Math.cos(phi) * Math.sin(theta) + (Math.random() > 0.5 ? 0.18 : -0.18)
-    const y = r * Math.sin(phi) * 0.75 + 0.08
-    const z = r * Math.cos(phi) * Math.cos(theta) * 1.1 - 0.05
+    const x = r * Math.cos(phi) * Math.sin(theta) + (Math.random() > 0.5 ? 0.16 : -0.16)
+    const y = r * Math.sin(phi) * 0.72 + 0.08
+    const z = r * Math.cos(phi) * Math.cos(theta) * 1.08 - 0.04
     points.push({
       x,
       y,
       z,
+      nx: 0,
+      ny: 1,
+      nz: 0,
       region: classifyLobe(x, y, z),
       isSurface: false,
+      isFissure: false,
       lobeWeight: 0.65,
     })
   }
@@ -206,9 +261,9 @@ function positionNeuron3D(rec: BrainRecord): { x: number; y: number; z: number; 
   const elev = (((h >>> 7) % 200) / 100 - 1) * 0.4
   const radius = lobe.r * (0.65 + (((h >>> 12) % 100) / 100) * 0.35)
 
-  let x = lobe.cx + hemi * (Math.abs(Math.cos(angle)) * radius + 0.08)
-  let y = lobe.cy + elev * radius
-  let z = lobe.cz + Math.sin(angle) * radius * 0.9
+  const x = lobe.cx + hemi * (Math.abs(Math.cos(angle)) * radius + 0.08)
+  const y = lobe.cy + elev * radius
+  const z = lobe.cz + Math.sin(angle) * radius * 0.9
 
   return { x, y, z, region }
 }
@@ -233,7 +288,7 @@ export default function AsciiBrain() {
   const [hover, setHover] = useState<Neuron3D | null>(null)
   const [tip, setTip] = useState<{ x: number; y: number } | null>(null)
 
-  // 3D camera & rotation physics
+  // 3D Camera & Orbit Physics
   const rotRef = useRef({ yaw: 0.45, pitch: 0.22, zoom: 1 })
   const targetRotRef = useRef({ yaw: 0.45, pitch: 0.22, zoom: 1 })
   const dragRef = useRef<{ isDown: boolean; lastX: number; lastY: number }>({ isDown: false, lastX: 0, lastY: 0 })
@@ -248,7 +303,7 @@ export default function AsciiBrain() {
   hoverRef.current = hover
   siStateRef.current = siState
 
-  const brainModel = useMemo(() => generateBrainModel(), [])
+  const brainModel = useMemo(() => generateRealisticBrainModel(), [])
 
   // Listen to external SI assistant state broadcasts
   useEffect(() => {
@@ -283,7 +338,7 @@ export default function AsciiBrain() {
       }
     })
 
-    // Trigger learning shockwave from latest records
+    // Trigger learning shockwave from newly updated records
     const now = performance.now()
     for (const n of neuronsRef.current) {
       if (Date.now() - n.rec.lastTs < 2000) {
@@ -357,7 +412,7 @@ export default function AsciiBrain() {
     return () => clearInterval(timer)
   }, [])
 
-  // 3D ASCII Render Loop
+  // 3D ASCII Render Loop with Lambertian + Specular + Fresnel Rim Shading
   useEffect(() => {
     const cv = canvasRef.current
     if (!cv) return
@@ -365,18 +420,25 @@ export default function AsciiBrain() {
     if (!ctx) return
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    // ASCII terminal grid resolution
-    const COLS = 86
-    const ROWS = 38
+    // High resolution ASCII terminal grid
+    const COLS = 96
+    const ROWS = 42
     const zBuffer = new Float32Array(COLS * ROWS)
     const energyBuf = new Float32Array(COLS * ROWS)
     const hotBuf = new Uint8Array(COLS * ROWS)
-    const regionBuf = Array.from({ length: COLS * ROWS }, () => '')
+    const rimBuf = new Uint8Array(COLS * ROWS)
+
+    // Key light vector for anatomical shading
+    const lx = 0.36
+    const ly = 0.62
+    const lz = 0.7
+    const lLen = Math.hypot(lx, ly, lz)
+    const lightDir = { x: lx / lLen, y: ly / lLen, z: lz / lLen }
 
     const draw = (timeMs: number) => {
-      const avail = cv.parentElement?.clientWidth ?? 680
-      const stageH = cv.parentElement?.clientHeight ?? 600
-      const fs = Math.max(10, Math.min(avail / (COLS * 0.62), stageH / (ROWS * 1.15), 24))
+      const avail = cv.parentElement?.clientWidth ?? 720
+      const stageH = cv.parentElement?.clientHeight ?? 640
+      const fs = Math.max(9.5, Math.min(avail / (COLS * 0.6), stageH / (ROWS * 1.15), 23))
       const cellW = fs * 0.6
       const cellH = fs * 1.14
       const cssW = COLS * cellW
@@ -399,13 +461,12 @@ export default function AsciiBrain() {
       const hoveredNeuron = hoverRef.current
       const t = timeMs / 1000
 
-      // Automated rotation velocity based on SI state
+      // Dynamic rotation kinematics
       if (!dragRef.current.isDown && !reduced) {
         if (state === 'thinking') {
-          targetRotRef.current.yaw += 0.024
+          targetRotRef.current.yaw += 0.022
           targetRotRef.current.pitch = 0.2 + 0.12 * Math.sin(t * 3.5)
         } else if (state === 'listening') {
-          // Orient toward user for audio focus
           const delta = ((0 - targetRotRef.current.yaw) % TAU + TAU) % TAU
           targetRotRef.current.yaw += (delta > Math.PI ? delta - TAU : delta) * 0.05
           targetRotRef.current.pitch = 0.12 + 0.05 * Math.sin(t * 2.0)
@@ -413,8 +474,7 @@ export default function AsciiBrain() {
           targetRotRef.current.yaw += 0.012
           targetRotRef.current.pitch = 0.22 + 0.08 * Math.cos(t * 2.8)
         } else {
-          // Idle ambient drift
-          targetRotRef.current.yaw += 0.007
+          targetRotRef.current.yaw += 0.0075
           targetRotRef.current.pitch = 0.22 + 0.06 * Math.sin(t * 1.1)
         }
       }
@@ -426,22 +486,21 @@ export default function AsciiBrain() {
       rot.pitch += (targetRot.pitch - rot.pitch) * 0.1
       rot.zoom += (targetRot.zoom - rot.zoom) * 0.1
 
-      // Clear 3D buffers
       zBuffer.fill(9999)
       energyBuf.fill(0)
       hotBuf.fill(0)
-      regionBuf.fill('')
+      rimBuf.fill(0)
 
       const cosY = Math.cos(rot.yaw)
       const sinY = Math.sin(rot.yaw)
       const cosP = Math.cos(rot.pitch)
       const sinP = Math.sin(rot.pitch)
 
-      const camDist = 3.2 / rot.zoom
+      const camDist = 3.3 / rot.zoom
       const scaleX = COLS * 0.44 * rot.zoom
       const scaleY = ROWS * 0.48 * rot.zoom
 
-      // State dynamic pulse energy
+      // Speech audio pulsation
       let stateAudioAmp = 0
       if (state === 'speaking') {
         stateAudioAmp = 0.35 + 0.25 * Math.sin(t * 18) * Math.sin(t * 7.5)
@@ -449,7 +508,7 @@ export default function AsciiBrain() {
         stateAudioAmp = 0.2 + 0.15 * Math.sin(t * 12)
       }
 
-      // Active expanding 3D shockwaves
+      // Shockwave pulses
       const pulses = pulsesRef.current
       for (let pi = pulses.length - 1; pi >= 0; pi--) {
         const p = pulses[pi]
@@ -461,11 +520,10 @@ export default function AsciiBrain() {
         }
       }
 
-      // 1. Project 3D Brain Lattice Points
+      // 1. Ray-project 3D Anatomical Brain Points
       for (let i = 0; i < brainModel.length; i++) {
         const pt = brainModel[i]
 
-        // Dynamic speaking expansion & thinking jitter
         let px = pt.x
         let py = pt.y
         let pz = pt.z
@@ -475,7 +533,7 @@ export default function AsciiBrain() {
           px *= expansion
           py *= expansion
           pz *= expansion
-        } else if (state === 'thinking' && Math.random() < 0.03) {
+        } else if (state === 'thinking' && Math.random() < 0.02) {
           px += (Math.random() - 0.5) * 0.025
           py += (Math.random() - 0.5) * 0.025
           pz += (Math.random() - 0.5) * 0.025
@@ -485,9 +543,15 @@ export default function AsciiBrain() {
         const x1 = px * cosY + pz * sinY
         const z1 = -px * sinY + pz * cosY
 
-        // 3D Pitch tilt
+        // 3D Pitch rotation
         const y2 = py * cosP - z1 * sinP
         const z2 = py * sinP + z1 * cosP
+
+        // Rotate normal vector
+        const nx1 = pt.nx * cosY + pt.nz * sinY
+        const nz1 = -pt.nx * sinY + pt.nz * cosY
+        const ny2 = pt.ny * cosP - nz1 * sinP
+        const nz2 = pt.ny * sinP + nz1 * cosP
 
         const factor = camDist / (camDist + z2)
         const col = Math.round(COLS / 2 + x1 * scaleX * factor)
@@ -498,45 +562,51 @@ export default function AsciiBrain() {
 
         if (z2 < zBuffer[bufIdx]) {
           zBuffer[bufIdx] = z2
-          regionBuf[bufIdx] = pt.region
 
-          // Depth normal & shading
-          let baseEnergy = (1 - (z2 + 0.8) / 2.2) * 0.45
-          if (pt.isSurface) baseEnergy += 0.25
+          // Shading: Lambertian diffuse + Blinn specular + Fresnel rim
+          const dotLight = Math.max(0, nx1 * lightDir.x + ny2 * lightDir.y + nz2 * lightDir.z)
+          const dotView = Math.max(0, nz2)
+          const fresnel = Math.pow(1 - dotView, 2.5) // Glowing silhouette edge
 
-          // Lobe specific illumination
+          let intensity = 0.22 + dotLight * 0.52 + fresnel * 0.42
+
+          // Longitudinal fissure groove depth
+          if (pt.isFissure) intensity *= 0.55
+
+          // Lobe specific highlight
           if (focusedRegion && pt.region !== focusedRegion) {
-            baseEnergy *= 0.16
+            intensity *= 0.18
           } else if (focusedRegion && pt.region === focusedRegion) {
-            baseEnergy *= 1.45
+            intensity *= 1.45
             hotBuf[bufIdx] = 1
           }
 
           // SI state activations
           if (state === 'listening' && pt.region === 'detection') {
-            baseEnergy += 0.45 + 0.3 * Math.sin(t * 8 + py * 10)
+            intensity += 0.45 + 0.3 * Math.sin(t * 8 + py * 10)
             hotBuf[bufIdx] = 1
           } else if (state === 'thinking' && (pt.region === 'flammability' || pt.region === 'spread')) {
-            baseEnergy += 0.5 + 0.4 * Math.sin(t * 14 + px * 12 + pz * 12)
+            intensity += 0.5 + 0.4 * Math.sin(t * 14 + px * 12 + pz * 12)
             hotBuf[bufIdx] = 1
           } else if (state === 'speaking' && (pt.region === 'detection' || pt.region === 'flammability')) {
-            baseEnergy += 0.4 + stateAudioAmp * 0.8
+            intensity += 0.4 + stateAudioAmp * 0.8
             hotBuf[bufIdx] = 1
           }
 
-          // Check pulses passing this 3D coordinate
+          // Shockwave collisions
           for (let pi = 0; pi < pulses.length; pi++) {
             const p = pulses[pi]
             const age = (timeMs - p.t0) / 1000
             const curRad = age * p.speed
             const dist = Math.hypot(pt.x - p.ox, pt.y - p.oy, pt.z - p.oz)
             if (Math.abs(dist - curRad) < 0.14) {
-              baseEnergy += (1 - Math.abs(dist - curRad) / 0.14) * 0.75
+              intensity += (1 - Math.abs(dist - curRad) / 0.14) * 0.85
               hotBuf[bufIdx] = 1
             }
           }
 
-          energyBuf[bufIdx] = baseEnergy
+          if (fresnel > 0.65) rimBuf[bufIdx] = 1
+          energyBuf[bufIdx] = intensity
         }
       }
 
@@ -561,22 +631,21 @@ export default function AsciiBrain() {
 
         const isHovered = hoveredNeuron === n
 
-        // Synapse glow radius
         for (let dy = -1; dy <= 1; dy++) {
           for (let dx = -1; dx <= 1; dx++) {
             const c = col + dx
             const r = row + dy
             if (c < 0 || c >= COLS || r < 0 || r >= ROWS) continue
             const idx = r * COLS + c
-            const nIntensity = isHovered ? 1.6 : 0.85 + 0.25 * Math.sin(t * 3.5 + n.phase)
-            energyBuf[idx] += nIntensity * (dx === 0 && dy === 0 ? 1 : 0.45)
+            const nIntensity = isHovered ? 1.8 : 0.95 + 0.25 * Math.sin(t * 3.5 + n.phase)
+            energyBuf[idx] += nIntensity * (dx === 0 && dy === 0 ? 1 : 0.5)
             hotBuf[idx] = 1
             zBuffer[idx] = Math.min(zBuffer[idx], nz2)
           }
         }
       }
 
-      // 3. Render Characters to Canvas
+      // 3. Render Characters (100% transparent background)
       const inkColor = '#edf4fa'
       const accentColor = state === 'speaking' ? '#ff7e40' : state === 'listening' ? '#52e3c2' : '#49b8d6'
 
@@ -587,13 +656,15 @@ export default function AsciiBrain() {
 
           const e = energyBuf[idx]
           const isHot = hotBuf[idx] === 1
+          const isRim = rimBuf[idx] === 1
 
           const glyphSet = state === 'thinking' ? GLYPHS_THINK : RAMP
-          const rampIdx = Math.max(1, Math.min(glyphSet.length - 1, Math.floor(e * glyphSet.length)))
+          let rampIdx = Math.max(1, Math.min(glyphSet.length - 1, Math.floor(e * glyphSet.length)))
+          if (isRim && rampIdx < 3) rampIdx = 3
           const char = glyphSet[rampIdx]
 
           ctx.fillStyle = isHot ? accentColor : inkColor
-          ctx.globalAlpha = Math.max(0.18, Math.min(1, 0.35 + e * 0.65))
+          ctx.globalAlpha = Math.max(0.2, Math.min(1, 0.32 + e * 0.68))
           ctx.fillText(char, (c + 0.5) * cellW, (r + 0.5) * cellH)
         }
       }
@@ -603,7 +674,7 @@ export default function AsciiBrain() {
     let raf = 0
     let last = 0
     const loop = (timeMs: number) => {
-      if (timeMs - last > 33) {
+      if (timeMs - last > 30) {
         draw(timeMs)
         last = timeMs
       }
@@ -619,7 +690,7 @@ export default function AsciiBrain() {
     return () => cancelAnimationFrame(raf)
   }, [brainModel])
 
-  // Mouse drag & tilt interaction
+  // Orbit drag interaction
   const onPointerDown = (e: React.PointerEvent) => {
     dragRef.current = { isDown: true, lastX: e.clientX, lastY: e.clientY }
     ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
@@ -635,7 +706,7 @@ export default function AsciiBrain() {
       dragRef.current.lastY = e.clientY
     }
 
-    // Neuron pick test
+    // Neuron pick
     const cv = canvasRef.current
     if (!cv) return
     const rect = cv.getBoundingClientRect()
@@ -646,7 +717,7 @@ export default function AsciiBrain() {
     let minDist = 18
 
     for (const n of neuronsRef.current) {
-      if (n.depth > 0.9) continue // occluded by back of brain
+      if (n.depth > 0.9) continue
       const d = Math.hypot(n.screenX - mx, n.screenY - my)
       if (d < minDist) {
         minDist = d
@@ -740,8 +811,8 @@ export default function AsciiBrain() {
         </div>
       </div>
 
-      {/* 3D ASCII Canvas Stage */}
-      <div className="brain-stage relative mt-3 overflow-hidden rounded-2xl border border-white/10 bg-[var(--panel)]/40 backdrop-blur-xl shadow-[0_16px_40px_rgba(0,0,0,0.2)]">
+      {/* 3D ASCII Canvas Stage — 100% transparent, no background box */}
+      <div className="brain-stage relative mt-4 overflow-hidden">
         <canvas
           ref={canvasRef}
           className="relative z-[1] mx-auto block cursor-grab active:cursor-grabbing touch-none select-none"
@@ -759,7 +830,7 @@ export default function AsciiBrain() {
         />
 
         {/* Subtle 3D rotation hint */}
-        <div className="pointer-events-none absolute bottom-3 left-4 font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--ink)] opacity-35">
+        <div className="pointer-events-none absolute bottom-2 left-3 font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--ink)] opacity-35">
           [ 3D ORBIT · DRAG TO ROTATE · CLICK NEURON TO AUDIT ]
         </div>
 

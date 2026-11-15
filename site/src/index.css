@@ -251,45 +251,19 @@ button.pill:active { transform: translateY(0) scale(.96); }
     inset 0 -1px 0 rgb(0 0 0 / .15);
 }
 
-/* Full-bleed phosphor field for the oversized ASCII memory cortex. */
+/* Seamless transparent ASCII brain stage */
 .brain-stage {
-  display: grid;
-  width: 100vw;
-  height: clamp(30rem, 78vh, 58rem);
-  margin-left: calc(50% - 50vw);
-  place-items: center;
-  background: linear-gradient(180deg, #000 0%, #000 57%, #17135f 100%);
-  isolation: isolate;
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 28rem;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
 }
-.brain-stage::before,
-.brain-stage::after {
-  position: absolute;
-  z-index: 0;
-  content: "";
-  pointer-events: none;
-}
-.brain-stage::before {
-  inset: 0;
-  background-image: radial-gradient(rgb(129 199 179 / .55) .55px, transparent .75px);
-  background-size: 3px 3px;
-  opacity: .1;
-  mask-image: linear-gradient(transparent, #000 14%, #000 90%, transparent);
-}
-.brain-stage::after {
-  inset: 0;
-  background: repeating-linear-gradient(0deg, transparent 0 2px, rgb(3 5 18 / .12) 3px);
-  opacity: .1;
-}
-.brain-shader { pointer-events: none; }
-.brain-stage > canvas:not(.brain-shader) {
-  max-width: min(80vw, 1120px);
+.brain-stage > canvas {
+  max-width: 100%;
   touch-action: manipulation;
-}
-
-@media (max-width: 560px) {
-  .brain-stage { height: 72vh; min-height: 28rem; }
-  .brain-stage > canvas:not(.brain-shader) { max-width: calc(100vw - 2rem); }
-  .btn { min-height: 48px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
