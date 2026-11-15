@@ -88,7 +88,7 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     stickRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 160
   }
 
-  const applyResponse = (res: SiResponse, turnId: number, ms: number) => {
+  const applyResponse = (res: SiResponse, turnId: number, ms: number, suppressNav = false) => {
     const sim = res.simulation_commands ?? null
     const { tools, run } = toolCallsFromCommands(sim)
     // emit before setMsgs: the lazy LiveChamber mount peeks the pending
@@ -120,7 +120,9 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     // when the copilot points somewhere (generated dashboards, a section),
     // follow it — this is how answers surface the dashboards they produced
     const section = res.navigation?.scroll_to_section
-    if (section) {
+    // preset-driven turns must never leave the deck — the operator just
+    // asked to simulate here, so a stray 'psi-dataset' hop is a bug
+    if (section && !suppressNav) {
       // 'chamber' is the copilot's name for this console — the live-chamber
       // video section no longer exists
       const target = section === 'chamber' ? '#ignis-console' : section.startsWith('#') ? section : `#${section}`
@@ -169,7 +171,7 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     ms: null,
   })
 
-  const sendTextRef = useRef<((text: string, display?: string) => Promise<void>) | null>(null)
+  const sendTextRef = useRef<((text: string, display?: string, opts?: { suppressNav?: boolean }) => Promise<void>) | null>(null)
   // mission envelopes in the deck above announce picks on the chamber bus
   // (__origin 'sim-deck'). Each pick becomes a real LLM turn: the preset's
   // chamber context is applied first so the copilot answers under the
@@ -193,6 +195,7 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
       void sendTextRef.current?.(
         preset?.prompt ?? `Analyze ${cmd.__investigation ?? cmd.load_preset ?? 'this mission'}.`,
         preset ? `Explore mission — ${preset.title}` : undefined,
+        { suppressNav: true },
       )
     }
     window.addEventListener('ignis:ui-command', onDeckCommand)
@@ -200,7 +203,7 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presets])
 
-  const sendText = async (text: string, display?: string) => {
+  const sendText = async (text: string, display?: string, opts?: { suppressNav?: boolean }) => {
     const uid = nid()
     const tid = nid()
     stickRef.current = true
@@ -209,7 +212,7 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     const res =
       (await siChat(text, chamberRef.current)) ??
       synthesizeLocalSiResponse(text, chamberRef.current)
-    applyResponse(res, tid, performance.now() - t0)
+    applyResponse(res, tid, performance.now() - t0, opts?.suppressNav)
   }
   sendTextRef.current = sendText
 
