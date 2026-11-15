@@ -12,7 +12,14 @@ const ctx = canvas.getContext('2d', { willReadFrequently: true }) as
 
 self.onmessage = (e: MessageEvent) => {
   const bmp = (e.data as { bitmap?: ImageBitmap }).bitmap
-  if (!bmp || !ctx) return
+  if (!bmp) return
+  if (!ctx) {
+    // replying keeps the main thread's inFlight flag from sticking —
+    // the throw then surfaces as worker.onerror → main-thread fallback
+    bmp.close()
+    ;(self as unknown as Worker).postMessage({})
+    throw new Error('keyedVideo: no 2d context on OffscreenCanvas')
+  }
   const w = bmp.width >> 1
   const h = bmp.height >> 1
   if (canvas.width !== w || canvas.height !== h) {
