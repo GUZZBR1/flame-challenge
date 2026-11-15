@@ -1,7 +1,7 @@
 import type { ChamberState } from './live'
 import type { SiChamberState, SiResponse } from './api'
 import type { CrewMember, CausalEvent, CounterfactualDoctrine, MissionOutcomeStatus } from '../components/CrewTimelinePanel'
-import { riskIndexLocal } from './risk'
+import { MATERIALS, riskIndexLocal } from './risk'
 import type { RiskUncertainty } from './risk'
 
 export interface HeadlineFinding {
@@ -138,9 +138,12 @@ const EVENT = 'ignis:dashboard-generated'
 const MAX_ITEMS = 30
 
 /**
- * 3 Golden-Path Pre-seeded Reports for instant demo readiness
+ * 3 Golden-Path Pre-seeded Reports for instant demo readiness.
+ * Function (not a const) so createdAt stamps stay relative to the view,
+ * not to module evaluation time.
  */
-export const SEED_REPORTS: GeneratedDashboard[] = [
+export function buildSeedReports(): GeneratedDashboard[] {
+  return [
   {
     id: 'artemis-01',
     createdAt: Date.now() - 1000 * 60 * 35,
@@ -670,57 +673,97 @@ export const SEED_REPORTS: GeneratedDashboard[] = [
       },
     },
   },
-]
+  ]
+}
 
-function read(): GeneratedDashboard[] {
+/** User-generated reports only — localStorage v2 plus a one-time v1
+ *  migration. Seeds never enter storage; they're merged at read time. */
+function readUser(): GeneratedDashboard[] {
   try {
     const raw = localStorage.getItem(STORE_KEY)
-    let userReports: GeneratedDashboard[] = []
     if (raw) {
-      const parsed = JSON.parse(raw) as GeneratedDashboard[]
-      if (Array.isArray(parsed)) userReports = parsed
-    } else {
-      // Migrate v1 generated dashboards if present
-      const rawV1 = localStorage.getItem('ignis-generated-dashboards-v1')
-      if (rawV1) {
-        try {
-          const parsedV1 = JSON.parse(rawV1)
-          if (Array.isArray(parsedV1)) {
-            userReports = parsedV1.map((item: any) => {
-              if (item.spec) return item as GeneratedDashboard
-              const spec = compileMissionReportSpec(
-                item.prompt || 'Migrated Mission Report',
-                item.response || {
-                  briefing: '',
-                  recommended_action: '',
-                  evidence: [],
-                  mode: 'local-fallback',
-                  model: 'v1-migration',
-                },
-                item.run,
-                item.scenario || item.analysisScenario,
-                item.engineGravityMode,
-              )
-              return { ...item, spec } as GeneratedDashboard
-            })
-            localStorage.setItem(STORE_KEY, JSON.stringify(userReports.slice(0, MAX_ITEMS)))
-          }
-        } catch {
-          // ignore v1 migration parse error
-        }
-      }
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? (parsed as GeneratedDashboard[]) : []
     }
-    const seedIds = new Set(SEED_REPORTS.map((s) => s.id))
-    const filteredUserReports = userReports.filter((r) => !seedIds.has(r.id))
-    const combined = [...filteredUserReports, ...SEED_REPORTS].slice(0, MAX_ITEMS)
-    return combined
+    // Migrate v1 generated dashboards if present
+    const rawV1 = localStorage.getItem('ignis-generated-dashboards-v1')
+    if (!rawV1) return []
+    const parsedV1 = JSON.parse(rawV1)
+    if (!Array.isArray(parsedV1)) return []
+    const migrated = parsedV1.map((item: any) => {
+      if (item.spec) return item as GeneratedDashboard
+      const spec = compileMissionReportSpec(
+        item.prompt || 'Migrated Mission Report',
+        item.response || {
+          briefing: '',
+          recommended_action: '',
+          evidence: [],
+          mode: 'local-fallback',
+          model: 'v1-migration',
+        },
+        item.run,
+        item.scenario || item.analysisScenario,
+        item.engineGravityMode,
+      )
+      return { ...item, spec } as GeneratedDashboard
+    })
+    localStorage.setItem(STORE_KEY, JSON.stringify(migrated.slice(0, MAX_ITEMS)))
+    return migrated
   } catch {
-    return SEED_REPORTS
+    return []
   }
+}
+
+function read(): GeneratedDashboard[] {
+  const seeds = buildSeedReports()
+  const seedIds = new Set(seeds.map((s) => s.id))
+  const userReports = readUser().filter((r) => !seedIds.has(r.id))
+  return [...userReports, ...seeds].slice(0, MAX_ITEMS)
 }
 
 export function getGeneratedDashboards(): GeneratedDashboard[] {
   return read()
+}
+
+/** Action code → containment doctrine text. Keeps the printed doctrine
+ *  consistent with whatever the copilot/policy actually recommended. */
+const ACTION_DOCTRINE: Record<string, string> = {
+  CUT_VENTILATION:
+    'Cut cabin recirculating flow to < 1 cm/s within 5 seconds. Maintain hermetic hatch seal until IR scan confirms core T < 350 K.',
+  REDUCE_O2:
+    'Throttle cabin O₂ toward the material LOC margin — approach but never cross the limiting oxygen concentration.',
+  COOL_AND_ISOLATE:
+    'Isolate the affected module and hold the seal. Cool flames persist invisibly — require radiometric confirmation T < 350 K before re-entry.',
+  SUPPRESS_LOCAL:
+    'Deploy localized N₂/CO₂ suppression at the flame base. Avoid global ventilation changes that feed the front.',
+}
+
+/** Per-factor rationale keyed on the explainLocal factor ids — the
+ *  deltas themselves come from the real Shapley decomposition. */
+const DRIVER_RATIONALE: Record<string, string> = {
+  o2Margin: 'margin above the material LOC drives ignition pressure',
+  airflow: 'forced-convection oxidizer transport along the flame front',
+  materialHazard: 'material flammability and hidden-regime flags',
+  gravity: 'buoyant chimney-effect coupling',
+}
+
+/** Findings most relevant to this scenario first; the rest follow.
+ *  Every report still carries the full corpus list. */
+function rankedFindings(
+  run: ChamberState | undefined,
+  res: ReturnType<typeof riskIndexLocal>,
+  o2: number,
+  gravity: string,
+): HeadlineFinding[] {
+  const relevant = (id: string) =>
+    (id === 'finding-cool-flames' && (run?.coolFlame || res.flags.coolFlameCapable)) ||
+    (id === 'finding-exploration-atmospheres' && o2 >= 30) ||
+    (id === 'finding-partial-gravity' && gravity !== 'microgravity' && gravity !== 'earth') ||
+    (id === 'finding-sensor-blindness' && res.flags.smoldering) ||
+    (id === 'finding-loc-persistence' && res.margin <= 2)
+  return [...HEADLINE_EXPLORATION_FINDINGS].sort(
+    (a, b) => Number(relevant(b.id)) - Number(relevant(a.id)),
+  )
 }
 
 export function compileMissionReportSpec(
@@ -732,18 +775,27 @@ export function compileMissionReportSpec(
 ): MissionReportSpec {
   const o2 = scenario?.o2Pct ?? run?.o2Pct ?? 21
   const flow = scenario?.flowCms ?? 5
-  const material = scenario?.materialId ?? 'PMMA'
+  const gravity = scenario?.gravity ?? 'microgravity'
   const invId = scenario?.investigationId ?? 'flex-2'
-  const riskVal = typeof response.chamber?.riskIndex === 'number' ? response.chamber.riskIndex : 0.5
+
+  // one model evaluation drives every numeric field below — the same
+  // riskIndexLocal the API fallback exposes (material ids normalized)
+  const res = riskIndexLocal(
+    (scenario?.materialId ?? 'pmma').toLowerCase(), o2, flow, gravity,
+  )
+  const material = res.materialName
+
+  const riskVal =
+    typeof response.chamber?.riskIndex === 'number'
+      ? response.chamber.riskIndex
+      : res.riskIndex
   const riskPct = Math.round(riskVal <= 1 ? riskVal * 100 : riskVal)
 
   const level: 'low' | 'moderate' | 'high' | 'critical' =
     riskPct >= 75 ? 'critical' : riskPct >= 50 ? 'high' : riskPct >= 30 ? 'moderate' : 'low'
 
   const rawUncertainty = response.chamber?.uncertainty as RiskUncertainty | undefined
-  const calculatedUncertainty =
-    rawUncertainty ??
-    riskIndexLocal(material, o2, flow, scenario?.gravity ?? 'microgravity').uncertainty
+  const calculatedUncertainty = rawUncertainty ?? res.uncertainty
   const uncertaintyBand = calculatedUncertainty
     ? {
         low: Math.round(calculatedUncertainty.lower * 100),
@@ -752,28 +804,58 @@ export function compileMissionReportSpec(
       }
     : null
 
+  // zone derived from the material's fitted LOC + the same thresholds
+  // SafetyEnvelopeChart draws — the two envelopes can't disagree
   const zone: 'safe' | 'amber' | 'runaway' =
-    o2 <= 13.5 ? 'safe' : o2 > 25 || flow > 12 ? 'runaway' : 'amber'
+    o2 <= res.locPct
+      ? 'safe'
+      : o2 > 25 || flow > 14 || (o2 >= 20.5 && flow >= 8)
+        ? 'runaway'
+        : 'amber'
 
   const missionStatus: MissionOutcomeStatus =
     riskPct >= 75 ? 'MISSION ABORTED / HULL BREACH' : riskPct >= 45 ? 'EMERGENCY CONTAINED' : 'MISSION ACCOMPLISHED'
 
   const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`
 
+  const psiRuns = MATERIALS.find((m) => m.id === res.materialId)?.psiRuns ?? 0
+  const actionCode = (response.recommended_action ?? '').trim().toUpperCase()
+  const containmentDoctrine =
+    ACTION_DOCTRINE[actionCode] ??
+    (response.recommended_action ||
+      'Cut cabin recirculating flow to < 1 cm/s within 5 seconds. Maintain hermetic hatch seal until IR scan confirms core T < 350 K.')
+
+  // causal-log timestamps follow the actual run duration when a run
+  // exists, otherwise a nominal 12 s window
+  const tSec = run?.tSec ?? 12
+  const ts = (frac: number) => {
+    const s = Math.round(frac * tSec)
+    return `T+${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+  }
+
+  const paperCitations = [
+    ...new Set(
+      (response.evidence ?? [])
+        .map((e) => e.investigationId?.toUpperCase())
+        .filter((x): x is string => Boolean(x)),
+    ),
+  ].map((x) => `NASA PSI ${x} series`)
+
   return {
     id,
     createdAt: Date.now(),
     title: prompt.length > 5 ? prompt : `Mission Safety Assessment: ${material.toUpperCase()} at ${o2}% O₂`,
-    missionTag: `${invId.toUpperCase()} · ${scenario?.gravity ?? 'Microgravity'} Environment`,
+    missionTag: `${invId.toUpperCase()} · ${gravity[0].toUpperCase() + gravity.slice(1)} Environment`,
     rubric: {
       summarize: {
         investigationId: invId,
         materialId: material,
         abstract: response.briefing,
         psiAccessions: (response.evidence ?? []).map((e) => e.accession),
-        paperCitations: ['NASA PSI Combustion Database', 'NTRS Scientific Index'],
-        pressureKpa: 101.3,
-        gravityRegime: engineGravityMode ?? scenario?.gravity ?? 'microgravity',
+        paperCitations: paperCitations.length ? paperCitations : ['NASA PSI Combustion Database'],
+        // exploration atmospheres run 8.2 psia (~56.5 kPa)
+        pressureKpa: gravity === 'lunar' || gravity === 'martian' ? 56.5 : 101.3,
+        gravityRegime: engineGravityMode ?? gravity,
         o2Pct: o2,
         flowCms: flow,
       },
@@ -782,33 +864,41 @@ export function compileMissionReportSpec(
         level,
         uncertaintyBand,
         components: {
-          flammability: Math.round(riskPct * 1.05),
-          hiddenHazard: run?.coolFlame ? 92 : Math.round(riskPct * 0.9),
-          explorationRelevance: o2 > 25 ? 95 : 75,
-          dataRichness: 85,
+          flammability: Math.round(res.breakdown.ignitionPressure * 100),
+          hiddenHazard: run?.coolFlame
+            ? 92
+            : Math.min(100, Math.round((res.breakdown.hiddenFactor - 1) * 200)),
+          explorationRelevance:
+            o2 >= 30
+              ? 95
+              : gravity === 'lunar' || gravity === 'martian' || gravity === 'partial-gravity'
+                ? 85
+                : 70,
+          dataRichness: Math.min(95, 50 + Math.round(Math.log2(1 + psiRuns) * 8)),
         },
-        shapDrivers: [
-          { factor: `Atmospheric O₂ (${o2}%)`, delta: `${o2 > 21 ? '+' : '-'}${Math.abs(o2 - 21) * 2}%`, rationale: 'Oxidizer chemical kinetics driving factor' },
-          { factor: `Ventilation Flow (${flow} cm/s)`, delta: `${flow > 5 ? '+' : '-'}${Math.round(flow * 1.2)}%`, rationale: 'Convective boundary layer transport' },
-          { factor: `Gravity Regime (${scenario?.gravity ?? '0g'})`, delta: scenario?.gravity === 'earth' ? '+15%' : '-8%', rationale: 'Buoyant chimney effect coupling' },
-        ],
+        // exact Shapley decomposition of the same model evaluation —
+        // not a template; shares sum to the deviation from baseline
+        shapDrivers: (res.explanation?.contributions ?? []).slice(0, 3).map((c) => ({
+          factor: c.label,
+          delta: `${c.phi >= 0 ? '+' : ''}${Math.round(c.phi * 100)} pt`,
+          rationale: DRIVER_RATIONALE[c.factor] ?? c.factor,
+        })),
       },
       interpret: {
         actionableGuidance:
           riskPct > 60
             ? 'Mandate automated containment damper shutdown and immediate N₂/CO₂ flooding of affected module.'
             : 'Operational envelope acceptable under continuous forced aspirating particulate monitoring.',
-        containmentDoctrine:
-          'Cut cabin recirculating flow to < 1 cm/s within 5 seconds. Maintain hermetic hatch seal until IR scan confirms core T < 350 K.',
+        containmentDoctrine,
         sensorAdvisory:
           'Standard optical ionization alarms cannot detect 0g smoke clusters. Use multipoint duct aspirating detectors.',
         atmosphereLimits:
           o2 > 25
             ? 'WARNING: Material enters high-risk spread envelope under elevated exploration atmospheres.'
-            : 'Material within nominal baseline flammability range.',
+            : `Material within nominal baseline flammability range (LOC ${res.locPct}%).`,
       },
     },
-    headlineFindings: HEADLINE_EXPLORATION_FINDINGS,
+    headlineFindings: rankedFindings(run, res, o2, gravity),
     crewImpact: {
       missionStatus,
       crew: [
@@ -838,9 +928,9 @@ export function compileMissionReportSpec(
         },
       ],
       causalLog: [
-        { time: 'T+00:00', actor: 'Simulation Core', action: `Ignition initialized at ${o2}% O₂ and ${flow} cm/s.`, severity: 'info' },
-        { time: 'T+00:04', actor: 'Combustion Solver', action: run?.coolFlame ? 'Cool flame regime triggered.' : 'Front advancing along boundary.', severity: run?.coolFlame ? 'warning' : 'info' },
-        { time: 'T+00:10', actor: 'Safety Interlock', action: riskPct > 70 ? 'Flashover limit breached.' : 'Contained within nominal limits.', severity: riskPct > 70 ? 'danger' : 'info' },
+        { time: ts(0), actor: 'Simulation Core', action: `Ignition initialized at ${o2}% O₂ and ${flow} cm/s.`, severity: 'info' },
+        { time: ts(0.33), actor: 'Combustion Solver', action: run?.coolFlame ? 'Cool flame regime triggered.' : 'Front advancing along boundary.', severity: run?.coolFlame ? 'warning' : 'info' },
+        { time: ts(0.85), actor: 'Safety Interlock', action: riskPct > 70 ? 'Flashover limit breached.' : 'Contained within nominal limits.', severity: riskPct > 70 ? 'danger' : 'info' },
       ],
       counterfactual: {
         title: 'NASA PSI Standard Counterfactual Protocol',
@@ -873,7 +963,11 @@ export function generateDashboard(
   analysisScenario?: SiChamberState,
   engineGravityMode?: string,
 ): GeneratedDashboard {
-  const spec = compileMissionReportSpec(prompt, response, run, scenario, engineGravityMode)
+  // the report describes what was analyzed — fall back to the live
+  // chamber scenario when the caller doesn't separate the two
+  const spec = compileMissionReportSpec(
+    prompt, response, run, analysisScenario ?? scenario, engineGravityMode,
+  )
 
   const item: GeneratedDashboard = {
     id: spec.id,
@@ -887,7 +981,9 @@ export function generateDashboard(
     ...(run ? { run } : {}),
   }
 
-  const items = [item, ...read()].slice(0, MAX_ITEMS)
+  // store user items only — seeds merge at read time and always keep
+  // their slots (user cap = MAX_ITEMS - seed count)
+  const items = [item, ...readUser()].slice(0, MAX_ITEMS - buildSeedReports().length)
   try {
     localStorage.setItem(STORE_KEY, JSON.stringify(items))
   } catch {
@@ -909,8 +1005,9 @@ export function clearGeneratedDashboards(): void {
 
 export function exportReportMarkdown(report: GeneratedDashboard): void {
   const spec = report.spec
+  const shortId = spec.id.slice(0, 8).replace(/[^a-z0-9]/gi, '').toUpperCase()
   const md = `# NASA Space Apps 2026 — IGNIS Executive Flight Safety Brief
-**Document Reference:** IGNIS-REPORT-${spec.id.slice(0, 8).toUpperCase()}  
+**Document Reference:** IGNIS-REPORT-${shortId}  
 **Generated Date:** ${new Date(spec.createdAt).toUTCString()}  
 **Mission Classification:** ${spec.missionTag}  
 **Assessment Subject:** ${spec.title}  
@@ -985,7 +1082,7 @@ ${spec.crewImpact.causalLog
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `IGNIS_Certification_Brief_${spec.id.slice(0, 8)}.md`
+  a.download = `IGNIS_Certification_Brief_${shortId}.md`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
