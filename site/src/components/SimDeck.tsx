@@ -149,17 +149,42 @@ const MISSION_MEDIA = {
   },
 } as const
 
+/** poster until the pointer (or keyboard focus) reaches the nearest
+ *  [data-hover-media] host, then it plays; touch devices have no hover, so
+ *  they loop on their own. Reduced-motion users keep the poster. */
+function HoverVideo({ src, poster, label, className }: { src: string; poster: string; label: string; className: string }) {
+  const ref = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    const v = ref.current
+    if (!v || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const play = () => void v.play().catch(() => {})
+    const stop = () => v.pause()
+    if (matchMedia('(hover: none)').matches) {
+      play()
+      return
+    }
+    const host = v.closest<HTMLElement>('[data-hover-media]') ?? v
+    host.addEventListener('pointerenter', play)
+    host.addEventListener('pointerleave', stop)
+    host.addEventListener('focusin', play)
+    host.addEventListener('focusout', stop)
+    return () => {
+      host.removeEventListener('pointerenter', play)
+      host.removeEventListener('pointerleave', stop)
+      host.removeEventListener('focusin', play)
+      host.removeEventListener('focusout', stop)
+    }
+  }, [])
+  return <video ref={ref} className={className} src={src} poster={poster} aria-label={label} muted loop playsInline preload="auto" />
+}
+
 export default function SimDeck() {
   const rootRef = useRef<HTMLDivElement>(null)
   const [activeMission, setActiveMission] = useState<MissionPreset>(MISSION_PRESETS[0])
 
   useEffect(() => {
     const root = rootRef.current
-    if (!root) return
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      root.querySelectorAll('video').forEach((v) => v.pause())
-      return
-    }
+    if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
       gsap.from('[data-hero]', { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', stagger: 0.07 })
     }, root)
@@ -202,22 +227,12 @@ export default function SimDeck() {
 
   const renderMedia = (media: (typeof MISSION_MEDIA)[keyof typeof MISSION_MEDIA], cls: string) =>
     media.type === 'video' ? (
-      <video
-        className={cls}
-        src={media.src}
-        poster={media.poster}
-        aria-label={media.alt}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-      />
+      <HoverVideo src={media.src} poster={media.poster} label={media.alt} className={cls} />
     ) : (
       <img className={cls} src={media.src} alt={media.alt} loading="lazy" />
     )
   const mediaCls =
-    'h-full w-full object-cover grayscale contrast-110 transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0'
+    'h-full w-full object-cover grayscale contrast-110 transition-[filter,transform] duration-700 ease-out group-hover:scale-[1.04] group-hover:grayscale-0 group-focus-visible:grayscale-0'
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overflow-x-hidden overscroll-contain bg-bg">
@@ -305,19 +320,14 @@ export default function SimDeck() {
                   )}
                 </div>
                 <div className="relative min-w-0">
-                  <div className="cut-hero relative h-[300px] overflow-hidden bg-black sm:h-[420px] lg:h-[500px] xl:h-[560px]">
-                    <video
-                      className="h-full w-full object-cover grayscale contrast-125 brightness-95"
+                  <div data-hover-media className="group/feat cut-hero relative h-[300px] overflow-hidden bg-black sm:h-[420px] lg:h-[500px] xl:h-[560px]">
+                    <HoverVideo
                       src={MISSION_MEDIA.feature.src}
                       poster={MISSION_MEDIA.feature.poster}
-                      aria-label={MISSION_MEDIA.feature.alt}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      preload="metadata"
+                      label={MISSION_MEDIA.feature.alt}
+                      className="h-full w-full object-cover grayscale contrast-125 brightness-95 transition-[filter,transform] duration-700 ease-out group-hover/feat:scale-[1.03] group-hover/feat:grayscale-0 group-hover/feat:contrast-100"
                     />
-                    <div className="absolute inset-0 bg-[#1e3fae]/15 mix-blend-multiply" />
+                    <div className="pointer-events-none absolute inset-0 bg-[#1e3fae]/15 mix-blend-multiply transition-opacity duration-700 group-hover/feat:opacity-0" />
                   </div>
                 </div>
               </div>
@@ -332,7 +342,7 @@ export default function SimDeck() {
                     key={preset.id}
                     {...pickProps(preset)}
                     data-hero
-                    className="group flex flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    data-hover-media className="group flex flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                   >
                     <span className="cut-panel grid w-full grid-cols-[minmax(0,1fr)_46%] items-center gap-3 bg-ink/[0.09] dark:bg-ink/[0.07] py-10 pl-12 pr-8 transition-colors duration-300 group-hover:bg-ink/[0.13] dark:group-hover:bg-ink/[0.1]">
                       <span className="flex h-full min-w-0 flex-col justify-between gap-6">
@@ -378,7 +388,7 @@ export default function SimDeck() {
                     key={preset.id}
                     {...pickProps(preset)}
                     data-hero
-                    className="group relative flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
+                    data-hover-media className="group relative flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
                   >
                     <span
                       className={`${shape} block h-48 overflow-hidden bg-black sm:h-60 sm:w-[48%] sm:shrink-0 ${
