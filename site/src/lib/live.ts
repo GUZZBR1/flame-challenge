@@ -60,6 +60,7 @@ export interface ChamberState {
   coolFlame: boolean
   finished: boolean
   events?: string[]
+  observations?: { coolFlameObserved: boolean; events: string[] }
   done?: boolean
 }
 

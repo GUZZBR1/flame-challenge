@@ -7,6 +7,8 @@ export interface GeneratedDashboard {
   prompt: string
   response: SiResponse
   scenario?: SiChamberState
+  analysisScenario?: SiChamberState
+  engineGravityMode?: string
   run?: ChamberState
 }
 
@@ -27,13 +29,22 @@ export function getGeneratedDashboards(): GeneratedDashboard[] {
   return read()
 }
 
-export function generateDashboard(prompt: string, response: SiResponse, run?: ChamberState, scenario?: SiChamberState): GeneratedDashboard {
+export function generateDashboard(
+  prompt: string,
+  response: SiResponse,
+  run?: ChamberState,
+  scenario?: SiChamberState,
+  analysisScenario?: SiChamberState,
+  engineGravityMode?: string,
+): GeneratedDashboard {
   const item: GeneratedDashboard = {
     id: globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`,
     createdAt: Date.now(),
     prompt,
     response,
     ...(scenario ? { scenario } : {}),
+    ...(analysisScenario ? { analysisScenario } : {}),
+    ...(engineGravityMode ? { engineGravityMode } : {}),
     ...(run ? { run } : {}),
   }
   const items = [item, ...read()].slice(0, MAX_ITEMS)

@@ -13,6 +13,12 @@ function Result({ item }: { item: GeneratedDashboard }) {
   const risk = percent(item.response.chamber?.riskIndex)
   const level = typeof item.response.chamber?.level === 'string' ? item.response.chamber.level : null
   const evidence = item.response.evidence ?? []
+  const coolFlameObserved = item.run?.observations?.coolFlameObserved ?? item.run?.coolFlame ?? false
+  const engineOutcome = item.run
+    ? coolFlameObserved
+      ? item.run.ignited ? 'cool flame observed · then extinguished' : 'cool flame observed'
+      : item.run.ignited ? 'ignition observed' : 'no ignition'
+    : 'analysis only'
   return (
     <article id={`dashboard-${item.id}`} className="dashboard-result scroll-mt-28 rounded-[28px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_82%,transparent)] p-6 shadow-[0_24px_70px_-42px_rgba(16,35,60,.5)] backdrop-blur-2xl sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -26,9 +32,18 @@ function Result({ item }: { item: GeneratedDashboard }) {
       <h2 className="mt-6 max-w-4xl font-[family-name:var(--font-display)] text-2xl font-semibold leading-tight tracking-[-0.025em] sm:text-3xl">
         {item.prompt}
       </h2>
-      {item.scenario && <div className="mt-4 flex flex-wrap gap-2 text-sm">
-        {[item.scenario.investigationId, item.scenario.materialId, `${item.scenario.o2Pct}% O₂`, `${item.scenario.flowCms} cm/s`, item.scenario.gravity].filter(Boolean).map((value) => <span key={value} className="rounded-full border border-[var(--edge)] bg-white/30 px-3 py-1.5 capitalize dark:bg-white/[0.04]">{value}</span>)}
+      {item.scenario && <div className="mt-5">
+        <h3 className="text-sm font-semibold">Risk model conditions</h3>
+        <div className="mt-2 flex flex-wrap gap-2 text-sm">
+          {[item.scenario.investigationId, item.scenario.materialId, `${item.scenario.o2Pct}% O₂`, `${item.scenario.flowCms} cm/s`, item.scenario.gravity].filter(Boolean).map((value) => <span key={value} className="rounded-full border border-[var(--edge)] bg-white/30 px-3 py-1.5 capitalize dark:bg-white/[0.04]">{value}</span>)}
+        </div>
       </div>}
+      {item.analysisScenario && item.scenario && (
+        item.analysisScenario.o2Pct !== item.scenario.o2Pct ||
+        item.analysisScenario.flowCms !== item.scenario.flowCms ||
+        item.analysisScenario.gravity !== item.scenario.gravity ||
+        item.analysisScenario.investigationId !== item.scenario.investigationId
+      ) && <p className="mt-3 text-sm leading-6 opacity-65">The copilot first analyzed {item.analysisScenario.o2Pct}% O₂ at {item.analysisScenario.flowCms} cm/s under {item.analysisScenario.gravity} risk conditions. Risk below is recalculated for the commanded run conditions.</p>}
       <p className="mt-4 max-w-4xl whitespace-pre-wrap text-base leading-8 opacity-85 sm:text-lg">{item.response.briefing}</p>
 
       <div className="mt-7 grid gap-3 sm:grid-cols-3">
@@ -45,7 +60,8 @@ function Result({ item }: { item: GeneratedDashboard }) {
         <div className="rounded-2xl border border-[var(--edge)] bg-white/30 p-5 dark:bg-white/[0.04]">
           <div className="text-sm opacity-60">Engine run</div>
           <div className="mt-2 text-3xl font-semibold">{item.run ? `${item.run.tSec.toFixed(1)} s` : '—'}</div>
-          <div className="mt-1 text-sm capitalize opacity-65">{item.run ? (item.run.coolFlame ? 'cool flame observed' : item.run.ignited ? 'ignition observed' : 'no ignition') : 'analysis only'}</div>
+          <div className="mt-1 text-sm capitalize opacity-65">{engineOutcome}</div>
+          {item.run && item.engineGravityMode && <div className="mt-2 text-xs leading-5 opacity-55">Chamber preset physics: {item.engineGravityMode}</div>}
         </div>
       </div>
 

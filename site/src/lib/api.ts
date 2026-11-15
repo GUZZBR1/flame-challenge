@@ -4,6 +4,7 @@
  * Offline: the bundled mirror in lib/risk.ts (same formula, same JSON).
  */
 import { riskCurveLocal, riskIndexLocal, type RiskResult, type RiskUncertainty } from './risk'
+import { blobToWavPcm16 } from './voice'
 import snapshot from '../data/psi_snapshot.json'
 
 const TIMEOUT_MS = 1200
@@ -74,6 +75,7 @@ export interface SiChamberState {
   o2Pct: number
   flowCms: number
   gravity: string
+  sealed?: boolean
   module?: string | null
 }
 
@@ -86,6 +88,10 @@ export interface SiEvidence {
   similarity: number
   verified: boolean
   sourceUrl: string
+  o2Pct?: number | null
+  flowCms?: number | null
+  materialKey?: string | null
+  coolFlame?: boolean
 }
 
 export interface SiSimulationCommands {
@@ -130,8 +136,9 @@ export async function siChat(message: string, state: SiChamberState): Promise<Si
 
 export async function siVoice(audio: Blob, state: SiChamberState): Promise<SiResponse | null> {
   try {
+    const wav = await blobToWavPcm16(audio)
     const form = new FormData()
-    form.append('audio', audio, audio.type.includes('webm') ? 'clip.webm' : 'clip')
+    form.append('audio', wav, 'clip.wav')
     form.append('state', JSON.stringify(state))
     const controller = new AbortController()
     const timeout = window.setTimeout(() => controller.abort(), 70000)
@@ -159,6 +166,12 @@ export interface InvestigationSpec {
   flowRangeCms: [number, number]
   pressureKpa?: number
   loc?: number
+  partialGravity?: boolean
+}
+
+export function investigationDefaultFlow(id: string, specs: Record<string, InvestigationSpec> = FALLBACK_INVESTIGATIONS): number {
+  const range = specs[id]?.flowRangeCms ?? [0, 0]
+  return (range[0] + range[1]) / 2
 }
 
 export async function materialsIndex(): Promise<Record<string, InvestigationSpec>> {
@@ -168,7 +181,7 @@ export async function materialsIndex(): Promise<Record<string, InvestigationSpec
 
 /** Embedded copy of shared/calibrated-data/calibration.json investigation
  *  shells — used only when the API is unreachable so presets still load. */
-const FALLBACK_INVESTIGATIONS: Record<string, InvestigationSpec> = {
+export const FALLBACK_INVESTIGATIONS: Record<string, InvestigationSpec> = {
   'sofie-gel': { model: 'spread', materialId: 'pmma', o2Range: [15, 24], flowRangeCms: [0, 25], loc: 15 },
   'bass-ii': { model: 'spread', materialId: 'pmma-sphere', o2Range: [17, 40], flowRangeCms: [0, 20], loc: 17 },
   'flex-2': { model: 'droplet', materialId: 'heptane', o2Range: [12, 34], flowRangeCms: [0, 2.55] },
@@ -176,7 +189,14 @@ const FALLBACK_INVESTIGATIONS: Record<string, InvestigationSpec> = {
   saffire: { model: 'spread', materialId: 'cotton', o2Range: [21.5, 22.1], flowRangeCms: [20, 30] },
   same: { model: 'spread', materialId: 'teflon', o2Range: [21, 21], flowRangeCms: [0, 10] },
   'confined-combustion': { model: 'spread', materialId: 'thin-sheet', o2Range: [19, 40], flowRangeCms: [0, 15] },
-  flare: { model: 'spread', materialId: 'pmma', o2Range: [15, 40], flowRangeCms: [0, 30] },
+  flare: { model: 'spread', materialId: 'pmma', o2Range: [15, 40], flowRangeCms: [0, 30], partialGravity: true },
+}
+
+export async function siNeighbors(materialId: string, o2Pct: number, flowCms: number): Promise<SiEvidence[] | null> {
+  const live = await probe<{ neighbors: SiEvidence[] }>(
+    `/api/neighbors?materialId=${encodeURIComponent(materialId)}&o2Pct=${o2Pct}&flowCms=${flowCms}&k=3`,
+  )
+  return live?.neighbors ?? null
 }
 
 /** Rank pillar — /api/risk/rank when the backend is up (same model the

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import type { ChamberUiCommand } from '../lib/api'
+import { FALLBACK_INVESTIGATIONS, type ChamberUiCommand } from '../lib/api'
 import {
   streamChamber,
   type ChamberState,
@@ -13,14 +13,11 @@ import { emitSimFrame, peekPendingUiCmd } from '../lib/simBus'
  * extinction), the physics the dashboard claims.
  */
 
-export const CHAMBER_INVESTIGATIONS = [
-  { id: 'flex-2', label: 'flex-2 · heptane droplet', model: 'droplet' },
-  { id: 'saffire', label: 'saffire · cotton spread', model: 'spread' },
-  { id: 'bass-ii', label: 'bass-ii · pmma sphere', model: 'spread' },
-  { id: 'confined-combustion', label: 'confined · thin sheet', model: 'spread' },
-] as const
-
-const INVESTIGATIONS = CHAMBER_INVESTIGATIONS
+export const CHAMBER_INVESTIGATIONS = Object.entries(FALLBACK_INVESTIGATIONS).map(([id, spec]) => ({
+  id,
+  label: `${id} · ${spec.materialId}`,
+  model: spec.model === 'droplet' ? 'droplet' : 'spread',
+}))
 
 const REGIME = ['ignition', 'hot flame', 'cool flame', 'extinction', 'out']
 const SPREAD_REGIME = ['preheat', 'spreading', 'cooling', 'out']
@@ -46,6 +43,8 @@ export default function LiveChamber({
   const [frame, setFrame] = useState<ChamberState | null>(null)
   const [status, setStatus] = useState<Status>('idle')
   const [log, setLog] = useState<string[]>([])
+  const [retuneTick, setRetuneTick] = useState(0)
+  const runObservations = useRef({ coolFlameObserved: false, events: [] as string[] })
 
   const stop = useCallback(() => {
     wsRef.current?.close()
@@ -57,6 +56,7 @@ export default function LiveChamber({
     setFrame(null)
     setLog([])
     setStatus('streaming')
+    runObservations.current = { coolFlameObserved: false, events: [] }
     const req = {
       investigationId: inv,
       o2Pct: o2,
@@ -69,13 +69,20 @@ export default function LiveChamber({
     wsRef.current = streamChamber(
       req,
       (s) => {
-        setFrame(s)
-        emitSimFrame(s)
+        if (s.coolFlame) runObservations.current.coolFlameObserved = true
+        for (const event of s.events ?? []) {
+          if (!runObservations.current.events.includes(event)) runObservations.current.events.push(event)
+        }
+        const completed = s.done
+          ? { ...s, observations: { coolFlameObserved: runObservations.current.coolFlameObserved, events: [...runObservations.current.events] } }
+          : s
+        setFrame(completed)
+        emitSimFrame(completed)
         if (s.events?.length) {
           setLog((l) => [...l.slice(-5), ...s.events!])
         }
         if (s.done) setStatus('done')
-        if (s.done) window.dispatchEvent(new CustomEvent('ignis:chamber-complete', { detail: s }))
+        if (s.done) window.dispatchEvent(new CustomEvent('ignis:chamber-complete', { detail: completed }))
       },
       () => setStatus('offline'),
     )
@@ -84,20 +91,21 @@ export default function LiveChamber({
 
   useEffect(() => stop, [stop])
 
-  // Dashboard actions can retune the live chamber. Auto-restart only
-  // when the selected investigation matches the incoming command.
-  const retune = useRef(false)
-  // mirror of inv for the command handler — its effect closes over
-  // state once, so comparisons need the ref
+  // The tick makes identical repeated commands trigger a new run too.
   const invRef = useRef(inv)
   useEffect(() => { invRef.current = inv }, [inv])
 
   const applyCmd = useCallback(
     (cmd: ChamberUiCommand & { __investigation?: string | null }) => {
       let touched = false
-      const srcInv = cmd.__investigation ?? cmd.load_preset
-      const runnable = srcInv != null
-        && INVESTIGATIONS.some((i) => i.id === srcInv)
+      const requestedInv = cmd.__investigation ?? cmd.load_preset
+      const hasPreset = requestedInv != null
+      const runnable = !hasPreset || CHAMBER_INVESTIGATIONS.some((i) => i.id === requestedInv)
+      if (!runnable) {
+        window.dispatchEvent(new CustomEvent('ignis:chamber-command-error', { detail: { preset: requestedInv } }))
+        return
+      }
+      const srcInv = requestedInv ?? invRef.current
       const af = cmd.set_airflow_cm_s
       const hasFlow = typeof af === 'number'
       if (runnable) {
@@ -116,16 +124,11 @@ export default function LiveChamber({
         setFlow(Math.round(Math.min(Math.max(af, 0), 40) * 10) / 10)
         touched = true
       }
-      if (typeof cmd.set_gravity_g === 'number') touched = true
       if (cmd.trigger_containment) {
         setSealed(true)
-        if (invRef.current === 'flex-2') setInv('saffire')
         touched = true
       }
-      // restart only when the chamber runs the investigation the answer
-      // was scoped to — otherwise the state lands for the next manual
-      // run without spawning a misleading experiment
-      if (touched && (runnable || cmd.__run)) retune.current = true
+      if (touched && cmd.__run) setRetuneTick((tick) => tick + 1)
     },
     [],
   )
@@ -145,13 +148,10 @@ export default function LiveChamber({
     return () => window.removeEventListener('ignis:ui-command', onCmd)
   }, [applyCmd])
 
-  // re-stream once the new parameters have landed in state
+  // Re-stream after the batched state updates land, even for repeated values.
   useEffect(() => {
-    if (retune.current) {
-      retune.current = false
-      run()
-    }
-  }, [run, inv, o2, flow])
+    if (retuneTick > 0) run()
+  }, [retuneTick, run])
 
   // ---------- canvas ----------
   useEffect(() => {
@@ -252,7 +252,7 @@ export default function LiveChamber({
     : '—'
 
   const invLabel =
-    INVESTIGATIONS.find((i) => i.id === inv)?.label ?? inv
+    CHAMBER_INVESTIGATIONS.find((i) => i.id === inv)?.label ?? inv
 
   return (
     <section

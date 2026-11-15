@@ -1,15 +1,36 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { gravityRegime, siChat, siVoice, type SiChamberState, type SiResponse } from '../lib/api'
+import { FALLBACK_INVESTIGATIONS, gravityRegime, investigationDefaultFlow, materialsIndex, riskIndex, siChat, siNeighbors, siVoice, type InvestigationSpec, type SiChamberState, type SiResponse } from '../lib/api'
 import { generateDashboard } from '../lib/generatedDashboards'
 import { emitSimulationCommands } from '../lib/simBus'
-import { clearInnerTarget, gsap, navigate, navigateBack, peekInnerTarget } from '../lib/scroll'
+import { clearInnerTarget, gsap, navigate, navigateBack, peekInnerTarget, scrollToSection, setFilterTag } from '../lib/scroll'
 import type { ChamberState } from '../lib/live'
 import KeyedFlame from './KeyedFlame'
 import LiveChamber from './LiveChamber'
 import { IconArrowLeft, IconArrowUpRight, IconMic, IconSend } from './Icons'
 import Button from './ui/Button'
 
-type Message = { id: number; role: 'user' | 'assistant'; text: string; response?: SiResponse; prompt?: string; saved?: boolean; dashboardId?: string }
+type Message = {
+  id: number
+  role: 'user' | 'assistant'
+  text: string
+  response?: SiResponse
+  prompt?: string
+  scenario?: SiChamberState
+  saved?: boolean
+  dashboardId?: string
+  warning?: string
+}
+
+type PendingRun = {
+  prompt: string
+  response: SiResponse
+  messageId: number
+  analysisScenario: SiChamberState
+  scenario: SiChamberState
+  engineGravityMode: string
+}
+
+const cloneScenario = (scenario: SiChamberState): SiChamberState => ({ ...scenario })
 
 function FormattedCopy({ text }: { text: string }) {
   const blocks = text.replace(/\r/g, '').split(/\n\s*\n/).map((block) => block.trim()).filter(Boolean)
@@ -58,10 +79,12 @@ function ResultDetails({ response }: { response: SiResponse }) {
   )
 }
 
-function responseRunsChamber(response: SiResponse): boolean {
+function responseRunsChamber(response: SiResponse, specs: Record<string, InvestigationSpec>): boolean {
   const sim = response.simulation_commands
   const ui = response.ui_command
-  return [sim?.load_preset, sim?.set_o2_percent, sim?.set_airflow_cm_s, ui?.load_preset, ui?.set_o2_percent, ui?.set_airflow_cm_s].some((value) => value != null)
+  const requestedPreset = sim?.load_preset ?? ui?.load_preset
+  if (requestedPreset && !specs[requestedPreset]) return false
+  return [sim?.load_preset, sim?.set_o2_percent, sim?.set_airflow_cm_s, sim?.trigger_containment, ui?.load_preset, ui?.set_o2_percent, ui?.set_airflow_cm_s, ui?.trigger_containment].some((value) => value != null)
 }
 
 /** Conversational simulation surface. The copilot response can tune the
@@ -73,13 +96,27 @@ export default function SimDeck() {
   const streamRef = useRef<MediaStream | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const nextId = useRef(1)
-  const chamberRef = useRef<SiChamberState>({ investigationId: 'flex-2', materialId: 'heptane', o2Pct: 21, flowCms: 0, gravity: 'microgravity' })
-  const latestResponse = useRef<{ prompt: string; response: SiResponse; messageId: number } | null>(null)
+  const [investigationSpecs, setInvestigationSpecs] = useState<Record<string, InvestigationSpec>>(FALLBACK_INVESTIGATIONS)
+  const chamberRef = useRef<SiChamberState>({
+    investigationId: 'flex-2',
+    materialId: FALLBACK_INVESTIGATIONS['flex-2'].materialId,
+    o2Pct: 21,
+    flowCms: investigationDefaultFlow('flex-2'),
+    gravity: 'microgravity',
+  })
+  const voiceScenarioRef = useRef<SiChamberState | null>(null)
+  const latestResponse = useRef<PendingRun | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [draft, setDraft] = useState('')
   const [busy, setBusy] = useState(false)
   const [voiceState, setVoiceState] = useState<'idle' | 'recording' | 'transcribing'>('idle')
   const [notice, setNotice] = useState('')
+
+  useEffect(() => {
+    let alive = true
+    void materialsIndex().then((specs) => { if (alive) setInvestigationSpecs(specs) })
+    return () => { alive = false }
+  }, [])
 
   useEffect(() => {
     const go = (id: string) => {
@@ -90,11 +127,21 @@ export default function SimDeck() {
       const id = (event as CustomEvent<{ id?: string }>).detail?.id
       if (id) go(id)
     }
-    const onComplete = (event: Event) => {
+    const onComplete = async (event: Event) => {
       const current = latestResponse.current
       if (!current) return
       const frame = (event as CustomEvent<ChamberState>).detail
-      const report = generateDashboard(current.prompt, current.response, frame, chamberRef.current)
+      const materialId = current.scenario.materialId ?? 'pmma'
+      const [runRisk, neighbors] = await Promise.all([
+        riskIndex(materialId, current.scenario.o2Pct, current.scenario.flowCms, current.scenario.gravity),
+        siNeighbors(materialId, current.scenario.o2Pct, current.scenario.flowCms),
+      ])
+      const reportResponse: SiResponse = {
+        ...current.response,
+        chamber: { ...current.response.chamber, ...runRisk, materialId: current.scenario.materialId, o2Pct: current.scenario.o2Pct, flowCms: current.scenario.flowCms, gravity: current.scenario.gravity },
+        ...(neighbors ? { evidence: neighbors } : {}),
+      }
+      const report = generateDashboard(current.prompt, reportResponse, frame, current.scenario, current.analysisScenario, current.engineGravityMode)
       setMessages((all) => all.map((message) => message.id === current.messageId ? { ...message, saved: true, dashboardId: report.id } : message))
       setNotice('Simulation complete. Its report is ready in Dashboard.')
       latestResponse.current = null
@@ -123,34 +170,67 @@ export default function SimDeck() {
     transcriptRef.current?.scrollTo({ top: transcriptRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, busy])
 
-  const respond = async (prompt: string, response: SiResponse | null) => {
+  const applyNavigation = (response: SiResponse) => {
+    const navigation = response.navigation
+    if (!navigation) return
+    if (navigation.active_filter_tag) setFilterTag(navigation.active_filter_tag)
+    const target = navigation.scroll_to_section
+    if (!target) {
+      if (navigation.active_filter_tag) scrollToSection('psi-dataset')
+      return
+    }
+    const section = target === 'mission-control' ? 'simulations' : target
+    scrollToSection(section)
+  }
+
+  const respond = async (prompt: string, response: SiResponse | null, analysisScenario: SiChamberState) => {
     setBusy(false)
     if (!response) {
       setMessages((all) => [...all, { id: nextId.current++, role: 'assistant', text: 'I could not reach the copilot service. Check the backend connection and try again.' }])
       return
     }
     const sim = response.simulation_commands
-    const preset = sim?.load_preset ?? response.ui_command?.load_preset ?? null
+    const requestedPreset = sim?.load_preset ?? response.ui_command?.load_preset ?? null
+    const preset = requestedPreset && investigationSpecs[requestedPreset] ? requestedPreset : null
+    const invalidPreset = !!requestedPreset && !preset
     const o2 = sim?.set_o2_percent ?? response.ui_command?.set_o2_percent
     const flow = sim?.set_airflow_cm_s ?? response.ui_command?.set_airflow_cm_s
-    if (preset) chamberRef.current.investigationId = preset
-    if (typeof o2 === 'number') chamberRef.current.o2Pct = o2
-    if (typeof flow === 'number') chamberRef.current.flowCms = flow
-    if (typeof sim?.set_gravity_g === 'number') chamberRef.current.gravity = gravityRegime(sim.set_gravity_g)
-    const commandSet = sim ?? (response.ui_command ? {
-      load_preset: preset,
-      set_o2_percent: o2,
-      set_airflow_cm_s: flow,
-    } : null)
-    const hasRunConditions = !!commandSet && [commandSet.load_preset, commandSet.set_o2_percent, commandSet.set_airflow_cm_s].some((value) => value != null)
+    const gravityG = sim?.set_gravity_g ?? response.ui_command?.set_gravity_g
+    const containment = sim?.trigger_containment ?? response.ui_command?.trigger_containment
+    const nextScenario = cloneScenario(analysisScenario)
+    if (preset) {
+      const changedPreset = nextScenario.investigationId !== preset
+      nextScenario.investigationId = preset
+      nextScenario.materialId = investigationSpecs[preset].materialId
+      if (changedPreset && typeof flow !== 'number') nextScenario.flowCms = investigationDefaultFlow(preset, investigationSpecs)
+    }
+    if (!invalidPreset && typeof o2 === 'number') nextScenario.o2Pct = o2
+    if (!invalidPreset && typeof flow === 'number') nextScenario.flowCms = flow
+    if (typeof gravityG === 'number') nextScenario.gravity = gravityRegime(gravityG)
+    if (!invalidPreset && containment) nextScenario.sealed = true
+    chamberRef.current = nextScenario
+    const commandSet = !invalidPreset && (preset || typeof o2 === 'number' || typeof flow === 'number' || containment) ? {
+      ...(preset ? { load_preset: preset } : {}),
+      ...(typeof o2 === 'number' ? { set_o2_percent: o2 } : {}),
+      ...(typeof flow === 'number' ? { set_airflow_cm_s: flow } : {}),
+      ...(containment ? { trigger_containment: containment } : {}),
+    } : null
+    const hasRunConditions = !!commandSet && [commandSet.load_preset, commandSet.set_o2_percent, commandSet.set_airflow_cm_s, commandSet.trigger_containment].some((value) => value != null)
     const assistantMessageId = nextId.current++
-    if (hasRunConditions) latestResponse.current = { prompt, response, messageId: assistantMessageId }
-    emitSimulationCommands(commandSet, 'sim-chat', chamberRef.current.investigationId ?? null)
+    const gravityCommand = typeof gravityG === 'number'
+    const engineGravityMode = investigationSpecs[nextScenario.investigationId ?? '']?.partialGravity
+      ? 'partial-gravity correction calibrated for the FLARE preset'
+      : 'preset gravity mode; requested gravity applies to risk analysis only'
+    if (hasRunConditions) latestResponse.current = { prompt, response, messageId: assistantMessageId, analysisScenario: cloneScenario(analysisScenario), scenario: cloneScenario(nextScenario), engineGravityMode }
+    emitSimulationCommands(commandSet, 'sim-chat', nextScenario.investigationId ?? null)
     setMessages((all) => [...all, {
-      id: assistantMessageId, role: 'assistant', text: response.briefing, response, prompt,
+      id: assistantMessageId, role: 'assistant', text: response.briefing, response, prompt, scenario: cloneScenario(analysisScenario),
+      ...(invalidPreset ? { warning: `The copilot requested “${requestedPreset}”, which is not a calibrated chamber preset. The chamber settings were left unchanged and no run was started.` } : {}),
     }])
+    applyNavigation(response)
     if (response.transcript) setNotice(`Heard: “${response.transcript}”`)
     else if (response.stt === 'offline') setNotice('Voice transcription is offline. You can still type to the copilot.')
+    else if (gravityCommand) setNotice('Gravity was applied to risk analysis. Chamber physics use the selected preset gravity mode.')
     else setNotice('')
   }
 
@@ -161,8 +241,9 @@ export default function SimDeck() {
     setNotice('')
     setMessages((all) => [...all, { id: nextId.current++, role: 'user', text: prompt }])
     setBusy(true)
-    const response = await siChat(prompt, chamberRef.current)
-    await respond(prompt, response)
+    const scenario = cloneScenario(chamberRef.current)
+    const response = await siChat(prompt, scenario)
+    await respond(prompt, response, scenario)
   }
 
   const toggleVoice = async () => {
@@ -178,6 +259,7 @@ export default function SimDeck() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
+      voiceScenarioRef.current = cloneScenario(chamberRef.current)
       const recorder = new MediaRecorder(stream)
       recorderRef.current = recorder
       chunksRef.current = []
@@ -189,10 +271,12 @@ export default function SimDeck() {
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' })
         chunksRef.current = []
         setBusy(true)
-        const response = await siVoice(blob, chamberRef.current)
+        const scenario = voiceScenarioRef.current ?? cloneScenario(chamberRef.current)
+        voiceScenarioRef.current = null
+        const response = await siVoice(blob, scenario)
         const prompt = response?.transcript?.trim() || 'Voice scenario'
         if (response?.transcript) setMessages((all) => [...all, { id: nextId.current++, role: 'user', text: response.transcript! }])
-        await respond(prompt, response)
+        await respond(prompt, response, scenario)
         setVoiceState('idle')
       }
       recorder.start()
@@ -206,7 +290,8 @@ export default function SimDeck() {
 
   const save = (message: Message): string | undefined => {
     if (!message.response || !message.prompt) return
-    const report = generateDashboard(message.prompt, message.response, undefined, chamberRef.current)
+    const scenario = cloneScenario(message.scenario ?? chamberRef.current)
+    const report = generateDashboard(message.prompt, message.response, undefined, scenario, scenario)
     setMessages((all) => all.map((item) => item.id === message.id ? { ...item, saved: true, dashboardId: report.id } : item))
     setNotice('Analysis saved to Dashboard.')
     return report.id
@@ -248,8 +333,9 @@ export default function SimDeck() {
               <div className="text-base leading-8 sm:text-lg">{message.role === 'assistant' ? <FormattedCopy text={message.text} /> : <p className="m-0 whitespace-pre-wrap">{message.text}</p>}</div>
               {message.role === 'assistant' && message.response && <>
                 <ResultDetails response={message.response} />
+                {message.warning && <p role="status" className="mt-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm leading-6">{message.warning}</p>}
                 <div className="mt-5 flex flex-wrap items-center gap-3">
-                  {responseRunsChamber(message.response) && !message.saved
+                  {responseRunsChamber(message.response, investigationSpecs) && !message.saved
                     ? <span className="inline-flex min-h-12 items-center rounded-full border border-[var(--edge)] px-5 text-sm opacity-70">Dashboard report will appear when the chamber run finishes.</span>
                     : <Button asChild variant="glass" size="lg"><a href={message.dashboardId ? `#dashboard-${message.dashboardId}` : '#dashboard'} onClick={(event) => { event.preventDefault(); const id = message.dashboardId ?? save(message); navigate(id ? `#dashboard-${id}` : '#dashboard') }}>{message.saved ? 'Open generated dashboard' : 'Generate dashboard'} <IconArrowUpRight size={16} /></a></Button>}
                 </div>

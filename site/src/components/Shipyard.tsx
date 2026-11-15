@@ -1,5 +1,5 @@
 import { startTransition, useEffect, useRef, useState } from 'react'
-import { getLenis, gsap, ScrollTrigger } from '../lib/scroll'
+import { gsap, navigate, ScrollTrigger } from '../lib/scroll'
 import Button from './ui/Button'
 
 type Pose = 'idle' | 'talk' | 'explain' | 'mad' | 'stern' | 'panic' | 'yell'
@@ -42,9 +42,7 @@ const SPRITES: Record<Line['who'], Record<string, string>> = {
 }
 
 function scrollToSims() {
-  const lenis = getLenis()
-  if (lenis) lenis.scrollTo('#simulations', { offset: -96 })
-  else document.getElementById('simulations')?.scrollIntoView({ behavior: 'smooth' })
+  navigate('#simulations')
 }
 
 /** The crew arguing combustion physics — typed comms transcript with pose

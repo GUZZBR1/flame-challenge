@@ -36,7 +36,7 @@ export function emitSimulationCommands(
   scopeInv: string | null,
 ): void {
   if (!sim || !Object.values(sim).some((value) => value != null)) return
-  const hasRunCondition = sim.load_preset != null || sim.set_o2_percent != null || sim.set_airflow_cm_s != null
+  const hasRunCondition = sim.load_preset != null || sim.set_o2_percent != null || sim.set_airflow_cm_s != null || sim.trigger_containment != null
   emitUiCommand({
     load_preset: sim.load_preset ?? null,
     set_o2_percent: sim.set_o2_percent ?? null,
