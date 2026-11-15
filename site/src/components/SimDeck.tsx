@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { emitSimulationCommands } from '../lib/simBus'
 import { gsap, navigateBack } from '../lib/scroll'
 import KeyedFlame from './KeyedFlame'
 import { IconArrowLeft } from './Icons'
@@ -130,17 +129,10 @@ export default function SimDeck() {
     return () => ctx.revert()
   }, [])
 
-  const loadMissionPreset = (preset: MissionPreset) => {
-    setActiveMission(preset)
-    const commandSet = {
-      load_preset: preset.investigationId,
-      set_o2_percent: preset.o2Pct,
-      set_airflow_cm_s: preset.flowCms,
-      __investigation: preset.investigationId,
-      __run: true,
-    }
-    emitSimulationCommands(commandSet, 'sim-preset', preset.investigationId)
-  }
+  // selecting an envelope is a visual pick only — it marks the active
+  // mission and retitles the scattered crew; the run/report pipeline
+  // intentionally lives outside this view
+  const loadMissionPreset = (preset: MissionPreset) => setActiveMission(preset)
 
   return (
     <div ref={rootRef} data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-[var(--bg)]">
@@ -179,7 +171,7 @@ export default function SimDeck() {
                 1-Click Mission Envelopes
               </h2>
             </div>
-            <span className="font-mono text-xs opacity-60">Click any card to load conditions &amp; stream</span>
+            <span className="font-mono text-xs opacity-60">Click any card to preview the mission</span>
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -216,7 +208,7 @@ export default function SimDeck() {
                     <span>
                       {preset.investigationId} · {preset.o2Pct}% O₂
                     </span>
-                    <span className="group-hover:translate-x-0.5 transition-transform">Run ↗</span>
+                    <span className="group-hover:translate-x-0.5 transition-transform">Select →</span>
                   </div>
                 </button>
               )
