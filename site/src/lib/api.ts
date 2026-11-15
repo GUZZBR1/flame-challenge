@@ -159,11 +159,22 @@ export async function siVoice(audio: Blob, state: SiChamberState): Promise<SiRes
     const form = new FormData()
     form.append('audio', wav, 'clip.wav')
     form.append('state', JSON.stringify(state))
-    const controller = new AbortController()
-    const timeout = window.setTimeout(() => controller.abort(), 70000)
-    const response = await fetch(apiUrl('/api/si/voice-command'), { method: 'POST', body: form, signal: controller.signal })
-    window.clearTimeout(timeout)
-    if (response.ok) return (await response.json()) as SiResponse
+    // free-tier backends sleep — an abort/reset during cold boot gets one
+    // retry before we report the uplink unreachable
+    let response: Response | null = null
+    for (let attempt = 0; attempt < 2 && !response; attempt++) {
+      const controller = new AbortController()
+      const timeout = window.setTimeout(() => controller.abort(), 70000)
+      try {
+        response = await fetch(apiUrl('/api/si/voice-command'), { method: 'POST', body: form, signal: controller.signal })
+      } catch (err) {
+        if (attempt === 1) throw err
+        await new Promise((r) => setTimeout(r, 1500))
+      } finally {
+        window.clearTimeout(timeout)
+      }
+    }
+    if (response!.ok) return (await response!.json()) as SiResponse
     return {
       briefing: 'Voice command service is currently unavailable or speech could not be transcribed.',
       recommended_action: 'Use manual controls or retry voice input.',

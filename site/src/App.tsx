@@ -1,14 +1,17 @@
-import { useCallback, useEffect, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import Challenge from './components/Challenge'
 import Crew from './components/Crew'
-import Dashboard from './components/Dashboard'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import PsiDataset from './components/PsiDataset'
 import Shipyard from './components/Shipyard'
-import SimDeck from './components/SimDeck'
 import Stars from './components/Stars'
+
+// overlay screens carry the heavy data tables — split them out of the
+// hero path so the landing bundle stays small
+const PsiDataset = lazy(() => import('./components/PsiDataset'))
+const SimDeck = lazy(() => import('./components/SimDeck'))
+const Dashboard = lazy(() => import('./components/Dashboard'))
 import { getLenis, initScroll, isSimChild, scrollInner, scrollToSection } from './lib/scroll'
 
 type Theme = 'light' | 'dark'
@@ -132,9 +135,11 @@ export default function App() {
       <Crew />
       <Shipyard />
       <Footer />
-      {view === 'psi' && <PsiDataset />}
-      {view === 'sim' && <SimDeck />}
-      {view === 'dashboard' && <Dashboard />}
+      <Suspense fallback={null}>
+        {view === 'psi' && <PsiDataset />}
+        {view === 'sim' && <SimDeck />}
+        {view === 'dashboard' && <Dashboard />}
+      </Suspense>
     </main>
   )
 }

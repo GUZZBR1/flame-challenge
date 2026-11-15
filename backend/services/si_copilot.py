@@ -542,17 +542,49 @@ def _llm_client() -> AsyncOpenAI | None:
     return _client
 
 
+def _compact_material(r: dict) -> dict:
+    """Slim resolved_material for the prompt — drops the Shapley block
+    (surfaced separately as risk_explain) and the conformal internals
+    the LLM is never asked to quote. ~55% smaller than the raw dict."""
+    u = r.get("uncertainty") or {}
+    return {
+        "materialId": r["materialId"],
+        "materialName": r["materialName"],
+        "o2Pct": r["o2Pct"],
+        "flowCms": r["flowCms"],
+        "gravity": r["gravity"],
+        "locPct": r["locPct"],
+        "margin": r["margin"],
+        "riskIndex": r["riskIndex"],
+        "level": r["level"],
+        "breakdown": r["breakdown"],
+        "flags": r["flags"],
+        "uncertainty": {
+            "lower": u.get("lower"),
+            "upper": u.get("upper"),
+            "regime": u.get("regime"),
+            "calibrationN": u.get("calibrationN"),
+        } if u else None,
+    }
+
+
 def _messages(message: str, state: ChamberState, packet: dict) -> list[dict]:
     exp = (packet["material"].get("explanation") or {}).get(
         "contributions") or []
     user = {
         "operator_message": message,
         "chamber_state": state.model_dump(exclude_none=True),
-        "resolved_material": packet["material"],
+        "resolved_material": _compact_material(packet["material"]),
         "engine_ignition_pressure": packet["ignitionPressure"],
         "engine_risk_index": packet["engineRiskIndex"],
         "nearest_psi_runs": packet["neighbors"],
-        "decision_options": packet["decisionOptions"],
+        # one best option per card is all the LLM needs to phrase the
+        # recommendation — the full option lattice costs ~2x tokens
+        "decision_options": [
+            {"card": c["card"], "context": c["context"],
+             "best": max(c["options"], key=lambda o: o["score"])}
+            for c in packet["decisionOptions"]
+        ],
         "risk_explain": [{"factor": c["label"], "share": c["share"]}
                          for c in exp[:4]],
     }
