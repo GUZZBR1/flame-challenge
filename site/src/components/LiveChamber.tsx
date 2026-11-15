@@ -78,6 +78,10 @@ export default function LiveChamber() {
   // synchronize that investigation; a SAME-scoped O₂ answer must not
   // respawn a FLEX heptane run under new numbers.
   const retune = useRef(false)
+  // mirror of inv for the command handler — its effect closes over
+  // state once, so comparisons need the ref
+  const invRef = useRef(inv)
+  useEffect(() => { invRef.current = inv }, [inv])
   useEffect(() => {
     const onCmd = (e: Event) => {
       const cmd = (e as CustomEvent<SiUiCommand & {
@@ -90,10 +94,10 @@ export default function LiveChamber() {
       const af = cmd.set_airflow_cm_s
       const hasFlow = typeof af === 'number'
       if (runnable) {
+        // only a *different* investigation invalidates a pinned flow —
+        // oxygen-only follow-ups on the same experiment keep it
+        if (srcInv !== invRef.current && !hasFlow) setFlow(null)
         setInv(srcInv)
-        // a new investigation has its own flow regime — drop any flow
-        // pinned for the previous one unless this command sets it too
-        if (!hasFlow) setFlow(null)
         touched = true
       }
       if (typeof cmd.set_o2_percent === 'number') {
