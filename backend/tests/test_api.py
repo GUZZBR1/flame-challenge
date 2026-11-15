@@ -296,3 +296,13 @@ def test_mission_reports_templates():
     for t in j["templates"]:
         assert "risk" in t
         assert "riskIndex" in t["risk"]
+
+
+def test_cors_preflight_localhost():
+    r = client.options("/health", headers={
+        "Origin": "http://localhost:5173",
+        "Access-Control-Request-Method": "GET",
+    })
+    assert r.status_code == 200
+    assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+

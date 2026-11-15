@@ -411,7 +411,15 @@ export default function SimDeck() {
     if (!invalidPreset && typeof o2 === 'number') nextScenario.o2Pct = o2
     if (!invalidPreset && typeof flow === 'number') nextScenario.flowCms = flow
     if (typeof gravityG === 'number') nextScenario.gravity = gravityRegime(gravityG)
-    if (!invalidPreset && containment) nextScenario.sealed = true
+    const isN2Purge =
+      typeof containment === 'string' &&
+      (containment.toLowerCase().includes('n2') || containment.toLowerCase().includes('purge'))
+    if (!invalidPreset && containment) {
+      nextScenario.sealed = true
+      if (isN2Purge && typeof o2 !== 'number') {
+        nextScenario.o2Pct = 11.5
+      }
+    }
     chamberRef.current = nextScenario
     const commandSet =
       !invalidPreset && (preset || typeof o2 === 'number' || typeof flow === 'number' || containment)

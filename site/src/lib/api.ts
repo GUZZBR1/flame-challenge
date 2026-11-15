@@ -183,30 +183,57 @@ export function synthesizeLocalSiResponse(message: string, state: SiChamberState
   let briefing = ''
   let action = ''
 
+  // 1. Parse oxygen dynamically without overwriting material
   const o2Match = q.match(/(\d+(?:\.\d+)?)\s*%/i)
-  const requestedO2 = o2Match ? parseFloat(o2Match[1]) : null
+  if (o2Match) {
+    o2Pct = parseFloat(o2Match[1])
+  } else if (q.includes('oxygen drops') || q.includes('drops to') || q.includes('o2 drops')) {
+    o2Pct = 18
+  }
 
-  if (requestedO2 !== null || q.includes('oxygen drops') || q.includes('drops to') || q.includes('o2 drops')) {
-    o2Pct = requestedO2 ?? 18
-    invId = 'sofie-gel'
-    materialId = 'pmma'
-    briefing = `LOCAL ENGINE GROUNDED ANALYSIS (NASA PSI SoFIE-GEL): Modulating atmospheric oxygen to ${o2Pct}% O₂ shifts PMMA solid combustion relative to the microgravity Limiting Oxygen Concentration (LOC ≈ 15.0%). Flame spread rate scales with oxidizer availability while sustaining low-speed diffusion kinetics.`
-    action = 'Throttle cabin ventilation to < 1 cm/s to induce radiative extinction below LOC.'
-  } else if (q.includes('cotton') || q.includes('compare cotton') || q.includes('earth gravity')) {
+  // 2. Parse airflow dynamically if present
+  const flowMatch = q.match(/(\d+(?:\.\d+)?)\s*cm\/s/i)
+  if (flowMatch) {
+    flowCms = parseFloat(flowMatch[1])
+  }
+
+  // 3. Resolve investigation & material: prioritize explicit query keywords,
+  // then preserve incoming mission state
+  if (q.includes('cotton') || q.includes('saffire') || q.includes('sibal')) {
     invId = 'saffire'
     materialId = 'cotton'
-    flowCms = 20.0
-    briefing =
-      'LOCAL ENGINE GROUNDED ANALYSIS (NASA SAFFIRE vs Earth 1g): In Earth 1g, natural buoyancy causes rapid vertical convective flame acceleration with a tall teardrop plume. In microgravity, buoyancy is absent; however, forced cabin airflow at 20 cm/s continuously sweeps oxidizer across the SIBAL cotton fabric, creating sustained steady spread with thick char formation.'
-    action = 'Isolate compartment air ducts immediately to cut forced convective flow.'
-  } else if (q.includes('hidden flame') || q.includes('cool flame') || q.includes('incidents')) {
+    if (!flowMatch && (state.flowCms == null || state.flowCms <= 2.0)) flowCms = 20.0
+  } else if (q.includes('hidden flame') || q.includes('cool flame') || q.includes('heptane') || q.includes('droplet')) {
     invId = 'flex-2'
     materialId = 'heptane'
-    flowCms = 0.5
+    if (!flowMatch) flowCms = 0.5
+  } else if (q.includes('airlock') || q.includes('artemis') || q.includes('lunar') || state.investigationId === 'flare') {
+    invId = state.investigationId === 'flare' || q.includes('flare') ? 'flare' : 'sofie-gel'
+    materialId = 'pmma'
+  } else if (q.includes('sofie') || q.includes('acrylic') || q.includes('pmma')) {
+    invId = 'sofie-gel'
+    materialId = 'pmma'
+  } else if (state.investigationId) {
+    invId = state.investigationId
+    materialId = state.materialId ?? (FALLBACK_INVESTIGATIONS[invId]?.materialId ?? 'pmma')
+  }
+
+  // 4. Construct grounded technical briefing
+  if (invId === 'saffire' || materialId === 'cotton') {
+    briefing =
+      'LOCAL ENGINE GROUNDED ANALYSIS (NASA SAFFIRE vs Earth 1g): In Earth 1g, natural buoyancy causes rapid vertical convective flame acceleration with a tall teardrop plume. In microgravity, buoyancy is absent; however, forced cabin airflow continuously sweeps oxidizer across the SIBAL cotton fabric, creating sustained steady spread with thick char formation.'
+    action = 'Isolate compartment air ducts immediately to cut forced convective flow.'
+  } else if (invId === 'flex-2' || materialId === 'heptane') {
     briefing =
       'LOCAL ENGINE GROUNDED ANALYSIS (NASA FLEX-2 Cool-Flame Catalog): In 53 documented NASA PSI runs, hydrocarbon droplets exhibited radiative extinction of the visible hot flame, followed by sustained low-temperature (~600–720 K) invisible burning. Premature atmosphere replenishment causes violent explosive flashover.'
     action =
       'Maintain nitrogen purge hold for at least 180 seconds; verify thermal core temperature with IR sensors before hatch release.'
+  } else if (invId === 'flare' || gravity === 'lunar') {
+    briefing = `LOCAL ENGINE GROUNDED ANALYSIS (NASA FLARE Partial Gravity): Under ${gravity} (${o2Pct}% O₂ at ${flowCms} cm/s), partial buoyancy creates a steady chimney updraft along solid PMMA conduits without inducing blowout, causing rapid boundary-layer flame propagation.`
+    action = 'Seal airlock bulkhead and throttle recirculating airflow below 1 cm/s.'
+  } else if (invId === 'sofie-gel') {
+    briefing = `LOCAL ENGINE GROUNDED ANALYSIS (NASA PSI SoFIE-GEL): Modulating atmospheric oxygen to ${o2Pct}% O₂ shifts PMMA solid combustion relative to the microgravity Limiting Oxygen Concentration (LOC ≈ 15.0%). Flame spread rate scales with oxidizer availability while sustaining low-speed diffusion kinetics.`
+    action = 'Throttle cabin ventilation to < 1 cm/s to induce radiative extinction below LOC.'
   } else {
     briefing = `LOCAL ENGINE GROUNDED ANALYSIS (${invId.toUpperCase()}): Scenario evaluated under ${o2Pct}% O₂ at ${flowCms} cm/s (${gravity}). Physical solver bounds confirm stable boundary layer reaction with microgravity diffusion kinetics.`
     action = 'Monitor exhaust particulates via multi-point duct sensors.'

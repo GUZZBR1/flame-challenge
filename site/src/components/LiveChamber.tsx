@@ -124,7 +124,6 @@ export default function LiveChamber({
 
   useEffect(() => stop, [stop])
 
-  const bootedRef = useRef(false)
   const runRef = useRef(run)
   useEffect(() => {
     runRef.current = run
@@ -132,8 +131,6 @@ export default function LiveChamber({
 
   // Auto-seed boot run on mount
   useEffect(() => {
-    if (bootedRef.current) return
-    bootedRef.current = true
     const timer = setTimeout(() => {
       runRef.current()
     }, 250)
@@ -175,7 +172,11 @@ export default function LiveChamber({
       }
       if (cmd.trigger_containment) {
         setSealed(true)
-        if (typeof cmd.set_o2_percent !== 'number') {
+        const isN2Purge =
+          typeof cmd.trigger_containment === 'string' &&
+          (cmd.trigger_containment.toLowerCase().includes('n2') ||
+            cmd.trigger_containment.toLowerCase().includes('purge'))
+        if (isN2Purge && typeof cmd.set_o2_percent !== 'number') {
           setO2(11.5)
         }
         touched = true

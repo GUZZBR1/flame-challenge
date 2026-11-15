@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import os
 import time
 from pathlib import Path
 
@@ -24,9 +25,10 @@ from backend.services import (diff, investigations, neighbors, rag, risk,
                               si_copilot, tactics)
 
 app = FastAPI(title="Freefall Foundry Engine API", version="0.1.0")
+_extra_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] + _extra_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

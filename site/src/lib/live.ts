@@ -5,6 +5,7 @@
  * No offline mirror: when the backend is down these degrade to an
  * explicit "engine offline" state instead of fabricated data.
  */
+import { apiUrl, wsUrl } from './apiBase'
 
 export interface AskCitation {
   id: string
@@ -27,7 +28,7 @@ export async function askQuestion(q: string, k = 6): Promise<AskResponse | null>
   try {
     const ctrl = new AbortController()
     const t = setTimeout(() => ctrl.abort(), 8000)
-    const res = await fetch('/api/ask', {
+    const res = await fetch(apiUrl('/api/ask'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ q, k }),
@@ -87,8 +88,7 @@ export function streamChamber(
   onError: (msg: string) => void,
 ): WebSocket | null {
   try {
-    const proto = location.protocol === 'https:' ? 'wss' : 'ws'
-    const ws = new WebSocket(`${proto}://${location.host}/ws/chamber`)
+    const ws = new WebSocket(wsUrl('/ws/chamber'))
     ws.onopen = () => ws.send(JSON.stringify(req))
     ws.onmessage = (ev) => {
       try {
