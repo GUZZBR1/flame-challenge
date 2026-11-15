@@ -223,14 +223,14 @@ export default function SimDeck() {
           <h1 data-hero className="mt-6 font-display text-[clamp(2.4rem,6vw,4.6rem)] font-bold leading-display tracking-tight">
             Simulations
           </h1>
-          <p data-hero className="mt-6 max-w-2xl text-body leading-copy opacity-80">
+          <p data-hero className="mt-8 max-w-xl text-body leading-copy opacity-80">
             Test real-world mission atmospheres, partial-gravity regimes, and historical fire crises. The copilot
             cross-references 30 years of NASA PSI data and streams physical combustion runs in real time.
           </p>
         </header>
 
         {/* GUIDED MISSION PRESETS CARDS (1-CLICK EXECUTION) */}
-        <section className="panel rounded-shell relative mt-10 p-6 shadow-xl backdrop-blur-2xl sm:p-8">
+        <section className="rounded-shell panel-85 relative mt-14 p-6 shadow-xl backdrop-blur-2xl sm:mt-16 sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-edge pb-4">
             <div>
               <span className="card-label">

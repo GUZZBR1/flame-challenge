@@ -110,18 +110,18 @@ export default function Crew() {
     <section
       id="crew"
       aria-labelledby="crew-title"
-      className="relative scroll-mt-24 overflow-x-clip px-5 pb-24 sm:px-10 lg:px-16"
+      className="relative scroll-mt-24 overflow-x-clip px-6 pb-24 sm:px-10 lg:px-16"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-          <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
+        <div className="eyebrow opacity-70">
+          <span className="cursor-default transition-colors duration-300 hover:text-accent hover:opacity-100">
             the crew — freefall foundry
           </span>
         </div>
 
         <h2
           id="crew-title"
-          className="m-0 mt-10 cursor-default font-[family-name:var(--font-display)] text-[clamp(1.6rem,3vw,2.4rem)] font-bold leading-[1.06] tracking-[-0.03em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
+          className="m-0 mt-10 cursor-default font-display text-[clamp(1.6rem,3vw,2.4rem)] font-bold leading-display tracking-tight text-ink transition-colors duration-300 hover:text-accent"
         >
           built by two people, calibrated by real missions
         </h2>
@@ -130,7 +130,7 @@ export default function Crew() {
           {CREW.map((m) => (
             <li
               key={m.name}
-              className="flex items-center gap-x-5 rounded-md px-2 py-3 transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)] sm:gap-x-7"
+              className="row-hover flex items-center gap-x-6 rounded-md px-2 py-3 sm:gap-x-8"
             >
               <img
                 src={m.img}
@@ -139,10 +139,10 @@ export default function Crew() {
                 loading="lazy"
               />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-8">
-                <span className="font-mono text-[13px] font-medium lowercase tracking-[0.14em] text-[var(--ink)] sm:w-40 sm:shrink-0">
+                <span className="font-mono text-caption font-medium lowercase tracking-card text-ink sm:w-40 sm:shrink-0">
                   {m.name}
                 </span>
-                <span className="text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-80">
+                <span className="text-tiny lowercase leading-relaxed text-ink opacity-80">
                   {m.role}
                 </span>
               </span>
@@ -151,7 +151,7 @@ export default function Crew() {
                   href={m.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="hidden font-mono text-[11px] lowercase tracking-[0.16em] text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline sm:inline"
+                  className="hidden font-mono text-mini lowercase tracking-card text-link underline-offset-4 transition-colors duration-300 hover:text-accent hover:underline sm:inline"
                 >
                   profile ↗
                 </a>

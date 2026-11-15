@@ -311,7 +311,7 @@ export default function PsiDataset() {
                       </td>
                     </tr>,
                     expanded ? (
-                      <tr key={`${inv.id}-detail`} className="bg-[color-mix(in_srgb,var(--accent)_4%,transparent)]">
+                      <tr key={`${inv.id}-detail`} className="bg-accent/4">
                         <td colSpan={7} className="border-b border-edge px-2 py-4">
                           <div className="grid gap-4 pl-7 sm:grid-cols-2 lg:grid-cols-3">
                             <div>

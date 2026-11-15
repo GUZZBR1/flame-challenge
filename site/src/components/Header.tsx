@@ -99,7 +99,7 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
 
   return (
     <header className="fixed inset-x-0 top-0 z-20 px-3 py-4 sm:px-8 sm:py-6">
-      <div className="relative mx-auto flex w-fit max-w-full items-center justify-center gap-3 px-3.5 py-2.5 sm:gap-7 sm:px-7 sm:py-3.5">
+      <div className="relative mx-auto flex w-fit max-w-full items-center justify-center gap-3 px-3.5 py-2.5 sm:gap-8 sm:px-8 sm:py-3.5">
         <span
           ref={glassRef}
           aria-hidden="true"
@@ -115,7 +115,7 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
                   e.preventDefault()
                   go(item.href)
                 }}
-                className={`nav-glass-link group relative inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-3.5 font-mono text-[clamp(14px,1.15vw,16px)] font-semibold lowercase tracking-[0.06em] text-[var(--ink)] transition-[background,box-shadow,transform,color] duration-300 hover:-translate-y-px ${item.className ?? ''}`}
+                className={`nav-glass-link group relative inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-3.5 font-mono text-[clamp(14px,1.15vw,16px)] font-semibold lowercase tracking-micro text-ink transition-[background,box-shadow,transform,color] duration-300 hover:-translate-y-px ${item.className ?? ''}`}
               >
                 {item.label}
                 <span
@@ -133,7 +133,7 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
                     go('#top')
                   }}
                   aria-label="IGNIS — back to top"
-                  className="relative pb-1 font-[family-name:var(--font-display)] text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-[-0.03em] text-[var(--ink)] opacity-0"
+                  className="relative pb-1 font-display text-[clamp(14px,1.9vw,20px)] font-bold leading-none tracking-tight text-ink opacity-0"
                 >
                   IGNIS
                 </a>
@@ -144,17 +144,17 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
 
         <div className="relative flex items-center gap-3 sm:gap-6">
           <span
-            className="group/loc hidden cursor-default items-center gap-2 rounded-full border border-transparent px-3 py-1.5 font-mono text-[13px] lowercase tracking-[0.18em] text-[var(--ink)] opacity-60 transition-[background,border-color,box-shadow,opacity,transform] duration-300 hover:-translate-y-px hover:border-white/60 hover:bg-white/70 hover:opacity-100 hover:shadow-[0_6px_18px_rgba(23,33,43,0.10)] xl:inline-flex dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.4)]"
+            className="group/loc hidden cursor-default items-center gap-2 rounded-full border border-transparent px-3 py-1.5 font-mono text-caption lowercase tracking-card text-ink opacity-60 transition-[background,border-color,box-shadow,opacity,transform] duration-300 hover:-translate-y-px hover:border-white/60 hover:bg-white/70 hover:opacity-100 hover:shadow-[0_6px_18px_rgba(23,33,43,0.10)] xl:inline-flex dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:shadow-[0_6px_18px_rgba(0,0,0,0.4)]"
             title="são paulo, brazil — utc-3"
           >
             <span
               aria-hidden="true"
-              className="loc-dot size-1.5 shrink-0 rounded-full bg-[var(--accent)] transition-transform duration-300 group-hover/loc:scale-125"
+              className="loc-dot size-1.5 shrink-0 rounded-full bg-accent transition-transform duration-300 group-hover/loc:scale-125"
             />
             são paulo, brazil
           </span>
           <span
-            className="hidden font-mono text-[13px] lowercase tracking-[0.18em] text-[var(--ink)] opacity-60 sm:inline"
+            className="hidden font-mono text-caption lowercase tracking-card text-ink opacity-60 sm:inline"
             aria-label="current time in são paulo, utc-3"
           >
             {clock.split(':').map((part, i) => (

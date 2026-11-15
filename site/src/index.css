@@ -190,7 +190,7 @@ button.pill:active { transform: translateY(0) scale(.96); }
 .btn {
   position: relative;
   display: inline-flex;
-  min-height: 60px;
+  min-height: 56px;
   min-width: 56px;
   padding-inline: 1.5rem;
   align-items: center;

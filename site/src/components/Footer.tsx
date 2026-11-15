@@ -25,7 +25,7 @@ export default function Footer() {
   }, [])
 
   return (
-    <footer className="relative isolate overflow-hidden bg-[#05070d]">
+    <footer className="relative isolate overflow-hidden bg-void">
       <img
         src="/assets/footer_earth_night.jpg"
         alt=""
@@ -36,7 +36,7 @@ export default function Footer() {
       />
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-[var(--bg)] via-transparent to-transparent"
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-bg via-transparent to-transparent"
       />
       <img
         src="/assets/space/ship_vessel.png"
@@ -50,10 +50,10 @@ export default function Footer() {
       <div className="relative z-10 mx-auto w-[min(1400px,94%)] pb-10 pt-28 sm:pt-36">
         <div className="grid gap-12 sm:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <p className="m-0 font-[family-name:var(--font-display)] text-3xl font-bold leading-none tracking-[-0.03em] text-[#edf4fa] sm:text-4xl">
+            <p className="m-0 font-display text-3xl font-bold leading-none tracking-tight text-ink-inverse sm:text-4xl">
               IGNIS
             </p>
-            <p className="mt-4 max-w-[36ch] font-mono text-[11px] lowercase leading-relaxed tracking-[0.08em] text-[#edf4fa99]">
+            <p className="mt-4 max-w-[36ch] font-mono text-mini lowercase leading-relaxed tracking-micro text-ink-inverse/60">
               fire-safety insight for crewed spacecraft — microgravity
               combustion physics driven by real nasa psi experiment data.
               cabins &amp; habitats, not propulsion.
@@ -61,7 +61,7 @@ export default function Footer() {
           </div>
 
           <nav aria-label="Footer" className="flex flex-col items-start gap-2.5">
-            <span className="mb-1 font-mono text-[9px] uppercase tracking-[0.28em] text-[#edf4fa66]">
+            <span className="mb-1 font-mono text-micro uppercase tracking-spread text-ink-inverse/40">
               navigate
             </span>
             {LINKS.map((item) => (
@@ -72,7 +72,7 @@ export default function Footer() {
                   e.preventDefault()
                   go(item.href)
                 }}
-                className="font-mono text-[11px] lowercase tracking-[0.18em] text-[#edf4fab3] transition-colors hover:text-[#edf4fa]"
+                className="font-mono text-mini lowercase tracking-card text-ink-inverse/70 transition-colors hover:text-ink-inverse"
               >
                 {item.label}
               </a>
@@ -80,7 +80,7 @@ export default function Footer() {
           </nav>
 
           <div className="flex flex-col items-start gap-2.5">
-            <span className="mb-1 font-mono text-[9px] uppercase tracking-[0.28em] text-[#edf4fa66]">
+            <span className="mb-1 font-mono text-micro uppercase tracking-spread text-ink-inverse/40">
               data & sources
             </span>
             {SOURCES.map((item) => (
@@ -89,7 +89,7 @@ export default function Footer() {
                 href={item.href}
                 target="_blank"
                 rel="noreferrer"
-                className="font-mono text-[11px] lowercase tracking-[0.18em] text-[#edf4fab3] transition-colors hover:text-[#edf4fa]"
+                className="font-mono text-mini lowercase tracking-card text-ink-inverse/70 transition-colors hover:text-ink-inverse"
               >
                 {item.label}
               </a>
@@ -97,7 +97,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-[#edf4fa73] sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-16 flex flex-col gap-2 font-mono text-micro uppercase tracking-eyebrow text-ink-inverse/45 sm:flex-row sm:items-center sm:justify-between">
           <span>nasa space apps challenge 2026 · flame in freefall</span>
           <span>photo iss035e017673 · nasa image & video library</span>
         </div>

@@ -66,7 +66,7 @@ export default function KeyedFlame({
         />
         {/* readability veil — the flame stays ambient, never a wall of
             noise under the copy that rides over it */}
-        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[var(--bg)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-bg to-transparent" />
       </div>
     </>
   )
