@@ -114,6 +114,8 @@ export interface MissionReportSpec {
     currentO2: number
     currentFlow: number
     zone: 'safe' | 'amber' | 'runaway'
+    /** the evaluated material's fitted LOC — the boundary `zone` was derived from */
+    locPct?: number
     trajectory: Array<{ o2Pct: number; flowCms: number }>
   }
   rawScenario?: SiChamberState
@@ -143,7 +145,7 @@ const MAX_ITEMS = 30
  * not to module evaluation time.
  */
 export function buildSeedReports(): GeneratedDashboard[] {
-  return [
+  return withMaterialLoc([
   {
     id: 'artemis-01',
     createdAt: Date.now() - 1000 * 60 * 35,
@@ -673,7 +675,25 @@ export function buildSeedReports(): GeneratedDashboard[] {
       },
     },
   },
-  ]
+  ])
+}
+
+/** Material LOC a report's safety zone is judged against: the stored value,
+ *  else the fitted LOC of the analyzed material; undefined when the report
+ *  carries no material at all. */
+export function reportLocPct(report: GeneratedDashboard): number | undefined {
+  const stored = report.spec.safetyEnvelope.locPct
+  if (typeof stored === 'number') return stored
+  const material = report.analysisScenario?.materialId ?? report.scenario?.materialId
+  if (!material) return undefined
+  return riskIndexLocal(material.toLowerCase(), report.spec.safetyEnvelope.currentO2).locPct
+}
+
+function withMaterialLoc(reports: GeneratedDashboard[]): GeneratedDashboard[] {
+  return reports.map((r) => {
+    const locPct = reportLocPct(r)
+    return locPct === undefined ? r : { ...r, spec: { ...r.spec, safetyEnvelope: { ...r.spec.safetyEnvelope, locPct } } }
+  })
 }
 
 /** User-generated reports only — localStorage v2 plus a one-time v1
@@ -944,6 +964,7 @@ export function compileMissionReportSpec(
       currentO2: o2,
       currentFlow: flow,
       zone,
+      locPct: res.locPct,
       trajectory: [
         { o2Pct: Math.max(10, o2 - 6), flowCms: Math.max(0, flow - 3) },
         { o2Pct: o2, flowCms: flow },

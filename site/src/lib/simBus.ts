@@ -1,5 +1,6 @@
 import type { ChamberUiCommand } from './api'
 import type { ChamberState } from './live'
+import type { MissionBrief } from './missionBrief'
 
 /** Simulation frames and short-lived chamber commands survive deck remounts. */
 
@@ -28,6 +29,20 @@ export function peekPendingUiCmd(): ChamberUiCommand | null {
     return null
   }
   return pendingUiCmd.cmd
+}
+
+let queuedBrief: MissionBrief | null = null
+
+/** Dashboard → console handoff. The simulations screen mounts after the
+ *  click, so the brief waits here (no TTL) until the console takes it. */
+export function queueMissionBrief(brief: MissionBrief): void {
+  queuedBrief = brief
+}
+
+export function takeMissionBrief(): MissionBrief | null {
+  const brief = queuedBrief
+  queuedBrief = null
+  return brief
 }
 
 export function emitSimulationCommands(

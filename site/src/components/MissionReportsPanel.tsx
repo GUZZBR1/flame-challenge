@@ -4,11 +4,13 @@ import {
   clearGeneratedDashboards,
   exportReportMarkdown,
   getGeneratedDashboards,
+  reportLocPct,
   type GeneratedDashboard,
 } from '../lib/generatedDashboards'
+import { buildMissionBrief } from '../lib/missionBrief'
 import { missionMedia } from '../lib/missionMedia'
 import { navigate } from '../lib/scroll'
-import { emitSimulationCommands } from '../lib/simBus'
+import { queueMissionBrief } from '../lib/simBus'
 import { cn } from '../lib/cn'
 import { HoverVideo } from './SimDeck'
 import './missionReports.css'
@@ -198,7 +200,7 @@ function GuidanceTab({ report }: { report: GeneratedDashboard }) {
   )
 }
 
-function EnvelopeChart({ env }: { env: GeneratedDashboard['spec']['safetyEnvelope'] }) {
+function EnvelopeChart({ env, loc }: { env: GeneratedDashboard['spec']['safetyEnvelope']; loc: number }) {
   const W = 520
   const H = 320
   const p = { t: 20, r: 20, b: 46, l: 50 }
@@ -225,15 +227,15 @@ function EnvelopeChart({ env }: { env: GeneratedDashboard['spec']['safetyEnvelop
           {f}
         </text>
       ))}
-      <rect x={p.l} y={Y(LOC_MICROGRAVITY)} width={iw} height={p.t + ih - Y(LOC_MICROGRAVITY)} rx="6" fill="var(--r-green)" opacity=".18" />
+      <rect x={p.l} y={Y(loc)} width={iw} height={p.t + ih - Y(loc)} rx="6" fill="var(--r-green)" opacity=".18" />
       <polygon
         points={`${X(0)},${Y(38)} ${X(5)},${Y(28)} ${X(12)},${Y(22)} ${X(30)},${Y(17)} ${X(30)},${Y(40)} ${X(0)},${Y(40)}`}
         fill="var(--r-red)"
         opacity=".15"
       />
-      <line x1={p.l} x2={p.l + iw} y1={Y(LOC_MICROGRAVITY)} y2={Y(LOC_MICROGRAVITY)} stroke="var(--r-green)" strokeOpacity=".7" strokeDasharray="4 4" />
+      <line x1={p.l} x2={p.l + iw} y1={Y(loc)} y2={Y(loc)} stroke="var(--r-green)" strokeOpacity=".7" strokeDasharray="4 4" />
       <text x={p.l + 10} y={p.t + ih - 10} fontSize="11" fontWeight="500" fill="var(--r-green)">
-        Safe · below LOC
+        Safe · below material LOC
       </text>
       <text x={p.l + iw - 10} y={p.t + 18} fontSize="11" fontWeight="500" fill="var(--r-red)" textAnchor="end">
         Thermal runaway
@@ -258,15 +260,16 @@ function EnvelopeChart({ env }: { env: GeneratedDashboard['spec']['safetyEnvelop
 
 function EnvelopeTab({ report }: { report: GeneratedDashboard }) {
   const { safetyEnvelope: env, rubric } = report.spec
-  const margin = +(env.currentO2 - LOC_MICROGRAVITY).toFixed(1)
+  const materialLoc = reportLocPct(report)
+  const loc = materialLoc ?? LOC_MICROGRAVITY
+  const margin = +(env.currentO2 - loc).toFixed(1)
   const over = margin > 0
   const zoneTone = env.zone === 'runaway' ? 'c-red' : env.zone === 'safe' ? 'c-green' : 'c-amber'
   const facts: Array<[string, ReactNode]> = [
     ['Zone', <span key="z" className={cn(zoneTone, 'capitalize')}>{env.zone}</span>],
     ['Operating point', `${env.currentO2}% O₂ · ${env.currentFlow} cm/s`],
     ['Pressure · gravity', `${rubric.summarize.pressureKpa} kPa · ${rubric.summarize.gravityRegime}`],
-    ['Microgravity LOC', `${LOC_MICROGRAVITY.toFixed(1)}% O₂`],
-    ['Earth baseline LOC', `${LOC_EARTH.toFixed(1)}% O₂`],
+    [materialLoc === undefined ? 'Reference LOC' : 'Material LOC', `${loc.toFixed(1)}% O₂`],
     [
       'LOC margin',
       <span key="m" className={over ? 'c-red' : 'c-green'}>
@@ -274,12 +277,14 @@ function EnvelopeTab({ report }: { report: GeneratedDashboard }) {
         {margin} pts {over ? 'above LOC' : 'below LOC'}
       </span>,
     ],
+    ['Microgravity reference LOC', `${LOC_MICROGRAVITY.toFixed(1)}% O₂`],
+    ['Earth baseline LOC', `${LOC_EARTH.toFixed(1)}% O₂`],
   ]
   return (
     <div className="two" style={{ alignItems: 'center' }}>
       <div className="gray">
         <p className="r-eyebrow">Flammability boundary</p>
-        <EnvelopeChart env={env} />
+        <EnvelopeChart env={env} loc={loc} />
       </div>
       <div>
         <dl className="facts">
@@ -458,12 +463,7 @@ export default function MissionReportsPanel() {
   const hasCustom = reports.some((r) => !SEED_IDS.has(r.id))
 
   const simulate = (r: GeneratedDashboard) => {
-    const s = r.spec.rubric.summarize
-    emitSimulationCommands(
-      { load_preset: s.investigationId, set_o2_percent: s.o2Pct, set_airflow_cm_s: s.flowCms },
-      'mission-brief',
-      s.investigationId,
-    )
+    queueMissionBrief(buildMissionBrief(r))
     navigate('#simulations')
   }
 

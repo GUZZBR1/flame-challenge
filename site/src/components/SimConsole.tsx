@@ -8,7 +8,7 @@ import {
   type SiResponse,
   type SiSimulationCommands,
 } from '../lib/api'
-import { emitSimulationCommands } from '../lib/simBus'
+import { emitSimulationCommands, takeMissionBrief } from '../lib/simBus'
 import { navigate } from '../lib/scroll'
 import {
   GRAVITY_G,
@@ -202,6 +202,17 @@ export default function SimConsole({ presets }: { presets: SimPreset[] }) {
     return () => window.removeEventListener('ignis:ui-command', onDeckCommand)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presets])
+
+  // a report's "Simulate in Live Chamber" navigates here first, so its
+  // conditions are waiting in the bus queue when the console mounts
+  useEffect(() => {
+    const brief = takeMissionBrief()
+    if (!brief) return
+    const next = mergeChamberState(chamberRef.current, brief.commands)
+    chamberRef.current = next
+    setChamber(next)
+    void sendTextRef.current?.(brief.prompt, brief.label, { suppressNav: true })
+  }, [])
 
   const sendText = async (text: string, display?: string, opts?: { suppressNav?: boolean }) => {
     const uid = nid()
