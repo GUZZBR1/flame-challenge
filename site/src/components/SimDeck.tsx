@@ -295,136 +295,100 @@ export default function SimDeck() {
           </svg>
           <OrbitDecor />
 
-          <div className="relative grid gap-x-14 gap-y-16 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-            {/* featured — apollo 1 */}
-            <article data-hero className="grid items-center gap-8 xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
-              <div className="min-w-0">
-                <span className="inline-block bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
-                  Historical Crisis
-                </span>
-                <h2 className="mt-5 whitespace-nowrap font-display text-[clamp(3.2rem,7vw,4.5rem)] font-bold leading-[0.95] tracking-tight">
-                  {feature.name}
-                </h2>
-                <p className="mt-5 font-mono text-[clamp(1rem,1.6vw,1.2rem)] font-semibold text-[#e5202e]">
-                  {FEATURE.tag}
-                </p>
-                <p className="mt-5 max-w-xs text-body leading-[1.8] opacity-80">{FEATURE.description}</p>
-                <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
-                  <button
-                    {...pickProps(FEATURE)}
-                    className="inline-flex items-center gap-3 rounded-[6px] bg-[#1e3fae] px-6 py-3.5 font-mono text-caption font-semibold text-white transition-colors duration-300 hover:bg-[#2a52d4] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                  >
-                    {activeMission.id === FEATURE.id ? '● Active' : 'Explore Mission'} <span aria-hidden="true">→</span>
-                  </button>
-                  <button
-                    type="button"
-                    aria-expanded={detailsOpen}
-                    onClick={() => setDetailsOpen((o) => !o)}
-                    className="border-b-2 border-[#1e3fae] pb-1 font-mono text-caption font-semibold transition-colors duration-300 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                  >
-                    Details
-                  </button>
-                </div>
-                {detailsOpen && (
-                  <p className="mt-5 max-w-xs font-mono text-tiny leading-relaxed opacity-70">
-                    {FEATURE.prompt} — {FEATURE.outcomeStatus}
+          <div className="relative grid gap-x-14 gap-y-16 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+            {/* featured — apollo 1: giant name across the block, copy + plate below */}
+            <article data-hero className="flex min-w-0 flex-col">
+              <span className="inline-block self-start bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
+                Historical Crisis
+              </span>
+              <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3.5rem,8.4vw,6.75rem)] font-bold leading-[0.92] tracking-tight">
+                {feature.name}
+              </h2>
+              <div className="mt-8 grid flex-1 items-center gap-8 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+                <div className="min-w-0">
+                  <p className="font-mono text-[clamp(1rem,1.6vw,1.2rem)] font-semibold text-[#e5202e]">
+                    {FEATURE.tag}
                   </p>
-                )}
-              </div>
-              <div className="relative min-w-0 xl:-ml-6">
-                <svg
-                  aria-hidden="true"
-                  className="pointer-events-none absolute -left-3 top-0 z-10 hidden h-full w-[35%] xl:block"
-                  viewBox="0 0 100 100"
-                  preserveAspectRatio="none"
-                  fill="none"
-                >
-                  <line x1="34" y1="4" x2="2" y2="64" stroke="#e5202e" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                </svg>
-                <div className="cut-hero relative h-[300px] overflow-hidden bg-black sm:h-[380px] xl:h-[420px]">
-                  <img
-                    src={MISSION_MEDIA.feature.src}
-                    alt={MISSION_MEDIA.feature.alt}
-                    className="h-full w-full object-cover grayscale contrast-125 brightness-95"
-                  />
-                  <div className="absolute inset-0 bg-[#1e3fae]/15 mix-blend-multiply" />
+                  <p className="mt-5 max-w-xs text-body leading-[1.8] opacity-80">{FEATURE.description}</p>
+                  <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3">
+                    <button
+                      {...pickProps(FEATURE)}
+                      className="inline-flex items-center gap-3 rounded-[6px] bg-[#1e3fae] px-6 py-3.5 font-mono text-caption font-semibold text-white transition-colors duration-300 hover:bg-[#2a52d4] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    >
+                      {activeMission.id === FEATURE.id ? '● Active' : 'Explore Mission'} <span aria-hidden="true">→</span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-expanded={detailsOpen}
+                      onClick={() => setDetailsOpen((o) => !o)}
+                      className="border-b-2 border-[#1e3fae] pb-1 font-mono text-caption font-semibold transition-colors duration-300 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    >
+                      Details
+                    </button>
+                  </div>
+                  {detailsOpen && (
+                    <p className="mt-5 max-w-xs font-mono text-tiny leading-relaxed opacity-70">
+                      {FEATURE.prompt} — {FEATURE.outcomeStatus}
+                    </p>
+                  )}
+                </div>
+                <div className="relative min-w-0">
+                  <svg
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -left-3 top-0 z-10 hidden h-full w-[35%] sm:block"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none"
+                    fill="none"
+                  >
+                    <line x1="34" y1="4" x2="2" y2="64" stroke="#e5202e" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+                  </svg>
+                  <div className="cut-hero relative h-[320px] overflow-hidden bg-black sm:h-[420px] lg:h-[460px]">
+                    <img
+                      src={MISSION_MEDIA.feature.src}
+                      alt={MISSION_MEDIA.feature.alt}
+                      className="h-full w-full object-cover grayscale contrast-125 brightness-95"
+                    />
+                    <div className="absolute inset-0 bg-[#1e3fae]/15 mix-blend-multiply" />
+                  </div>
                 </div>
               </div>
             </article>
 
-            {/* rail — challenger (text) over mir 1997 (panel) */}
-            <div className="flex flex-col gap-8 lg:pt-8">
-              {rail.map(([preset, t, media, n, shape], idx) => {
+            {/* rail — two identical panels sharing the feature's height */}
+            <div className="flex flex-col gap-6">
+              {rail.map(([preset, t, media, n, shape]) => {
                 const isActive = activeMission.id === preset.id
-                const arrow = (
-                  <span
-                    aria-hidden="true"
-                    className="grid size-10 shrink-0 place-items-center rounded-full border border-[#1e3fae] font-mono text-caption text-[#1e3fae] transition-colors duration-300 group-hover:bg-[#1e3fae] group-hover:text-white"
-                  >
-                    →
-                  </span>
-                )
-                const label = (
-                  <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
-                    {n} / Historical Crisis
-                  </span>
-                )
-                const name = (
-                  <span
-                    className="mt-1 block font-display text-[clamp(2rem,3.2vw,2.75rem)] font-bold leading-display tracking-tight transition-colors duration-300 group-hover:text-accent"
-                    style={isActive ? { color: preset.accent } : undefined}
-                  >
-                    {t.name}
-                  </span>
-                )
-                const tag = (
-                  <span className="mt-2 block font-mono text-tiny font-semibold text-[#e5202e]">
-                    {isActive ? '● active' : preset.tag}
-                  </span>
-                )
-                const desc = (
-                  <span className="mt-3 line-clamp-2 block max-w-[17rem] text-caption leading-relaxed opacity-75">
-                    {preset.description}
-                  </span>
-                )
-                if (idx === 0)
-                  return (
-                    <div key={preset.id} className="space-y-8">
-                      <button
-                        {...pickProps(preset)}
-                        data-hero
-                        className="group relative flex w-full items-start justify-between gap-4 pl-10 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                      >
-                        <span aria-hidden="true" className="absolute left-0 top-1 h-24 w-px bg-ink/35" />
-                        <span className="min-w-0">
-                          {label}
-                          {name}
-                          {tag}
-                          {desc}
-                        </span>
-                        {arrow}
-                      </button>
-                      <svg aria-hidden="true" className="h-4 w-full text-ink opacity-25" viewBox="0 0 400 16" preserveAspectRatio="none" fill="none">
-                        <path d="M0 16 Q0 0 28 0 H400" stroke="currentColor" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                      </svg>
-                    </div>
-                  )
                 return (
                   <button
                     key={preset.id}
                     {...pickProps(preset)}
                     data-hero
-                    className="group block w-full text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    className="group flex flex-1 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
                   >
-                    <span className="cut-panel grid min-h-[230px] grid-cols-[minmax(0,1fr)_44%] items-center gap-2 bg-ink/[0.07] py-5 pl-9 pr-4">
-                      <span className="flex min-w-0 flex-col items-start">
-                        {label}
-                        {name}
-                        {tag}
-                        {desc}
-                        <span className="mt-4">{arrow}</span>
+                    <span className="cut-panel grid w-full grid-cols-[minmax(0,1fr)_46%] items-center gap-3 bg-ink/[0.07] py-7 pl-9 pr-5 transition-colors duration-300 group-hover:bg-ink/[0.1]">
+                      <span className="flex h-full min-w-0 flex-col justify-between gap-6">
+                        <span className="block">
+                          <span className="block font-mono text-tiny uppercase tracking-label opacity-60">
+                            {n} / Historical Crisis
+                          </span>
+                          <span
+                            className="mt-2 block font-display text-[clamp(1.7rem,2.6vw,2.3rem)] font-bold leading-[1.05] tracking-tight transition-colors duration-300 group-hover:text-accent"
+                            style={isActive ? { color: preset.accent } : undefined}
+                          >
+                            {t.name}
+                          </span>
+                          <span className="mt-3 block font-mono text-tiny font-semibold text-[#e5202e]">
+                            {isActive ? '● active' : preset.tag}
+                          </span>
+                        </span>
+                        <span
+                          aria-hidden="true"
+                          className="grid size-10 shrink-0 place-items-center rounded-full border border-[#1e3fae] font-mono text-caption text-[#1e3fae] transition-colors duration-300 group-hover:bg-[#1e3fae] group-hover:text-white"
+                        >
+                          →
+                        </span>
                       </span>
-                      <span className={`${shape} block h-44 overflow-hidden bg-black sm:h-48`}>
+                      <span className={`${shape} block h-52 overflow-hidden bg-black sm:h-60`}>
                         {renderMedia(media, mediaCls)}
                       </span>
                     </span>
