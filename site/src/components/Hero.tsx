@@ -18,6 +18,7 @@ export default function Hero() {
     const el = titleRef.current
     if (!el) return
     el.replaceChildren()
+    setShipOn(false)
     const cursor = document.createElement('span')
     cursor.className = 'caret'
     cursor.setAttribute('aria-hidden', 'true')
