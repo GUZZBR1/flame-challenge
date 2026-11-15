@@ -111,15 +111,17 @@ const SIDE_B = MISSION_PRESETS[2] // mir 1997
 const BAND_A = MISSION_PRESETS[1] // apollo 13
 const BAND_B = MISSION_PRESETS[4] // columbia sts-107
 
-/** official NASA media — images-api.nasa.gov. Apollo 1 flew no mission
- *  (the crew died in a pad test), so the archival CSM photo leads; the
- *  Apollo 13 loop is cut from the real 1970 launch footage; Mir has no
- *  video in the library, so the STS-63 flyaround photo stands in */
+/** official NASA video — images-api.nasa.gov. Every plate is a short,
+ *  muted loop cut from archival footage (Apollo 1 / Challenger / Columbia
+ *  from the "NASA Remembers Its Fallen Heroes" montage, Mir from the
+ *  Mike Foale "In Their Own Words" piece, Apollo 13 from the 1970 KSC
+ *  launch reel); posters are the first frames. */
 const MISSION_MEDIA = {
   feature: {
-    type: 'image',
-    src: '/assets/nasa/apollo1_csm.jpg',
-    alt: 'Apollo 1 (AS-204) Command/Service Module — NASA S67-15704',
+    type: 'video',
+    src: '/assets/nasa/apollo1_loop.mp4',
+    poster: '/assets/nasa/apollo1_loop_poster.jpg',
+    alt: 'Apollo 1 command module being hoisted at the launch tower — NASA, Fallen Heroes montage',
   },
   sideA: {
     type: 'video',
@@ -128,38 +130,24 @@ const MISSION_MEDIA = {
     alt: 'Apollo 13 Saturn V ignition and liftoff — NASA KSC-19700411',
   },
   sideB: {
-    type: 'image',
-    src: '/assets/nasa/mir_sts63.jpg',
-    alt: 'Mir space station as seen from STS-63 — NASA sts063-708-095',
+    type: 'video',
+    src: '/assets/nasa/mir_loop.mp4',
+    poster: '/assets/nasa/mir_loop_poster.jpg',
+    alt: 'Mir space station exterior — NASA, Mike Foale "In Their Own Words"',
   },
   bandA: {
-    type: 'image',
-    src: '/assets/nasa/challenger_51l.jpg',
-    alt: 'Space Shuttle Challenger clearing the tower on STS-51-L — NASA 51l-s-156',
+    type: 'video',
+    src: '/assets/nasa/challenger_loop.mp4',
+    poster: '/assets/nasa/challenger_loop_poster.jpg',
+    alt: 'Challenger STS-51L crew walking the flight line — NASA, Fallen Heroes montage',
   },
   bandB: {
-    type: 'image',
-    src: '/assets/nasa/columbia_sts107.jpg',
-    alt: 'Space Shuttle Columbia liftoff on STS-107 — NASA STS107-S-015',
+    type: 'video',
+    src: '/assets/nasa/columbia_loop.mp4',
+    poster: '/assets/nasa/columbia_loop_poster.jpg',
+    alt: 'Columbia STS-107 crew walking out to the vehicle — NASA, Fallen Heroes montage',
   },
 } as const
-
-/** large orbital arc sweeping across the spread + crosshair */
-function OrbitDecor() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="pointer-events-none absolute -right-40 -top-72 hidden h-[1000px] w-[1100px] text-ink opacity-[0.22] dark:opacity-[0.09] lg:block"
-      viewBox="0 0 1100 1000"
-      fill="none"
-    >
-      <circle cx="1020" cy="140" r="640" stroke="currentColor" strokeWidth="1" />
-      <circle cx="1020" cy="140" r="520" stroke="currentColor" strokeWidth="0.75" strokeDasharray="3 8" opacity="0.7" />
-      <path d="M690 296 V326 M675 311 H705" stroke="currentColor" strokeWidth="1" />
-      <circle cx="560" cy="702" r="3.5" fill="currentColor" />
-    </svg>
-  )
-}
 
 export default function SimDeck() {
   const rootRef = useRef<HTMLDivElement>(null)
@@ -167,7 +155,11 @@ export default function SimDeck() {
 
   useEffect(() => {
     const root = rootRef.current
-    if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    if (!root) return
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      root.querySelectorAll('video').forEach((v) => v.pause())
+      return
+    }
     const ctx = gsap.context(() => {
       gsap.from('[data-hero]', { opacity: 0, y: 14, duration: 0.6, ease: 'power2.out', stagger: 0.07 })
     }, root)
@@ -273,29 +265,14 @@ export default function SimDeck() {
               </clipPath>
             </defs>
           </svg>
-          <OrbitDecor />
-
-          <div
-            aria-hidden="true"
-            className="relative mb-12 grid h-3 gap-x-[clamp(3rem,7vw,9rem)] sm:mb-16 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]"
-          >
-            <span className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-ink/60 via-ink/30 to-transparent dark:from-ink/35 dark:via-ink/15" />
-            <span className="absolute left-0 top-0 h-3 w-px bg-ink/70 dark:bg-ink/45" />
-            <span className="relative hidden lg:col-start-2 lg:block">
-              <span className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[2px] h-2 w-px bg-ink/55 dark:bg-ink/30" />
-              <span className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e5202e]" />
-            </span>
-          </div>
+          <div aria-hidden="true" className="mb-12 h-px bg-gradient-to-r from-ink/50 to-transparent dark:from-ink/30 sm:mb-16" />
 
           <div className="relative grid gap-x-[clamp(3rem,7vw,9rem)] gap-y-24 lg:grid-cols-[minmax(0,1.9fr)_minmax(0,1fr)]">
             {/* featured — apollo 1: giant name across the block, copy + plate below */}
             <article data-hero className="flex min-w-0 flex-col">
-              <div className="flex items-center gap-5">
-                <span className="inline-block shrink-0 bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
-                  Historical Crisis
-                </span>
-                <span aria-hidden="true" className="h-px flex-1 bg-gradient-to-r from-[#e5202e] to-transparent dark:from-[#e5202e]/60" />
-              </div>
+              <span className="inline-block self-start bg-[#e5202e] px-3 py-1.5 font-mono text-tiny font-semibold uppercase tracking-label text-white">
+                Historical Crisis
+              </span>
               <h2 className="mt-4 whitespace-nowrap font-display text-[clamp(3rem,7.6vw,7rem)] font-bold leading-[0.92] tracking-tight">
                 {feature.name}
               </h2>
@@ -328,20 +305,17 @@ export default function SimDeck() {
                   )}
                 </div>
                 <div className="relative min-w-0">
-                  <svg
-                    aria-hidden="true"
-                    className="pointer-events-none absolute -left-3 top-0 z-10 hidden h-full w-[35%] sm:block"
-                    viewBox="0 0 100 100"
-                    preserveAspectRatio="none"
-                    fill="none"
-                  >
-                    <line x1="34" y1="4" x2="2" y2="64" stroke="#e5202e" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                  </svg>
                   <div className="cut-hero relative h-[300px] overflow-hidden bg-black sm:h-[420px] lg:h-[500px] xl:h-[560px]">
-                    <img
-                      src={MISSION_MEDIA.feature.src}
-                      alt={MISSION_MEDIA.feature.alt}
+                    <video
                       className="h-full w-full object-cover grayscale contrast-125 brightness-95"
+                      src={MISSION_MEDIA.feature.src}
+                      poster={MISSION_MEDIA.feature.poster}
+                      aria-label={MISSION_MEDIA.feature.alt}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
                     />
                     <div className="absolute inset-0 bg-[#1e3fae]/15 mix-blend-multiply" />
                   </div>
@@ -351,21 +325,6 @@ export default function SimDeck() {
 
             {/* rail — two identical panels sharing the feature's height */}
             <div className="relative flex flex-col gap-10">
-              <span
-                aria-hidden="true"
-                className="absolute -left-[clamp(1.5rem,3.5vw,4.5rem)] top-[6%] hidden h-[88%] w-px bg-gradient-to-b from-transparent via-ink/55 to-transparent dark:via-ink/30 lg:block"
-              />
-              <svg
-                aria-hidden="true"
-                className="absolute -left-[calc(clamp(1.5rem,3.5vw,4.5rem)+32px)] top-[46%] hidden text-ink lg:block"
-                width="64"
-                height="64"
-                viewBox="0 0 64 64"
-                fill="none"
-              >
-                <line x1="4" y1="60" x2="60" y2="4" stroke="currentColor" strokeOpacity="0.7" strokeWidth="1" />
-                <circle cx="32" cy="32" r="3" fill="#e5202e" />
-              </svg>
               {rail.map(([preset, t, media, n, shape]) => {
                 const isActive = activeMission.id === preset.id
                 return (
@@ -409,8 +368,7 @@ export default function SimDeck() {
           </div>
 
           {/* band — challenger + columbia, media bleeding to the screen edges */}
-          <div className="mission-bleed relative mt-24 pt-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-ink/60 before:via-ink/35 before:to-transparent dark:before:from-ink/35 dark:before:via-ink/20 sm:mt-32">
-            <span aria-hidden="true" className="absolute left-[var(--gut)] top-0 h-[3px] w-14 -translate-y-px bg-[#1e3fae]" />
+          <div className="mission-bleed relative mt-24 pt-16 before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-ink/50 before:to-transparent dark:before:from-ink/30 sm:mt-32">
             <div className="grid gap-24 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-[clamp(4rem,8vw,10rem)]">
               {band.map(([preset, t, media, n, shape], i) => {
                 const isActive = activeMission.id === preset.id
@@ -422,12 +380,6 @@ export default function SimDeck() {
                     data-hero
                     className="group relative flex flex-col items-stretch gap-6 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:flex-row sm:items-center sm:gap-8"
                   >
-                    {!imageLeft && (
-                      <span
-                        aria-hidden="true"
-                        className="absolute -left-[clamp(2rem,4vw,5rem)] top-[10%] hidden h-[80%] w-px bg-gradient-to-b from-transparent via-ink/55 to-transparent dark:via-ink/30 lg:block"
-                      />
-                    )}
                     <span
                       className={`${shape} block h-48 overflow-hidden bg-black sm:h-60 sm:w-[48%] sm:shrink-0 ${
                         imageLeft ? 'bleed-l' : 'bleed-r sm:order-2'
