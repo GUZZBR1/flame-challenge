@@ -1,4 +1,4 @@
-// CDP smoke test for the generated-dashboard and conversational simulation routes.
+// CDP smoke test for the conversational simulation and PSI dataset routes.
 // usage: node scripts/route_test.mjs (needs `ws` under /tmp/cdpx, Vite :5173,
 // and Chromium DevTools on :9333)
 import { createRequire } from 'module'
@@ -35,6 +35,7 @@ const evalJs = async (expression) => {
 }
 const state = async () => JSON.parse(await evalJs(`JSON.stringify({
   hash: location.hash,
+  psi: !!document.getElementById('psi-dataset'),
   dashboard: [...document.querySelectorAll('h1')].some((heading) => heading.textContent?.trim() === 'Dashboard'),
   deck: !!document.querySelector('#scenario-prompt'),
 })`))
@@ -49,15 +50,18 @@ const check = (name, condition, extra = '') => {
 await send('Page.enable')
 await send('Page.navigate', { url: BASE })
 await sleep(1800)
-await evalJs('localStorage.removeItem("ignis-generated-dashboards-v1"); 1')
 
-// Dashboard is an empty generated-artifact library until a report exists.
-await send('Page.navigate', { url: `${BASE}/#dashboard` })
+// The dataset owns its own screen; the dashboard route was removed.
+await send('Page.navigate', { url: `${BASE}/#psi-dataset` })
 await sleep(900)
 let current = await state()
-let dashboardText = await evalJs(`document.body.innerText || ''`)
-check('dashboard route opens its dedicated screen', current.hash === '#dashboard' && current.dashboard, JSON.stringify(current))
-check('empty dashboard asks for a simulation first', /No generated dashboards yet/.test(dashboardText) && /Simulations/.test(dashboardText), dashboardText.slice(0, 100))
+check('psi-dataset route opens its dedicated screen', current.hash === '#psi-dataset' && current.psi, JSON.stringify(current))
+
+// Regression: the deleted dashboard hash must not revive a dedicated screen.
+await send('Page.navigate', { url: `${BASE}/#dashboard` })
+await sleep(900)
+current = await state()
+check('legacy #dashboard hash falls back to the main view', !current.dashboard && !current.psi && !current.deck, JSON.stringify(current))
 
 // Simulations owns the chat, voice input, and chamber; legacy SI-console
 // selectors and the former Investigation/Run Experiment controls are gone.
@@ -75,7 +79,7 @@ check('simulations route opens conversational workbench', current.hash === '#sim
 check('deck has chamber and no legacy console controls', deck.chamber && !deck.legacyConsole && !deck.investigationControls, JSON.stringify(deck))
 
 // Keep this test independent from the local API services and verify the
-// end-to-end assistant → generated report → dashboard link flow.
+// end-to-end assistant reply renders inside the deck (no dashboard link).
 await evalJs(`window.fetch = async (input) => {
   const url = String(input)
   const json = (body) => Promise.resolve(new Response(JSON.stringify(body), { status: 200, headers: { 'content-type': 'application/json' } }))
@@ -96,11 +100,9 @@ await sleep(700)
 let chatText = await evalJs(`document.querySelector('[aria-live="polite"]')?.textContent || ''`)
 if (!chatText.includes('Scenario is ready')) chatText = await evalJs(`document.body.textContent || ''`)
 check('copilot response is formatted in the conversation', /Scenario is ready for review/.test(chatText) && /Sources: NASA PSI records/.test(chatText))
-await evalJs(`[...document.querySelectorAll('a,button')].find((element) => element.textContent.includes('Generate dashboard'))?.click(); 1`)
-await sleep(900)
 current = await state()
-dashboardText = await evalJs(`document.body.innerText || ''`)
-check('analysis generates a report and routes to it', current.hash.startsWith('#dashboard-') && /Analyze a low oxygen case/.test(dashboardText), JSON.stringify(current))
+const bodyText = await evalJs(`document.body.innerText || ''`)
+check('assistant reply offers no dashboard navigation', !current.hash.startsWith('#dashboard') && !/Generate dashboard/.test(bodyText), JSON.stringify(current))
 
 console.log(`\n${pass} pass, ${fail} fail`)
 ws.close()
