@@ -97,6 +97,7 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
 
   const [hidden, setHidden] = useState(false)
   const [docked, setDocked] = useState(false)
+  const headerRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     const last = new WeakMap<EventTarget, number>()
@@ -110,7 +111,7 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
       if (!(t instanceof Element)) setDocked(y > window.innerHeight * 0.58)
       const safe = t instanceof Element ? 80 : window.innerHeight * 1.15
       if (y < safe || y < prev - 2) setHidden(false)
-      else if (y > prev + 2) setHidden(true)
+      else if (y > prev + 2 && !headerRef.current?.contains(document.activeElement)) setHidden(true)
     }
     window.addEventListener('scroll', onScroll, { capture: true, passive: true })
     return () => window.removeEventListener('scroll', onScroll, { capture: true })
@@ -148,6 +149,8 @@ export default function Header({ dark, onToggleTheme, brandVisible = false }: Pr
 
   return (
     <header
+      ref={headerRef}
+      onFocusCapture={() => setHidden(false)}
       className={`fixed inset-x-0 top-0 z-20 px-3 py-3 transition-[transform,opacity,filter] ease-out sm:px-8 sm:py-4 ${hidden ? 'pointer-events-none -translate-y-3 opacity-0 blur-[3px] duration-500' : 'duration-400'}`}
     >
       <div className="relative mx-auto flex w-fit max-w-full items-center justify-center gap-3 px-3 py-1 sm:gap-5 sm:px-4 sm:py-1.5">
