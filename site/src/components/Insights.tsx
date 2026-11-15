@@ -10,7 +10,6 @@ import {
 } from '../lib/dashboard'
 import { gsap } from '../lib/scroll'
 import type { RiskResult } from '../lib/risk'
-import Artifacts from './Artifacts'
 import Button from './ui/Button'
 
 const LEVEL_ORDER = ['minimal', 'low', 'moderate', 'high', 'critical']
@@ -36,10 +35,8 @@ export default function Insights() {
   const [topMaterial, setTopMaterial] = useState('pmma')
   const [diffIdx, setDiffIdx] = useState(0)
 
-  // voice-command bus: 'ignis:ui-command' retunes the rank scenario —
-  // o₂ / airflow / gravity land on a 'chamber echo' scenario so the
-  // dashboard mirrors whatever the sim deck (or the copilot) last set
-  // (the 'ignis:filter' matrix lives on the psi-dataset screen)
+  // simulation bus: 'ignis:ui-command' retunes the rank scenario so
+  // the dashboard mirrors the conditions from the latest chamber run.
   useEffect(() => {
     const onCmd = (e: Event) => {
       const d = (e as CustomEvent<{
@@ -185,11 +182,6 @@ export default function Insights() {
           bundled mirror of the same model takes over seamlessly.
         </p>
 
-        {/* generated artifacts — the dashboards the copilot actually
-            built answering questions this session; the model's own
-            rankings sit below */}
-        <Artifacts />
-
         {/* ============ 01 · RANK ============ */}
         <div className="pt-16">
           <div
@@ -237,7 +229,7 @@ export default function Insights() {
               {ranked.map((r) => (
                 <li
                   key={r.materialId}
-                  className="grid grid-cols-[2rem_9rem_1fr_5.5rem_4.5rem] items-center gap-x-3 rounded-md px-2 py-2 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)] sm:grid-cols-[2rem_11rem_1fr_6rem_6rem_4.5rem]"
+                  className="grid grid-cols-[1.5rem_minmax(0,1fr)_5.5rem] items-center gap-x-2 rounded-xl px-2 py-2 transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)] sm:grid-cols-[2rem_11rem_minmax(0,1fr)_6rem_6rem_4.5rem] sm:gap-x-3"
                 >
                   <span className="font-mono text-[11px] text-[var(--ink)] opacity-50">
                     {String(r.rank).padStart(2, '0')}
@@ -453,26 +445,26 @@ export default function Insights() {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-[8rem_1fr_1fr] gap-x-3 sm:grid-cols-[10rem_1fr_1fr]">
+              <div className="mt-4 grid grid-cols-[5rem_minmax(0,1fr)_minmax(0,1fr)] gap-x-2 sm:grid-cols-[10rem_minmax(0,1fr)_minmax(0,1fr)] sm:gap-x-3">
                 <div className="border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--ink)] opacity-50">
                   field
                 </div>
-                <div className="border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
+                <div className="min-w-0 break-words border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.12em] text-[var(--accent)] sm:tracking-[0.2em]">
                   run {card.runA.runId}
                 </div>
-                <div className="border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--accent)]">
+                <div className="min-w-0 break-words border-b border-[var(--edge)] pb-2 font-mono text-[9.5px] lowercase tracking-[0.12em] text-[var(--accent)] sm:tracking-[0.2em]">
                   run {card.runB.runId}
                 </div>
 
                 {card.changed.map((f) => (
                   <div key={f.field} className="contents">
-                    <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] lowercase text-[var(--accent)]">
+                    <div className="min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] lowercase text-[var(--accent)]">
                       Δ {f.label}
                     </div>
-                    <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
+                    <div className="min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
                       {f.a || '—'}
                     </div>
-                    <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
+                    <div className="min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)]">
                       {f.b || '—'}
                     </div>
                   </div>
@@ -482,7 +474,7 @@ export default function Insights() {
                     <div className="border-b border-[var(--edge)] py-1.5 font-mono text-[11px] lowercase text-[var(--ink)] opacity-50">
                       = {f.label}
                     </div>
-                    <div className="col-span-2 border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)] opacity-50">
+                    <div className="col-span-2 min-w-0 break-words border-b border-[var(--edge)] py-1.5 font-mono text-[11px] text-[var(--ink)] opacity-50">
                       {f.value}
                     </div>
                   </div>

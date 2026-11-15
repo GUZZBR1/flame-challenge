@@ -1,296 +1,121 @@
-import { useEffect, useRef, useState } from 'react'
-import {
-  investigations,
-  investigationDetail,
-  insights,
-  type Insight,
-  type InvestigationCard,
-  type InvestigationDetail,
-} from '../lib/api'
-import { gsap } from '../lib/scroll'
+import { useEffect, useState } from 'react'
+import { dashboardGeneratedEvent, getGeneratedDashboards, type GeneratedDashboard } from '../lib/generatedDashboards'
+import { navigate, navigateBack } from '../lib/scroll'
+import Button from './ui/Button'
+import { IconArrowLeft, IconArrowUpRight } from './Icons'
 
-const PART_LABEL: Record<string, string> = {
-  flammability: 'flammability',
-  hiddenHazard: 'hidden hazard',
-  explorationRelevance: 'exploration relevance',
-  dataRichness: 'data richness',
+function percent(value: unknown): string | null {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return null
+  return `${Math.round(value <= 1 ? value * 100 : value)}%`
 }
 
-const SEVERITY_DOT: Record<Insight['severity'], string> = {
-  high: 'bg-[var(--accent)]',
-  medium: 'bg-[var(--link)]',
-  info: 'bg-[var(--ink)] opacity-40',
-}
-
-function Bar({ value, label }: { value: number; label: string }) {
+function Result({ item }: { item: GeneratedDashboard }) {
+  const risk = percent(item.response.chamber?.riskIndex)
+  const level = typeof item.response.chamber?.level === 'string' ? item.response.chamber.level : null
+  const evidence = item.response.evidence ?? []
   return (
-    <div className="flex items-center gap-2 font-mono text-[10px] lowercase tracking-[0.14em]">
-      <span className="w-36 truncate opacity-55">{label}</span>
-      <span className="relative h-1 flex-1 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--ink)_12%,transparent)]">
-        <span
-          className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent)]"
-          style={{ width: `${value}%` }}
-        />
-      </span>
-      <span className="w-8 text-right tabular-nums opacity-75">{value.toFixed(0)}</span>
-    </div>
-  )
-}
+    <article id={`dashboard-${item.id}`} className="dashboard-result scroll-mt-28 rounded-[28px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_82%,transparent)] p-6 shadow-[0_24px_70px_-42px_rgba(16,35,60,.5)] backdrop-blur-2xl sm:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="rounded-full border border-[var(--edge)] px-3 py-1.5 text-sm font-medium capitalize opacity-80">
+          {item.run ? 'simulation complete' : item.response.mode === 'llm' ? 'model analysis' : 'local analysis'}
+        </span>
+        <time className="text-sm opacity-60" dateTime={new Date(item.createdAt).toISOString()}>
+          {new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(item.createdAt)}
+        </time>
+      </div>
+      <h2 className="mt-6 max-w-4xl font-[family-name:var(--font-display)] text-2xl font-semibold leading-tight tracking-[-0.025em] sm:text-3xl">
+        {item.prompt}
+      </h2>
+      {item.scenario && <div className="mt-4 flex flex-wrap gap-2 text-sm">
+        {[item.scenario.investigationId, item.scenario.materialId, `${item.scenario.o2Pct}% O₂`, `${item.scenario.flowCms} cm/s`, item.scenario.gravity].filter(Boolean).map((value) => <span key={value} className="rounded-full border border-[var(--edge)] bg-white/30 px-3 py-1.5 capitalize dark:bg-white/[0.04]">{value}</span>)}
+      </div>}
+      <p className="mt-4 max-w-4xl whitespace-pre-wrap text-base leading-8 opacity-85 sm:text-lg">{item.response.briefing}</p>
 
-/** Ranked investigation row — expandable to the SI detail card. */
-function LeaderboardRow({ card, detail, onExpand, expanded }: {
-  card: InvestigationCard
-  detail: InvestigationDetail | null
-  expanded: boolean
-  onExpand: () => void
-}) {
-  return (
-    <li className="rounded-md transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)]">
-      <button
-        type="button"
-        onClick={onExpand}
-        aria-expanded={expanded}
-        className="grid w-full cursor-pointer grid-cols-[2.5rem_1fr_4rem] items-baseline gap-x-4 px-2 py-3 text-left sm:grid-cols-[3rem_10rem_1fr_5rem] sm:gap-x-6"
-      >
-        <span className="font-mono text-[12px] tabular-nums text-[var(--ink)] opacity-50">
-          {String(card.rank).padStart(2, '0')}
-        </span>
-        <span className="font-mono text-[13px] font-medium lowercase tracking-[0.12em] text-[var(--ink)]">
-          {card.name}
-        </span>
-        <span className="hidden sm:block">
-          <span className="relative block h-1 overflow-hidden rounded-full bg-[color-mix(in_srgb,var(--ink)_12%,transparent)]">
-            <span
-              className="absolute inset-y-0 left-0 rounded-full bg-[var(--accent)]"
-              style={{ width: `${card.score}%` }}
-            />
-          </span>
-        </span>
-        <span className="text-right font-mono text-[13px] tabular-nums text-[var(--ink)]">
-          {card.score.toFixed(1)}
-        </span>
-      </button>
-
-      {expanded && (
-        <div className="grid gap-6 px-2 pb-5 pt-1 sm:grid-cols-[1fr_1fr] sm:px-10">
-          <div>
-            {Object.entries(card.breakdown).map(([k, v]) => (
-              <Bar key={k} value={v} label={PART_LABEL[k] ?? k} />
-            ))}
-            <p className="mt-4 text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-80">
-              {detail?.summary || card.summary}
-            </p>
-            {card.hazards.length > 0 && (
-              <ul className="mt-3 flex list-none flex-wrap gap-2 p-0 font-mono text-[10px] lowercase tracking-[0.14em]">
-                {card.hazards.map((h) => (
-                  <li
-                    key={h}
-                    className="rounded-full border border-[color-mix(in_srgb,var(--ink)_20%,transparent)] px-2 py-0.5 opacity-70"
-                  >
-                    {h}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className="font-mono text-[11px] lowercase leading-[2] tracking-[0.1em] text-[var(--ink)] opacity-80">
-            <div>
-              psi runs <span className="tabular-nums">{card.stats.nRuns}</span>
-              {' · '}labeled <span className="tabular-nums">{card.stats.nLabeled}</span>
-            </div>
-            {card.stats.coolFlameRuns > 0 && (
-              <div>
-                cool-flame runs{' '}
-                <span className="tabular-nums text-[var(--accent)]">
-                  {card.stats.coolFlameRuns}
-                </span>
-              </div>
-            )}
-            {card.engineFidelity && (
-              <div>
-                engine replay fidelity{' '}
-                <span className="tabular-nums text-[var(--accent)]">
-                  {(card.engineFidelity.accuracy * 100).toFixed(0)}%
-                </span>
-                <span className="opacity-50">
-                  {' '}/ {card.engineFidelity.scoredRuns} runs
-                </span>
-              </div>
-            )}
-            {card.effectiveLoc != null && (
-              <div>
-                effective loc <span className="tabular-nums">{card.effectiveLoc}% o₂</span>
-              </div>
-            )}
-            {detail?.material?.ignitionFitScope && (
-              <div>
-                ignition curve{' '}
-                <span className="text-[var(--link)]">
-                  {detail.material.ignitionFitScope}
-                </span>
-              </div>
-            )}
-            <div>
-              <a
-                href={card.psiUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-[var(--link)] underline-offset-4 transition-colors duration-300 hover:text-[var(--accent)] hover:underline"
-              >
-                nasa psi repository ↗
-              </a>
-            </div>
-          </div>
+      <div className="mt-7 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-[var(--edge)] bg-white/30 p-5 dark:bg-white/[0.04]">
+          <div className="text-sm opacity-60">Risk index</div>
+          <div className="mt-2 text-3xl font-semibold tabular-nums">{risk ?? '—'}</div>
+          {level && <div className="mt-1 text-sm capitalize opacity-65">{level}</div>}
         </div>
-      )}
-    </li>
-  )
-}
-
-/** The SI layer made visible: ranked investigations + interpreted findings. */
-export default function Dashboard() {
-  const rootRef = useRef<HTMLElement>(null)
-  const [cards, setCards] = useState<InvestigationCard[]>([])
-  const [weights, setWeights] = useState<Record<string, number>>({})
-  const [ins, setIns] = useState<Insight[]>([])
-  const [live, setLive] = useState<boolean | null>(null)
-  const [open, setOpen] = useState<string | null>(null)
-  const [detail, setDetail] = useState<InvestigationDetail | null>(null)
-
-  useEffect(() => {
-    let dead = false
-    void (async () => {
-      const [lb, i2] = await Promise.all([investigations(), insights()])
-      if (dead) return
-      setCards(lb.items)
-      setWeights(lb.weights)
-      setIns(i2.items)
-      setLive(lb.live && i2.live)
-    })()
-    return () => {
-      dead = true
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!open) {
-      setDetail(null)
-      return
-    }
-    let dead = false
-    void investigationDetail(open).then((d) => {
-      if (!dead) setDetail(d)
-    })
-    return () => {
-      dead = true
-    }
-  }, [open])
-
-  // same reveal convention as the rest of the page
-  useEffect(() => {
-    const root = rootRef.current
-    if (!root || matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
-        gsap.from(el, {
-          opacity: 0,
-          y: 16,
-          duration: 0.55,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: el, start: 'top 92%' },
-        })
-      })
-    }, root)
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <section
-      id="leaderboard"
-      ref={rootRef}
-      aria-labelledby="dashboard-title"
-      className="relative px-5 pb-28 pt-6 sm:px-10 lg:px-16"
-    >
-      <div className="mx-auto max-w-6xl">
-        <div
-          data-reveal
-          className="flex items-baseline justify-between gap-6 font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70"
-        >
-          <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
-            mission intelligence — ranked investigations
-          </span>
-          {live !== null && (
-            <span className="cursor-default opacity-60">
-              {live ? 'live engine' : 'baked snapshot — backend offline'}
-            </span>
-          )}
+        <div className="rounded-2xl border border-[var(--edge)] bg-white/30 p-5 dark:bg-white/[0.04]">
+          <div className="text-sm opacity-60">Evidence records</div>
+          <div className="mt-2 text-3xl font-semibold tabular-nums">{evidence.length}</div>
+          <div className="mt-1 text-sm opacity-65">NASA PSI matches</div>
         </div>
-
-        <h2
-          id="dashboard-title"
-          data-reveal
-          className="m-0 mt-6 cursor-default font-[family-name:var(--font-display)] text-[clamp(1.6rem,3.2vw,2.6rem)] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--ink)] transition-colors duration-300 hover:text-[var(--accent)]"
-        >
-          which fire regimes deserve a crew's attention first
-        </h2>
-        <p data-reveal className="mt-4 max-w-3xl text-[clamp(13px,1.15vw,15px)] leading-[1.75] text-[var(--ink)] opacity-80">
-          every investigation is scored on four auditable components —
-          flammability{' '}
-          <span className="font-mono text-[11px]">{(weights.flammability ?? 0) * 100}%</span>, hidden
-          hazard{' '}
-          <span className="font-mono text-[11px]">{(weights.hiddenHazard ?? 0) * 100}%</span>, exploration
-          relevance{' '}
-          <span className="font-mono text-[11px]">{(weights.explorationRelevance ?? 0) * 100}%</span>,
-          data richness{' '}
-          <span className="font-mono text-[11px]">{(weights.dataRichness ?? 0) * 100}%</span> —
-          each computed from parsed psi runs, not assigned by hand.
-        </p>
-
-        <ul data-reveal className="m-0 mt-8 list-none divide-y divide-[color-mix(in_srgb,var(--ink)_10%,transparent)] p-0">
-          {cards.map((c) => (
-            <LeaderboardRow
-              key={c.id}
-              card={c}
-              detail={open === c.id ? detail : null}
-              expanded={open === c.id}
-              onExpand={() => setOpen(open === c.id ? null : c.id)}
-            />
-          ))}
-        </ul>
-
-        {/* interpreted findings — the "interpret" deliverable */}
-        <div data-reveal className="mt-16">
-          <div className="font-mono text-[11px] lowercase tracking-[0.22em] text-[var(--ink)] opacity-70">
-            <span className="cursor-default transition-colors duration-300 hover:text-[var(--accent)] hover:opacity-100">
-              interpreted findings — evidence-backed
-            </span>
-          </div>
-          <dl className="m-0 mt-4">
-            {ins.map((i) => (
-              <div
-                key={i.id}
-                className="grid grid-cols-[1rem_1fr] items-baseline gap-x-4 rounded-md px-2 py-3 transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)]"
-              >
-                <span
-                  className={`inline-block h-2 w-2 translate-y-[-1px] rounded-full ${SEVERITY_DOT[i.severity]}`}
-                  aria-label={`severity: ${i.severity}`}
-                />
-                <div>
-                  <dt className="font-mono text-[13px] font-medium lowercase tracking-[0.1em] text-[var(--ink)]">
-                    {i.title}
-                  </dt>
-                  <dd className="m-0 mt-1 max-w-3xl text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-75">
-                    {i.body}
-                  </dd>
-                  <dd className="m-0 mt-1 font-mono text-[10px] lowercase tracking-[0.16em] text-[var(--ink)] opacity-50">
-                    sources: {i.sources.join(' · ')}
-                  </dd>
-                </div>
-              </div>
-            ))}
-          </dl>
+        <div className="rounded-2xl border border-[var(--edge)] bg-white/30 p-5 dark:bg-white/[0.04]">
+          <div className="text-sm opacity-60">Engine run</div>
+          <div className="mt-2 text-3xl font-semibold">{item.run ? `${item.run.tSec.toFixed(1)} s` : '—'}</div>
+          <div className="mt-1 text-sm capitalize opacity-65">{item.run ? (item.run.coolFlame ? 'cool flame observed' : item.run.ignited ? 'ignition observed' : 'no ignition') : 'analysis only'}</div>
         </div>
       </div>
-    </section>
+
+      {evidence.length > 0 && (
+        <div className="mt-7 border-t border-[var(--edge)] pt-5">
+          <h3 className="text-base font-semibold">Source records</h3>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {evidence.slice(0, 4).map((source) => (
+              <li key={`${item.id}-${source.runId}`}>
+                <a className="inline-flex min-h-12 w-full items-center justify-between gap-3 rounded-2xl border border-[var(--edge)] px-4 text-sm transition-colors hover:bg-white/50 dark:hover:bg-white/10" href={source.sourceUrl || '#psi-dataset'} target={source.sourceUrl ? '_blank' : undefined} rel="noreferrer">
+                  <span className="truncate">{source.accession} · {source.fuel} · {source.outcome}</span>
+                  <span className="shrink-0 tabular-nums opacity-65">{Math.round(source.similarity)}%</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Button asChild variant="glass" size="default">
+          <a href="#simulations" onClick={(event) => { event.preventDefault(); navigate('#simulations') }}>
+            Open simulations <IconArrowUpRight size={16} />
+          </a>
+        </Button>
+        {evidence[0]?.sourceUrl && <Button asChild variant="ghost" size="default"><a href={evidence[0].sourceUrl} target="_blank" rel="noreferrer">Open PSI source <IconArrowUpRight size={16} /></a></Button>}
+      </div>
+    </article>
+  )
+}
+
+export default function Dashboard() {
+  const [items, setItems] = useState(getGeneratedDashboards)
+  useEffect(() => {
+    const refresh = () => setItems(getGeneratedDashboards())
+    window.addEventListener(dashboardGeneratedEvent(), refresh)
+    return () => window.removeEventListener(dashboardGeneratedEvent(), refresh)
+  }, [])
+
+  useEffect(() => {
+    const id = location.hash.startsWith('#dashboard-') ? location.hash.slice('#dashboard-'.length) : null
+    if (!id) return
+    const timer = window.setTimeout(() => document.getElementById(`dashboard-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100)
+    return () => window.clearTimeout(timer)
+  }, [items])
+
+  return (
+    <div data-lenis-prevent className="fixed inset-0 z-10 overflow-y-auto overscroll-contain bg-[var(--bg)]">
+      <div className="mx-auto max-w-6xl px-5 pb-24 pt-28 sm:px-10 lg:px-16">
+        <Button variant="glass" size="default" onClick={navigateBack}><IconArrowLeft size={16} /> Back</Button>
+        <div className="mt-12 flex flex-wrap items-end justify-between gap-5">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-[0.2em] opacity-60">IGNIS · generated reports</p>
+            <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl font-bold tracking-[-0.04em] sm:text-6xl">Dashboard</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 opacity-75 sm:text-lg">Scenario analyses and completed chamber runs, with their evidence and source links.</p>
+          </div>
+          {items.length > 0 && <Button variant="primary" size="default" onClick={() => navigate('#simulations')}>Generate a scenario <IconArrowUpRight size={16} /></Button>}
+        </div>
+
+        {items.length === 0 ? (
+          <div className="mt-12 rounded-[32px] border border-[var(--edge)] bg-[color-mix(in_srgb,var(--panel)_70%,transparent)] px-6 py-16 text-center shadow-[0_32px_80px_-56px_rgba(16,35,60,.5)] backdrop-blur-2xl sm:px-12">
+            <div className="mx-auto grid size-16 place-items-center rounded-full border border-[var(--edge)] bg-white/40 text-2xl dark:bg-white/5" aria-hidden="true">↗</div>
+            <h2 className="mt-6 font-[family-name:var(--font-display)] text-2xl font-semibold sm:text-3xl">No generated dashboards yet</h2>
+            <p className="mx-auto mt-3 max-w-xl text-base leading-7 opacity-70 sm:text-lg">Describe a combustion scenario in Simulations. Save an analysis or ask the copilot to run the chamber; each result will appear here with its sources.</p>
+            <Button variant="primary" size="lg" className="mt-8" onClick={() => navigate('#simulations')}>Go to Simulations <IconArrowUpRight size={17} /></Button>
+          </div>
+        ) : (
+          <div className="mt-10 grid gap-6">{items.map((item) => <Result key={item.id} item={item} />)}</div>
+        )}
+      </div>
+    </div>
   )
 }

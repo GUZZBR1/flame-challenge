@@ -14,19 +14,18 @@ const buttonVariants = cva('btn', {
       outline: 'btn-ghost',
       secondary: 'btn-ghost',
       ghost: 'btn-ghost',
-      destructive: 'btn-rec',
+      destructive: 'btn-destructive',
+      row: 'btn-row',
       chip: 'chip',
-      rec: 'btn-rec',
-      recording: 'btn-rec',
       link: 'btn-link',
     },
     size: {
-      default: 'h-11 px-5 text-sm',
-      sm: 'h-10 px-4 text-xs',
-      lg: 'h-12 px-6 text-sm',
-      xl: 'h-14 px-8 text-base',
-      icon: 'h-10 w-10 p-0',
-      'icon-sm': 'h-9 w-9 p-0',
+      default: 'min-h-[60px] px-6 text-base',
+      sm: 'min-h-[56px] px-5 text-sm',
+      lg: 'min-h-[68px] px-8 text-base',
+      xl: 'min-h-[76px] px-9 text-lg',
+      icon: 'size-14 p-0',
+      'icon-sm': 'size-12 p-0',
     },
   },
   defaultVariants: { variant: 'default', size: 'default' },
@@ -44,6 +43,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Component
         ref={ref}
         data-slot="button"
+        data-size={size ?? 'default'}
         className={cn(buttonVariants({ variant, size }), className)}
         {...props}
       />

@@ -207,7 +207,7 @@ export default function Shipyard() {
             onClick={scrollToSims}
             variant="accent"
             size="xl"
-            className="font-mono lowercase tracking-[0.12em]"
+            className="w-full max-w-full whitespace-normal text-center font-mono lowercase tracking-[0.1em] sm:w-auto sm:tracking-[0.12em]"
           >
             run the numbers — simulations ↑
           </Button>

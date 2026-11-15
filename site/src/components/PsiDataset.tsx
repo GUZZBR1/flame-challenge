@@ -32,17 +32,14 @@ export default function PsiDataset() {
   const rootRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  // the filter lives in module state (see scroll.ts) — a voice command
-  // can navigate here *and* ask for a theme in the same tick, so the
-  // event fires before we mount; seeding from it also keeps the last
-  // pick across close/reopen
+  // Keep the selected theme across close/reopen.
   const [theme, setTheme] = useState<string>(() => {
     const t = getFilterTag()
     return t && (t === 'all' || ALL_THEMES.includes(t)) ? t : 'all'
   })
   const [open, setOpen] = useState<string | null>(null)
 
-  // mirror picks (voice or manual) back into module state
+  // Mirror manual picks back into module state.
   useEffect(() => {
     setFilterTag(theme)
   }, [theme])
@@ -109,16 +106,6 @@ export default function PsiDataset() {
       v.removeEventListener('loadedmetadata', onMeta)
       v.removeEventListener('timeupdate', onTime)
     }
-  }, [])
-
-  // voice-command bus — 'ignis:filter' drives the matrix theme filter
-  useEffect(() => {
-    const onFilter = (e: Event) => {
-      const tag = (e as CustomEvent<{ tag?: string }>).detail?.tag
-      if (tag && (tag === 'all' || ALL_THEMES.includes(tag))) setTheme(tag)
-    }
-    window.addEventListener('ignis:filter', onFilter)
-    return () => window.removeEventListener('ignis:filter', onFilter)
   }, [])
 
   // choreography — hero elements fly in on mount; further blocks reveal
@@ -298,7 +285,13 @@ export default function PsiDataset() {
             ))}
           </div>
 
-          <div data-reveal className="mt-4 overflow-x-auto">
+          <div
+            data-reveal
+            role="region"
+            aria-label="Scrollable NASA PSI investigation table"
+            tabIndex={0}
+            className="mt-4 overflow-x-auto rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+          >
             <table className="w-full min-w-[760px] border-collapse text-left">
               <thead>
                 <tr className="font-mono text-[9.5px] lowercase tracking-[0.2em] text-[var(--ink)] opacity-50">
@@ -317,15 +310,22 @@ export default function PsiDataset() {
                   return [
                     <tr
                       key={inv.id}
-                      onClick={() => setOpen(expanded ? null : inv.id)}
-                      aria-expanded={expanded}
-                      className="cursor-pointer transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)]"
+                      className="transition-colors duration-200 hover:bg-[color-mix(in_srgb,var(--accent)_7%,transparent)]"
                     >
                       <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[12px] font-medium lowercase tracking-[0.1em] text-[var(--ink)]">
-                        <span className="mr-2 inline-block w-3 text-[var(--accent)]">
-                          {expanded ? '−' : '+'}
-                        </span>
-                        {inv.name.toLowerCase()}
+                        <Button
+                          type="button"
+                          variant="row"
+                          size="sm"
+                          aria-expanded={expanded}
+                          onClick={() => setOpen(expanded ? null : inv.id)}
+                          className="dataset-expand justify-start gap-2 text-left font-mono text-[12px] font-medium lowercase tracking-[0.1em]"
+                        >
+                          <span className="inline-block w-3 text-[var(--accent)]">
+                            {expanded ? '−' : '+'}
+                          </span>
+                          {inv.name.toLowerCase()}
+                        </Button>
                       </td>
                       <td className="border-b border-[var(--edge)] px-2 py-2.5 font-mono text-[10px] lowercase tracking-[0.12em] text-[var(--ink)] opacity-70">
                         {inv.themes.map((t) => THEME_LABELS[t] ?? t).join(' · ')}

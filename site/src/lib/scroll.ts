@@ -20,29 +20,18 @@ export function getLenis(): Lenis | null {
   return lenis
 }
 
-/** voice/navigation names -> real DOM ids (voice contract uses these
- *  friendly names; the sections carry different ids) */
+/** Friendly section names -> their DOM ids. */
 const SECTION_IDS: Record<string, string> = {
   hero: 'top',
   dashboard: 'dashboard',
   shipyard: 'vision',
 }
 
-/** sections that live inside the #simulations deck — "scrolling" to
- *  one opens the overlay and scrolls within it instead of the page.
- *  the copilot's own surfaces (console, feed, brain) live on the
- *  #si-console screen, not here */
-const SIM_CHILDREN = new Set(['chamber', 'mission-control'])
-
-/** sections inside the #si-console screen */
-const SI_CHILDREN = new Set(['ask'])
+/** sections that live inside the #simulations deck */
+const SIM_CHILDREN = new Set(['chamber'])
 
 export function isSimChild(name: string): boolean {
   return SIM_CHILDREN.has(name)
-}
-
-export function isSiChild(name: string): boolean {
-  return SI_CHILDREN.has(name)
 }
 
 let innerTarget: string | null = null
@@ -78,13 +67,8 @@ export function scrollToSection(name: string): boolean {
     navigate('#simulations')
     return true
   }
-  if (name === 'si-console') {
-    navigate('#si-console')
-    return true
-  }
-  if (SI_CHILDREN.has(name)) {
-    navigate('#si-console')
-    scrollInner(name)
+  if (name === 'dashboard') {
+    navigate('#dashboard')
     return true
   }
   if (SIM_CHILDREN.has(name)) {
@@ -131,11 +115,7 @@ export function navigateBack(): void {
   applyRoute()
 }
 
-/** the matrix's active theme filter — kept in module scope because the
- *  filter event fires in the same tick the overlay starts mounting (and
- *  state should survive close/reopen + StrictMode's dev double-mount).
- *  PsiDataset seeds its useState from here; applyNavigation writes it
- *  before 'ignis:filter' fans out. */
+/** Keep the dataset's selected theme across overlay open/close cycles. */
 let filterTag: string | null = null
 
 export function getFilterTag(): string | null {
@@ -144,24 +124,6 @@ export function getFilterTag(): string | null {
 
 export function setFilterTag(tag: string | null): void {
   filterTag = tag
-}
-
-/** apply the copilot's navigation block — scroll + matrix filter fan-out */
-export function applyNavigation(
-  nav: {
-    scroll_to_section?: string | null
-    active_filter_tag?: string | null
-  } | null | undefined,
-): void {
-  if (nav?.scroll_to_section) scrollToSection(nav.scroll_to_section)
-  if (nav?.active_filter_tag) {
-    filterTag = nav.active_filter_tag
-    window.dispatchEvent(
-      new CustomEvent('ignis:filter', {
-        detail: { tag: nav.active_filter_tag },
-      }),
-    )
-  }
 }
 
 export { gsap, ScrollTrigger }

@@ -1,13 +1,10 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
-import type { SiUiCommand } from '../lib/api'
+import type { ChamberUiCommand } from '../lib/api'
 import {
   streamChamber,
   type ChamberState,
 } from '../lib/live'
-import { navigate } from '../lib/scroll'
-import { emitSimFrame, emitUiCommand, peekPendingUiCmd } from '../lib/simBus'
-import { IconArrowUpRight } from './Icons'
-import Button from './ui/Button'
+import { emitSimFrame, peekPendingUiCmd } from '../lib/simBus'
 
 /**
  * Live combustion chamber — streams the compiled C++ engine over
@@ -35,8 +32,7 @@ export default function LiveChamber({
   children,
 }: {
   stage?: boolean
-  /** stage mode only — rendered between the scenario readout and the
-   *  canvas; the deck's copilot answer feed lives there */
+  /** stage mode only — rendered between the scenario readout and canvas */
   children?: ReactNode
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -44,7 +40,7 @@ export default function LiveChamber({
   const [inv, setInv] = useState<string>('flex-2')
   const [o2, setO2] = useState(21)
   // null = let the engine pick the investigation's mid-range flow;
-  // only an explicit copilot airflow command pins a value
+  // null lets the engine choose the investigation's default airflow
   const [flow, setFlow] = useState<number | null>(null)
   const [sealed, setSealed] = useState(false)
   const [frame, setFrame] = useState<ChamberState | null>(null)
@@ -79,6 +75,7 @@ export default function LiveChamber({
           setLog((l) => [...l.slice(-5), ...s.events!])
         }
         if (s.done) setStatus('done')
+        if (s.done) window.dispatchEvent(new CustomEvent('ignis:chamber-complete', { detail: s }))
       },
       () => setStatus('offline'),
     )
@@ -87,11 +84,8 @@ export default function LiveChamber({
 
   useEffect(() => stop, [stop])
 
-  // copilot commands retune the live chamber — SiConsole broadcasts
-  // 'ignis:ui-command' after each SI answer, carrying __investigation =
-  // the console's experiment. Auto-restart only when we can actually
-  // synchronize that investigation; a SAME-scoped O₂ answer must not
-  // respawn a FLEX heptane run under new numbers.
+  // Dashboard actions can retune the live chamber. Auto-restart only
+  // when the selected investigation matches the incoming command.
   const retune = useRef(false)
   // mirror of inv for the command handler — its effect closes over
   // state once, so comparisons need the ref
@@ -99,7 +93,7 @@ export default function LiveChamber({
   useEffect(() => { invRef.current = inv }, [inv])
 
   const applyCmd = useCallback(
-    (cmd: SiUiCommand & { __investigation?: string | null }) => {
+    (cmd: ChamberUiCommand & { __investigation?: string | null }) => {
       let touched = false
       const srcInv = cmd.__investigation ?? cmd.load_preset
       const runnable = srcInv != null
@@ -122,10 +116,16 @@ export default function LiveChamber({
         setFlow(Math.round(Math.min(Math.max(af, 0), 40) * 10) / 10)
         touched = true
       }
+      if (typeof cmd.set_gravity_g === 'number') touched = true
+      if (cmd.trigger_containment) {
+        setSealed(true)
+        if (invRef.current === 'flex-2') setInv('saffire')
+        touched = true
+      }
       // restart only when the chamber runs the investigation the answer
       // was scoped to — otherwise the state lands for the next manual
       // run without spawning a misleading experiment
-      if (touched && runnable) retune.current = true
+      if (touched && (runnable || cmd.__run)) retune.current = true
     },
     [],
   )
@@ -133,15 +133,13 @@ export default function LiveChamber({
   useEffect(() => {
     const onCmd = (e: Event) => {
       applyCmd(
-        (e as CustomEvent<SiUiCommand & {
+        (e as CustomEvent<ChamberUiCommand & {
           __investigation?: string | null
         }>).detail ?? {},
       )
     }
     window.addEventListener('ignis:ui-command', onCmd)
-    // a command that arrived in the same breath as 'go to simulations'
-    // seeds this mount — voice 'run saffire' opens the deck and the
-    // burn starts on its own
+    // A fresh dashboard command can seed this mount with its parameters.
     const pending = peekPendingUiCmd()
     if (pending) applyCmd(pending)
     return () => window.removeEventListener('ignis:ui-command', onCmd)
@@ -173,13 +171,8 @@ export default function LiveChamber({
       .trim() || '#e8e6e0'
 
     if (!frame || !frame.ignited) {
-      ctx.strokeStyle = ink
-      ctx.globalAlpha = 0.25
-      ctx.setLineDash([3, 4])
-      ctx.strokeRect(cw / 2 - 60, ch / 2 - 40, 120, 80)
-      ctx.setLineDash([])
       ctx.globalAlpha = 0.5
-      ctx.font = '10px monospace'
+      ctx.font = '15px monospace'
       ctx.fillStyle = ink
       ctx.textAlign = 'center'
       ctx.fillText(
@@ -268,7 +261,7 @@ export default function LiveChamber({
         stage ? '' : 'px-5 pb-28 pt-6 sm:px-10 lg:px-16'
       }`}
     >
-      <div className={`flex items-baseline justify-between gap-6 font-mono lowercase tracking-[0.22em] text-[var(--ink)] opacity-70 ${stage ? 'text-[12.5px]' : 'text-[11px]'}`}>
+      <div className="flex flex-wrap items-baseline justify-between gap-3 font-mono text-sm lowercase tracking-[0.1em] text-[var(--ink)] opacity-70">
         <span>live chamber — compiled c++ core</span>
         <span>{status === 'offline' ? 'engine offline' : `ws · 30 hz · ${status}`}</span>
       </div>
@@ -284,10 +277,10 @@ export default function LiveChamber({
         </>
       )}
 
-      <div className={`mt-4 grid gap-6 ${stage ? '' : 'sm:grid-cols-[1fr_16rem]'}`}>
+      <div className="mt-6">
         <div>
           {stage && (
-            <div className="mb-3 font-mono text-[14px] lowercase tracking-[0.12em] text-[var(--ink)] opacity-85">
+            <div className="mb-4 font-mono text-base lowercase tracking-[0.08em] text-[var(--ink)] opacity-85 sm:text-lg">
               <span className="text-[var(--accent)]">▸</span> {invLabel} · o₂{' '}
               {o2}%{flow != null ? ` · ${flow} cm/s` : ''}
               {sealed ? ' · sealed cabin' : ''}
@@ -296,12 +289,12 @@ export default function LiveChamber({
           {stage && children}
           {/* the stage stays empty until a command arrives — that's the
               "things appear" moment: the instrument panel materializes
-              the instant the copilot retunes and relights the chamber */}
+              the instant new conditions relight the chamber */}
           {(!stage || status === 'streaming' || status === 'done') && (
             <>
-              <canvas ref={canvasRef} className="h-64 w-full rounded-md sm:h-72" />
+              <canvas ref={canvasRef} className="h-72 w-full rounded-3xl sm:h-80" />
               {frame && (
-                <div className="mt-3 flex items-baseline gap-5 font-mono text-[12.5px] lowercase text-[var(--ink)] opacity-75">
+                <div className="mt-4 flex flex-wrap items-baseline gap-x-6 gap-y-2 font-mono text-base lowercase text-[var(--ink)] opacity-80">
                   <span>t {frame.tSec.toFixed(1)}s</span>
                   <span>{regime}</span>
                   <span>o₂ {frame.o2Pct.toFixed(1)}%</span>
@@ -321,97 +314,15 @@ export default function LiveChamber({
                   ))}
                 </div>
               )}
-              {status === 'done' && (
-                <a
-                  href="#dashboard"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    // echo the run's parameters into the dashboard's risk
-                    // ranking, then land on it — "save & show" without a
-                    // second state model
-                    emitUiCommand({
-                      set_o2_percent: o2,
-                      ...(flow != null ? { set_airflow_cm_s: flow } : {}),
-                      __origin: 'chamber',
-                    })
-                    navigate('#dashboard')
-                  }}
-                  className="btn btn-ghost mt-3 h-10 px-5 text-[12.5px] lowercase"
-                >
-                  this run's risk, ranked in dashboard
-                  <IconArrowUpRight size={14} />
-                </a>
-              )}
             </>
           )}
           {stage && status === 'idle' && (
-            <p className="m-0 font-mono text-[13px] lowercase tracking-[0.12em] text-[var(--ink)] opacity-50">
-              quiet — a copilot command lights it
-            </p>
-          )}
-          {stage && status === 'offline' && (
-            <p className="m-0 mt-3 font-mono text-[12.5px] lowercase leading-relaxed text-[var(--ink)] opacity-60">
-              engine offline — start uvicorn on :8000 and ask again; the
-              dashboard runs on the baked psi snapshot meanwhile.
+            <p className="m-0 rounded-3xl border border-dashed border-[var(--edge)] px-6 py-8 text-center text-base leading-7 text-[var(--ink)] opacity-65 sm:text-lg">
+              The chamber is ready. Describe a combustion scenario in the conversation above to tune conditions and stream a run here.
             </p>
           )}
         </div>
 
-        {!stage && (
-        <div className="flex flex-col gap-3 font-mono text-[11px] lowercase text-[var(--ink)]">
-          <label className="opacity-70">investigation</label>
-          <select
-            value={inv}
-            onChange={(e) => {
-              setInv(e.target.value)
-              setFlow(null)
-            }}
-            className="rounded border border-[color-mix(in_srgb,var(--ink)_25%,transparent)] bg-transparent px-2 py-1.5 font-mono text-[11px] lowercase text-[var(--ink)]"
-          >
-            {INVESTIGATIONS.map((i) => (
-              <option key={i.id} value={i.id}>{i.label}</option>
-            ))}
-          </select>
-          <label className="mt-1 opacity-70">o₂ {o2.toFixed(0)}%</label>
-          <input
-            type="range"
-            min={10}
-            max={40}
-            step={0.5}
-            value={o2}
-            onChange={(e) => setO2(Number(e.target.value))}
-            className="accent-[var(--accent)]"
-          />
-          <label className="mt-1 flex items-center gap-2 opacity-80">
-            <input
-              type="checkbox"
-              checked={sealed}
-              onChange={(e) => {
-                setSealed(e.target.checked)
-                // a 1 mm droplet can't deplete 50 L — switch to a solid
-                // spread run so the sealed demo shows real O2 depletion
-                if (e.target.checked && inv === 'flex-2') setInv('saffire')
-              }}
-              className="accent-[var(--accent)]"
-            />
-            seal cabin · 50 l · 0.05%/s vent
-          </label>
-          <Button
-            onClick={run}
-            disabled={status === 'streaming'}
-            variant="primary"
-            className="mt-2 lowercase"
-          >
-            {status === 'streaming' ? 'burning…' : 'run experiment'}
-          </Button>
-          {status === 'offline' && (
-            <p className="m-0 text-[10px] leading-relaxed opacity-60">
-              backend offline — start uvicorn on :8000 to stream the engine.
-              the dashboard above runs on the baked psi snapshot meanwhile.
-            </p>
-          )}
-        </div>
-        )}
       </div>
     </section>
   )

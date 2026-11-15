@@ -5,14 +5,11 @@ import Dashboard from './components/Dashboard'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import Hero from './components/Hero'
-import Insights from './components/Insights'
 import PsiDataset from './components/PsiDataset'
 import Shipyard from './components/Shipyard'
-import SiConsoleDeck from './components/SiConsoleDeck'
 import SimDeck from './components/SimDeck'
 import Stars from './components/Stars'
-import VoiceHud from './components/VoiceHud'
-import { initScroll, isSiChild, isSimChild, scrollInner, scrollToSection } from './lib/scroll'
+import { initScroll, isSimChild, scrollInner, scrollToSection } from './lib/scroll'
 
 type Theme = 'light' | 'dark'
 
@@ -26,14 +23,14 @@ function initialTheme(): Theme {
 
 export default function App() {
   const [theme, setTheme] = useState<Theme>(initialTheme)
-  // '#psi-dataset', '#simulations' and '#si-console' swap the whole
+  // '#psi-dataset' and '#simulations' swap the whole
   // page for their own screens — the main scroll stays mounted
   // underneath so its position (and every ScrollTrigger) survives the
   // round trip
-  const [view, setView] = useState<'main' | 'psi' | 'sim' | 'si'>(() => {
+  const [view, setView] = useState<'main' | 'psi' | 'sim' | 'dashboard'>(() => {
     const h = location.hash.slice(1)
     if (h === 'psi-dataset') return 'psi'
-    if (h === 'si-console' || isSiChild(h)) return 'si'
+    if (h === 'dashboard' || h.startsWith('dashboard-')) return 'dashboard'
     if (h === 'simulations' || isSimChild(h)) return 'sim'
     return 'main'
   })
@@ -45,16 +42,8 @@ export default function App() {
         setView('psi')
         return
       }
-      if (name === 'si-console') {
-        setView('si')
-        return
-      }
-      if (isSiChild(name)) {
-        // a bare '#ask'-style link — normalize onto the copilot
-        // screen's hash and land on the inner section
-        history.replaceState(null, '', '#si-console')
-        scrollInner(name)
-        setView('si')
+      if (name === 'dashboard' || name.startsWith('dashboard-')) {
+        setView('dashboard')
         return
       }
       if (name === 'simulations') {
@@ -116,15 +105,12 @@ export default function App() {
       <Stars />
       <Hero />
       <Challenge />
-      <Insights />
-      <Dashboard />
       <Crew />
       <Shipyard />
       <Footer />
       {view === 'psi' && <PsiDataset />}
       {view === 'sim' && <SimDeck />}
-      {view === 'si' && <SiConsoleDeck />}
-      <VoiceHud />
+      {view === 'dashboard' && <Dashboard />}
     </main>
   )
 }
