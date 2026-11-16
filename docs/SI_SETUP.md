@@ -27,9 +27,13 @@ bash models/download-ggml-model.sh small.en    # ~465 MB; base.en works too
     --host 127.0.0.1 --port 8081 -t 8 &
 ```
 
-**Endpoint gotcha:** this build serves `POST /inference` (multipart `file`
-+ `response_format=json` → `{"text": "…"}`), not `/v1/audio/transcriptions`.
-`backend/.env` already points there via `WHISPER_CPP_URL`.
+**Endpoint gotcha:** which route `whisper-server` serves depends on the
+build — older builds expose `POST /inference` (multipart `file` +
+`response_format=json` → `{"text": "…"}`), newer ones the
+OpenAI-compatible `POST /v1/audio/transcriptions`. Point `STT_BASE_URL`
+(or the legacy `WHISPER_CPP_URL` alias) at whichever your build serves —
+the backend POSTs `file` + `response_format` (+ `model` when `STT_MODEL`
+is set) to the URL verbatim.
 
 Smoke test:
 
@@ -58,15 +62,26 @@ ollama create llama3.2:3b -f Modelfile
 
 ## 3. backend/.env
 
-Materialized already — see `backend/.env` (contract in `.env.example`):
+Not committed — copy the contract and fill it in:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+For this all-local setup:
 
 ```
 NINE_ROUTER_BASE_URL=http://localhost:11434/v1
 NINE_ROUTER_API_KEY=ollama
 NINE_ROUTER_MODEL=llama3.2:3b
-WHISPER_CPP_URL=http://localhost:8081/inference
+STT_BASE_URL=http://localhost:8081/v1/audio/transcriptions   # newer whisper.cpp
+# WHISPER_CPP_URL=http://localhost:8081/inference            # older builds (legacy alias)
 SI_LLM_TIMEOUT_S=75     # CPU inference: 12 s default dies mid-reply
 ```
+
+Without `.env`, the code defaults to a 9Router gateway on
+`http://localhost:20128/v1` and whisper.cpp on
+`http://localhost:8081/v1/audio/transcriptions`.
 
 `SI_LLM_TIMEOUT_S` is read when the OpenAI client is first created —
 **restart uvicorn after changing `.env`**.
