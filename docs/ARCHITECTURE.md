@@ -72,8 +72,8 @@
 
 ## Data flow — the SI console
 
-1. `SimConsole` (site) posts chat text or PTT audio to
-   `/api/si/chat`, `/api/si/voice` or `/api/si/voice-command`
+1. `SimConsole` (site) posts chat text to `/api/si/chat` and PTT audio to
+   `/api/si/voice-command` (`/api/si/voice` is the alternate envelope)
    (`lib/voice.ts` transcodes MediaRecorder output to WAV PCM16 16 kHz).
 2. `si_copilot` first builds a deterministic factual packet — risk model
    result, engine ignition pressure, 3 nearest PSI runs (`neighbors`),
