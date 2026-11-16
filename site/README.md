@@ -11,7 +11,7 @@ overlay views ride on top of it:
 - `SimDeck` — simulation deck: investigation presets, generated mission
   reports (`/api/mission-reports/templates`) and `SimConsole`, the agent
   console — chat + push-to-talk voice (MediaRecorder →
-  `/api/si/chat` `/api/si/voice`). Every response becomes an `AgentTurn`
+  `/api/si/chat` `/api/si/voice-command`). Every response becomes an `AgentTurn`
   whose `simulation_commands` fan out through `emitSimulationCommands` →
   `ignis:ui-command` (bus in `src/lib/simBus.ts`; `lib/voice.ts`
   transcodes clips to WAV PCM16 16 kHz in-browser).

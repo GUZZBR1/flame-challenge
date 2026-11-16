@@ -31,7 +31,8 @@ bash models/download-ggml-model.sh small.en    # ~465 MB; base.en works too
 build — older builds expose `POST /inference` (multipart `file` +
 `response_format=json` → `{"text": "…"}`), newer ones the
 OpenAI-compatible `POST /v1/audio/transcriptions`. Point `STT_BASE_URL`
-(or the legacy `WHISPER_CPP_URL` alias) at whichever your build serves —
+at whichever your build serves (`WHISPER_CPP_URL` is a legacy alias read
+only when `STT_BASE_URL` is unset — check `STT_BASE_URL` first) —
 the backend POSTs `file` + `response_format` (+ `model` when `STT_MODEL`
 is set) to the URL verbatim.
 
@@ -75,7 +76,7 @@ NINE_ROUTER_BASE_URL=http://localhost:11434/v1
 NINE_ROUTER_API_KEY=ollama
 NINE_ROUTER_MODEL=llama3.2:3b
 STT_BASE_URL=http://localhost:8081/v1/audio/transcriptions   # newer whisper.cpp
-# WHISPER_CPP_URL=http://localhost:8081/inference            # older builds (legacy alias)
+# STT_BASE_URL=http://localhost:8081/inference               # older builds (replace the line above)
 SI_LLM_TIMEOUT_S=75     # CPU inference: 12 s default dies mid-reply
 ```
 
@@ -134,5 +135,7 @@ npm install -g 9router && 9router        # dashboard → http://localhost:20128
   server) or the model is cold-loading; retry once warm.
 - **`ollama pull` DNS errors** → WSL resolver flake; daemon is a system
   service so use the GGUF + `ollama create` path above (pure local file).
-- **`stt: "offline"`** → whisper-server not on :8081, or
-  `WHISPER_CPP_URL` still points at `/v1/audio/transcriptions`.
+- **`stt: "offline"`** → whisper-server not on :8081, or `STT_BASE_URL`
+  points at the wrong route for your build (`/inference` vs
+  `/v1/audio/transcriptions`). `STT_BASE_URL` wins over the
+  `WHISPER_CPP_URL` alias — check it first.

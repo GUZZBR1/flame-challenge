@@ -73,7 +73,7 @@ backend only — no client. See `docs/`.
   `/api/mission-reports/templates`) and `Dashboard` (summarize ·
   rank · interpret pillars + `MissionReportsPanel`). `SimConsole`
   is the agent console: chat + push-to-talk voice via MediaRecorder
-  → `/api/si/chat` / `/api/si/voice`, `Composer` owns the recorder
+  → `/api/si/chat` / `/api/si/voice-command`, `Composer` owns the recorder
   and `lib/voice.ts` transcodes to WAV PCM16 16kHz in-browser; every
   response becomes an `AgentTurn` whose `simulation_commands` fan out
   through `emitSimulationCommands` → `ignis:ui-command`. Event bus in
